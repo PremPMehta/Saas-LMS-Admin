@@ -19,7 +19,7 @@ import PlansList from '../components/dashboard/PlansList';
 
 const DashboardOverview = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [dashboardData, setDashboardData] = useState({
+  const [dashboardData] = useState({
     kpis: {
       totalAcademies: 8,
       totalPlans: 3,

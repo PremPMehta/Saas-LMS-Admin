@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
@@ -29,14 +29,18 @@ export const AuthProvider = ({ children }) => {
           setUser(JSON.parse(storedUser));
         } catch (error) {
           console.error('Error parsing stored user data:', error);
-          logout();
+          // Clear invalid data without calling logout to avoid circular dependency
+          setToken(null);
+          setUser(null);
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
         }
       }
       setIsLoading(false);
     };
 
     checkAuth();
-  }, [logout]);
+  }, []);
 
   // Login function
   const login = async (email, password) => {
@@ -67,13 +71,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Logout function
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     navigate('/login');
-  };
+  }, [navigate]);
 
   // Check if user is authenticated
   const isAuthenticated = () => {
