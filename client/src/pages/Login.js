@@ -22,7 +22,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const Login = () => {
   const { mode } = useTheme();
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [formData, setFormData] = useState({

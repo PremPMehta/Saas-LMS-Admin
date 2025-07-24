@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import Sidebar from '../components/layout/Sidebar';
 import Navbar from '../components/layout/Navbar';
 import Login from '../pages/Login';
-import Dashboard from '../pages/Dashboard';
+import DashboardOverview from '../pages/DashboardOverview';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 const drawerWidth = 240;
@@ -49,7 +49,7 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <MainLayout>
-              <Dashboard />
+              <DashboardOverview />
             </MainLayout>
           </ProtectedRoute>
         }
@@ -116,8 +116,8 @@ const AppRoutes = () => {
       />
       
       {/* Default redirect */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };
