@@ -7,7 +7,7 @@ import Login from '../pages/Login';
 import DashboardOverview from '../pages/DashboardOverview';
 import ProtectedRoute from '../components/ProtectedRoute';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 // Layout component for pages that need sidebar and navbar
 const MainLayout = ({ children }) => {
