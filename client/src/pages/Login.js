@@ -8,6 +8,7 @@ import {
   Link,
   InputAdornment,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -16,15 +17,46 @@ import {
   VisibilityOff,
 } from '@mui/icons-material';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Login = () => {
   const { mode } = useTheme();
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
+
+  // Validation rules
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'email':
+        if (!value) {
+          return 'Email is required';
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          return 'Please enter a valid email address';
+        }
+        return '';
+      case 'password':
+        if (!value) {
+          return 'Password is required';
+        }
+        if (value.length < 6) {
+          return 'Password must be at least 6 characters long';
+        }
+        return '';
+      default:
+        return '';
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,31 +64,62 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
-    if (error) setError('');
+
+    // Clear field-specific error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+
+    // Clear API error when user starts typing
+    if (apiError) {
+      setApiError('');
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(formData).forEach(field => {
+      const error = validateField(field, formData[field]);
+      if (error) {
+        newErrors[field] = error;
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Basic validation
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    if (!formData.email.includes('@')) {
-      setError('Please enter a valid email address');
-      return;
-    }
-
-    // Here you would typically make an API call to authenticate
-    console.log('Login attempt:', formData);
+    // Clear previous errors
+    setApiError('');
     
-    // For demo purposes, show success (replace with actual authentication)
-    setError('');
-    // Redirect to dashboard after successful login
-    window.location.href = '/dashboard';
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await login(formData.email.toLowerCase(), formData.password);
+      
+      if (result.success) {
+        // Redirect to intended page or dashboard
+        const from = location.state?.from?.pathname || '/dashboard';
+        navigate(from, { replace: true });
+      } else {
+        setApiError(result.message);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setApiError('Network error. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -219,10 +282,10 @@ const Login = () => {
             Enter your credentials to access the admin panel
           </Typography>
 
-          {/* Error Alert */}
-          {error && (
+          {/* API Error Alert */}
+          {apiError && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              {error}
+              {apiError}
             </Alert>
           )}
 
@@ -240,10 +303,13 @@ const Login = () => {
               autoFocus
               value={formData.email}
               onChange={handleInputChange}
+              error={!!errors.email}
+              helperText={errors.email}
+              disabled={isLoading}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <EmailIcon sx={{ color: 'text.secondary' }} />
+                    <EmailIcon sx={{ color: errors.email ? 'error.main' : 'text.secondary' }} />
                   </InputAdornment>
                 ),
               }}
@@ -252,7 +318,7 @@ const Login = () => {
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
                   '&:hover fieldset': {
-                    borderColor: 'primary.main',
+                    borderColor: errors.email ? 'error.main' : 'primary.main',
                   },
                 },
               }}
@@ -270,20 +336,24 @@ const Login = () => {
               autoComplete="current-password"
               value={formData.password}
               onChange={handleInputChange}
+              error={!!errors.password}
+              helperText={errors.password}
+              disabled={isLoading}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LockIcon sx={{ color: 'text.secondary' }} />
+                    <LockIcon sx={{ color: errors.password ? 'error.main' : 'text.secondary' }} />
                   </InputAdornment>
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
                     <Button
                       onClick={handleTogglePasswordVisibility}
+                      disabled={isLoading}
                       sx={{
                         minWidth: 'auto',
                         p: 0.5,
-                        color: 'text.secondary',
+                        color: errors.password ? 'error.main' : 'text.secondary',
                         '&:hover': {
                           backgroundColor: 'transparent',
                         },
@@ -299,7 +369,7 @@ const Login = () => {
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
                   '&:hover fieldset': {
-                    borderColor: 'primary.main',
+                    borderColor: errors.password ? 'error.main' : 'primary.main',
                   },
                 },
               }}
@@ -310,6 +380,7 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={isLoading}
               sx={{
                 mt: 2,
                 mb: 2,
@@ -323,10 +394,18 @@ const Login = () => {
                   boxShadow: '0 6px 20px rgba(255, 111, 12, 0.4)',
                   transform: 'translateY(-1px)',
                 },
+                '&:disabled': {
+                  boxShadow: 'none',
+                  transform: 'none',
+                },
                 transition: 'all 0.2s ease-in-out',
               }}
             >
-              Login Now
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Login Now'
+              )}
             </Button>
 
             {/* Forgot Password Link */}

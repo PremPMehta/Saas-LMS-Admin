@@ -21,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import { styled, alpha } from '@mui/material/styles';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const drawerWidth = 240;
 
@@ -67,6 +68,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const Navbar = () => {
   const { mode, toggleTheme } = useTheme();
+  const { logout, getCurrentUser } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -76,6 +78,11 @@ const Navbar = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
   };
 
   const handleSearchChange = (event) => {
@@ -191,7 +198,7 @@ const Navbar = () => {
                   fontSize: '0.875rem',
                 }}
               >
-                A
+                {getCurrentUser()?.email?.charAt(0).toUpperCase() || 'A'}
               </Avatar>
             </IconButton>
           </Tooltip>
@@ -215,7 +222,7 @@ const Navbar = () => {
           <SettingsIcon sx={{ mr: 1 }} />
           Settings
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem onClick={handleLogout}>
           <LogoutIcon sx={{ mr: 1 }} />
           Logout
         </MenuItem>
