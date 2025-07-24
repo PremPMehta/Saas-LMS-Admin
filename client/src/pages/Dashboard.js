@@ -6,7 +6,6 @@ import {
   Paper,
   Card,
   CardContent,
-  CardHeader,
 } from '@mui/material';
 import {
   People as PeopleIcon,
