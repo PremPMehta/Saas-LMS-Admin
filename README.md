@@ -1,188 +1,238 @@
-# LMS Admin Dashboard
+# SaaS-LMS Admin - Technical Documentation
 
-A comprehensive Learning Management System (LMS) admin dashboard for managing multiple academies.
+## Project Overview
 
-## Features
+SaaS-LMS Admin is a comprehensive Learning Management System (LMS) administration platform designed for educational institutions and training organizations. The system provides centralized management of academies, courses, users, and learning plans with role-based access control and real-time analytics.
+
+The platform enables administrators to manage multiple academies, create subscription plans, monitor user activities, and generate insights through an intuitive dashboard interface. It supports scalable operations with configurable limits and automated user provisioning.
+
+## Core Features
+
+### User Management
+- **Role-based Access Control**: Admin, Standard User roles with granular permissions
+- **User Registration & Authentication**: Secure login with JWT token-based sessions
+- **Profile Management**: User profile updates and status management
+- **Bulk Operations**: Mass user creation and management capabilities
 
 ### Academy Management
-- **Create Academies**: Add new academies with comprehensive details
-- **Edit Academies**: Update existing academy information
-- **View Academy Details**: Preview academy information with a beautiful card layout
-- **Delete Academies**: Remove academies with confirmation
-- **Search & Filter**: Find academies by name, subdomain, plan, or status
+- **Multi-Academy Support**: Manage multiple educational institutions
+- **Academy Configuration**: Customizable settings per academy
+- **Student & Educator Limits**: Configurable capacity management
+- **Status Tracking**: Active/Inactive academy status monitoring
 
-### Academy Status Management
-- **Active**: Academy is fully operational (Green indicator)
-- **Inactive**: Academy is temporarily disabled (Red indicator)
-- **Onhold**: Academy is on hold/pending (Orange indicator)
+### Plan Management
+- **Subscription Plans**: Flexible pricing tiers (Basic, Pro, Premium, Enterprise)
+- **Feature Configuration**: Customizable plan features and limitations
+- **Billing Periods**: Monthly/Annual subscription options
+- **Popular Plan Highlighting**: Featured plan designation
 
-### Preview Card System
-- **Add/Edit Modal**: Live preview card shows academy details as you fill the form
-- **View Dialog**: Same preview card layout when viewing academy details
-- **Real-time Updates**: Preview updates as you type and select options
+### Dashboard & Analytics
+- **Real-time KPIs**: User counts, academy statistics, plan metrics
+- **Visual Analytics**: Interactive charts and data visualization
+- **Performance Monitoring**: System health and usage statistics
+- **Export Capabilities**: Data export in multiple formats
 
-## Technology Stack
+### Security & Authentication
+- **JWT Token Authentication**: Secure API access control
+- **Protected Routes**: Role-based endpoint protection
+- **Session Management**: Automatic token refresh and validation
+- **Data Encryption**: Sensitive data protection
 
-### Backend
-- **Node.js** with Express.js
-- **MongoDB** with Mongoose ODM
-- **JWT** for authentication
-- **Nodemon** for development
+## Tech Stack
 
 ### Frontend
-- **React.js** with functional components and hooks
-- **Material-UI (MUI)** for beautiful, responsive UI
-- **Context API** for state management
-- **React Router** for navigation
+- **React.js**: Component-based UI framework
+- **Material-UI (MUI)**: Design system and component library
+- **React Router**: Client-side routing and navigation
+- **Context API**: State management for themes and authentication
+- **Axios**: HTTP client for API communication
 
-## Getting Started
+### Backend
+- **Node.js**: JavaScript runtime environment
+- **Express.js**: Web application framework
+- **JWT**: JSON Web Token authentication
+- **bcryptjs**: Password hashing and security
+- **CORS**: Cross-origin resource sharing
 
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB (local or cloud)
-- npm or yarn
+### Database
+- **MongoDB**: NoSQL document database
+- **Mongoose**: MongoDB object modeling
+- **MongoDB Compass**: Database management tool
 
-### Installation
+### Development Tools
+- **ESLint**: Code quality and consistency
+- **Git**: Version control system
+- **npm**: Package management
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd lms-admin
-   ```
+## Folder Structure
 
-2. **Install dependencies**
-   ```bash
-   # Install server dependencies
-   cd server
-   npm install
-   
-   # Install client dependencies
-   cd ../client
-   npm install
-   ```
+```
+lms-admin/
+├── client/                          # React frontend application
+│   ├── public/                      # Static assets and HTML template
+│   ├── src/
+│   │   ├── components/              # Reusable UI components
+│   │   │   ├── dashboard/           # Dashboard-specific components
+│   │   │   ├── layout/              # Layout and navigation components
+│   │   │   └── users/               # User management components
+│   │   ├── contexts/                # React context providers
+│   │   ├── features/                # Redux slices and state management
+│   │   ├── pages/                   # Main application pages
+│   │   └── routes/                  # Application routing configuration
+│   └── package.json                 # Frontend dependencies
+├── server/                          # Node.js backend application
+│   ├── config/                      # Database and configuration files
+│   ├── controllers/                 # Request handlers and business logic
+│   ├── middleware/                  # Custom middleware functions
+│   ├── models/                      # MongoDB schema definitions
+│   ├── routes/                      # API route definitions
+│   ├── seed.js                      # Database seeding scripts
+│   └── server.js                    # Main server entry point
+└── README.md                        # Project documentation
+```
 
-3. **Set up environment variables**
-   ```bash
-   # In the server directory, create a .env file or use the start script
-   cd ../server
-   ./start.sh
-   ```
+## System Architecture
 
-4. **Start the development servers**
-   ```bash
-   # Start the backend server (from server directory)
-   npm run dev
-   
-   # Start the frontend server (from client directory)
-   npm start
-   ```
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        UI[React UI Components]
+        Router[React Router]
+        Context[Context Providers]
+    end
+    
+    subgraph "API Layer"
+        Auth[Authentication Middleware]
+        Controllers[API Controllers]
+        Routes[Express Routes]
+    end
+    
+    subgraph "Data Layer"
+        Models[Mongoose Models]
+        DB[(MongoDB Database)]
+    end
+    
+    UI --> Router
+    Router --> Context
+    Context --> Auth
+    Auth --> Controllers
+    Controllers --> Routes
+    Routes --> Models
+    Models --> DB
+    
+    style UI fill:#e1f5fe
+    style Auth fill:#fff3e0
+    style DB fill:#f3e5f5
+```
 
-### Default Admin Credentials
-- **Email**: admin@multi-admin.com
-- **Password**: Password@123
+## Role-Based Access Flow
+
+```mermaid
+flowchart TD
+    A[User Login] --> B{Authentication}
+    B -->|Valid Credentials| C[Role Check]
+    B -->|Invalid| D[Login Failed]
+    
+    C -->|Admin Role| E[Admin Dashboard]
+    C -->|Standard User| F[User Dashboard]
+    
+    E --> G[Manage Academies]
+    E --> H[Manage Plans]
+    E --> I[Manage Users]
+    E --> J[View Analytics]
+    
+    F --> K[View Academies]
+    F --> L[View Plans]
+    F --> M[Limited Analytics]
+    
+    G --> N[Create/Edit Academies]
+    H --> O[Create/Edit Plans]
+    I --> P[Create/Edit Users]
+    J --> Q[Full System Access]
+    
+    K --> R[Read-Only Access]
+    L --> S[Read-Only Access]
+    M --> T[Limited Data Access]
+    
+    style E fill:#4caf50
+    style F fill:#2196f3
+    style D fill:#f44336
+```
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
-- `POST /api/auth/logout` - User logout
+- `POST /api/auth/login` - User authentication
+- `POST /api/auth/register` - User registration
+- `GET /api/auth/me` - Get current user profile
 
 ### Academies
-- `GET /api/academies` - Get all academies
+- `GET /api/academies` - List all academies
 - `POST /api/academies` - Create new academy
-- `GET /api/academies/:id` - Get academy by ID
 - `PUT /api/academies/:id` - Update academy
 - `DELETE /api/academies/:id` - Delete academy
 
-## Academy Fields
+### Plans
+- `GET /api/plans` - List all plans
+- `POST /api/plans` - Create new plan
+- `PUT /api/plans/:id` - Update plan
+- `DELETE /api/plans/:id` - Delete plan
 
-### Required Fields
-- **Name**: Academy name (max 100 characters)
-- **Address**: Complete academy address (max 500 characters)
-- **Contact Name**: Point of contact person
-- **Contact Number**: Phone number with country code
-- **Subdomain**: Unique subdomain (3-20 characters, lowercase, numbers, hyphens only)
-- **Logo**: Academy logo (JPEG, PNG, GIF, WebP, max 2MB)
-- **Subscription Plan**: Basic, Standard, or Premium
+### Users
+- `GET /api/users` - List all users
+- `POST /api/users` - Create new user
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
 
-### Optional Fields
-- **Status**: Active, Inactive, or Onhold (defaults to Active)
-- **Students**: Number of students (defaults to 0)
-- **Courses**: Number of courses (defaults to 0)
+## Data Models
 
-## UI Features
+### User Model
+- `email`: String (unique, required)
+- `password`: String (hashed, required)
+- `role`: String (enum: 'admin', 'user')
+- `status`: String (enum: 'active', 'inactive')
+- `createdAt`: Date
+- `updatedAt`: Date
 
-### Responsive Design
-- Mobile-friendly interface
-- Adaptive layouts for different screen sizes
-- Touch-friendly interactions
+### Academy Model
+- `name`: String (required)
+- `description`: String
+- `status`: String (enum: 'active', 'inactive')
+- `maxStudents`: Number
+- `maxEducators`: Number
+- `createdAt`: Date
+- `updatedAt`: Date
 
-### Modern UI/UX
-- Material Design principles
-- Smooth animations and transitions
-- Intuitive navigation
-- Beautiful gradient backgrounds
-- Card-based layouts
+### Plan Model
+- `name`: String (required)
+- `price`: Number (required)
+- `period`: String (enum: 'month', 'year')
+- `features`: Array of Strings
+- `maxAcademies`: Number
+- `maxStudentsPerAcademy`: Number
+- `maxEducatorsPerAcademy`: Number
+- `popular`: Boolean
+- `status`: String (enum: 'active', 'inactive')
+- `createdAt`: Date
+- `updatedAt`: Date
 
-### Interactive Elements
-- Real-time form validation
-- Live preview cards
-- Confirmation dialogs
-- Loading states
-- Error handling
+## Security Considerations
 
-## Development
+- **Password Hashing**: All passwords are hashed using bcryptjs
+- **JWT Tokens**: Secure token-based authentication with expiration
+- **Protected Routes**: Role-based middleware for API endpoint protection
+- **Input Validation**: Server-side validation for all user inputs
+- **CORS Configuration**: Proper cross-origin request handling
+- **Environment Variables**: Sensitive configuration stored in environment files
 
-### Project Structure
-```
-lms-admin/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/         # Page components
-│   │   ├── contexts/      # React contexts
-│   │   └── features/      # Redux slices
-│   └── public/            # Static assets
-├── server/                # Node.js backend
-│   ├── controllers/       # Route controllers
-│   ├── models/           # Mongoose models
-│   ├── routes/           # API routes
-│   ├── middleware/       # Custom middleware
-│   └── config/           # Configuration files
-└── README.md
-```
+## Performance Optimization
 
-### Key Components
+- **Component Optimization**: React.memo and useMemo for expensive operations
+- **Lazy Loading**: Code splitting for better initial load times
+- **Database Indexing**: Optimized MongoDB queries with proper indexing
+- **Caching**: Client-side caching for frequently accessed data
+- **Bundle Optimization**: Minimized and compressed production builds
 
-#### AcademiesList
-- Displays all academies in a table format
-- Search and pagination functionality
-- Action buttons for view, edit, and delete
-- Status indicators with colors and icons
+---
 
-#### AddAcademyModal
-- Comprehensive form for creating/editing academies
-- Real-time validation
-- Live preview card
-- File upload for academy logo
-- Status selection with visual cards
-
-#### Preview Card
-- Consistent design across add/edit and view modes
-- Shows academy logo, name, and domain
-- Displays contact information
-- Shows subscription plan and status chips
-- Responsive layout
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License.
+*Documentation maintained by Team QuirkBees Technologies.*
