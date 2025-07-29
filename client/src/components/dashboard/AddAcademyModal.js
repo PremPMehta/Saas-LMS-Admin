@@ -46,11 +46,9 @@ const countryCodes = [
   { code: '+507', country: 'Panama', pattern: /^\+507\s?\d{7,8}$/ },
 ];
 
-const subscriptionPlans = [
-  { id: 1, name: 'Basic', price: '$29', limits: '1 academy', color: '#4CAF50', features: ['Basic features', 'Email support', '1 academy limit'] },
-  { id: 2, name: 'Standard', price: '$79', limits: '3 academies', color: '#2196F3', features: ['All Basic features', 'Priority support', '3 academies limit', 'Advanced analytics'] },
-  { id: 3, name: 'Premium', price: '$199', limits: 'Unlimited academies', color: '#9C27B0', features: ['All Standard features', '24/7 support', 'Unlimited academies', 'Custom branding', 'API access'] },
-];
+// Configure axios base URL
+import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:5001';
 
 const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
   const [formData, setFormData] = useState({
@@ -68,8 +66,32 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
   const [errors, setErrors] = useState({});
   const [logoPreview, setLogoPreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subscriptionPlans, setSubscriptionPlans] = useState([]);
+  const [plansLoading, setPlansLoading] = useState(true);
+
+  // Fetch subscription plans
+  const fetchSubscriptionPlans = async () => {
+    try {
+      setPlansLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/plans?limit=10', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSubscriptionPlans(response.data.data.plans || []);
+    } catch (err) {
+      console.error('Error fetching subscription plans:', err);
+    } finally {
+      setPlansLoading(false);
+    }
+  };
 
   // Populate form when editing
+  useEffect(() => {
+    if (open) {
+      fetchSubscriptionPlans();
+    }
+  }, [open]);
+
   useEffect(() => {
     if (editingAcademy) {
       setFormData({
@@ -453,15 +475,35 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
               <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1, opacity: 0.9 }}>
                 Subscription Plan
               </Typography>
-              <Chip
-                label={formData.subscriptionPlan}
-                sx={{
-                  backgroundColor: 'rgba(255,255,255,0.2)',
-                  color: 'white',
-                  fontWeight: 600,
-                  border: '1px solid rgba(255,255,255,0.3)',
-                }}
-              />
+              {(() => {
+                const selectedPlan = subscriptionPlans.find(plan => plan.name === formData.subscriptionPlan);
+                return selectedPlan ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Chip
+                      label={`${selectedPlan.name} - $${selectedPlan.price}/${selectedPlan.period}`}
+                      sx={{
+                        backgroundColor: 'rgba(255,255,255,0.2)',
+                        color: 'white',
+                        fontWeight: 600,
+                        border: '1px solid rgba(255,255,255,0.3)',
+                      }}
+                    />
+                    <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                      {selectedPlan.maxAcademies} academies • {selectedPlan.maxStudentsPerAcademy} students/academy
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Chip
+                    label={formData.subscriptionPlan}
+                    sx={{
+                      backgroundColor: 'rgba(255,255,255,0.2)',
+                      color: 'white',
+                      fontWeight: 600,
+                      border: '1px solid rgba(255,255,255,0.3)',
+                    }}
+                  />
+                );
+              })()}
             </Box>
           )}
         </Box>
@@ -871,9 +913,17 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                       },
                     }}
                   >
-                    <MenuItem value="Basic">Basic Plan</MenuItem>
-                    <MenuItem value="Standard">Standard Plan</MenuItem>
-                    <MenuItem value="Premium">Premium Plan</MenuItem>
+                    {plansLoading ? (
+                      <MenuItem disabled>Loading plans...</MenuItem>
+                    ) : subscriptionPlans.length > 0 ? (
+                      subscriptionPlans.map((plan) => (
+                        <MenuItem key={plan._id} value={plan.name}>
+                          {plan.name} - ${plan.price}/{plan.period}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled>No plans available</MenuItem>
+                    )}
                   </TextField>
                 </Grid>
                 <Grid item xs={12} md={6}>

@@ -34,8 +34,8 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [stats, setStats] = useState({
     users: { total: 0, active: 0, inactive: 0 },
-    academies: { total: 0, active: 0, inactive: 0 },
-    plans: { total: 0, active: 0, inactive: 0 },
+    academies: { totalAcademies: 0, activeAcademies: 0, inactiveAcademies: 0 },
+    plans: { totalPlans: 0, activePlans: 0, inactivePlans: 0 },
   });
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const [plansLoading, setPlansLoading] = useState(true);
