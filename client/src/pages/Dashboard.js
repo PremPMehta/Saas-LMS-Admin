@@ -13,38 +13,46 @@ import {
   Assignment as AssignmentIcon,
   TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Dashboard = () => {
+  const { mode } = useTheme();
+  
   const stats = [
     {
       title: 'Total Users',
       value: '1,234',
       icon: <PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />,
-      color: '#4CAF50',
+      color: '#1976d2',
     },
     {
       title: 'Active Academies',
       value: '56',
       icon: <SchoolIcon sx={{ fontSize: 40, color: 'primary.main' }} />,
-      color: '#2196F3',
+      color: '#42a5f5',
     },
     {
       title: 'Active Plans',
       value: '89',
       icon: <AssignmentIcon sx={{ fontSize: 40, color: 'primary.main' }} />,
-      color: '#FF9800',
+      color: '#2196F3',
     },
     {
       title: 'Growth Rate',
       value: '+12.5%',
       icon: <TrendingUpIcon sx={{ fontSize: 40, color: 'primary.main' }} />,
-      color: '#9C27B0',
+      color: '#64b5f6',
     },
   ];
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
+    <Box sx={{ 
+      p: 3,
+      backgroundColor: 'background.default',
+      minHeight: '100vh',
+      color: 'text.primary'
+    }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
         Dashboard
       </Typography>
       
@@ -59,9 +67,13 @@ const Dashboard = () => {
               sx={{
                 height: '100%',
                 transition: 'transform 0.2s ease-in-out',
+                backgroundColor: 'background.paper',
+                border: `1px solid ${mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'}`,
                 '&:hover': {
                   transform: 'translateY(-4px)',
-                  boxShadow: 3,
+                  boxShadow: mode === 'light' 
+                    ? '0 8px 24px rgba(0,0,0,0.1)'
+                    : '0 8px 24px rgba(0,0,0,0.3)',
                 },
               }}
             >
@@ -85,8 +97,13 @@ const Dashboard = () => {
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: 300 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 3, 
+            height: 300,
+            backgroundColor: 'background.paper',
+            border: `1px solid ${mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'}`,
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
               Recent Activity
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -95,8 +112,13 @@ const Dashboard = () => {
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, height: 300 }}>
-            <Typography variant="h6" gutterBottom>
+          <Paper sx={{ 
+            p: 3, 
+            height: 300,
+            backgroundColor: 'background.paper',
+            border: `1px solid ${mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'}`,
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
               Quick Actions
             </Typography>
             <Typography variant="body2" color="text.secondary">

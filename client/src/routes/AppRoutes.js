@@ -1,41 +1,13 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box } from '@mui/material';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
+import ProtectedRoute from '../components/ProtectedRoute';
+import RoleBasedRoute from '../components/RoleBasedRoute';
+import MainLayout from '../components/layout/MainLayout';
 import Login from '../pages/Login';
 import DashboardOverview from '../pages/DashboardOverview';
-import ProtectedRoute from '../components/ProtectedRoute';
-
-const drawerWidth = 280;
-
-// Layout component for pages that need sidebar and navbar
-const MainLayout = ({ children }) => {
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <Sidebar />
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          width: `calc(100% - ${drawerWidth}px)`,
-          minHeight: '100vh',
-          backgroundColor: 'background.default',
-        }}
-      >
-        <Navbar />
-        <Box
-          sx={{
-            pt: 8, // Account for the fixed navbar
-            minHeight: 'calc(100vh - 64px)',
-          }}
-        >
-          {children}
-        </Box>
-      </Box>
-    </Box>
-  );
-};
+import Academies from '../pages/Academies';
+import Plans from '../pages/Plans';
+import Users from '../pages/Users';
 
 const AppRoutes = () => {
   return (
@@ -48,9 +20,11 @@ const AppRoutes = () => {
         path="/dashboard"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <DashboardOverview />
-            </MainLayout>
+            <RoleBasedRoute allowedRoles={['admin']}>
+              <MainLayout>
+                <DashboardOverview />
+              </MainLayout>
+            </RoleBasedRoute>
           </ProtectedRoute>
         }
       />
@@ -58,9 +32,11 @@ const AppRoutes = () => {
         path="/academies"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <div style={{ padding: '24px' }}>Academies Page - Coming Soon</div>
-            </MainLayout>
+            <RoleBasedRoute allowedRoles={['admin', 'user']}>
+              <MainLayout>
+                <Academies />
+              </MainLayout>
+            </RoleBasedRoute>
           </ProtectedRoute>
         }
       />
@@ -68,9 +44,11 @@ const AppRoutes = () => {
         path="/plans"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <div style={{ padding: '24px' }}>Plans Page - Coming Soon</div>
-            </MainLayout>
+            <RoleBasedRoute allowedRoles={['admin', 'user']}>
+              <MainLayout>
+                <Plans />
+              </MainLayout>
+            </RoleBasedRoute>
           </ProtectedRoute>
         }
       />
@@ -78,9 +56,11 @@ const AppRoutes = () => {
         path="/users"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <div style={{ padding: '24px' }}>Users Page - Coming Soon</div>
-            </MainLayout>
+            <RoleBasedRoute allowedRoles={['admin']}>
+              <MainLayout>
+                <Users />
+              </MainLayout>
+            </RoleBasedRoute>
           </ProtectedRoute>
         }
       />
@@ -88,9 +68,11 @@ const AppRoutes = () => {
         path="/analytics"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <div style={{ padding: '24px' }}>Analytics Page - Coming Soon</div>
-            </MainLayout>
+            <RoleBasedRoute allowedRoles={['admin']}>
+              <MainLayout>
+                <div style={{ padding: '24px' }}>Analytics Page - Coming Soon</div>
+              </MainLayout>
+            </RoleBasedRoute>
           </ProtectedRoute>
         }
       />
@@ -98,9 +80,11 @@ const AppRoutes = () => {
         path="/settings"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <div style={{ padding: '24px' }}>Settings Page - Coming Soon</div>
-            </MainLayout>
+            <RoleBasedRoute allowedRoles={['admin']}>
+              <MainLayout>
+                <div style={{ padding: '24px' }}>Settings Page - Coming Soon</div>
+              </MainLayout>
+            </RoleBasedRoute>
           </ProtectedRoute>
         }
       />
@@ -108,16 +92,18 @@ const AppRoutes = () => {
         path="/profile"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <div style={{ padding: '24px' }}>Profile Page - Coming Soon</div>
-            </MainLayout>
+            <RoleBasedRoute allowedRoles={['admin', 'user']}>
+              <MainLayout>
+                <div style={{ padding: '24px' }}>Profile Page - Coming Soon</div>
+              </MainLayout>
+            </RoleBasedRoute>
           </ProtectedRoute>
         }
       />
       
-      {/* Default redirect */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Default redirect - redirect based on user role */}
+      <Route path="/" element={<Navigate to="/academies" replace />} />
+      <Route path="*" element={<Navigate to="/academies" replace />} />
     </Routes>
   );
 };

@@ -10,7 +10,6 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Badge,
 } from '@mui/material';
 import {
   Check as CheckIcon,

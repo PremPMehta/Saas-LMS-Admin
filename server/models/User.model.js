@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'user'],
     default: 'admin'
   },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'pending'],
+    default: 'active'
+  },
   isActive: {
     type: Boolean,
     default: true

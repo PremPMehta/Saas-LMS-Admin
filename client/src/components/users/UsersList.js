@@ -6,52 +6,48 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Paper,
-  Chip,
   Box,
   Typography,
-  Link,
-  Avatar,
-  Tooltip,
-  TablePagination,
   TextField,
   InputAdornment,
   IconButton,
+  Chip,
+  Avatar,
+  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Alert,
-  Divider,
-  Grid,
-  Card,
-  CardContent,
   CircularProgress,
+  Tooltip,
 } from '@mui/material';
 import {
+  Search as SearchIcon,
+  Visibility as ViewIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Close as CloseIcon,
+  AdminPanelSettings as AdminIcon,
+  Person as UserIcon,
   CheckCircle as ActiveIcon,
   Cancel as InactiveIcon,
-  School as SchoolIcon,
-  People as PeopleIcon,
-  Book as BookIcon,
-  Search as SearchIcon,
-  Edit as EditIcon,
-  Visibility as ViewIcon,
-  Delete as DeleteIcon,
   Warning as WarningIcon,
-  Close as CloseIcon,
-  Preview as PreviewIcon,
-  Language as LanguageIcon,
+  Person as PersonIcon,
+  Email as EmailIcon,
 } from '@mui/icons-material';
+import { useTheme } from '../../contexts/ThemeContext';
 
-const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRowsPerPage = 5 }) => {
+const UsersList = ({ users, onUserUpdate, onUserDelete, defaultRowsPerPage = 10 }) => {
+  const { mode } = useTheme();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedAcademy, setSelectedAcademy] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
@@ -71,19 +67,19 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
   };
 
   // Action handlers
-  const handleViewAcademy = (academy) => {
-    setSelectedAcademy(academy);
+  const handleViewUser = (user) => {
+    setSelectedUser(user);
     setViewDialogOpen(true);
   };
 
-  const handleEditAcademy = (academy) => {
-    if (onAcademyUpdate) {
-      onAcademyUpdate(academy);
+  const handleEditUser = (user) => {
+    if (onUserUpdate) {
+      onUserUpdate(user);
     }
   };
 
-  const handleDeleteClick = (academy) => {
-    setSelectedAcademy(academy);
+  const handleDeleteClick = (user) => {
+    setSelectedUser(user);
     setDeleteDialogOpen(true);
     setDeleteConfirmation('');
     setDeleteError('');
@@ -104,7 +100,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
         throw new Error('Authentication token not found. Please login again.');
       }
 
-      const response = await fetch(`http://localhost:5001/api/academies/${selectedAcademy._id}`, {
+      const response = await fetch(`http://localhost:5001/api/users/${selectedUser._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -113,20 +109,20 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete academy');
+        throw new Error(errorData.message || 'Failed to delete user');
       }
 
       // Call the parent callback to refresh the list
-      if (onAcademyDelete) {
-        onAcademyDelete(selectedAcademy._id);
+      if (onUserDelete) {
+        onUserDelete(selectedUser._id);
       }
 
       setDeleteDialogOpen(false);
-      setSelectedAcademy(null);
+      setSelectedUser(null);
       setDeleteConfirmation('');
     } catch (error) {
-      console.error('Error deleting academy:', error);
-      setDeleteError(error.message || 'Failed to delete academy. Please try again.');
+      console.error('Error deleting user:', error);
+      setDeleteError(error.message || 'Failed to delete user. Please try again.');
     } finally {
       setIsDeleting(false);
     }
@@ -134,32 +130,37 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
 
   const handleCloseViewDialog = () => {
     setViewDialogOpen(false);
-    setSelectedAcademy(null);
+    setSelectedUser(null);
   };
 
   const handleCloseDeleteDialog = () => {
     setDeleteDialogOpen(false);
-    setSelectedAcademy(null);
+    setSelectedUser(null);
     setDeleteConfirmation('');
     setDeleteError('');
   };
 
-  // Filter academies based on search query
-  const filteredAcademies = academies.filter(academy =>
-    (academy.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (academy.subdomain || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (academy.subscriptionPlan || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (academy.status || '').toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter users based on search query
+  const filteredUsers = users.filter(user =>
+    user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.role?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.status?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Paginate users
+  const paginatedUsers = filteredUsers.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  // Helper functions
   const getStatusColor = (status) => {
-    if (!status) return 'default';
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'active':
         return 'success';
       case 'inactive':
         return 'error';
-      case 'onhold':
+      case 'pending':
         return 'warning';
       default:
         return 'default';
@@ -167,70 +168,59 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
   };
 
   const getStatusIcon = (status) => {
-    if (!status) return null;
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'active':
-        return <ActiveIcon fontSize="small" />;
+        return <ActiveIcon />;
       case 'inactive':
-        return <InactiveIcon fontSize="small" />;
-      case 'onhold':
-        return <WarningIcon fontSize="small" />;
+        return <InactiveIcon />;
+      case 'pending':
+        return <WarningIcon />;
       default:
         return null;
     }
   };
 
-  const getPlanColor = (plan) => {
-    if (!plan) return 'default';
-    switch (plan.toLowerCase()) {
-      case 'premium':
+  const getRoleColor = (role) => {
+    switch (role?.toLowerCase()) {
+      case 'admin':
         return 'primary';
-      case 'standard':
+      case 'user':
         return 'secondary';
-      case 'basic':
-        return 'default';
       default:
         return 'default';
     }
   };
 
-  const getAcademyInitials = (name) => {
-    if (!name) return 'AC';
-    return name
-      .split(' ')
+  const getRoleIcon = (role) => {
+    switch (role?.toLowerCase()) {
+      case 'admin':
+        return <AdminIcon />;
+      case 'user':
+        return <UserIcon />;
+      default:
+        return <UserIcon />;
+    }
+  };
+
+  const getUserInitials = (email) => {
+    if (!email) return 'U';
+    const parts = email.split('@')[0];
+    return parts
+      .split(/[._-]/)
       .map(word => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
   };
 
-  if (!academies || academies.length === 0) {
-    return (
-      <Box sx={{ textAlign: 'center', py: 6 }}>
-        <SchoolIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2, opacity: 0.5 }} />
-        <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 500 }}>
-          No academies found
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Create your first academy to get started
-        </Typography>
-      </Box>
-    );
-  }
-
-  // Calculate pagination
-  const startIndex = page * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const paginatedAcademies = filteredAcademies.slice(startIndex, endIndex);
-
   return (
     <Box>
       {/* Search Bar */}
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, p: 3, pb: 0 }}>
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Search academies by name, subdomain, plan, or status..."
+          placeholder="Search users by email, role, or status..."
           value={searchQuery}
           onChange={handleSearchChange}
           InputProps={{
@@ -305,7 +295,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}>
-                Academy
+                User
               </TableCell>
               <TableCell sx={{ 
                 fontWeight: 800, 
@@ -316,7 +306,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}>
-                Subdomain
+                Email
               </TableCell>
               <TableCell sx={{ 
                 fontWeight: 800, 
@@ -327,7 +317,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
               }}>
-                Plan
+                Role
               </TableCell>
               <TableCell sx={{ 
                 fontWeight: 800, 
@@ -346,17 +336,6 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                 color: 'primary.main', 
                 py: 3,
                 px: 3,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-              }}>
-                Stats
-              </TableCell>
-              <TableCell sx={{ 
-                fontWeight: 800, 
-                fontSize: '0.9rem', 
-                color: 'primary.main', 
-                py: 3,
-                px: 3,
                 textAlign: 'center',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px',
@@ -366,9 +345,9 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedAcademies.map((academy, index) => (
+            {paginatedUsers.map((user, index) => (
               <TableRow
-                key={academy.id}
+                key={user.id || user._id || index}
                 sx={{
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   '&:hover': {
@@ -379,7 +358,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                     boxShadow: (theme) => theme.palette.mode === 'light'
                       ? '0 8px 24px rgba(0, 0, 0, 0.12)'
                       : '0 8px 24px rgba(0, 0, 0, 0.4)',
-                    '& .academy-avatar': {
+                    '& .user-avatar': {
                       transform: 'scale(1.15) rotate(5deg)',
                       boxShadow: '0 8px 24px rgba(25, 118, 210, 0.3)',
                     },
@@ -398,8 +377,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                 <TableCell sx={{ py: 3, px: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                     <Avatar
-                      src={academy.logo}
-                      className="academy-avatar"
+                      className="user-avatar"
                       sx={{
                         bgcolor: 'primary.main',
                         width: 56,
@@ -414,15 +392,15 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                           : 'rgba(255, 255, 255, 0.15)',
                       }}
                     >
-                      {getAcademyInitials(academy.name)}
+                      {getUserInitials(user.email)}
                     </Avatar>
                     <Box>
                       <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
-                        {academy.name || 'Unnamed Academy'}
+                        {user.email ? user.email.split('@')[0] : 'Unknown User'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <SchoolIcon sx={{ fontSize: 16 }} />
-                        Created {academy.createdAt ? new Date(academy.createdAt).toLocaleDateString('en-US', {
+                        <PersonIcon sx={{ fontSize: 16 }} />
+                        Created {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric'
@@ -432,35 +410,17 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                   </Box>
                 </TableCell>
                 <TableCell sx={{ py: 3, px: 3 }}>
-                  <Link
-                    href={`https://${academy.subdomain || 'example'}.bbrtek-lms.com`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{
-                      textDecoration: 'none',
-                      color: 'primary.main',
-                      fontWeight: 700,
-                      fontSize: '0.95rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      transition: 'all 0.2s ease',
-                      '&:hover': {
-                        color: 'primary.dark',
-                        textDecoration: 'underline',
-                        transform: 'translateX(4px)',
-                      },
-                    }}
-                  >
-                    <LanguageIcon sx={{ fontSize: 18 }} />
-                    {academy.subdomain || 'N/A'}
-                  </Link>
+                  <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.primary', display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <EmailIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+                    {user.email || 'N/A'}
+                  </Typography>
                 </TableCell>
                 <TableCell sx={{ py: 3, px: 3 }}>
                   <Chip
-                    label={academy.subscriptionPlan || 'N/A'}
+                    icon={getRoleIcon(user.role)}
+                    label={user.role || 'N/A'}
                     size="medium"
-                    color={getPlanColor(academy.subscriptionPlan)}
+                    color={getRoleColor(user.role)}
                     variant="filled"
                     sx={{ 
                       fontWeight: 700,
@@ -473,10 +433,10 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                 </TableCell>
                 <TableCell sx={{ py: 3, px: 3 }}>
                   <Chip
-                    icon={getStatusIcon(academy.status)}
-                    label={academy.status || 'Unknown'}
+                    icon={getStatusIcon(user.status)}
+                    label={user.status || 'Unknown'}
                     size="medium"
-                    color={getStatusColor(academy.status)}
+                    color={getStatusColor(user.status)}
                     variant="filled"
                     sx={{ 
                       fontWeight: 700,
@@ -486,50 +446,6 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                       boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                     }}
                   />
-                </TableCell>
-                <TableCell sx={{ py: 3, px: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <Tooltip title={`${academy.students} students`} arrow placement="top">
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: 1,
-                        p: 1,
-                        borderRadius: 2,
-                        backgroundColor: 'rgba(25, 118, 210, 0.08)',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          backgroundColor: 'rgba(25, 118, 210, 0.12)',
-                          transform: 'scale(1.05)',
-                        },
-                      }}>
-                        <PeopleIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                          {academy.students?.toLocaleString() || '0'}
-                        </Typography>
-                      </Box>
-                    </Tooltip>
-                    <Tooltip title={`${academy.courses} courses`} arrow placement="top">
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: 1,
-                        p: 1,
-                        borderRadius: 2,
-                        backgroundColor: 'rgba(156, 39, 176, 0.08)',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          backgroundColor: 'rgba(156, 39, 176, 0.12)',
-                          transform: 'scale(1.05)',
-                        },
-                      }}>
-                        <BookIcon sx={{ fontSize: 18, color: 'secondary.main' }} />
-                        <Typography variant="body2" sx={{ fontWeight: 700, color: 'secondary.main' }}>
-                          {academy.courses || '0'}
-                        </Typography>
-                      </Box>
-                    </Tooltip>
-                  </Box>
                 </TableCell>
                 <TableCell sx={{ py: 3, px: 3, textAlign: 'center' }}>
                   <Box 
@@ -543,10 +459,10 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                       transition: 'all 0.3s ease',
                     }}
                   >
-                    <Tooltip title="View Academy Details" arrow placement="top">
+                    <Tooltip title="View User Details" arrow placement="top">
                       <IconButton
                         size="medium"
-                        onClick={() => handleViewAcademy(academy)}
+                        onClick={() => handleViewUser(user)}
                         sx={{
                           color: 'primary.main',
                           backgroundColor: 'rgba(25, 118, 210, 0.1)',
@@ -560,10 +476,10 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                         <ViewIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Edit Academy" arrow placement="top">
+                    <Tooltip title="Edit User" arrow placement="top">
                       <IconButton
                         size="medium"
-                        onClick={() => handleEditAcademy(academy)}
+                        onClick={() => handleEditUser(user)}
                         sx={{
                           color: 'secondary.main',
                           backgroundColor: 'rgba(156, 39, 176, 0.1)',
@@ -577,10 +493,10 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                         <EditIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete Academy" arrow placement="top">
+                    <Tooltip title="Delete User" arrow placement="top">
                       <IconButton
                         size="medium"
-                        onClick={() => handleDeleteClick(academy)}
+                        onClick={() => handleDeleteClick(user)}
                         sx={{
                           color: 'error.main',
                           backgroundColor: 'rgba(211, 47, 47, 0.1)',
@@ -601,16 +517,16 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
           </TableBody>
         </Table>
       </TableContainer>
-      
+
       {/* Pagination */}
       <TablePagination
         component="div"
-        count={filteredAcademies.length}
+        count={filteredUsers.length}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={[5, 10, 25]}
+        rowsPerPageOptions={[5, 10, 25, 50]}
         sx={{
           '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
             color: 'text.secondary',
@@ -635,7 +551,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
         }}
       />
 
-      {/* View Academy Dialog */}
+      {/* View User Dialog */}
       <Dialog
         open={viewDialogOpen}
         onClose={handleCloseViewDialog}
@@ -660,9 +576,9 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
           justifyContent: 'space-between',
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <SchoolIcon />
+            <UserIcon />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Academy Details
+              User Details
             </Typography>
           </Box>
           <IconButton onClick={handleCloseViewDialog} sx={{ color: 'white' }}>
@@ -670,7 +586,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
           </IconButton>
         </DialogTitle>
         <DialogContent sx={{ p: 0 }}>
-          {selectedAcademy && (
+          {selectedUser && (
             <Paper
               elevation={0}
               sx={{
@@ -680,74 +596,65 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                 width: '100%',
               }}
             >
-                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1, textAlign: 'center', justifyContent: 'center' }}>
-                  <PreviewIcon />
-                  Preview Card
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, justifyContent: 'center' }}>
+                <Avatar
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    bgcolor: 'primary.main',
+                    fontSize: '2rem',
+                    fontWeight: 600,
+                    mr: 2,
+                    border: '3px solid white',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  {getUserInitials(selectedUser.email)}
+                </Avatar>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
+                    {selectedUser.email ? selectedUser.email.split('@')[0] : 'Unknown User'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                    {selectedUser.email || 'No email provided'}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, textAlign: 'center' }}>
+                  User Information
                 </Typography>
-                
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, justifyContent: 'center' }}>
-                  <Avatar
-                    src={selectedAcademy.logo}
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      bgcolor: 'primary.main',
-                      fontSize: '2rem',
-                      fontWeight: 600,
-                      mr: 2,
-                      border: '3px solid white',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    }}
-                  >
-                    {getAcademyInitials(selectedAcademy.name)}
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
-                      {selectedAcademy.name || 'Academy Name'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                      {selectedAcademy.subdomain ? `${selectedAcademy.subdomain}.bbrtek-lms.com` : 'your-subdomain.bbrtek-lms.com'}
-                    </Typography>
-                  </Box>
-                </Box>
+                <Typography variant="body2" sx={{ mb: 1, textAlign: 'center' }}>
+                  <strong>Email:</strong> {selectedUser.email || 'N/A'}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1, textAlign: 'center' }}>
+                  <strong>Role:</strong> {selectedUser.role || 'N/A'}
+                </Typography>
+                <Typography variant="body2" sx={{ textAlign: 'center' }}>
+                  <strong>Status:</strong> {selectedUser.status || 'N/A'}
+                </Typography>
+              </Box>
 
-                <Divider sx={{ my: 3 }} />
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, textAlign: 'center' }}>
-                    Contact Information
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1, textAlign: 'center' }}>
-                    <strong>Contact:</strong> {selectedAcademy.contactName || 'Contact Name'}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 1, textAlign: 'center' }}>
-                    <strong>Phone:</strong> {selectedAcademy.contactNumber || 'Contact Number'}
-                  </Typography>
-                  <Typography variant="body2" sx={{ textAlign: 'center' }}>
-                    <strong>Address:</strong> {selectedAcademy.address || 'Academy Address'}
-                  </Typography>
-                </Box>
-
-                <Divider sx={{ my: 3 }} />
-
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Chip
-                    label={selectedAcademy.subscriptionPlan || 'N/A'}
-                    color={getPlanColor(selectedAcademy.subscriptionPlan)}
-                    variant="filled"
-                    sx={{ fontWeight: 600 }}
-                  />
-                  <Chip
-                    label={selectedAcademy.status || 'Unknown'}
-                    color={getStatusColor(selectedAcademy.status)}
-                    icon={getStatusIcon(selectedAcademy.status)}
-                    size="small"
-                    sx={{ fontWeight: 600 }}
-                  />
-                                 </Box>
-               </Paper>
-           )}
-         </DialogContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Chip
+                  icon={getRoleIcon(selectedUser.role)}
+                  label={selectedUser.role || 'N/A'}
+                  color={getRoleColor(selectedUser.role)}
+                  variant="filled"
+                  sx={{ fontWeight: 600 }}
+                />
+                <Chip
+                  icon={getStatusIcon(selectedUser.status)}
+                  label={selectedUser.status || 'Unknown'}
+                  color={getStatusColor(selectedUser.status)}
+                  size="small"
+                  sx={{ fontWeight: 600 }}
+                />
+              </Box>
+            </Paper>
+          )}
+        </DialogContent>
         <DialogActions sx={{ p: 3, pt: 0 }}>
           <Button onClick={handleCloseViewDialog} variant="outlined">
             Close
@@ -780,7 +687,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
         }}>
           <WarningIcon />
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Delete Academy
+            Delete User
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ p: 4 }}>
@@ -789,7 +696,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
               This action cannot be undone!
             </Typography>
             <Typography variant="body2">
-              You are about to permanently delete <strong>{selectedAcademy?.name || 'this academy'}</strong> and all its associated data.
+              You are about to permanently delete <strong>{selectedUser?.email || 'this user'}</strong> and all their associated data.
             </Typography>
           </Alert>
           
@@ -809,7 +716,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
           />
           
           <Typography variant="body2" color="text.secondary">
-            This academy will be permanently removed from the system.
+            This user will be permanently removed from the system.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 0 }}>
@@ -827,7 +734,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
             disabled={deleteConfirmation !== 'DELETE' || isDeleting}
             startIcon={isDeleting ? <CircularProgress size={20} color="inherit" /> : <DeleteIcon />}
           >
-            {isDeleting ? 'Deleting...' : 'Delete Academy'}
+            {isDeleting ? 'Deleting...' : 'Delete User'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -835,4 +742,4 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
   );
 };
 
-export default AcademiesList; 
+export default UsersList; 

@@ -6,21 +6,40 @@ import {
   Typography,
   Avatar,
   Chip,
+  Skeleton,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
 } from '@mui/icons-material';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const KPICard = ({ 
   title, 
   value, 
-  subtitle, 
+  description, 
   icon, 
-  color = '#1976d2',
+  color = 'primary',
   trend,
-  trendDirection = 'up'
+  trendDirection = 'up',
+  isLoading = false
 }) => {
+  const { mode } = useTheme();
+  
+  const getColorValue = (colorName) => {
+    const colorMap = {
+      primary: '#1976d2',
+      secondary: '#9c27b0',
+      success: '#4CAF50',
+      error: '#F44336',
+      warning: '#FF9800',
+      info: '#2196F3',
+    };
+    return colorMap[colorName] || colorName;
+  };
+
+  const colorValue = getColorValue(color);
+  
   const getTrendColor = (direction) => {
     return direction === 'up' ? '#4CAF50' : '#F44336';
   };
@@ -29,15 +48,51 @@ const KPICard = ({
     return direction === 'up' ? <TrendingUpIcon /> : <TrendingDownIcon />;
   };
 
+  if (isLoading) {
+    return (
+      <Card
+        sx={{
+          height: '100%',
+          background: (theme) => theme.palette.mode === 'light'
+            ? 'rgba(255, 255, 255, 0.8)'
+            : 'rgba(26, 26, 26, 0.8)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid',
+          borderColor: (theme) => theme.palette.mode === 'light' 
+            ? 'rgba(0, 0, 0, 0.08)' 
+            : 'rgba(255, 255, 255, 0.08)',
+          borderRadius: 3,
+          overflow: 'hidden',
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <Box sx={{ flex: 1 }}>
+              <Skeleton variant="text" width="60%" height={48} sx={{ mb: 1 }} />
+              <Skeleton variant="text" width="80%" height={24} sx={{ mb: 0.5 }} />
+              <Skeleton variant="text" width="60%" height={20} />
+            </Box>
+            <Skeleton variant="circular" width={56} height={56} />
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card
       sx={{
         height: '100%',
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-        backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
+        background: (theme) => theme.palette.mode === 'light'
+          ? 'rgba(255, 255, 255, 0.8)'
+          : 'rgba(26, 26, 26, 0.8)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid',
+        borderColor: (theme) => theme.palette.mode === 'light' 
+          ? 'rgba(0, 0, 0, 0.08)' 
+          : 'rgba(255, 255, 255, 0.08)',
         borderRadius: 3,
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.3s ease-in-out',
         position: 'relative',
         overflow: 'hidden',
         '&::before': {
@@ -46,29 +101,30 @@ const KPICard = ({
           top: 0,
           left: 0,
           right: 0,
-          height: '4px',
-          background: `linear-gradient(90deg, ${color} 0%, ${color}80 100%)`,
+          height: '3px',
+          background: `linear-gradient(90deg, ${colorValue} 0%, ${colorValue}80 100%)`,
           transform: 'scaleX(0)',
           transition: 'transform 0.3s ease-in-out',
         },
         '&:hover': {
-          transform: 'translateY(-8px) scale(1.02)',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+          transform: 'translateY(-4px)',
+          boxShadow: (theme) => theme.palette.mode === 'light'
+            ? '0 12px 32px rgba(0, 0, 0, 0.1)'
+            : '0 12px 32px rgba(0, 0, 0, 0.3)',
           '&::before': {
             transform: 'scaleX(1)',
           },
           '& .kpi-icon': {
-            transform: 'scale(1.1) rotate(5deg)',
-          },
-          '& .kpi-value': {
             transform: 'scale(1.05)',
           },
+          '& .kpi-value': {
+            transform: 'scale(1.02)',
+          },
         },
-        cursor: 'pointer',
       }}
     >
-      <CardContent sx={{ p: 3.5, position: 'relative' }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
+      <CardContent sx={{ p: 3, position: 'relative' }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <Typography
@@ -76,12 +132,11 @@ const KPICard = ({
                 component="div"
                 className="kpi-value"
                 sx={{
-                  fontWeight: 800,
-                  color: color,
-                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                  fontWeight: 700,
+                  color: colorValue,
+                  fontSize: { xs: '2rem', sm: '2.25rem', md: '2.5rem' },
                   lineHeight: 1.1,
                   transition: 'transform 0.3s ease-in-out',
-                  textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 }}
               >
                 {value}
@@ -92,7 +147,7 @@ const KPICard = ({
                   label={trend}
                   size="small"
                   sx={{
-                    ml: 1,
+                    ml: 1.5,
                     backgroundColor: getTrendColor(trendDirection),
                     color: 'white',
                     fontWeight: 600,
@@ -110,11 +165,10 @@ const KPICard = ({
               variant="h6"
               component="div"
               sx={{
-                fontWeight: 700,
+                fontWeight: 600,
                 color: 'text.primary',
-                fontSize: { xs: '0.875rem', sm: '1rem' },
+                fontSize: '1rem',
                 mb: 0.5,
-                textShadow: '0 1px 2px rgba(0,0,0,0.05)',
               }}
             >
               {title}
@@ -123,25 +177,25 @@ const KPICard = ({
               variant="body2"
               color="text.secondary"
               sx={{
-                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                fontSize: '0.875rem',
                 fontWeight: 500,
-                opacity: 0.8,
+                lineHeight: 1.4,
               }}
             >
-              {subtitle}
+              {description}
             </Typography>
           </Box>
           <Avatar
             className="kpi-icon"
             sx={{
-              bgcolor: color,
-              width: { xs: 56, sm: 64, md: 72 },
-              height: { xs: 56, sm: 64, md: 72 },
-              boxShadow: `0 8px 24px ${color}40`,
-              transition: 'all 0.3s ease-in-out',
+              backgroundColor: colorValue,
+              width: 56,
+              height: 56,
+              boxShadow: `0 4px 12px ${colorValue}40`,
+              transition: 'transform 0.3s ease-in-out',
               '& .MuiSvgIcon-root': {
-                fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' },
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+                fontSize: '1.75rem',
+                color: 'white',
               },
             }}
           >
@@ -149,17 +203,17 @@ const KPICard = ({
           </Avatar>
         </Box>
         
-        {/* Decorative gradient overlay */}
+        {/* Subtle gradient overlay */}
         <Box
           sx={{
             position: 'absolute',
             top: 0,
             right: 0,
-            width: '100px',
-            height: '100px',
-            background: `radial-gradient(circle, ${color}10 0%, transparent 70%)`,
+            width: '80px',
+            height: '80px',
+            background: `radial-gradient(circle, ${colorValue}08 0%, transparent 70%)`,
             borderRadius: '50%',
-            transform: 'translate(30px, -30px)',
+            transform: 'translate(20px, -20px)',
             pointerEvents: 'none',
           }}
         />

@@ -108,9 +108,27 @@ const Login = () => {
       const result = await login(formData.email.toLowerCase(), formData.password);
       
       if (result.success) {
-        // Redirect to intended page or dashboard
-        const from = location.state?.from?.pathname || '/dashboard';
-        navigate(from, { replace: true });
+        // Get the user data to determine redirect based on role
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const userRole = userData?.role || 'user';
+        
+        // Redirect based on user role
+        let redirectPath = '/academies'; // Default for regular users
+        
+        if (userRole === 'admin') {
+          redirectPath = '/dashboard'; // Admin users go to dashboard
+        }
+        
+        // Check if there's an intended page from location state
+        const from = location.state?.from?.pathname;
+        if (from && from !== '/login') {
+          // Only redirect to intended page if user has access to it
+          if (userRole === 'admin' || (from === '/academies' || from === '/plans' || from === '/profile')) {
+            redirectPath = from;
+          }
+        }
+        
+        navigate(redirectPath, { replace: true });
       } else {
         setApiError(result.message);
       }

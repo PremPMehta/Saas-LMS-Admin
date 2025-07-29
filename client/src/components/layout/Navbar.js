@@ -12,6 +12,7 @@ import {
   Box,
   Typography,
   Divider,
+  Chip,
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import {
@@ -26,14 +27,18 @@ import {
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 
-const drawerWidth = 280;
+const drawerWidth = 80; // Updated to match collapsed sidebar
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: 25,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  backgroundColor: theme.palette.mode === 'light' 
+    ? alpha(theme.palette.common.white, 0.15)
+    : alpha(theme.palette.common.black, 0.15),
   '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
+    backgroundColor: theme.palette.mode === 'light'
+      ? alpha(theme.palette.common.white, 0.25)
+      : alpha(theme.palette.common.black, 0.25),
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
@@ -43,7 +48,9 @@ const Search = styled('div')(({ theme }) => ({
     width: 'auto',
   },
   border: '1px solid',
-  borderColor: alpha(theme.palette.common.white, 0.2),
+  borderColor: theme.palette.mode === 'light'
+    ? alpha(theme.palette.common.white, 0.2)
+    : alpha(theme.palette.common.black, 0.2),
   backdropFilter: 'blur(10px)',
 }));
 
@@ -55,7 +62,9 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: alpha(theme.palette.common.white, 0.8),
+  color: theme.palette.mode === 'light'
+    ? alpha(theme.palette.common.white, 0.8)
+    : alpha(theme.palette.common.black, 0.8),
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -66,10 +75,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: '20ch',
+      width: '40ch',
+    },
+    [theme.breakpoints.up('lg')]: {
+      width: '50ch',
     },
     '&::placeholder': {
-      color: alpha(theme.palette.common.white, 0.7),
+      color: theme.palette.mode === 'light'
+        ? alpha(theme.palette.common.white, 0.7)
+        : alpha(theme.palette.common.black, 0.7),
       opacity: 1,
     },
   },
@@ -90,15 +104,15 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    handleMenuClose();
     logout();
+    handleMenuClose();
   };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const isMenuOpen = Boolean(anchorEl);
+  const currentUser = getCurrentUser();
 
   return (
     <AppBar
@@ -106,42 +120,61 @@ const Navbar = () => {
       sx={{
         width: `calc(100% - ${drawerWidth}px)`,
         ml: `${drawerWidth}px`,
-        background: 'linear-gradient(135deg, rgba(255, 111, 12, 0.95) 0%, rgba(255, 111, 12, 0.85) 100%)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-        zIndex: (theme) => theme.zIndex.drawer + 1,
+        background: (theme) => theme.palette.mode === 'light'
+          ? 'rgba(255, 255, 255, 0.95)'
+          : 'rgba(26, 26, 26, 0.95)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid',
+        borderColor: (theme) => theme.palette.mode === 'light' 
+          ? 'rgba(0, 0, 0, 0.08)' 
+          : 'rgba(255, 255, 255, 0.08)',
+        boxShadow: (theme) => theme.palette.mode === 'light'
+          ? '0 2px 8px rgba(0, 0, 0, 0.05)'
+          : '0 2px 8px rgba(0, 0, 0, 0.2)',
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
+      <Toolbar sx={{ px: 3, py: 1 }}>
         {/* Search Bar */}
         <Search>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder="Search academies, users, plans..."
-            inputProps={{ 'aria-label': 'search' }}
+            placeholder="Search academies, plans, users..."
             value={searchQuery}
             onChange={handleSearchChange}
+            inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
 
+        <Box sx={{ flexGrow: 1 }} />
+
         {/* Right Side Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Notifications */}
+          <Tooltip title="Notifications" arrow>
+            <IconButton
+              sx={{
+                color: 'text.secondary',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            >
+              <Badge badgeContent={3} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+
           {/* Theme Toggle */}
-          <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>
+          <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`} arrow>
             <IconButton
               onClick={toggleTheme}
               sx={{
-                color: 'white',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                transition: 'all 0.3s ease-in-out',
+                color: 'text.secondary',
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  transform: 'scale(1.05)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
                 },
               }}
             >
@@ -149,40 +182,14 @@ const Navbar = () => {
             </IconButton>
           </Tooltip>
 
-          {/* Notifications */}
-          <Tooltip title="Notifications">
-            <IconButton
-              sx={{
-                color: 'white',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                transition: 'all 0.3s ease-in-out',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  transform: 'scale(1.05)',
-                },
-              }}
-            >
-              <Badge badgeContent={4} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
-
-          {/* User Profile */}
-          <Tooltip title="Account settings">
+          {/* User Menu */}
+          <Tooltip title="Account settings" arrow>
             <IconButton
               onClick={handleMenuOpen}
               sx={{
-                color: 'white',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                transition: 'all 0.3s ease-in-out',
+                color: 'text.secondary',
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  transform: 'scale(1.05)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
                 },
               }}
             >
@@ -190,32 +197,39 @@ const Navbar = () => {
                 sx={{
                   width: 32,
                   height: 32,
-                  bgcolor: 'rgba(255, 255, 255, 0.2)',
-                  fontSize: '0.875rem',
+                  backgroundColor: 'primary.main',
+                  color: 'white',
                   fontWeight: 600,
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  fontSize: '0.875rem',
                 }}
               >
-                {getCurrentUser()?.email?.charAt(0).toUpperCase() || 'A'}
+                {currentUser?.firstName?.charAt(0) || currentUser?.email?.charAt(0) || 'U'}
               </Avatar>
             </IconButton>
           </Tooltip>
         </Box>
 
-        {/* User Menu */}
+        {/* User Menu Dropdown */}
         <Menu
           anchorEl={anchorEl}
-          open={isMenuOpen}
+          open={Boolean(anchorEl)}
           onClose={handleMenuClose}
           PaperProps={{
             sx: {
               mt: 1,
               minWidth: 200,
-              background: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0, 0, 0, 0.1)',
               borderRadius: 2,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+              background: (theme) => theme.palette.mode === 'light'
+                ? 'rgba(255, 255, 255, 0.98)'
+                : 'rgba(26, 26, 26, 0.98)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid',
+              borderColor: (theme) => theme.palette.mode === 'light' 
+                ? 'rgba(0, 0, 0, 0.08)' 
+                : 'rgba(255, 255, 255, 0.08)',
+              boxShadow: (theme) => theme.palette.mode === 'light'
+                ? '0 8px 32px rgba(0, 0, 0, 0.1)'
+                : '0 8px 32px rgba(0, 0, 0, 0.3)',
             },
           }}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -224,38 +238,42 @@ const Navbar = () => {
           {/* User Info */}
           <Box sx={{ p: 2, pb: 1 }}>
             <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary' }}>
-              {getCurrentUser()?.email || 'Admin User'}
+              {currentUser?.firstName} {currentUser?.lastName}
             </Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Super Administrator
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+              {currentUser?.email}
             </Typography>
+            <Chip
+              label={currentUser?.role === 'admin' ? 'Administrator' : 'User'}
+              size="small"
+              sx={{
+                mt: 1,
+                backgroundColor: currentUser?.role === 'admin' 
+                  ? 'rgba(25, 118, 210, 0.1)' 
+                  : 'rgba(76, 175, 80, 0.1)',
+                color: currentUser?.role === 'admin' ? 'primary.main' : 'success.main',
+                fontWeight: 600,
+                fontSize: '0.75rem',
+              }}
+            />
           </Box>
-          
+
           <Divider sx={{ my: 1 }} />
-          
-          <MenuItem onClick={handleMenuClose} sx={{ py: 1.5 }}>
-            <AccountCircleIcon sx={{ mr: 2, fontSize: 20 }} />
+
+          {/* Menu Items */}
+          <MenuItem onClick={handleMenuClose} sx={{ py: 1.5, px: 2 }}>
+            <AccountCircleIcon sx={{ mr: 2, fontSize: 20, color: 'text.secondary' }} />
             <Typography variant="body2">Profile</Typography>
           </MenuItem>
-          
-          <MenuItem onClick={handleMenuClose} sx={{ py: 1.5 }}>
-            <SettingsIcon sx={{ mr: 2, fontSize: 20 }} />
+
+          <MenuItem onClick={handleMenuClose} sx={{ py: 1.5, px: 2 }}>
+            <SettingsIcon sx={{ mr: 2, fontSize: 20, color: 'text.secondary' }} />
             <Typography variant="body2">Settings</Typography>
           </MenuItem>
-          
+
           <Divider sx={{ my: 1 }} />
-          
-          <MenuItem 
-            onClick={handleLogout} 
-            sx={{ 
-              py: 1.5,
-              color: 'error.main',
-              '&:hover': {
-                backgroundColor: 'error.light',
-                color: 'white',
-              },
-            }}
-          >
+
+          <MenuItem onClick={handleLogout} sx={{ py: 1.5, px: 2, color: 'error.main' }}>
             <LogoutIcon sx={{ mr: 2, fontSize: 20 }} />
             <Typography variant="body2">Logout</Typography>
           </MenuItem>

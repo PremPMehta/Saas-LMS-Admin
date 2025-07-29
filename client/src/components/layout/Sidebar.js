@@ -1,15 +1,16 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText,
   Box,
   Typography,
   Divider,
   Avatar,
+  Tooltip,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -21,21 +22,36 @@ import {
   Person as PersonIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
-const drawerWidth = 280;
-
-const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'Academies', icon: <SchoolIcon />, path: '/academies' },
-  { text: 'Plans', icon: <AssignmentIcon />, path: '/plans' },
-  { text: 'Users', icon: <PeopleIcon />, path: '/users' },
-  { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
-  { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
-  { text: 'Profile', icon: <PersonIcon />, path: '/profile' },
-];
+const drawerWidth = 80; // Collapsed width
 
 const Sidebar = () => {
   const { mode } = useTheme();
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Get user role, default to 'user' if not set
+  const userRole = user?.role || 'user';
+
+  // Define menu items based on user role
+  const getMenuItems = () => {
+    const allMenuItems = [
+      { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', roles: ['admin'] },
+      { text: 'Academies', icon: <SchoolIcon />, path: '/academies', roles: ['admin', 'user'] },
+      { text: 'Plans', icon: <AssignmentIcon />, path: '/plans', roles: ['admin', 'user'] },
+      { text: 'Users', icon: <PeopleIcon />, path: '/users', roles: ['admin'] },
+      { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', roles: ['admin'] },
+      { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'] },
+      { text: 'Profile', icon: <PersonIcon />, path: '/profile', roles: ['admin', 'user'] },
+    ];
+
+    // Filter menu items based on user role
+    return allMenuItems.filter(item => item.roles.includes(userRole));
+  };
+
+  const menuItems = getMenuItems();
 
   return (
     <Drawer
@@ -46,20 +62,24 @@ const Sidebar = () => {
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
-          background: mode === 'light' 
-            ? 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'
-            : 'linear-gradient(180deg, #1a202c 0%, #2d3748 100%)',
+          background: (theme) => theme.palette.mode === 'light' 
+            ? 'rgba(255, 255, 255, 0.98)'
+            : 'rgba(26, 26, 26, 0.98)',
           borderRight: '1px solid',
-          borderColor: mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)',
-          backdropFilter: 'blur(10px)',
+          borderColor: (theme) => theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(20px)',
+          overflow: 'hidden',
+          boxShadow: (theme) => theme.palette.mode === 'light'
+            ? '2px 0 8px rgba(0, 0, 0, 0.05)'
+            : '2px 0 8px rgba(0, 0, 0, 0.2)',
         },
       }}
     >
       {/* Logo Section */}
       <Box
         sx={{
-          p: 3,
-          background: 'linear-gradient(135deg, rgb(255, 111, 12) 0%, rgba(255, 111, 12, 0.8) 100%)',
+          p: 2,
+          background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
           position: 'relative',
           overflow: 'hidden',
           '&::before': {
@@ -76,166 +96,104 @@ const Sidebar = () => {
       >
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           <Typography
-            variant="h4"
+            variant="h6"
             component="div"
             sx={{
               fontWeight: 800,
               color: 'white',
+              fontSize: '1.25rem',
               textAlign: 'center',
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
               letterSpacing: '-0.5px',
             }}
           >
-            BBR Tek
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'rgba(255, 255, 255, 0.9)',
-              textAlign: 'center',
-              display: 'block',
-              mt: 0.5,
-              fontWeight: 500,
-              letterSpacing: '0.5px',
-            }}
-          >
-            ADMIN PANEL
+            BBR
           </Typography>
         </Box>
       </Box>
-
-      <Divider sx={{ borderColor: mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)' }} />
 
       {/* Navigation Menu */}
-      <Box sx={{ flexGrow: 1, py: 2 }}>
-        <List sx={{ px: 2 }}>
-          {menuItems.map((item, index) => (
-            <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
-              <ListItemButton
-                sx={{
-                  borderRadius: 2,
-                  py: 1.5,
-                  px: 2,
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'linear-gradient(135deg, rgba(255, 111, 12, 0.1) 0%, rgba(255, 111, 12, 0.05) 100%)',
-                    opacity: 0,
-                    transition: 'opacity 0.3s ease-in-out',
-                  },
-                  '&:hover': {
-                    background: mode === 'light' 
-                      ? 'rgba(255, 111, 12, 0.08)' 
-                      : 'rgba(255, 111, 12, 0.15)',
-                    transform: 'translateX(4px)',
-                    '&::before': {
-                      opacity: 1,
-                    },
-                    '& .menu-icon': {
-                      transform: 'scale(1.1)',
-                      color: 'rgb(255, 111, 12)',
-                    },
-                    '& .menu-text': {
-                      color: 'rgb(255, 111, 12)',
-                      fontWeight: 600,
-                    },
-                  },
-                  '&.Mui-selected': {
-                    background: 'linear-gradient(135deg, rgba(255, 111, 12, 0.15) 0%, rgba(255, 111, 12, 0.08) 100%)',
-                    border: '1px solid rgba(255, 111, 12, 0.2)',
-                    '& .menu-icon': {
-                      color: 'rgb(255, 111, 12)',
-                    },
-                    '& .menu-text': {
-                      color: 'rgb(255, 111, 12)',
-                      fontWeight: 600,
-                    },
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      right: 0,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      width: 4,
-                      height: 20,
-                      background: 'rgb(255, 111, 12)',
-                      borderRadius: '2px 0 0 2px',
-                    },
-                  },
-                }}
-              >
-                <ListItemIcon
-                  className="menu-icon"
+      <List sx={{ p: 1, mt: 1 }}>
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+              <Tooltip title={item.text} placement="right" arrow>
+                <ListItemButton
+                  onClick={() => navigate(item.path)}
                   sx={{
-                    minWidth: 40,
-                    transition: 'all 0.3s ease-in-out',
-                    color: mode === 'light' ? 'text.secondary' : 'text.primary',
+                    minHeight: 48,
+                    borderRadius: 2,
+                    mx: 0.5,
+                    backgroundColor: isActive 
+                      ? (theme) => theme.palette.mode === 'light'
+                        ? 'rgba(25, 118, 210, 0.1)'
+                        : 'rgba(25, 118, 210, 0.2)'
+                      : 'transparent',
+                    border: isActive 
+                      ? '1px solid rgba(25, 118, 210, 0.2)'
+                      : '1px solid transparent',
+                    '&:hover': {
+                      backgroundColor: isActive 
+                        ? (theme) => theme.palette.mode === 'light'
+                          ? 'rgba(25, 118, 210, 0.15)'
+                          : 'rgba(25, 118, 210, 0.25)'
+                        : (theme) => theme.palette.mode === 'light'
+                          ? 'rgba(0, 0, 0, 0.04)'
+                          : 'rgba(255, 255, 255, 0.04)',
+                    },
+                    transition: 'all 0.2s ease-in-out',
                   }}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  className="menu-text"
-                  primaryTypographyProps={{
-                    sx: {
-                      fontWeight: 500,
-                      fontSize: '0.95rem',
-                      transition: 'all 0.3s ease-in-out',
-                      color: mode === 'light' ? 'text.primary' : 'text.primary',
-                    },
-                  }}
-                />
-              </ListItemButton>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      color: isActive ? 'primary.main' : 'text.secondary',
+                      '& .MuiSvgIcon-root': {
+                        fontSize: 24,
+                      },
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                </ListItemButton>
+              </Tooltip>
             </ListItem>
-          ))}
-        </List>
-      </Box>
+          );
+        })}
+      </List>
 
       {/* User Profile Section */}
-      <Box sx={{ p: 3, borderTop: '1px solid', borderColor: mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar
-            sx={{
-              width: 48,
-              height: 48,
-              background: 'linear-gradient(135deg, rgb(255, 111, 12) 0%, rgba(255, 111, 12, 0.8) 100%)',
-              fontWeight: 600,
-              fontSize: '1.1rem',
-              boxShadow: '0 4px 12px rgba(255, 111, 12, 0.3)',
-            }}
-          >
-            A
-          </Avatar>
-          <Box>
-            <Typography
-              variant="body2"
+      <Box sx={{ mt: 'auto', p: 2 }}>
+        <Divider sx={{ mb: 2, opacity: 0.6 }} />
+        <Tooltip 
+          title={`${userRole === 'admin' ? 'Administrator' : 'User'}: ${user?.email || 'user@example.com'}`} 
+          placement="right" 
+          arrow
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Avatar
               sx={{
-                fontWeight: 600,
-                color: mode === 'light' ? 'text.primary' : 'text.primary',
-                mb: 0.5,
+                width: 40,
+                height: 40,
+                backgroundColor: userRole === 'admin' 
+                  ? 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)'
+                  : 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)',
+                color: 'white',
+                fontWeight: 700,
+                fontSize: '1rem',
+                boxShadow: (theme) => theme.palette.mode === 'light'
+                  ? '0 4px 12px rgba(0, 0, 0, 0.15)'
+                  : '0 4px 12px rgba(0, 0, 0, 0.3)',
+                border: '2px solid',
+                borderColor: (theme) => theme.palette.mode === 'light'
+                  ? 'rgba(255, 255, 255, 0.8)'
+                  : 'rgba(255, 255, 255, 0.2)',
               }}
             >
-              Admin User
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{
-                color: mode === 'light' ? 'text.secondary' : 'text.secondary',
-                fontWeight: 500,
-              }}
-            >
-              Super Administrator
-            </Typography>
+              {userRole === 'admin' ? 'A' : 'U'}
+            </Avatar>
           </Box>
-        </Box>
+        </Tooltip>
       </Box>
     </Drawer>
   );

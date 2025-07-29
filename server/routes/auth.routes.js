@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { loginUser, getCurrentUser, logoutUser } = require('../controllers/auth.controller');
-const { protect } = require('../middleware/auth');
+const protect = require('../middleware/auth');
 
 // @route   POST /api/auth/login
 // @desc    Login user
