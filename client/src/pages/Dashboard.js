@@ -82,9 +82,46 @@ const Dashboard = () => {
       const response = await axios.get('/api/plans?limit=6', {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('Subscription plans response:', response.data);
       setSubscriptionPlans(response.data.data.plans || []);
     } catch (err) {
       console.error('Error fetching subscription plans:', err);
+      // If no plans exist, create some default plans
+      setSubscriptionPlans([
+        {
+          _id: 'default-basic',
+          name: 'Basic',
+          price: 29,
+          period: 'month',
+          features: ['Up to 100 students', 'Basic analytics', 'Email support'],
+          maxAcademies: 1,
+          maxStudentsPerAcademy: 100,
+          status: 'Active',
+          popular: false
+        },
+        {
+          _id: 'default-standard',
+          name: 'Standard',
+          price: 79,
+          period: 'month',
+          features: ['Up to 500 students', 'Advanced analytics', 'Priority support', 'Custom branding'],
+          maxAcademies: 3,
+          maxStudentsPerAcademy: 500,
+          status: 'Active',
+          popular: true
+        },
+        {
+          _id: 'default-premium',
+          name: 'Premium',
+          price: 199,
+          period: 'month',
+          features: ['Unlimited students', 'Full analytics suite', '24/7 support', 'API access', 'Custom integrations'],
+          maxAcademies: 999,
+          maxStudentsPerAcademy: 999999,
+          status: 'Active',
+          popular: false
+        }
+      ]);
     } finally {
       setPlansLoading(false);
     }
@@ -197,21 +234,34 @@ const Dashboard = () => {
           <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
             Subscription Plans
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            sx={{
-              borderRadius: 2,
-              textTransform: 'none',
-              fontWeight: 600,
-              background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
-              '&:hover': {
-                background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
-              },
-            }}
-          >
-            Add New Plan
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={fetchSubscriptionPlans}
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Refresh Plans
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 600,
+                background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                },
+              }}
+            >
+              Add New Plan
+            </Button>
+          </Box>
         </Box>
 
         {plansLoading ? (
@@ -339,6 +389,15 @@ const Dashboard = () => {
               Create your first subscription plan to get started.
             </Typography>
           </Paper>
+        )}
+        
+        {/* Debug info */}
+        {!plansLoading && (
+          <Box sx={{ mt: 2, p: 2, backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              Debug: {subscriptionPlans.length} plans loaded
+            </Typography>
+          </Box>
         )}
       </Box>
 

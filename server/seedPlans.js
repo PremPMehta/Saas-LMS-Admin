@@ -10,7 +10,7 @@ const seedPlans = async () => {
     console.log('Connected to MongoDB');
 
     // Get admin user for createdBy field
-    const adminUser = await User.findOne({ email: 'admin@bbrtek.com' });
+    const adminUser = await User.findOne({ email: 'admin@multi-admin.com' });
     if (!adminUser) {
       console.log('Admin user not found. Please run seed.js first.');
       return;
