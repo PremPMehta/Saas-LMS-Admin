@@ -32,6 +32,7 @@ import {
   Assignment as AssignmentIcon,
   AddPhotoAlternate as AddPhotoAlternateIcon,
 } from '@mui/icons-material';
+import axios from 'axios';
 
 // Country codes for phone validation
 const countryCodes = [
@@ -47,7 +48,6 @@ const countryCodes = [
 ];
 
 // Configure axios base URL
-import axios from 'axios';
 axios.defaults.baseURL = 'http://localhost:5001';
 
 const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
