@@ -16,10 +16,23 @@ const seedDatabase = async () => {
       return;
     }
 
-    // Create default admin user
+    // Create default admin user with complete profile
     const adminUser = new User({
       email: 'admin@bbrtek.com',
       password: 'Password@123',
+      firstName: 'Prem',
+      lastName: 'Mehta',
+      phoneNumber: '9879228567',
+      countryCode: '+91',
+      address: {
+        street: '123 Main Street',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        country: 'India',
+        zipCode: '400001'
+      },
+      profilePicture: 'https://ui-avatars.com/api/?name=Prem+Mehta&background=1976d2&color=fff&size=200',
+      isProfileComplete: true,
       role: 'admin',
       status: 'active',
       isActive: true
@@ -29,6 +42,8 @@ const seedDatabase = async () => {
     console.log('Default admin user created successfully');
     console.log('Email: admin@bbrtek.com');
     console.log('Password: Password@123');
+    console.log('Name: Prem Mehta');
+    console.log('Phone: +91 9879228567');
 
   } catch (error) {
     console.error('Error seeding database:', error);

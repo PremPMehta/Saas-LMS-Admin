@@ -1,27 +1,38 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/user.controller');
-const authMiddleware = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
+const {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  updateUserProfile,
+  deleteUser,
+  getUserStats
+} = require('../controllers/user.controller');
 
-// Apply authentication middleware to all routes
-router.use(authMiddleware);
+// Protected routes (require authentication)
+router.use(protect);
 
 // Get all users
-router.get('/', userController.getAllUsers);
+router.get('/', getAllUsers);
 
 // Get user statistics
-router.get('/stats', userController.getUserStats);
+router.get('/stats', getUserStats);
 
-// Get single user by ID
-router.get('/:id', userController.getUserById);
+// Get single user
+router.get('/:id', getUserById);
 
 // Create new user
-router.post('/', userController.createUser);
+router.post('/', createUser);
 
 // Update user
-router.put('/:id', userController.updateUser);
+router.put('/:id', updateUser);
+
+// Update user profile (for profile page)
+router.patch('/:id/profile', updateUserProfile);
 
 // Delete user
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', deleteUser);
 
 module.exports = router; 

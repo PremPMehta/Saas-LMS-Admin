@@ -8,6 +8,7 @@ import DashboardOverview from '../pages/DashboardOverview';
 import Academies from '../pages/Academies';
 import Plans from '../pages/Plans';
 import Users from '../pages/Users';
+import Profile from '../pages/Profile';
 
 const AppRoutes = () => {
   return (
@@ -94,7 +95,7 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <RoleBasedRoute allowedRoles={['admin', 'user']}>
               <MainLayout>
-                <div style={{ padding: '24px' }}>Profile Page - Coming Soon</div>
+                <Profile />
               </MainLayout>
             </RoleBasedRoute>
           </ProtectedRoute>

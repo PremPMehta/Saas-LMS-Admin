@@ -53,7 +53,18 @@ const getUserById = async (req, res) => {
 // Create new user
 const createUser = async (req, res) => {
   try {
-    const { email, role, status, password } = req.body;
+    const { 
+      email, 
+      role, 
+      status, 
+      password,
+      firstName,
+      lastName,
+      phoneNumber,
+      countryCode,
+      address,
+      profilePicture
+    } = req.body;
     
     // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
@@ -70,7 +81,21 @@ const createUser = async (req, res) => {
       role: role || 'admin',
       status: status || 'active',
       password: password || 'Password@123', // Default password
-      isActive: status === 'active'
+      isActive: status === 'active',
+      // Profile fields
+      firstName: firstName || '',
+      lastName: lastName || '',
+      phoneNumber: phoneNumber || '',
+      countryCode: countryCode || '+91',
+      address: address || {
+        street: '',
+        city: '',
+        state: '',
+        country: 'India',
+        zipCode: ''
+      },
+      profilePicture: profilePicture || null,
+      isProfileComplete: !!(firstName && lastName && phoneNumber && countryCode)
     };
     
     const newUser = new User(userData);
@@ -108,7 +133,19 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { email, role, status, password } = req.body;
+    const { 
+      email, 
+      role, 
+      status, 
+      password,
+      firstName,
+      lastName,
+      phoneNumber,
+      countryCode,
+      address,
+      profilePicture,
+      isProfileComplete
+    } = req.body;
     
     // Check if user exists
     const existingUser = await User.findById(id);
@@ -144,6 +181,15 @@ const updateUser = async (req, res) => {
     }
     if (password) updateData.password = password;
     
+    // Profile fields
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (lastName !== undefined) updateData.lastName = lastName;
+    if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+    if (countryCode !== undefined) updateData.countryCode = countryCode;
+    if (address) updateData.address = address;
+    if (profilePicture !== undefined) updateData.profilePicture = profilePicture;
+    if (isProfileComplete !== undefined) updateData.isProfileComplete = isProfileComplete;
+    
     // Update user
     const updatedUser = await User.findByIdAndUpdate(
       id,
@@ -158,6 +204,72 @@ const updateUser = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating user:', error);
+    
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: validationErrors
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+};
+
+// Update user profile (for profile page)
+const updateUserProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      firstName,
+      lastName,
+      phoneNumber,
+      countryCode,
+      address,
+      profilePicture
+    } = req.body;
+    
+    // Check if user exists
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    // Prepare update data
+    const updateData = {};
+    if (firstName !== undefined) updateData.firstName = firstName;
+    if (lastName !== undefined) updateData.lastName = lastName;
+    if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+    if (countryCode !== undefined) updateData.countryCode = countryCode;
+    if (address) updateData.address = address;
+    if (profilePicture !== undefined) updateData.profilePicture = profilePicture;
+    
+    // Check if profile is complete
+    updateData.isProfileComplete = !!(firstName && lastName && phoneNumber && countryCode);
+    
+    // Update user
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password');
+    
+    res.status(200).json({
+      success: true,
+      data: updatedUser,
+      message: 'Profile updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
     
     if (error.name === 'ValidationError') {
       const validationErrors = Object.values(error.errors).map(err => err.message);
@@ -227,6 +339,8 @@ const getUserStats = async (req, res) => {
     const pendingUsers = await User.countDocuments({ status: 'pending' });
     const adminUsers = await User.countDocuments({ role: 'admin' });
     const regularUsers = await User.countDocuments({ role: 'user' });
+    const completeProfiles = await User.countDocuments({ isProfileComplete: true });
+    const incompleteProfiles = await User.countDocuments({ isProfileComplete: false });
     
     res.status(200).json({
       success: true,
@@ -236,7 +350,9 @@ const getUserStats = async (req, res) => {
         inactive: inactiveUsers,
         pending: pendingUsers,
         admins: adminUsers,
-        users: regularUsers
+        users: regularUsers,
+        completeProfiles,
+        incompleteProfiles
       },
       message: 'User statistics retrieved successfully'
     });
@@ -255,6 +371,7 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  updateUserProfile,
   deleteUser,
   getUserStats
 }; 

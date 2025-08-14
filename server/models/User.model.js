@@ -15,6 +15,62 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters long']
   },
+  // Personal Information
+  firstName: {
+    type: String,
+    trim: true,
+    maxlength: [50, 'First name cannot exceed 50 characters']
+  },
+  lastName: {
+    type: String,
+    trim: true,
+    maxlength: [50, 'Last name cannot exceed 50 characters']
+  },
+  phoneNumber: {
+    type: String,
+    trim: true,
+    maxlength: [15, 'Phone number cannot exceed 15 characters']
+  },
+  countryCode: {
+    type: String,
+    default: '+91',
+    trim: true
+  },
+  address: {
+    street: {
+      type: String,
+      trim: true,
+      maxlength: [100, 'Street address cannot exceed 100 characters']
+    },
+    city: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'City cannot exceed 50 characters']
+    },
+    state: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'State cannot exceed 50 characters']
+    },
+    country: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'Country cannot exceed 50 characters']
+    },
+    zipCode: {
+      type: String,
+      trim: true,
+      maxlength: [20, 'Zip code cannot exceed 20 characters']
+    }
+  },
+  profilePicture: {
+    type: String, // URL to stored image
+    default: null
+  },
+  isProfileComplete: {
+    type: Boolean,
+    default: false
+  },
   role: {
     type: String,
     enum: ['admin', 'user'],
@@ -62,6 +118,11 @@ userSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;
   return user;
+};
+
+// Method to check if profile is complete
+userSchema.methods.checkProfileComplete = function() {
+  return !!(this.firstName && this.lastName && this.phoneNumber && this.countryCode);
 };
 
 const User = mongoose.model('User', userSchema);
