@@ -132,6 +132,9 @@ const Login = () => {
           }
         }
         
+        // Set session flag to indicate recent login
+        sessionStorage.setItem('recentLogin', 'true');
+        
         // Show transition instead of immediate redirect
         setUserData(userData);
         setRedirectPath(redirectPath);

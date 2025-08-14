@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -51,6 +52,7 @@ const countryCodes = [
 ];
 
 const Profile = () => {
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,6 +60,7 @@ const Profile = () => {
   const [errors, setErrors] = useState({});
   const [profilePicture, setProfilePicture] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
+  const [hasShownModal, setHasShownModal] = useState(false);
 
   // Form data state
   const [formData, setFormData] = useState({
@@ -97,14 +100,28 @@ const Profile = () => {
       });
       setPreviewUrl(userData.profilePicture || '');
       
-      // Show first-time modal ONLY if profile is incomplete AND this is the first time
-      // Check if user has any profile data filled
-      const hasProfileData = userData.firstName && userData.lastName && userData.phoneNumber && userData.countryCode;
+      // Show first-time modal ONLY if profile is truly incomplete
+      // Check if user has essential profile data filled
+      const hasEssentialProfileData = userData.firstName && userData.lastName && userData.phoneNumber;
+      const hasAddressData = userData.address?.street && userData.address?.city && userData.address?.state && userData.address?.country && userData.address?.zipCode;
       
-      if (!hasProfileData && !userData.isProfileComplete) {
+      // Only show modal if profile is truly incomplete AND we haven't shown it before
+      // Check if user came from login (which means they're not a first-time user)
+      const cameFromLogin = location.state?.from === '/login' || location.state?.from === '/';
+      const hasRecentLogin = sessionStorage.getItem('recentLogin') === 'true';
+      const isFirstTimeUser = !userData.isProfileComplete && !cameFromLogin && !hasRecentLogin;
+      
+      // Show modal only if: profile incomplete + first time user + haven't shown modal + missing essential data
+      if (isFirstTimeUser && !hasShownModal && (!hasEssentialProfileData || !hasAddressData)) {
         setShowFirstTimeModal(true);
+        setHasShownModal(true);
       }
     }
+    
+    // Cleanup function to remove recent login flag when component unmounts
+    return () => {
+      sessionStorage.removeItem('recentLogin');
+    };
   }, []);
 
   const handleInputChange = (field, value) => {
