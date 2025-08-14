@@ -8,16 +8,18 @@ import {
   CircularProgress,
   Fade,
   Grow,
-  Divider,
   Button,
 } from '@mui/material';
 import {
   People as PeopleIcon,
   Add as AddIcon,
+  AdminPanelSettings as AdminIcon,
+  Person as PersonIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../contexts/ThemeContext';
 import UsersList from '../components/users/UsersList';
 import AddUserModal from '../components/users/AddUserModal';
+import KPICard from '../components/dashboard/KPICard';
 
 const Users = () => {
   const { mode } = useTheme();
@@ -151,8 +153,51 @@ const Users = () => {
           </Box>
         </Fade>
 
+        {/* KPI Cards */}
+        <Fade in timeout={1000}>
+          <Box sx={{ mb: 4 }}>
+            <Grid container spacing={3}>
+              {/* Total Users Card */}
+              <Grid item xs={12} sm={6} md={4}>
+                <KPICard
+                  title="Total Users"
+                  value={usersData.users.length}
+                  description="Total number of registered users in the system"
+                  icon={<PeopleIcon />}
+                  color="primary"
+                  isLoading={isLoading}
+                />
+              </Grid>
+
+              {/* Admin Users Card */}
+              <Grid item xs={12} sm={6} md={4}>
+                <KPICard
+                  title="Admin Users"
+                  value={usersData.users.filter(user => user.role === 'admin').length}
+                  description="Users with administrative privileges"
+                  icon={<AdminIcon />}
+                  color="error"
+                  isLoading={isLoading}
+                />
+              </Grid>
+
+              {/* Standard Users Card */}
+              <Grid item xs={12} sm={6} md={4}>
+                <KPICard
+                  title="Standard Users"
+                  value={usersData.users.filter(user => user.role === 'user').length}
+                  description="Regular users with standard access"
+                  icon={<PersonIcon />}
+                  color="success"
+                  isLoading={isLoading}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+        </Fade>
+
         {/* Add User Button */}
-        <Grow in timeout={1000}>
+        <Grow in timeout={1200}>
           <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               variant="contained"
@@ -180,7 +225,7 @@ const Users = () => {
         </Grow>
 
         {/* Users List */}
-        <Grow in timeout={1200}>
+        <Grow in timeout={1400}>
           <Paper
             elevation={0}
             sx={{
