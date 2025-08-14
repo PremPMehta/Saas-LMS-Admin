@@ -154,7 +154,7 @@ const Login = () => {
           : 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
       }}
     >
-      {/* Left Column - Branding */}
+      {/* Left Column - Video Background */}
       <Box
         sx={{
           flex: 1,
@@ -162,29 +162,51 @@ const Login = () => {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          background: 'linear-gradient(135deg, #2d3748 0%, #1a202c 100%)',
-          color: 'white',
-          padding: 4,
           position: 'relative',
           overflow: 'hidden',
-          '&::before': {
-            content: '""',
+          background: '#000',
+        }}
+      >
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        >
+          <source src="/5716233-uhd_2160_3840_30fps.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Black translucent overlay for better text readability */}
+        <Box
+          sx={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'radial-gradient(circle at 30% 20%, rgba(255, 111, 12, 0.1) 0%, transparent 50%)',
-            pointerEvents: 'none',
-          },
-        }}
-      >
+            background: 'rgba(0, 0, 0, 0.75)',
+            zIndex: 1,
+          }}
+        />
+
+        {/* Content overlay */}
         <Box
           sx={{
             position: 'relative',
-            zIndex: 1,
+            zIndex: 2,
             textAlign: 'center',
             maxWidth: 500,
+            color: 'white',
+            padding: 4,
           }}
         >
           {/* Logo */}
@@ -196,7 +218,7 @@ const Login = () => {
               color: 'rgb(255, 111, 12)',
               fontSize: { lg: '3rem', xl: '3.5rem' },
               mb: 3,
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              textShadow: '0 2px 4px rgba(0,0,0,0.8)',
             }}
           >
             BBR Tek
@@ -211,7 +233,7 @@ const Login = () => {
               fontSize: { lg: '2.5rem', xl: '3rem' },
               mb: 3,
               lineHeight: 1.2,
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              textShadow: '0 2px 4px rgba(0,0,0,0.8)',
             }}
           >
             Welcome to the Command Center
@@ -222,11 +244,11 @@ const Login = () => {
             variant="h6"
             sx={{
               fontWeight: 400,
-              opacity: 0.9,
+              opacity: 0.95,
               lineHeight: 1.6,
               maxWidth: 400,
               mx: 'auto',
-              textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+              textShadow: '0 1px 2px rgba(0,0,0,0.8)',
             }}
           >
             Manage, analyze, and scale your entire learning ecosystem from one powerful platform.
