@@ -9,6 +9,7 @@ import Academies from '../pages/Academies';
 import Plans from '../pages/Plans';
 import Users from '../pages/Users';
 import Profile from '../pages/Profile';
+import Settings from '../pages/Settings';
 
 const AppRoutes = () => {
   return (
@@ -83,7 +84,7 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <RoleBasedRoute allowedRoles={['admin']}>
               <MainLayout>
-                <div style={{ padding: '24px' }}>Settings Page - Coming Soon</div>
+                <Settings />
               </MainLayout>
             </RoleBasedRoute>
           </ProtectedRoute>
