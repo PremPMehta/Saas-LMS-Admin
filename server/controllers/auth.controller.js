@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User.model');
+const AccessLog = require('../models/AccessLog.model');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -45,6 +46,16 @@ const loginUser = async (req, res) => {
     const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
+      // Log failed login attempt
+      await AccessLog.create({
+        userId: user._id,
+        ipAddress: req.ip || req.connection.remoteAddress || 'Unknown',
+        location: 'Unknown', // Can be enhanced with IP geolocation service
+        userAgent: req.get('User-Agent') || 'Unknown',
+        status: 'failed',
+        failureReason: 'Invalid password'
+      });
+
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -52,8 +63,17 @@ const loginUser = async (req, res) => {
     }
 
     // Update last login
-    user.lastLogin = new Date();
+    user.lastLoginAt = new Date();
     await user.save();
+
+    // Log successful login
+    await AccessLog.create({
+      userId: user._id,
+      ipAddress: req.ip || req.connection.remoteAddress || 'Unknown',
+      location: 'Unknown', // Can be enhanced with IP geolocation service
+      userAgent: req.get('User-Agent') || 'Unknown',
+      status: 'success'
+    });
 
     // Generate token
     const token = generateToken(user._id);
@@ -73,7 +93,7 @@ const loginUser = async (req, res) => {
           profilePicture: user.profilePicture,
           isProfileComplete: user.isProfileComplete,
           role: user.role,
-          lastLogin: user.lastLogin
+          lastLoginAt: user.lastLoginAt
         },
         token
       }

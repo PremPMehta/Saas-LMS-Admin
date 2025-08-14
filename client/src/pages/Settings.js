@@ -117,12 +117,11 @@ const Settings = () => {
   // Load session settings from backend
   const loadSessionSettings = useCallback(async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
+      if (!user?.token) return;
 
       const response = await fetch('http://localhost:5001/api/settings/session', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${user.token}`,
         },
       });
       
@@ -137,21 +136,20 @@ const Settings = () => {
       console.error('Error loading session settings:', error);
       createMockSessionSettings();
     }
-  }, []);
+  }, [user?.token, sessionSettings]);
 
   // Fetch access logs
   const fetchAccessLogs = useCallback(async () => {
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
+      if (!user?.token) {
         console.error('No authentication token found');
         return;
       }
 
       const response = await fetch(`http://localhost:5001/api/settings/access-logs?page=${page + 1}&limit=${rowsPerPage}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${user.token}`,
         },
       });
       
@@ -173,7 +171,7 @@ const Settings = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, user?.token]);
 
   // Create mock system statistics for demo
   const createMockSystemStats = () => {
@@ -289,11 +287,41 @@ const Settings = () => {
     }));
   };
 
+  // Save session settings to backend
+  const saveSessionSettings = async () => {
+    try {
+      if (!user?.token) {
+        console.error('No authentication token found');
+        return;
+      }
+
+      const response = await fetch('http://localhost:5001/api/settings/session', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(sessionSettings),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Session settings saved successfully:', data.message);
+        // You could show a success notification here
+      } else {
+        console.error('Failed to save session settings:', response.statusText);
+        // You could show an error notification here
+      }
+    } catch (error) {
+      console.error('Error saving session settings:', error);
+      // You could show an error notification here
+    }
+  };
+
   const handleSaveSettings = async () => {
     setIsSaving(true);
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
+      if (!user?.token) {
         console.error('No authentication token found');
         return;
       }
@@ -302,7 +330,7 @@ const Settings = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${user.token}`,
         },
         body: JSON.stringify(sessionSettings),
       });

@@ -85,7 +85,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  lastLogin: {
+  lastLoginAt: {
     type: Date,
     default: null
   }
