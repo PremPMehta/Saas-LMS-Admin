@@ -8,6 +8,7 @@ import {
   Button,
   Switch,
   FormControlLabel,
+  Divider,
   Table,
   TableBody,
   TableCell,
@@ -51,7 +52,7 @@ const Settings = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalLogs, setTotalLogs] = useState(0);
   
-  // Session timeout settings
+  // Session timeout settings - will be loaded from backend
   const [sessionSettings, setSessionSettings] = useState({
     sessionTimeout: 30, // minutes
     enableSessionTimeout: true,
@@ -59,7 +60,25 @@ const Settings = () => {
     idleTimeout: 15, // minutes
     enableRememberMe: true,
     rememberMeDuration: 7, // days
+    maxLoginAttempts: 5,
+    lockoutDuration: 15, // minutes
+    requirePasswordChange: false,
+    passwordExpiryDays: 90,
   });
+
+  // System statistics
+  const [systemStats, setSystemStats] = useState({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalAcademies: 0,
+    totalPlans: 0,
+    systemUptime: 0,
+    lastBackup: null,
+    databaseSize: 0,
+  });
+
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Check if user is admin, redirect if not
   useEffect(() => {
@@ -67,6 +86,58 @@ const Settings = () => {
       navigate('/dashboard');
     }
   }, [user, navigate]);
+
+  // Fetch system statistics
+  const fetchSystemStats = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:5001/api/settings/system-stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSystemStats(data.data || {});
+      } else {
+        // For demo purposes, create mock system stats
+        createMockSystemStats();
+      }
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error('Error fetching system stats:', error);
+      createMockSystemStats();
+      setLastUpdated(new Date());
+    }
+  }, []);
+
+  // Load session settings from backend
+  const loadSessionSettings = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:5001/api/settings/session', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSessionSettings(data.data || sessionSettings);
+      } else {
+        // For demo purposes, create mock session settings
+        createMockSessionSettings();
+      }
+    } catch (error) {
+      console.error('Error loading session settings:', error);
+      createMockSessionSettings();
+    }
+  }, []);
 
   // Fetch access logs
   const fetchAccessLogs = useCallback(async () => {
@@ -103,6 +174,40 @@ const Settings = () => {
       setIsLoading(false);
     }
   }, [page, rowsPerPage]);
+
+  // Create mock system statistics for demo
+  const createMockSystemStats = () => {
+    const mockStats = {
+      totalUsers: 156,
+      activeUsers: 89,
+      totalAcademies: 23,
+      totalPlans: 45,
+      systemUptime: 99.7,
+      lastBackup: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      databaseSize: '2.4 GB',
+      serverLoad: 34,
+      memoryUsage: 67,
+      diskUsage: 42,
+    };
+    setSystemStats(mockStats);
+  };
+
+  // Create mock session settings for demo
+  const createMockSessionSettings = () => {
+    const mockSettings = {
+      sessionTimeout: 45,
+      enableSessionTimeout: true,
+      enableIdleTimeout: true,
+      idleTimeout: 20,
+      enableRememberMe: true,
+      rememberMeDuration: 14,
+      maxLoginAttempts: 3,
+      lockoutDuration: 30,
+      requirePasswordChange: true,
+      passwordExpiryDays: 60,
+    };
+    setSessionSettings(mockSettings);
+  };
 
   // Create mock access logs for demo
   const createMockAccessLogs = () => {
@@ -159,9 +264,23 @@ const Settings = () => {
 
   useEffect(() => {
     if (user?.role === 'admin') {
+      // Load all dynamic data
+      loadSessionSettings();
+      fetchSystemStats();
       fetchAccessLogs();
     }
-  }, [user, page, rowsPerPage]);
+  }, [user, page, rowsPerPage, loadSessionSettings, fetchSystemStats, fetchAccessLogs]);
+
+  // Auto-refresh system stats every 30 seconds
+  useEffect(() => {
+    if (!autoRefresh || !user?.role === 'admin') return;
+
+    const interval = setInterval(() => {
+      fetchSystemStats();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, user?.role, fetchSystemStats]);
 
   const handleSessionSettingChange = (field, value) => {
     setSessionSettings(prev => ({
@@ -273,6 +392,143 @@ const Settings = () => {
           </Box>
         </Fade>
 
+        {/* Refresh Controls */}
+        <Fade in timeout={850}>
+          <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+            <Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={autoRefresh}
+                    onChange={(e) => setAutoRefresh(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Auto-refresh (30s)"
+              />
+              {lastUpdated && (
+                <Typography variant="caption" color="text.secondary" sx={{ ml: 2 }}>
+                  Last updated: {lastUpdated.toLocaleTimeString()}
+                </Typography>
+              )}
+            </Box>
+            <Button
+              variant="outlined"
+              startIcon={<RefreshIcon />}
+              onClick={() => {
+                fetchSystemStats();
+                fetchAccessLogs();
+              }}
+              size="small"
+            >
+              Refresh Now
+            </Button>
+          </Box>
+        </Fade>
+
+        {/* System Overview */}
+        <Fade in timeout={900}>
+          <Box sx={{ mb: 4 }}>
+            <Grid container spacing={3}>
+              {/* Total Users */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography variant="h4" color="primary" fontWeight={700}>
+                    {systemStats.totalUsers}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Total Users
+                  </Typography>
+                </Card>
+              </Grid>
+
+              {/* Active Users */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography variant="h4" color="success.main" fontWeight={700}>
+                    {systemStats.activeUsers}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Active Users
+                  </Typography>
+                </Card>
+              </Grid>
+
+              {/* System Uptime */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography variant="h4" color="info.main" fontWeight={700}>
+                    {systemStats.systemUptime}%
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    System Uptime
+                  </Typography>
+                </Card>
+              </Grid>
+
+              {/* Database Size */}
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography variant="h4" color="primary" fontWeight={700}>
+                    {systemStats.databaseSize}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Database Size
+                  </Typography>
+                </Card>
+              </Grid>
+            </Grid>
+          </Box>
+        </Fade>
+
         <Grid container spacing={4}>
           {/* Session Settings */}
           <Grid item xs={12} lg={6}>
@@ -368,6 +624,60 @@ const Settings = () => {
                         onChange={(e) => handleSessionSettingChange('rememberMeDuration', parseInt(e.target.value))}
                         disabled={!sessionSettings.enableRememberMe}
                         InputProps={{ inputProps: { min: 1, max: 365 } }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Divider sx={{ my: 2 }} />
+                      <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
+                        Security Settings
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Max Login Attempts"
+                        type="number"
+                        value={sessionSettings.maxLoginAttempts}
+                        onChange={(e) => handleSessionSettingChange('maxLoginAttempts', parseInt(e.target.value))}
+                        InputProps={{ inputProps: { min: 1, max: 10 } }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Lockout Duration (minutes)"
+                        type="number"
+                        value={sessionSettings.lockoutDuration}
+                        onChange={(e) => handleSessionSettingChange('lockoutDuration', parseInt(e.target.value))}
+                        InputProps={{ inputProps: { min: 1, max: 1440 } }}
+                      />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={sessionSettings.requirePasswordChange}
+                            onChange={(e) => handleSessionSettingChange('requirePasswordChange', e.target.checked)}
+                            color="primary"
+                          />
+                        }
+                        label="Require Password Change on Expiry"
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Password Expiry (days)"
+                        type="number"
+                        value={sessionSettings.passwordExpiryDays}
+                        onChange={(e) => handleSessionSettingChange('passwordExpiryDays', parseInt(e.target.value))}
+                        disabled={!sessionSettings.requirePasswordChange}
+                        InputProps={{ inputProps: { min: 30, max: 365 } }}
                       />
                     </Grid>
                     
