@@ -181,7 +181,7 @@ const Plans = () => {
         {/* KPI Cards */}
         <Grow in timeout={1000}>
           <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Total Plans"
                 value={plansData.kpis.totalPlans}
@@ -190,7 +190,7 @@ const Plans = () => {
                 color="#1976d2"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Active Plans"
                 value={plansData.kpis.activePlans}
@@ -199,7 +199,7 @@ const Plans = () => {
                 color="#4CAF50"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Inactive Plans"
                 value={plansData.kpis.inactivePlans}
@@ -208,7 +208,7 @@ const Plans = () => {
                 color="#F44336"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Onhold Plans"
                 value={plansData.kpis.onHoldPlans}

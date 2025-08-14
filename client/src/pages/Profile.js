@@ -306,7 +306,7 @@ const Profile = () => {
       <Box
         sx={{
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-          height: 200,
+          height: 300,
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
@@ -369,102 +369,70 @@ const Profile = () => {
             <Box sx={{ 
               p: 4, 
               pb: 6, 
-              textAlign: 'center',
+              // textAlign: 'center',
               background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
               borderRadius: '12px 12px 0 0'
             }}>
               {/* Profile Picture */}
-              <Box sx={{ position: 'relative', display: 'inline-block', mb: 3 }}>
-                <Avatar
-                  src={previewUrl}
-                  sx={{ 
-                    width: 150, 
-                    height: 150, 
-                    border: '6px solid white',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                    fontSize: '3rem',
-                    cursor: isEditing ? 'pointer' : 'default'
-                  }}
-                  onClick={() => isEditing && document.getElementById('profile-picture-input').click()}
-                />
-                {isEditing && (
-                  <IconButton
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      right: 0,
-                      backgroundColor: 'primary.main',
-                      color: 'white',
-                      border: '3px solid white',
-                      '&:hover': { backgroundColor: 'primary.dark' }
-                    }}
-                    onClick={() => document.getElementById('profile-picture-input').click()}
-                  >
-                    <PhotoCameraIcon />
-                  </IconButton>
-                )}
-                <input
-                  id="profile-picture-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  style={{ display: 'none' }}
-                />
-              </Box>
-
-              {/* User Info */}
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
-                {user.firstName} {user.lastName}
-              </Typography>
-              <Typography variant="h6" sx={{ color: 'text.secondary', mb: 2, fontWeight: 400 }}>
-                {user.email}
-              </Typography>
-
-              {/* Action Buttons */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-                {!isEditing ? (
-                  <Button
-                    startIcon={<EditIcon />}
-                    onClick={() => setIsEditing(true)}
-                    variant="contained"
-                    size="large"
-                    sx={{
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      px: 4,
-                      py: 1.5,
-                      background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
-                      },
-                    }}
-                  >
-                    Edit Profile
-                  </Button>
-                ) : (
-                  <>
-                    <Button
-                      startIcon={<CancelIcon />}
-                      onClick={handleCancel}
-                      variant="outlined"
-                      size="large"
-                      sx={{
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        px: 4,
-                        py: 1.5,
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' , gap: 2}}>
+                  <Box sx={{ position: 'relative', display: 'inline-block'}}>
+                    <Avatar
+                      src={previewUrl}
+                      sx={{ 
+                        width: 150, 
+                        height: 150, 
+                        border: '6px solid white',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                        fontSize: '3rem',
+                        cursor: isEditing ? 'pointer' : 'default'
                       }}
-                    >
-                      Cancel
-                    </Button>
+                      onClick={() => isEditing && document.getElementById('profile-picture-input').click()}
+                    />
+                    {isEditing && (
+                      <IconButton
+                        sx={{
+                          position: 'absolute',
+                          bottom: 0,
+                          right: 0,
+                          backgroundColor: 'primary.main',
+                          color: 'white',
+                          border: '3px solid white',
+                          '&:hover': { backgroundColor: 'primary.dark' }
+                        }}
+                        onClick={() => document.getElementById('profile-picture-input').click()}
+                      >
+                        <PhotoCameraIcon />
+                      </IconButton>
+                    )}
+                    <input
+                      id="profile-picture-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      style={{ display: 'none' }}
+                    />
+                  </Box>
+
+                  {/* User Info */}
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                      {user.firstName} {user.lastName}
+                    </Typography>
+                    <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                      {user.email}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Action Buttons */}
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                  {!isEditing ? (
                     <Button
-                      startIcon={<SaveIcon />}
-                      onClick={handleSave}
+                      startIcon={<EditIcon />}
+                      onClick={() => setIsEditing(true)}
                       variant="contained"
                       size="large"
-                      disabled={isSubmitting}
                       sx={{
                         borderRadius: 2,
                         textTransform: 'none',
@@ -477,14 +445,52 @@ const Profile = () => {
                         },
                       }}
                     >
-                      {isSubmitting ? 'Saving...' : 'Save Changes'}
+                      Edit Profile
                     </Button>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <Button
+                        startIcon={<CancelIcon />}
+                        onClick={handleCancel}
+                        variant="outlined"
+                        size="large"
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          px: 4,
+                          py: 1.5,
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        startIcon={<SaveIcon />}
+                        onClick={handleSave}
+                        variant="contained"
+                        size="large"
+                        disabled={isSubmitting}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          px: 4,
+                          py: 1.5,
+                          background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                          },
+                        }}
+                      >
+                        {isSubmitting ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                    </>
+                  )}
+                </Box>
               </Box>
 
               {/* Profile Status */}
-              <Box sx={{ mt: 3 }}>
+              <Box sx={{ ml: 2, mt: 2, textAlign: 'start'}}>
                 <Chip 
                   label={user.isProfileComplete ? 'Profile Complete' : 'Profile Incomplete'} 
                   color={user.isProfileComplete ? 'success' : 'warning'}
@@ -498,13 +504,13 @@ const Profile = () => {
             <Box sx={{ p: 4 }}>
               <Grid container spacing={4}>
                 {/* Left Column */}
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main' }}>
+                <Grid size={{ xs: 12, md: 4}}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
                     Personal Information
                   </Typography>
                   
                   <Grid container spacing={3}>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12}}>
                       <TextField
                         fullWidth
                         label="Full Name"
@@ -522,7 +528,7 @@ const Profile = () => {
                       />
                     </Grid>
                     
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                       <TextField
                         fullWidth
                         label="Gender"
@@ -553,18 +559,18 @@ const Profile = () => {
                         <MenuItem value="es">Spanish</MenuItem>
                         <MenuItem value="fr">French</MenuItem>
                       </TextField>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
 
                 {/* Right Column */}
-                <Grid item xs={12} md={6}>
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main' }}>
+                <Grid size={{ xs: 12, md: 8}}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'primary.main' }}>
                     Contact & Preferences
                   </Typography>
                   
                   <Grid container spacing={3}>
-                    <Grid item xs={12}>
+                    <Grid item size={6}>
                       <TextField
                         fullWidth
                         label="Nick Name"
@@ -575,7 +581,7 @@ const Profile = () => {
                       />
                     </Grid>
                     
-                    <Grid item xs={12}>
+                    <Grid item size={6}>
                       <TextField
                         fullWidth
                         label="Country"
@@ -587,7 +593,7 @@ const Profile = () => {
                       />
                     </Grid>
                     
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                       <TextField
                         fullWidth
                         label="Time Zone"
@@ -602,89 +608,94 @@ const Profile = () => {
                         <MenuItem value="utc+0">UTC +0 (London)</MenuItem>
                         <MenuItem value="utc+1">UTC +1 (Central Europe)</MenuItem>
                       </TextField>
+                    </Grid> */}
+                  </Grid>
+                </Grid>
+                <Grid item size={6}>
+                  <Box sx={{ mb: 4 }}>
+                      <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <EmailIcon color="primary" />
+                        My Email Address
+                      </Typography>
+                      
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 2, 
+                        p: 3, 
+                        backgroundColor: 'rgba(25, 118, 210, 0.05)',
+                        borderRadius: 2,
+                        border: '1px solid rgba(25, 118, 210, 0.1)'
+                      }}>
+                        <EmailIcon color="primary" />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            {user.email}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            1 month ago
+                          </Typography>
+                        </Box>
+                        <Button
+                          startIcon={<AddIcon />}
+                          variant="outlined"
+                          size="small"
+                          sx={{ borderRadius: 2, textTransform: 'none' }}
+                        >
+                          +Add Email Address
+                        </Button>
+                      </Box>
+                    </Box>
+                </Grid>
+                <Grid item size={6}>
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PhoneIcon color="primary" />
+                    Phone Number
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} sm={4}>
+                      <TextField
+                        fullWidth
+                        select
+                        label="Country Code"
+                        value={formData.countryCode}
+                        onChange={(e) => handleInputChange('countryCode', e.target.value)}
+                        variant="outlined"
+                        disabled={!isEditing}
+                      >
+                        {countryCodes.map((option) => (
+                          <MenuItem key={option.code} value={option.code}>
+                            {option.flag} {option.code}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={12} sm={8}>
+                      <TextField
+                        fullWidth
+                        label="Phone Number"
+                        value={formData.phoneNumber}
+                        onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                        error={!!errors.phoneNumber}
+                        helperText={errors.phoneNumber}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your Phone Number"
+                      />
                     </Grid>
                   </Grid>
-                </Grid>
+                </Box>
+              </Grid>
               </Grid>
 
-              <Divider sx={{ my: 4 }} />
+              {/* <Divider sx={{ my: 4 }} /> */}
 
               {/* Email Section */}
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <EmailIcon color="primary" />
-                  My Email Address
-                </Typography>
-                
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 2, 
-                  p: 3, 
-                  backgroundColor: 'rgba(25, 118, 210, 0.05)',
-                  borderRadius: 2,
-                  border: '1px solid rgba(25, 118, 210, 0.1)'
-                }}>
-                  <EmailIcon color="primary" />
-                  <Box sx={{ flex: 1 }}>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      {user.email}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      1 month ago
-                    </Typography>
-                  </Box>
-                  <Button
-                    startIcon={<AddIcon />}
-                    variant="outlined"
-                    size="small"
-                    sx={{ borderRadius: 2, textTransform: 'none' }}
-                  >
-                    +Add Email Address
-                  </Button>
-                </Box>
-              </Box>
+              
 
               {/* Phone Number Section */}
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <PhoneIcon color="primary" />
-                  Phone Number
-                </Typography>
-                
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      fullWidth
-                      select
-                      label="Country Code"
-                      value={formData.countryCode}
-                      onChange={(e) => handleInputChange('countryCode', e.target.value)}
-                      variant="outlined"
-                      disabled={!isEditing}
-                    >
-                      {countryCodes.map((option) => (
-                        <MenuItem key={option.code} value={option.code}>
-                          {option.flag} {option.code}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} sm={8}>
-                    <TextField
-                      fullWidth
-                      label="Phone Number"
-                      value={formData.phoneNumber}
-                      onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                      error={!!errors.phoneNumber}
-                      helperText={errors.phoneNumber}
-                      variant="outlined"
-                      disabled={!isEditing}
-                      placeholder="Your Phone Number"
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
 
               {/* Address Section */}
               <Box sx={{ mb: 4 }}>

@@ -104,138 +104,38 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
           color: 'white',
         }}
       >
-        {/* Welcome Message */}
-        <Typography
-          variant="h2"
-          sx={{
-            fontWeight: 700,
-            mb: 2,
-            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-            animation: 'fadeInUp 1s ease-out',
-            '@keyframes fadeInUp': {
-              '0%': {
-                opacity: 0,
-                transform: 'translateY(30px)',
-              },
-              '100%': {
-                opacity: 1,
-                transform: 'translateY(0)',
-              },
-            },
-          }}
-        >
-          Welcome, {user?.firstName || 'Admin'}!
-        </Typography>
 
-        {/* Command Center Loading Text */}
-        <Typography
-          variant="h3"
-          sx={{
-            fontWeight: 700,
-            mb: 2,
-            opacity: 0.95,
-            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-            animation: 'fadeInUp 1s ease-out 0.3s both',
-            '@keyframes fadeInUp': {
-              '0%': {
-                opacity: 0,
-                transform: 'translateY(30px)',
-              },
-              '100%': {
-                opacity: 1,
-                transform: 'translateY(0)',
-              },
-            },
-          }}
-        >
-          Command Center
-        </Typography>
-        
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 400,
-            mb: 4,
-            opacity: 0.9,
-            textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-            animation: 'fadeInUp 1s ease-out 0.6s both',
-            '@keyframes fadeInUp': {
-              '0%': {
-                opacity: 0,
-                transform: 'translateY(30px)',
-              },
-              '100%': {
-                opacity: 1,
-                transform: 'translateY(0)',
-              },
-            },
-          }}
-        >
-          Loading...
-        </Typography>
-
-        {/* Progress Bar */}
-        <Box
-          sx={{
-            width: 300,
-            height: 4,
-            backgroundColor: 'rgba(255,255,255,0.2)',
-            borderRadius: 2,
-            overflow: 'hidden',
-            mb: 3,
-            animation: 'fadeInUp 1s ease-out 0.9s both',
-            '@keyframes fadeInUp': {
-              '0%': {
-                opacity: 0,
-                transform: 'translateY(30px)',
-              },
-              '100%': {
-                opacity: 1,
-                transform: 'translateY(0)',
-              },
-            },
-          }}
-        >
-          <Box
+        <Box className="loading-text">
+          {/* Welcome Message */}
+          <Typography
+            variant="h2"
             sx={{
-              width: `${progress}%`,
-              height: '100%',
-              background: 'linear-gradient(90deg, #ff6f0c 0%, #ff8f2e 100%)',
-              borderRadius: 2,
-              transition: 'width 0.3s ease',
+              fontWeight: 700,
+              mb: 2,
+              textShadow: '0 2px 4px rgba(0,0,0,0.8)',
+              animation: 'fadeInUp 1s ease-out',
+              '@keyframes fadeInUp': {
+                '0%': {
+                  opacity: 0,
+                  transform: 'translateY(30px)',
+                },
+                '100%': {
+                  opacity: 1,
+                  transform: 'translateY(0)',
+                },
+              },
             }}
-          />
-        </Box>
-
-        {/* Progress Text */}
-        <Typography
-          variant="body1"
-          sx={{
-            opacity: 0.8,
-            animation: 'fadeInUp 1s ease-out 1.2s both',
-            '@keyframes fadeInUp': {
-              '0%': {
-                opacity: 0,
-                transform: 'translateY(30px)',
-              },
-              '100%': {
-                opacity: 1,
-                transform: 'translateY(0)',
-              },
-            },
-          }}
-        >
-          {progress}% Complete
-        </Typography>
-
-        {/* Loading Spinner */}
-        {progress < 100 && (
-          <Box sx={{ mt: 3 }}>
-            <CircularProgress
-              size={40}
+          >
+            Welcome, {user?.firstName || 'Admin'}!
+          </Typography>
+          <Typography
+              variant="h3"
               sx={{
-                color: '#ff6f0c',
-                animation: 'fadeInUp 1s ease-out 1.5s both',
+                fontWeight: 700,
+                mb: 2,
+                opacity: 0.95,
+                textShadow: '0 2px 4px rgba(0,0,0,0.8)',
+                animation: 'fadeInUp 1s ease-out 0.3s both',
                 '@keyframes fadeInUp': {
                   '0%': {
                     opacity: 0,
@@ -247,9 +147,110 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
                   },
                 },
               }}
-            />
-          </Box>
-        )}
+            >
+              Command Center
+            </Typography>
+            
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 400,
+                mb: 4,
+                opacity: 0.9,
+                textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                animation: 'fadeInUp 1s ease-out 0.6s both',
+                '@keyframes fadeInUp': {
+                  '0%': {
+                    opacity: 0,
+                    transform: 'translateY(30px)',
+                  },
+                  '100%': {
+                    opacity: 1,
+                    transform: 'translateY(0)',
+                  },
+                },
+              }}
+            >
+              Loading...
+            </Typography>
+
+            {/* Progress Bar */}
+            <Box className="progress-bar"
+              sx={{
+                width: 300,
+                height: 4,
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                borderRadius: 2,
+                overflow: 'hidden',
+                mb: 3,
+                animation: 'fadeInUp 1s ease-out 0.9s both',
+                '@keyframes fadeInUp': {
+                  '0%': {
+                    opacity: 0,
+                    transform: 'translateY(30px)',
+                  },
+                  '100%': {
+                    opacity: 1,
+                    transform: 'translateY(0)',
+                  },
+                },
+              }}
+            >
+              <Box className="progress-bar-fill"
+                sx={{
+                  width: `${progress}%`,
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #ff6f0c 0%, #ff8f2e 100%)',
+                  borderRadius: 2,
+                  transition: 'width 0.3s ease',
+                }}
+              />
+            </Box>
+
+            {/* Progress Text */}
+            <Typography
+              variant="body1"
+              sx={{
+                opacity: 0.8,
+                animation: 'fadeInUp 1s ease-out 1.2s both',
+                '@keyframes fadeInUp': {
+                  '0%': {
+                    opacity: 0,
+                    transform: 'translateY(30px)',
+                  },
+                  '100%': {
+                    opacity: 1,
+                    transform: 'translateY(0)',
+                  },
+                },
+              }}
+            >
+              {progress}% Complete
+            </Typography>
+
+            {/* Loading Spinner */}
+            {progress < 100 && (
+              <Box sx={{ mt: 3 }}>
+                <CircularProgress
+                  size={40}
+                  sx={{
+                    color: '#ff6f0c',
+                    animation: 'fadeInUp 1s ease-out 1.5s both',
+                    '@keyframes fadeInUp': {
+                      '0%': {
+                        opacity: 0,
+                        transform: 'translateY(30px)',
+                      },
+                      '100%': {
+                        opacity: 1,
+                        transform: 'translateY(0)',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+            )}
+        </Box>
       </Box>
 
       {/* Company Logo */}

@@ -431,7 +431,7 @@ const Settings = () => {
           <Box sx={{ mb: 4 }}>
             <Grid container spacing={3}>
               {/* Total Users */}
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs:12 , sm:6, md:3}}>
                 <Card
                   elevation={0}
                   sx={{
@@ -455,7 +455,7 @@ const Settings = () => {
               </Grid>
 
               {/* Active Users */}
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs:12 , sm:6, md:3}}>
                 <Card
                   elevation={0}
                   sx={{
@@ -479,7 +479,7 @@ const Settings = () => {
               </Grid>
 
               {/* System Uptime */}
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs:12 , sm:6, md:3}}>
                 <Card
                   elevation={0}
                   sx={{
@@ -503,7 +503,7 @@ const Settings = () => {
               </Grid>
 
               {/* Database Size */}
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs:12 , sm:6, md:3}}>
                 <Card
                   elevation={0}
                   sx={{
@@ -552,8 +552,9 @@ const Settings = () => {
                 />
                 <CardContent>
                   <Grid container spacing={3}>
-                    <Grid item xs={12}>
+                    <Grid item size={4}>
                       <FormControlLabel
+                      sx={{ mb: 2 }}
                         control={
                           <Switch
                             checked={sessionSettings.enableSessionTimeout}
@@ -563,9 +564,6 @@ const Settings = () => {
                         }
                         label="Enable Session Timeout"
                       />
-                    </Grid>
-                    
-                    <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
                         label="Session Timeout (minutes)"
@@ -577,8 +575,9 @@ const Settings = () => {
                       />
                     </Grid>
                     
-                    <Grid item xs={12}>
+                    <Grid item size={4}>
                       <FormControlLabel
+                      sx={{ mb: 2 }}
                         control={
                           <Switch
                             checked={sessionSettings.enableIdleTimeout}
@@ -588,9 +587,6 @@ const Settings = () => {
                         }
                         label="Enable Idle Timeout"
                       />
-                    </Grid>
-                    
-                    <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
                         label="Idle Timeout (minutes)"
@@ -602,8 +598,9 @@ const Settings = () => {
                       />
                     </Grid>
                     
-                    <Grid item xs={12}>
+                    <Grid item size={4}>
                       <FormControlLabel
+                      sx={{ mb: 2 }}
                         control={
                           <Switch
                             checked={sessionSettings.enableRememberMe}
@@ -613,9 +610,6 @@ const Settings = () => {
                         }
                         label="Enable Remember Me"
                       />
-                    </Grid>
-                    
-                    <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
                         label="Remember Me Duration (days)"
@@ -627,37 +621,36 @@ const Settings = () => {
                       />
                     </Grid>
 
-                    <Grid item xs={12}>
-                      <Divider sx={{ my: 2 }} />
-                      <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
+                    <Grid item size={6}>
+                      {/* <Divider sx={{ my: 2 }} /> */}
+                      <Typography variant="h6" sx={{ mb: 3 , color: 'primary.main' }}>
                         Security Settings
                       </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center',  gap: 2 }}>
+                          <TextField
+                            fullWidth
+                            label="Max Login Attempts"
+                            type="number"
+                            value={sessionSettings.maxLoginAttempts}
+                            onChange={(e) => handleSessionSettingChange('maxLoginAttempts', parseInt(e.target.value))}
+                            InputProps={{ inputProps: { min: 1, max: 10 } }}
+                          />
+                          <TextField
+                            fullWidth
+                            label="Lockout Duration (minutes)"
+                            type="number"
+                            value={sessionSettings.lockoutDuration}
+                            onChange={(e) => handleSessionSettingChange('lockoutDuration', parseInt(e.target.value))}
+                            InputProps={{ inputProps: { min: 1, max: 1440 } }}
+                          />
+                        </Box>
                     </Grid>
 
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Max Login Attempts"
-                        type="number"
-                        value={sessionSettings.maxLoginAttempts}
-                        onChange={(e) => handleSessionSettingChange('maxLoginAttempts', parseInt(e.target.value))}
-                        InputProps={{ inputProps: { min: 1, max: 10 } }}
-                      />
-                    </Grid>
 
-                    <Grid item xs={12} sm={6}>
-                      <TextField
-                        fullWidth
-                        label="Lockout Duration (minutes)"
-                        type="number"
-                        value={sessionSettings.lockoutDuration}
-                        onChange={(e) => handleSessionSettingChange('lockoutDuration', parseInt(e.target.value))}
-                        InputProps={{ inputProps: { min: 1, max: 1440 } }}
-                      />
-                    </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid item size={6}>
                       <FormControlLabel
+                      sx={{ mb: 2 }}
                         control={
                           <Switch
                             checked={sessionSettings.requirePasswordChange}
@@ -667,9 +660,6 @@ const Settings = () => {
                         }
                         label="Require Password Change on Expiry"
                       />
-                    </Grid>
-
-                    <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
                         label="Password Expiry (days)"
@@ -682,33 +672,35 @@ const Settings = () => {
                     </Grid>
                     
                     <Grid item xs={12}>
-                      <Button
-                        variant="contained"
-                        startIcon={<SaveIcon />}
-                        onClick={handleSaveSettings}
-                        disabled={isSaving}
-                        fullWidth
-                        sx={{
-                          background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
-                          py: 1.5,
-                          borderRadius: 2,
-                          fontWeight: 600,
-                          '&:hover': {
-                            background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
-                          },
-                        }}
-                      >
-                        {isSaving ? <CircularProgress size={20} color="inherit" /> : 'Save Settings'}
-                      </Button>
                     </Grid>
                   </Grid>
+                  <Box sx={{ width: '200px', marginInline: 'auto' }}>
+                    <Button
+                      variant="contained"
+                      startIcon={<SaveIcon />}
+                      onClick={handleSaveSettings}
+                      disabled={isSaving}
+                      fullWidth
+                      sx={{
+                        background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                        py: 1.5,
+                        borderRadius: 2,
+                        fontWeight: 600,
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                        },
+                      }}
+                    >
+                      {isSaving ? <CircularProgress size={20} color="inherit" /> : 'Save Settings'}
+                    </Button>
+                  </Box>
                 </CardContent>
               </Card>
             </Grow>
           </Grid>
 
           {/* Access Logs */}
-          <Grid item xs={12} lg={6}>
+          <Grid size={12}>
             <Grow in timeout={1200}>
               <Card
                 elevation={0}

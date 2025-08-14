@@ -211,7 +211,7 @@ const Academies = () => {
 
         {/* KPI Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{xs:12,sm:6, lg:3}}>
             <KPICard
               title="Total Academies"
               value={academiesData.kpis.totalAcademies}
@@ -221,7 +221,7 @@ const Academies = () => {
               isLoading={isLoading}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{xs:12,sm:6, lg:3}}>
             <KPICard
               title="Active Academies"
               value={academiesData.kpis.activeAcademies}
@@ -231,7 +231,7 @@ const Academies = () => {
               isLoading={isLoading}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{xs:12,sm:6, lg:3}}>
             <KPICard
               title="Inactive Academies"
               value={academiesData.kpis.inactiveAcademies}
@@ -241,7 +241,7 @@ const Academies = () => {
               isLoading={isLoading}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{xs:12,sm:6, lg:3}}>
             <KPICard
               title="Onhold Academies"
               value={academiesData.kpis.onHoldAcademies}

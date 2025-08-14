@@ -316,7 +316,7 @@ const DashboardOverview = () => {
         {/* KPI Cards - All in one line */}
         <Grow in timeout={1000}>
           <Grid container spacing={3} sx={{ mb: 6 }}>
-            <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Total Academies"
                 value={dashboardData.kpis.totalAcademies.toString()}
@@ -327,7 +327,7 @@ const DashboardOverview = () => {
                 trendDirection="up"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Total Plans"
                 value={dashboardData.kpis.totalPlans.toString()}
@@ -338,7 +338,7 @@ const DashboardOverview = () => {
                 trendDirection="up"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Total Users"
                 value={dashboardData.kpis.totalUsers.toString()}
@@ -349,7 +349,7 @@ const DashboardOverview = () => {
                 trendDirection="up"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Courses Offered"
                 value={dashboardData.kpis.coursesOffered}

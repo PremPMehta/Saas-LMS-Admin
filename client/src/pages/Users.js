@@ -158,7 +158,7 @@ const Users = () => {
           <Box sx={{ mb: 4 }}>
             <Grid container spacing={3}>
               {/* Total Users Card */}
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid size={{xs:12,md:6, lg:4}}>
                 <KPICard
                   title="Total Users"
                   value={usersData.users.length}
@@ -170,7 +170,7 @@ const Users = () => {
               </Grid>
 
               {/* Admin Users Card */}
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid size={{xs:12,md:6, lg:4}}>
                 <KPICard
                   title="Admin Users"
                   value={usersData.users.filter(user => user.role === 'admin').length}
@@ -182,7 +182,7 @@ const Users = () => {
               </Grid>
 
               {/* Standard Users Card */}
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid size={{xs:12,sm:12, lg:4}}>
                 <KPICard
                   title="Standard Users"
                   value={usersData.users.filter(user => user.role === 'user').length}
