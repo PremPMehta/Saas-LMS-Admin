@@ -9,7 +9,7 @@ const seedDatabase = async () => {
     console.log('Connected to MongoDB');
 
     // Check if admin user already exists
-    const existingAdmin = await User.findOne({ email: 'admin@bbrtek.com' });
+    const existingAdmin = await User.findOne({ email: 'admin@multi-admin.com' });
     
     if (existingAdmin) {
       console.log('Admin user already exists');
@@ -18,7 +18,7 @@ const seedDatabase = async () => {
 
     // Create default admin user with complete profile
     const adminUser = new User({
-      email: 'admin@bbrtek.com',
+      email: 'admin@multi-admin.com',
       password: 'Password@123',
       firstName: 'Prem',
       lastName: 'Mehta',
@@ -40,7 +40,7 @@ const seedDatabase = async () => {
 
     await adminUser.save();
     console.log('Default admin user created successfully');
-    console.log('Email: admin@bbrtek.com');
+    console.log('Email: admin@multi-admin.com');
     console.log('Password: Password@123');
     console.log('Name: Prem Mehta');
     console.log('Phone: +91 9879228567');

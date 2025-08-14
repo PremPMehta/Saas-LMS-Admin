@@ -19,7 +19,6 @@ import {
   People as PeopleIcon,
   Analytics as AnalyticsIcon,
   Settings as SettingsIcon,
-  Person as PersonIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -44,7 +43,6 @@ const Sidebar = () => {
       { text: 'Users', icon: <PeopleIcon />, path: '/users', roles: ['admin'] },
       { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', roles: ['admin'] },
       { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'] },
-      { text: 'Profile', icon: <PersonIcon />, path: '/profile', roles: ['admin', 'user'] },
     ];
 
     // Filter menu items based on user role

@@ -10,6 +10,7 @@ import {
   Grow,
   Divider,
   Button,
+  Alert,
 } from '@mui/material';
 import {
   School as SchoolIcon,
@@ -18,6 +19,7 @@ import {
   Book as BookIcon,
   TrendingUp as TrendingUpIcon,
   Add as AddIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../contexts/ThemeContext';
 import KPICard from '../components/dashboard/KPICard';
@@ -27,46 +29,21 @@ import AddAcademyModal from '../components/dashboard/AddAcademyModal';
 const DashboardOverview = () => {
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPlansLoading, setIsPlansLoading] = useState(false);
+  const [plansError, setPlansError] = useState(null);
+  const [plansSuccess, setPlansSuccess] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingAcademy, setEditingAcademy] = useState(null);
   const [dashboardData, setDashboardData] = useState({
     kpis: {
       totalAcademies: 0,
-      totalPlans: 3,
+      totalPlans: 0,
       totalUsers: 5,
       coursesOffered: '~5,000',
     },
     academies: [],
-    plans: [
-      {
-        id: 1,
-        name: 'Basic',
-        price: '$29',
-        period: 'month',
-        features: ['Up to 100 students', 'Basic analytics', 'Email support'],
-        limits: '1 academy',
-        popular: false,
-      },
-      {
-        id: 2,
-        name: 'Standard',
-        price: '$79',
-        period: 'month',
-        features: ['Up to 500 students', 'Advanced analytics', 'Priority support', 'Custom branding'],
-        limits: '3 academies',
-        popular: true,
-      },
-      {
-        id: 3,
-        name: 'Premium',
-        price: '$199',
-        period: 'month',
-        features: ['Unlimited students', 'Full analytics suite', '24/7 support', 'White-label solution', 'API access'],
-        limits: 'Unlimited academies',
-        popular: false,
-      },
-    ],
+    plans: [],
   });
 
   // Fetch academies from backend
@@ -111,8 +88,111 @@ const DashboardOverview = () => {
     }
   };
 
+  // Fetch subscription plans from backend
+  const fetchSubscriptionPlans = async () => {
+    setIsPlansLoading(true);
+    setPlansError(null);
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('No authentication token found');
+        setPlansError('Authentication token not found');
+        return;
+      }
+
+      const response = await fetch('http://localhost:5001/api/plans', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.error('Authentication failed - token may be expired');
+          setPlansError('Authentication failed. Please login again.');
+          return;
+        }
+        throw new Error(`Failed to fetch plans: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const plans = data.data || data;
+      
+      // Transform the plans data to match the expected format
+      const transformedPlans = plans.map(plan => ({
+        id: plan._id || plan.id,
+        name: plan.name,
+        price: plan.price,
+        period: plan.period,
+        features: plan.features || [],
+        limits: plan.limits || `${plan.maxAcademies || 1} academy${plan.maxAcademies > 1 ? 's' : ''}`,
+        popular: plan.popular || false,
+      }));
+
+      setDashboardData(prev => ({
+        ...prev,
+        plans: transformedPlans,
+        kpis: {
+          ...prev.kpis,
+          totalPlans: transformedPlans.length,
+        },
+      }));
+      
+      // Set success message
+      setPlansSuccess(`Successfully loaded ${transformedPlans.length} subscription plans`);
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setPlansSuccess(null), 3000);
+    } catch (err) {
+      console.error('Error fetching subscription plans:', err);
+      setPlansError(err.message);
+      // If no plans exist, create some default plans as fallback
+      const defaultPlans = [
+        {
+          id: 'default-basic',
+          name: 'Basic',
+          price: '$29',
+          period: 'month',
+          features: ['Up to 100 students', 'Basic analytics', 'Email support'],
+          limits: '1 academy',
+          popular: false,
+        },
+        {
+          id: 'default-standard',
+          name: 'Standard',
+          price: '$79',
+          period: 'month',
+          features: ['Up to 500 students', 'Advanced analytics', 'Priority support', 'Custom branding'],
+          limits: '3 academies',
+          popular: true,
+        },
+        {
+          id: 'default-premium',
+          name: 'Premium',
+          price: '$199',
+          period: 'month',
+          features: ['Unlimited students', 'Full analytics suite', '24/7 support', 'White-label solution', 'API access'],
+          limits: 'Unlimited academies',
+          popular: false,
+        },
+      ];
+      
+      setDashboardData(prev => ({
+        ...prev,
+        plans: defaultPlans,
+        kpis: {
+          ...prev.kpis,
+          totalPlans: defaultPlans.length,
+        },
+      }));
+    } finally {
+      setIsPlansLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchAcademies();
+    fetchSubscriptionPlans();
   }, []);
 
   const handleAddAcademy = () => {
@@ -140,6 +220,16 @@ const DashboardOverview = () => {
         totalAcademies: prev.kpis.totalAcademies - 1,
       },
     }));
+  };
+
+  // Function to refresh plans (can be called from other components)
+  const refreshPlans = () => {
+    fetchSubscriptionPlans();
+  };
+
+  // Function to handle plan updates (can be called from other components)
+  const handlePlanUpdate = () => {
+    refreshPlans();
   };
 
   if (isLoading) {
@@ -353,30 +443,92 @@ const DashboardOverview = () => {
         {/* Subscription Plans - Horizontal Cards */}
         <Grow in timeout={1400}>
           <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-              <AssignmentIcon 
-                sx={{ 
-                  fontSize: 28, 
-                  color: 'primary.main', 
-                  mr: 2,
-                  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                }} 
-              />
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  fontWeight: 700,
-                  background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <AssignmentIcon 
+                  sx={{ 
+                    fontSize: 28, 
+                    color: 'primary.main', 
+                    mr: 2,
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                  }} 
+                />
+                <Typography 
+                  variant="h5" 
+                  sx={{ 
+                    fontWeight: 700,
+                    background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }}
+                >
+                  Subscription Plans
+                </Typography>
+              </Box>
+              <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={refreshPlans}
+                disabled={isPlansLoading}
+                sx={{
+                  borderRadius: 2,
+                  px: 2,
+                  py: 1,
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
+                  textTransform: 'none',
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  '&:hover': {
+                    borderColor: 'primary.dark',
+                    backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                  },
                 }}
               >
-                Subscription Plans
-              </Typography>
+                {isPlansLoading ? 'Refreshing...' : 'Refresh'}
+              </Button>
             </Box>
+            
+            {/* Success/Error Messages */}
+            {plansSuccess && (
+              <Alert severity="success" sx={{ mb: 3, maxWidth: 'fit-content' }}>
+                {plansSuccess}
+              </Alert>
+            )}
+            {plansError && (
+              <Alert severity="error" sx={{ mb: 3, maxWidth: 'fit-content' }}>
+                {plansError}
+              </Alert>
+            )}
             <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-              {dashboardData.plans.map((plan, index) => (
+              {isPlansLoading ? (
+                // Loading state for plans
+                <Grid item xs={12} sx={{ textAlign: 'center', py: 6 }}>
+                  <CircularProgress size={40} sx={{ mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    Loading subscription plans...
+                  </Typography>
+                </Grid>
+              ) : dashboardData.plans.length === 0 ? (
+                // Empty state for plans
+                <Grid item xs={12} sx={{ textAlign: 'center', py: 6 }}>
+                  <AssignmentIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2, opacity: 0.5 }} />
+                  <Typography variant="h6" color="text.secondary" sx={{ fontWeight: 500, mb: 1 }}>
+                    No subscription plans found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Create subscription plans to get started
+                  </Typography>
+                  {plansError && (
+                    <Alert severity="error" sx={{ maxWidth: 400, mx: 'auto' }}>
+                      {plansError}
+                    </Alert>
+                  )}
+                </Grid>
+              ) : (
+                // Render plans
+                dashboardData.plans.map((plan, index) => (
                 <Grid item xs={12} sm={6} md={4} key={plan.id} sx={{ minWidth: { md: 320 } }}>
                   <Paper
                     elevation={0}
@@ -499,7 +651,8 @@ const DashboardOverview = () => {
                     )}
                   </Paper>
                 </Grid>
-              ))}
+                ))
+              )}
             </Grid>
           </Box>
         </Grow>

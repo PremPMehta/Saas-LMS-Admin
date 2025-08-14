@@ -129,19 +129,19 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
       newErrors.phoneNumber = 'Please enter a valid phone number';
     }
     if (!formData.address.street.trim()) {
-      newErrors.street = 'Street address is required';
+      newErrors['address.street'] = 'Street address is required';
     }
     if (!formData.address.city.trim()) {
-      newErrors.city = 'City is required';
+      newErrors['address.city'] = 'City is required';
     }
     if (!formData.address.state.trim()) {
-      newErrors.state = 'State is required';
+      newErrors['address.state'] = 'State is required';
     }
     if (!formData.address.country.trim()) {
-      newErrors.country = 'Country is required';
+      newErrors['address.country'] = 'Country is required';
     }
     if (!formData.address.zipCode.trim()) {
-      newErrors.zipCode = 'Zip code is required';
+      newErrors['address.zipCode'] = 'Zip code is required';
     }
 
     setErrors(newErrors);
@@ -339,8 +339,8 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
               label="Street Address *"
               value={formData.address.street}
               onChange={(e) => handleInputChange('address.street', e.target.value)}
-              error={!!errors.street}
-              helperText={errors.street}
+              error={!!errors['address.street']}
+              helperText={errors['address.street']}
               variant="outlined"
             />
           </Grid>
@@ -350,8 +350,8 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
               label="City *"
               value={formData.address.city}
               onChange={(e) => handleInputChange('address.city', e.target.value)}
-              error={!!errors.city}
-              helperText={errors.city}
+              error={!!errors['address.city']}
+              helperText={errors['address.city']}
               variant="outlined"
             />
           </Grid>
@@ -361,8 +361,8 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
               label="State *"
               value={formData.address.state}
               onChange={(e) => handleInputChange('address.state', e.target.value)}
-              error={!!errors.state}
-              helperText={errors.state}
+              error={!!errors['address.state']}
+              helperText={errors['address.state']}
               variant="outlined"
             />
           </Grid>
@@ -372,8 +372,8 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
               label="Country *"
               value={formData.address.country}
               onChange={(e) => handleInputChange('address.country', e.target.value)}
-              error={!!errors.country}
-              helperText={errors.country}
+              error={!!errors['address.country']}
+              helperText={errors['address.country']}
               variant="outlined"
             />
           </Grid>
@@ -383,8 +383,8 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
               label="Zip Code *"
               value={formData.address.zipCode}
               onChange={(e) => handleInputChange('address.zipCode', e.target.value)}
-              error={!!errors.zipCode}
-              helperText={errors.zipCode}
+              error={!!errors['address.zipCode']}
+              helperText={errors['address.zipCode']}
               variant="outlined"
             />
           </Grid>

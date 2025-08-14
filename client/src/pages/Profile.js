@@ -25,8 +25,9 @@ import {
   Person as PersonIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
-  LocationOn as LocationIcon,
-  Security as SecurityIcon
+  LocationOn as LocationOnIcon,
+  Security as SecurityIcon,
+  Add as AddIcon
 } from '@mui/icons-material';
 import FirstTimeProfileModal from '../components/profile/FirstTimeProfileModal';
 
@@ -75,8 +76,8 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    // Get user data from localStorage or context
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    // Get user data from localStorage (from AuthContext)
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
     setUser(userData);
     
     if (userData) {
@@ -96,8 +97,11 @@ const Profile = () => {
       });
       setPreviewUrl(userData.profilePicture || '');
       
-      // Show first-time modal if profile is incomplete
-      if (!userData.isProfileComplete) {
+      // Show first-time modal ONLY if profile is incomplete AND this is the first time
+      // Check if user has any profile data filled
+      const hasProfileData = userData.firstName && userData.lastName && userData.phoneNumber && userData.countryCode;
+      
+      if (!hasProfileData && !userData.isProfileComplete) {
         setShowFirstTimeModal(true);
       }
     }
@@ -119,6 +123,10 @@ const Profile = () => {
     
     // Clear error when user starts typing
     if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+    // Also clear nested address errors
+    if (field.startsWith('address.') && errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
@@ -166,19 +174,19 @@ const Profile = () => {
       newErrors.phoneNumber = 'Please enter a valid phone number';
     }
     if (!formData.address.street.trim()) {
-      newErrors.street = 'Street address is required';
+      newErrors['address.street'] = 'Street address is required';
     }
     if (!formData.address.city.trim()) {
-      newErrors.city = 'City is required';
+      newErrors['address.city'] = 'City is required';
     }
     if (!formData.address.state.trim()) {
-      newErrors.state = 'State is required';
+      newErrors['address.state'] = 'State is required';
     }
     if (!formData.address.country.trim()) {
-      newErrors.country = 'Country is required';
+      newErrors['address.country'] = 'Country is required';
     }
     if (!formData.address.zipCode.trim()) {
-      newErrors.zipCode = 'Zip code is required';
+      newErrors['address.zipCode'] = 'Zip code is required';
     }
 
     setErrors(newErrors);
@@ -200,7 +208,7 @@ const Profile = () => {
         };
 
         // Update user data (this would typically be an API call)
-        localStorage.setItem('userData', JSON.stringify(updatedUser));
+        localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);
         setIsEditing(false);
         
@@ -246,8 +254,8 @@ const Profile = () => {
         isProfileComplete: true
       };
 
-      // Update user data (this would typically be an API call)
-      localStorage.setItem('userData', JSON.stringify(updatedUser));
+      // Update user data in localStorage (same key used by AuthContext)
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
       setFormData({
         firstName: profileData.firstName,
@@ -276,43 +284,91 @@ const Profile = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
-          Profile Settings
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Manage your account information and preferences
-        </Typography>
+    <Box sx={{ minHeight: '100vh', background: '#f8fafc' }}>
+      {/* Banner Section */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+          height: 200,
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Background Pattern */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+            pointerEvents: 'none'
+          }}
+        />
+        
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+              Welcome, {user.firstName || 'User'}
+            </Typography>
+            <Typography variant="h6" sx={{ opacity: 0.9, fontWeight: 400 }}>
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                day: '2-digit', 
+                month: 'long', 
+                year: 'numeric' 
+              })}
+            </Typography>
+          </Box>
+        </Container>
       </Box>
 
-      {/* Success/Error Messages */}
-      {errors.success && (
-        <Alert severity="success" sx={{ mb: 3 }}>
-          {errors.success}
-        </Alert>
-      )}
-      {errors.submit && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {errors.submit}
-        </Alert>
-      )}
+      <Container maxWidth="lg" sx={{ mt: -8, position: 'relative', zIndex: 2 }}>
+        {/* Success/Error Messages */}
+        {errors.success && (
+          <Alert severity="success" sx={{ mb: 3 }}>
+            {errors.success}
+          </Alert>
+        )}
+        {errors.submit && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {errors.submit}
+          </Alert>
+        )}
 
-      <Grid container spacing={3}>
-        {/* Profile Picture Card */}
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: 'fit-content' }}>
-            <CardContent sx={{ textAlign: 'center', p: 4 }}>
+        {/* Main Profile Card */}
+        <Card sx={{ 
+          borderRadius: 3, 
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+          overflow: 'visible'
+        }}>
+          <CardContent sx={{ p: 0 }}>
+            {/* Profile Header */}
+            <Box sx={{ 
+              p: 4, 
+              pb: 6, 
+              textAlign: 'center',
+              background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+              borderRadius: '12px 12px 0 0'
+            }}>
+              {/* Profile Picture */}
               <Box sx={{ position: 'relative', display: 'inline-block', mb: 3 }}>
                 <Avatar
                   src={previewUrl}
                   sx={{ 
                     width: 150, 
                     height: 150, 
-                    border: '4px solid #e3f2fd',
-                    fontSize: '3rem'
+                    border: '6px solid white',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+                    fontSize: '3rem',
+                    cursor: isEditing ? 'pointer' : 'default'
                   }}
+                  onClick={() => isEditing && document.getElementById('profile-picture-input').click()}
                 />
                 {isEditing && (
                   <IconButton
@@ -322,6 +378,7 @@ const Profile = () => {
                       right: 0,
                       backgroundColor: 'primary.main',
                       color: 'white',
+                      border: '3px solid white',
                       '&:hover': { backgroundColor: 'primary.dark' }
                     }}
                     onClick={() => document.getElementById('profile-picture-input').click()}
@@ -337,47 +394,51 @@ const Profile = () => {
                   style={{ display: 'none' }}
                 />
               </Box>
-              
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+
+              {/* User Info */}
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
                 {user.firstName} {user.lastName}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                {user.role === 'admin' ? 'Administrator' : 'Standard User'}
+              <Typography variant="h6" sx={{ color: 'text.secondary', mb: 2, fontWeight: 400 }}>
+                {user.email}
               </Typography>
-              
-              <Chip 
-                label={user.isProfileComplete ? 'Profile Complete' : 'Profile Incomplete'} 
-                color={user.isProfileComplete ? 'success' : 'warning'}
-                size="small"
-              />
-            </CardContent>
-          </Card>
-        </Grid>
 
-        {/* Profile Information Card */}
-        <Grid item xs={12} md={8}>
-          <Card>
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Personal Information
-                </Typography>
+              {/* Action Buttons */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
                 {!isEditing ? (
                   <Button
                     startIcon={<EditIcon />}
                     onClick={() => setIsEditing(true)}
-                    variant="outlined"
-                    size="small"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      px: 4,
+                      py: 1.5,
+                      background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                      },
+                    }}
                   >
                     Edit Profile
                   </Button>
                 ) : (
-                  <Box sx={{ display: 'flex', gap: 1 }}>
+                  <>
                     <Button
                       startIcon={<CancelIcon />}
                       onClick={handleCancel}
                       variant="outlined"
-                      size="small"
+                      size="large"
+                      sx={{
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        px: 4,
+                        py: 1.5,
+                      }}
                     >
                       Cancel
                     </Button>
@@ -385,170 +446,304 @@ const Profile = () => {
                       startIcon={<SaveIcon />}
                       onClick={handleSave}
                       variant="contained"
-                      size="small"
+                      size="large"
                       disabled={isSubmitting}
+                      sx={{
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        px: 4,
+                        py: 1.5,
+                        background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                        },
+                      }}
                     >
                       {isSubmitting ? 'Saving...' : 'Save Changes'}
                     </Button>
-                  </Box>
+                  </>
                 )}
               </Box>
 
-              <Grid container spacing={3}>
-                {/* First Name */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="First Name"
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    error={!!errors.firstName}
-                    helperText={errors.firstName}
-                    variant="outlined"
-                    disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    }}
-                  />
+              {/* Profile Status */}
+              <Box sx={{ mt: 3 }}>
+                <Chip 
+                  label={user.isProfileComplete ? 'Profile Complete' : 'Profile Incomplete'} 
+                  color={user.isProfileComplete ? 'success' : 'warning'}
+                  size="medium"
+                  sx={{ fontWeight: 600 }}
+                />
+              </Box>
+            </Box>
+
+            {/* Profile Form */}
+            <Box sx={{ p: 4 }}>
+              <Grid container spacing={4}>
+                {/* Left Column */}
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main' }}>
+                    Personal Information
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Full Name"
+                        value={`${formData.firstName} ${formData.lastName}`}
+                        onChange={(e) => {
+                          const names = e.target.value.split(' ');
+                          handleInputChange('firstName', names[0] || '');
+                          handleInputChange('lastName', names.slice(1).join(' ') || '');
+                        }}
+                        error={!!errors.firstName || !!errors.lastName}
+                        helperText={errors.firstName || errors.lastName}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your Full Name"
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Gender"
+                        select
+                        value=""
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Select Gender"
+                      >
+                        <MenuItem value="male">Male</MenuItem>
+                        <MenuItem value="female">Female</MenuItem>
+                        <MenuItem value="other">Other</MenuItem>
+                      </TextField>
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Language"
+                        select
+                        value=""
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Select Language"
+                      >
+                        <MenuItem value="en">English</MenuItem>
+                        <MenuItem value="hi">Hindi</MenuItem>
+                        <MenuItem value="es">Spanish</MenuItem>
+                        <MenuItem value="fr">French</MenuItem>
+                      </TextField>
+                    </Grid>
+                  </Grid>
                 </Grid>
 
-                {/* Last Name */}
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Last Name"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    error={!!errors.lastName}
-                    helperText={errors.lastName}
-                    variant="outlined"
-                    disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    }}
-                  />
-                </Grid>
-
-                {/* Email */}
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Email Address"
-                    value={formData.email}
-                    variant="outlined"
-                    disabled={true}
-                    InputProps={{
-                      startAdornment: <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    }}
-                    helperText="Email address cannot be changed"
-                  />
-                </Grid>
-
-                {/* Phone Number */}
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    select
-                    label="Country Code"
-                    value={formData.countryCode}
-                    onChange={(e) => handleInputChange('countryCode', e.target.value)}
-                    variant="outlined"
-                    disabled={!isEditing}
-                  >
-                    {countryCodes.map((option) => (
-                      <MenuItem key={option.code} value={option.code}>
-                        {option.flag} {option.code}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>
-                <Grid item xs={12} sm={8}>
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    value={formData.phoneNumber}
-                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                    error={!!errors.phoneNumber}
-                    helperText={errors.phoneNumber}
-                    variant="outlined"
-                    disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    }}
-                  />
+                {/* Right Column */}
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main' }}>
+                    Contact & Preferences
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Nick Name"
+                        value=""
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your Nick Name"
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Country"
+                        value={formData.address.country}
+                        onChange={(e) => handleInputChange('address.country', e.target.value)}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your Country"
+                      />
+                    </Grid>
+                    
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Time Zone"
+                        select
+                        value=""
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Select Time Zone"
+                      >
+                        <MenuItem value="utc+5:30">UTC +5:30 (India)</MenuItem>
+                        <MenuItem value="utc-5">UTC -5 (Eastern US)</MenuItem>
+                        <MenuItem value="utc+0">UTC +0 (London)</MenuItem>
+                        <MenuItem value="utc+1">UTC +1 (Central Europe)</MenuItem>
+                      </TextField>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
 
               <Divider sx={{ my: 4 }} />
 
-              {/* Address Section */}
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LocationOnIcon color="primary" />
-                Address Information
-              </Typography>
+              {/* Email Section */}
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <EmailIcon color="primary" />
+                  My Email Address
+                </Typography>
+                
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 2, 
+                  p: 3, 
+                  backgroundColor: 'rgba(25, 118, 210, 0.05)',
+                  borderRadius: 2,
+                  border: '1px solid rgba(25, 118, 210, 0.1)'
+                }}>
+                  <EmailIcon color="primary" />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {user.email}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      1 month ago
+                    </Typography>
+                  </Box>
+                  <Button
+                    startIcon={<AddIcon />}
+                    variant="outlined"
+                    size="small"
+                    sx={{ borderRadius: 2, textTransform: 'none' }}
+                  >
+                    +Add Email Address
+                  </Button>
+                </Box>
+              </Box>
 
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Street Address"
-                    value={formData.address.street}
-                    onChange={(e) => handleInputChange('address.street', e.target.value)}
-                    error={!!errors.street}
-                    helperText={errors.street}
-                    variant="outlined"
-                    disabled={!isEditing}
-                  />
+              {/* Phone Number Section */}
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <PhoneIcon color="primary" />
+                  Phone Number
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="Country Code"
+                      value={formData.countryCode}
+                      onChange={(e) => handleInputChange('countryCode', e.target.value)}
+                      variant="outlined"
+                      disabled={!isEditing}
+                    >
+                      {countryCodes.map((option) => (
+                        <MenuItem key={option.code} value={option.code}>
+                          {option.flag} {option.code}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} sm={8}>
+                    <TextField
+                      fullWidth
+                      label="Phone Number"
+                      value={formData.phoneNumber}
+                      onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                      error={!!errors.phoneNumber}
+                      helperText={errors.phoneNumber}
+                      variant="outlined"
+                      disabled={!isEditing}
+                      placeholder="Your Phone Number"
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="City"
-                    value={formData.address.city}
-                    onChange={(e) => handleInputChange('address.city', e.target.value)}
-                    error={!!errors.city}
-                    helperText={errors.city}
-                    variant="outlined"
-                    disabled={!isEditing}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="State"
-                    value={formData.address.state}
-                    onChange={(e) => handleInputChange('address.state', e.target.value)}
-                    error={!!errors.state}
-                    helperText={errors.state}
-                    variant="outlined"
-                    disabled={!isEditing}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Country"
-                    value={formData.address.country}
-                    onChange={(e) => handleInputChange('address.country', e.target.value)}
-                    error={!!errors.country}
-                    helperText={errors.country}
-                    variant="outlined"
-                    disabled={!isEditing}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Zip Code"
-                    value={formData.address.zipCode}
-                    onChange={(e) => handleInputChange('address.zipCode', e.target.value)}
-                    error={!!errors.zipCode}
-                    helperText={errors.zipCode}
-                    variant="outlined"
-                    disabled={!isEditing}
-                  />
-                </Grid>
-              </Grid>
+              </Box>
+
+              {/* Address Section */}
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <LocationOnIcon color="primary" />
+                  Address Information
+                </Typography>
+                
+                <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Street Address"
+                        value={formData.address.street}
+                        onChange={(e) => handleInputChange('address.street', e.target.value)}
+                        error={!!errors['address.street']}
+                        helperText={errors['address.street']}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your Street Address"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="City"
+                        value={formData.address.city}
+                        onChange={(e) => handleInputChange('address.city', e.target.value)}
+                        error={!!errors['address.city']}
+                        helperText={errors['address.city']}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your City"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="State"
+                        value={formData.address.state}
+                        onChange={(e) => handleInputChange('address.state', e.target.value)}
+                        error={!!errors['address.state']}
+                        helperText={errors['address.state']}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your State"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Country"
+                        value={formData.address.country}
+                        onChange={(e) => handleInputChange('address.country', e.target.value)}
+                        error={!!errors['address.country']}
+                        helperText={errors['address.country']}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your Country"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Zip Code"
+                        value={formData.address.zipCode}
+                        onChange={(e) => handleInputChange('address.zipCode', e.target.value)}
+                        error={!!errors['address.zipCode']}
+                        helperText={errors['address.zipCode']}
+                        variant="outlined"
+                        disabled={!isEditing}
+                        placeholder="Your Zip Code"
+                      />
+                    </Grid>
+                  </Grid>
+              </Box>
 
               {/* Image Validation Error */}
               {errors.image && (
@@ -556,10 +751,10 @@ const Profile = () => {
                   {errors.image}
                 </Alert>
               )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+            </Box>
+          </CardContent>
+        </Card>
+      </Container>
 
       {/* First Time Profile Modal */}
       <FirstTimeProfileModal
@@ -567,7 +762,7 @@ const Profile = () => {
         onComplete={handleFirstTimeComplete}
         user={user}
       />
-    </Container>
+    </Box>
   );
 };
 

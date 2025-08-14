@@ -31,6 +31,7 @@ import {
   Web as WebIcon,
   Assignment as AssignmentIcon,
   AddPhotoAlternate as AddPhotoAlternateIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
 
@@ -47,8 +48,8 @@ const countryCodes = [
   { code: '+507', country: 'Panama', pattern: /^\+507\s?\d{7,8}$/ },
 ];
 
-// Configure axios base URL
-axios.defaults.baseURL = 'http://localhost:5001';
+// Configure axios base URL for this component only
+const API_BASE_URL = 'http://localhost:5001';
 
 const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
   const [formData, setFormData] = useState({
@@ -68,24 +69,65 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const [plansLoading, setPlansLoading] = useState(true);
+  const [plansSuccess, setPlansSuccess] = useState(null);
 
   // Fetch subscription plans
   const fetchSubscriptionPlans = async () => {
     try {
       setPlansLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/plans?limit=10', {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error('No authentication token found');
+        // Set default plans as fallback
+        setSubscriptionPlans([
+          { _id: 'default-basic', name: 'Basic', price: '$29', period: 'month' },
+          { _id: 'default-standard', name: 'Standard', price: '$79', period: 'month' },
+          { _id: 'default-premium', name: 'Premium', price: '$199', period: 'month' }
+        ]);
+        return;
+      }
+      
+      console.log('Fetching plans with token:', token.substring(0, 20) + '...');
+      
+      const response = await axios.get(`${API_BASE_URL}/api/plans?limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setSubscriptionPlans(response.data.data.plans || []);
+      
+      console.log('Plans API response:', response.data);
+      
+      if (response.data && response.data.data) {
+        const plans = response.data.data.plans || response.data.data || [];
+        console.log('Setting plans:', plans);
+        setSubscriptionPlans(plans);
+        setPlansSuccess(`Loaded ${plans.length} subscription plans`);
+        setTimeout(() => setPlansSuccess(null), 3000);
+      } else {
+        console.log('No plans data in response');
+        // Set default plans as fallback
+        setSubscriptionPlans([
+          { _id: 'default-basic', name: 'Basic', price: '$29', period: 'month' },
+          { _id: 'default-standard', name: 'Standard', price: '$79', period: 'month' },
+          { _id: 'default-premium', name: 'Premium', price: '$199', period: 'month' }
+        ]);
+      }
     } catch (err) {
       console.error('Error fetching subscription plans:', err);
+      if (err.response) {
+        console.error('Error response:', err.response.data);
+        console.error('Error status:', err.response.status);
+      }
+      // Set default plans as fallback
+      setSubscriptionPlans([
+        { _id: 'default-basic', name: 'Basic', price: '$29', period: 'month' },
+        { _id: 'default-standard', name: 'Standard', price: '$79', period: 'month' },
+        { _id: 'default-premium', name: 'Premium', price: '$199', period: 'month' }
+      ]);
     } finally {
       setPlansLoading(false);
     }
   };
 
-  // Populate form when editing
+  // Fetch plans when modal opens
   useEffect(() => {
     if (open) {
       fetchSubscriptionPlans();
@@ -887,6 +929,27 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
               
               <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid item xs={12} md={6}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
+                      Available Plans: {subscriptionPlans.length}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={fetchSubscriptionPlans}
+                      disabled={plansLoading}
+                      startIcon={plansLoading ? <CircularProgress size={16} /> : <RefreshIcon />}
+                      sx={{
+                        borderRadius: 1.5,
+                        textTransform: 'none',
+                        fontSize: '0.75rem',
+                        py: 0.5,
+                        px: 1.5,
+                      }}
+                    >
+                      {plansLoading ? 'Refreshing...' : 'Refresh'}
+                    </Button>
+                  </Box>
                   <TextField
                     fullWidth
                     label="Subscription Plan *"
@@ -913,18 +976,38 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                       },
                     }}
                   >
-                    {plansLoading ? (
-                      <MenuItem disabled>Loading plans...</MenuItem>
-                    ) : subscriptionPlans.length > 0 ? (
-                      subscriptionPlans.map((plan) => (
-                        <MenuItem key={plan._id} value={plan.name}>
-                          {plan.name} - ${plan.price}/{plan.period}
-                        </MenuItem>
-                      ))
-                    ) : (
-                      <MenuItem disabled>No plans available</MenuItem>
-                    )}
+                                      {plansLoading ? (
+                    <MenuItem disabled>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={16} />
+                        Loading plans...
+                      </Box>
+                    </MenuItem>
+                  ) : subscriptionPlans.length > 0 ? (
+                    subscriptionPlans.map((plan) => (
+                      <MenuItem key={plan._id} value={plan.name}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <AssignmentIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                          {plan.name} - {plan.price}/{plan.period}
+                        </Box>
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <AssignmentIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                        No plans available
+                      </Box>
+                    </MenuItem>
+                  )}
                   </TextField>
+                  
+                  {/* Success/Error Messages for Plans */}
+                  {plansSuccess && (
+                    <Alert severity="success" sx={{ mt: 1 }}>
+                      {plansSuccess}
+                    </Alert>
+                  )}
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Box sx={{ 

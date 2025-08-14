@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const protect = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 const academyController = require('../controllers/academy.controller');
 
 // Apply authentication middleware to all routes

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -92,6 +93,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Navbar = () => {
   const { mode, toggleTheme } = useTheme();
   const { logout, getCurrentUser } = useAuth();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -105,6 +107,16 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    handleMenuClose();
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+    handleMenuClose();
+  };
+
+  const handleSettingsClick = () => {
+    navigate('/settings');
     handleMenuClose();
   };
 
@@ -261,12 +273,12 @@ const Navbar = () => {
           <Divider sx={{ my: 1 }} />
 
           {/* Menu Items */}
-          <MenuItem onClick={handleMenuClose} sx={{ py: 1.5, px: 2 }}>
+          <MenuItem onClick={handleProfileClick} sx={{ py: 1.5, px: 2 }}>
             <AccountCircleIcon sx={{ mr: 2, fontSize: 20, color: 'text.secondary' }} />
             <Typography variant="body2">Profile</Typography>
           </MenuItem>
 
-          <MenuItem onClick={handleMenuClose} sx={{ py: 1.5, px: 2 }}>
+          <MenuItem onClick={handleSettingsClick} sx={{ py: 1.5, px: 2 }}>
             <SettingsIcon sx={{ mr: 2, fontSize: 20, color: 'text.secondary' }} />
             <Typography variant="body2">Settings</Typography>
           </MenuItem>
