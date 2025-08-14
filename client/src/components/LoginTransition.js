@@ -76,6 +76,8 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
             zIndex: 0,
           }}
         >
+          <source src="/transition-video.mp4" type="video/mp4" />
+          {/* Fallback to original video if new one doesn't exist */}
           <source src="/5716233-uhd_2160_3840_30fps.mp4" type="video/mp4" />
         </video>
       )}
@@ -125,14 +127,14 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
           Welcome, {user?.firstName || 'Admin'}!
         </Typography>
 
-        {/* Subtitle */}
+        {/* Command Center Loading Text */}
         <Typography
-          variant="h5"
+          variant="h3"
           sx={{
-            fontWeight: 400,
-            mb: 4,
-            opacity: 0.9,
-            textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+            fontWeight: 700,
+            mb: 2,
+            opacity: 0.95,
+            textShadow: '0 2px 4px rgba(0,0,0,0.8)',
             animation: 'fadeInUp 1s ease-out 0.3s both',
             '@keyframes fadeInUp': {
               '0%': {
@@ -146,7 +148,30 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
             },
           }}
         >
-          Initializing your Command Center...
+          Command Center
+        </Typography>
+        
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 400,
+            mb: 4,
+            opacity: 0.9,
+            textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+            animation: 'fadeInUp 1s ease-out 0.6s both',
+            '@keyframes fadeInUp': {
+              '0%': {
+                opacity: 0,
+                transform: 'translateY(30px)',
+              },
+              '100%': {
+                opacity: 1,
+                transform: 'translateY(0)',
+              },
+            },
+          }}
+        >
+          Loading...
         </Typography>
 
         {/* Progress Bar */}
@@ -158,7 +183,7 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
             borderRadius: 2,
             overflow: 'hidden',
             mb: 3,
-            animation: 'fadeInUp 1s ease-out 0.6s both',
+            animation: 'fadeInUp 1s ease-out 0.9s both',
             '@keyframes fadeInUp': {
               '0%': {
                 opacity: 0,
@@ -187,7 +212,7 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
           variant="body1"
           sx={{
             opacity: 0.8,
-            animation: 'fadeInUp 1s ease-out 0.9s both',
+            animation: 'fadeInUp 1s ease-out 1.2s both',
             '@keyframes fadeInUp': {
               '0%': {
                 opacity: 0,
@@ -210,7 +235,7 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
               size={40}
               sx={{
                 color: '#ff6f0c',
-                animation: 'fadeInUp 1s ease-out 1.2s both',
+                animation: 'fadeInUp 1s ease-out 1.5s both',
                 '@keyframes fadeInUp': {
                   '0%': {
                     opacity: 0,
@@ -235,7 +260,7 @@ const LoginTransition = ({ user, redirectPath, onComplete }) => {
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 2,
-          animation: 'fadeInUp 1s ease-out 1.5s both',
+          animation: 'fadeInUp 1s ease-out 1.8s both',
           '@keyframes fadeInUp': {
             '0%': {
               opacity: 0,
