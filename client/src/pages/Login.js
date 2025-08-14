@@ -19,6 +19,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import LoginTransition from '../components/LoginTransition';
 
 const Login = () => {
   const { mode } = useTheme();
@@ -33,6 +34,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState('');
+  const [showTransition, setShowTransition] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [redirectPath, setRedirectPath] = useState('/dashboard');
 
   // Validation rules
   const validateField = (name, value) => {
@@ -112,7 +116,7 @@ const Login = () => {
         const userData = JSON.parse(localStorage.getItem('user'));
         const userRole = userData?.role || 'user';
         
-        // Redirect based on user role
+        // Set redirect path based on user role
         let redirectPath = '/academies'; // Default for regular users
         
         if (userRole === 'admin') {
@@ -128,7 +132,10 @@ const Login = () => {
           }
         }
         
-        navigate(redirectPath, { replace: true });
+        // Show transition instead of immediate redirect
+        setUserData(userData);
+        setRedirectPath(redirectPath);
+        setShowTransition(true);
       } else {
         setApiError(result.message);
       }
@@ -468,6 +475,18 @@ const Login = () => {
           </Box>
         </Paper>
       </Box>
+
+      {/* Login Transition */}
+      {showTransition && (
+        <LoginTransition
+          user={userData}
+          redirectPath={redirectPath}
+          onComplete={() => {
+            setShowTransition(false);
+            navigate(redirectPath, { replace: true });
+          }}
+        />
+      )}
     </Box>
   );
 };
