@@ -224,7 +224,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
   const paginatedAcademies = filteredAcademies.slice(startIndex, endIndex);
 
   return (
-    <Box>
+    <Box sx={{ p: 3 }}>
       {/* Search Bar */}
       <Box sx={{ mb: 3 }}>
         <TextField
@@ -748,7 +748,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
                </Paper>
            )}
          </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 0 }}>
+        <DialogActions sx={{ p: 3}}>
           <Button onClick={handleCloseViewDialog} variant="outlined">
             Close
           </Button>
@@ -783,7 +783,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
             Delete Academy
           </Typography>
         </DialogTitle>
-        <DialogContent sx={{ p: 4 }}>
+        <DialogContent sx={{ p: 4 , mt: 4 }}>
           <Alert severity="warning" sx={{ mb: 3 }}>
             <Typography variant="body1" sx={{ fontWeight: 600, mb: 1 }}>
               This action cannot be undone!

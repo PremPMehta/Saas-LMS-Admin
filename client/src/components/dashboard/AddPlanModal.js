@@ -372,7 +372,7 @@ const AddPlanModal = ({
       <DialogContent sx={{ p: 0 }}>
         <Grid container sx={{ minHeight: 600 }}>
           {/* Left Column - Form */}
-          <Grid item xs={12} md={7} sx={{ p: 4 }}>
+          <Grid size={{ xs: 12, md: 7 }} sx={{ p: 4 }}>
             <Box sx={{ maxWidth: 600 }}>
               {error && (
                 <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
@@ -415,12 +415,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -440,12 +440,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -465,12 +465,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -494,12 +494,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -546,12 +546,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -572,12 +572,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -598,12 +598,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -623,12 +623,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -706,12 +706,12 @@ const AddPlanModal = ({
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -753,7 +753,7 @@ const AddPlanModal = ({
           </Grid>
 
           {/* Right Column - Preview */}
-          <Grid item xs={12} md={5} sx={{ 
+          <Grid size={{ xs: 12, md: 5 }} sx={{ 
             p: 4, 
             background: (theme) => theme.palette.mode === 'light'
               ? 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'

@@ -20,6 +20,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoginTransition from '../components/LoginTransition';
+import "../index.css";
 
 const Login = () => {
   const { mode } = useTheme();

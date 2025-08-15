@@ -86,15 +86,15 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
         ]);
         return;
       }
-      
+
       console.log('Fetching plans with token:', token.substring(0, 20) + '...');
-      
+
       const response = await axios.get(`${API_BASE_URL}/api/plans?limit=10`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       console.log('Plans API response:', response.data);
-      
+
       if (response.data && response.data.data) {
         const plans = response.data.data.plans || response.data.data || [];
         console.log('Setting plans:', plans);
@@ -197,7 +197,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
       if (selectedCountry) {
         const phoneWithoutSpaces = formData.contactNumber.replace(/\s/g, '');
         const expectedLength = selectedCountry.code.length + (selectedCountry.country === 'India' ? 10 : selectedCountry.country === 'Panama' ? 7 : 10);
-        
+
         if (!phoneWithoutSpaces.startsWith(selectedCountry.code)) {
           newErrors.contactNumber = `Phone number must start with ${selectedCountry.code}`;
         } else if (phoneWithoutSpaces.length < expectedLength - 2 || phoneWithoutSpaces.length > expectedLength + 2) {
@@ -215,7 +215,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
       if (formData.logo.size > maxSize) {
         newErrors.logo = 'Logo file size must be less than 2MB';
       }
-      
+
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(formData.logo.type)) {
         newErrors.logo = 'Please upload a valid image file (JPEG, PNG, GIF, or WebP)';
@@ -228,24 +228,24 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
   const handleCountryCodeChange = (countryCode) => {
-    setFormData(prev => ({ 
-      ...prev, 
+    setFormData(prev => ({
+      ...prev,
       countryCode,
-      contactNumber: prev.contactNumber ? 
-        (prev.contactNumber.match(/^\+\d+/) ? 
-          prev.contactNumber.replace(/^\+\d+/, countryCode) : 
+      contactNumber: prev.contactNumber ?
+        (prev.contactNumber.match(/^\+\d+/) ?
+          prev.contactNumber.replace(/^\+\d+/, countryCode) :
           countryCode + prev.contactNumber.replace(/^\+\d+/, '')
-        ) : 
+        ) :
         countryCode
     }));
-    
+
     if (errors.contactNumber) {
       setErrors(prev => ({ ...prev, contactNumber: '' }));
     }
@@ -255,11 +255,11 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
     const file = event.target.files[0];
     if (file) {
       setFormData(prev => ({ ...prev, logo: file }));
-      
+
       const reader = new FileReader();
       reader.onload = (e) => setLogoPreview(e.target.result);
       reader.readAsDataURL(file);
-      
+
       if (errors.logo) {
         setErrors(prev => ({ ...prev, logo: '' }));
       }
@@ -277,13 +277,13 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
           const canvas = document.createElement('canvas');
           const ctx = canvas.getContext('2d');
           const img = new Image();
-          
+
           logoData = await new Promise((resolve) => {
             img.onload = () => {
               // Set canvas size (max 200x200 for smaller payload)
               const maxSize = 200;
               let { width, height } = img;
-              
+
               if (width > height) {
                 if (width > maxSize) {
                   height = (height * maxSize) / width;
@@ -295,10 +295,10 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                   height = maxSize;
                 }
               }
-              
+
               canvas.width = width;
               canvas.height = height;
-              
+
               // Draw and compress
               ctx.drawImage(img, 0, 0, width, height);
               const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
@@ -329,10 +329,10 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
           throw new Error('Authentication token not found. Please login again.');
         }
 
-        const url = editingAcademy 
+        const url = editingAcademy
           ? `http://localhost:5001/api/academies/${editingAcademy._id}`
           : 'http://localhost:5001/api/academies';
-        
+
         const method = editingAcademy ? 'PUT' : 'POST';
 
         const response = await fetch(url, {
@@ -357,10 +357,10 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
         }
 
         const savedAcademy = await response.json();
-        
+
         // Call the onSave callback with the saved academy data
         onSave(savedAcademy.data || savedAcademy);
-        
+
         // Close modal and reset form
         handleClose();
       } catch (error) {
@@ -454,10 +454,10 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
               label={formData.status || 'Active'}
               size="small"
               sx={{
-                backgroundColor: 
-                  formData.status === 'Active' ? 'rgba(76, 175, 80, 0.8)' : 
-                  formData.status === 'Inactive' ? 'rgba(244, 67, 54, 0.8)' :
-                  'rgba(255, 152, 0, 0.8)',
+                backgroundColor:
+                  formData.status === 'Active' ? 'rgba(76, 175, 80, 0.8)' :
+                    formData.status === 'Inactive' ? 'rgba(244, 67, 54, 0.8)' :
+                      'rgba(255, 152, 0, 0.8)',
                 color: 'white',
                 fontWeight: 600,
               }}
@@ -470,7 +470,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, opacity: 0.9 }}>
             Academy Preview
           </Typography>
-          
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {/* Domain */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -561,10 +561,10 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
   );
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={handleClose}
-      maxWidth="xl"
+      maxWidth="lg"
       fullWidth
       PaperProps={{
         sx: {
@@ -606,9 +606,9 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
             {editingAcademy ? 'Edit Academy' : 'Create New Academy'}
           </Typography>
         </Box>
-        <IconButton 
-          onClick={handleClose} 
-          sx={{ 
+        <IconButton
+          onClick={handleClose}
+          sx={{
             color: 'text.secondary',
             '&:hover': {
               backgroundColor: 'rgba(0, 0, 0, 0.04)',
@@ -622,15 +622,15 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
       <DialogContent sx={{ p: 0 }}>
         <Grid container sx={{ minHeight: 600 }}>
           {/* Left Side - Form */}
-          <Grid item xs={12} md={7} sx={{ p: 4 }}>
+          <Grid size={{ xs: 12, md: 7 }} sx={{ p: 4 }}>
             <Box sx={{ maxWidth: 600 }}>
               {/* Basic Information Section */}
-              <Typography variant="h6" sx={{ 
-                mb: 3, 
-                fontWeight: 600, 
+              <Typography variant="h6" sx={{
+                mb: 3,
+                fontWeight: 600,
                 color: 'text.primary',
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1.5,
                 fontSize: '1.125rem'
               }}>
@@ -646,9 +646,9 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                 </Box>
                 Basic Information
               </Typography>
-              
+
               <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
                     label="Academy Name *"
@@ -661,12 +661,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -675,7 +675,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
                     label="Subdomain *"
@@ -695,12 +695,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -709,7 +709,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
                     label="Academy Address *"
@@ -724,12 +724,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -738,7 +738,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <TextField
                     fullWidth
                     label="Status *"
@@ -750,12 +750,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -786,12 +786,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
               </Grid>
 
               {/* Contact Information Section */}
-              <Typography variant="h6" sx={{ 
-                mb: 3, 
-                fontWeight: 600, 
+              <Typography variant="h6" sx={{
+                mb: 3,
+                fontWeight: 600,
                 color: 'text.primary',
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1.5,
                 fontSize: '1.125rem'
               }}>
@@ -807,9 +807,9 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                 </Box>
                 Contact Information
               </Typography>
-              
+
               <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <TextField
                     fullWidth
                     label="Contact Person *"
@@ -822,12 +822,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -836,7 +836,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <TextField
                     fullWidth
                     label="Country Code"
@@ -848,12 +848,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -875,7 +875,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} md={8}>
+                <Grid size={{ xs: 12, md: 4 }}>
                   <TextField
                     fullWidth
                     label="Phone Number *"
@@ -888,12 +888,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -905,12 +905,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
               </Grid>
 
               {/* Subscription Plan Section */}
-              <Typography variant="h6" sx={{ 
-                mb: 3, 
-                fontWeight: 600, 
+              <Typography variant="h6" sx={{
+                mb: 3,
+                fontWeight: 600,
                 color: 'text.primary',
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1.5,
                 fontSize: '1.125rem'
               }}>
@@ -926,9 +926,9 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                 </Box>
                 Subscription & Branding
               </Typography>
-              
+
               <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
                       Available Plans: {subscriptionPlans.length}
@@ -963,12 +963,12 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         '&:hover': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          backgroundColor: 'transparent',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                          backgroundColor: 'transparent',
                         },
                       },
                       '& .MuiInputLabel-root': {
@@ -976,32 +976,32 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                       },
                     }}
                   >
-                                      {plansLoading ? (
-                    <MenuItem disabled>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <CircularProgress size={16} />
-                        Loading plans...
-                      </Box>
-                    </MenuItem>
-                  ) : subscriptionPlans.length > 0 ? (
-                    subscriptionPlans.map((plan) => (
-                      <MenuItem key={plan._id} value={plan.name}>
+                    {plansLoading ? (
+                      <MenuItem disabled>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <AssignmentIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-                          {plan.name} - {plan.price}/{plan.period}
+                          <CircularProgress size={16} />
+                          Loading plans...
                         </Box>
                       </MenuItem>
-                    ))
-                  ) : (
-                    <MenuItem disabled>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <AssignmentIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                        No plans available
-                      </Box>
-                    </MenuItem>
-                  )}
+                    ) : subscriptionPlans.length > 0 ? (
+                      subscriptionPlans.map((plan) => (
+                        <MenuItem key={plan._id} value={plan.name}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <AssignmentIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                            {plan.name} - {plan.price}/{plan.period}
+                          </Box>
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem disabled>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <AssignmentIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                          No plans available
+                        </Box>
+                      </MenuItem>
+                    )}
                   </TextField>
-                  
+
                   {/* Success/Error Messages for Plans */}
                   {plansSuccess && (
                     <Alert severity="success" sx={{ mt: 1 }}>
@@ -1009,15 +1009,15 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                     </Alert>
                   )}
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
                     gap: 2,
                     p: 3,
                     borderRadius: 2,
-                    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-                    border: '1px solid rgba(0, 0, 0, 0.08)',
+                    backgroundColor: 'tra',
+                    border: '1px solid #c8c8c899',
                   }}>
                     <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary' }}>
                       Academy Logo
@@ -1027,7 +1027,7 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
                         width: 60,
                         height: 60,
                         borderRadius: 2,
-                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                        backgroundColor: 'transparent',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1086,8 +1086,8 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
           </Grid>
 
           {/* Right Side - Preview */}
-          <Grid item xs={12} md={5} sx={{ 
-            p: 4, 
+          <Grid size={{ xs: 12, md: 5 }} sx={{
+            p: 4,
             background: (theme) => theme.palette.mode === 'light'
               ? 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
               : 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
@@ -1099,8 +1099,8 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
       </DialogContent>
 
       {/* Action Buttons */}
-      <Box sx={{ 
-        p: 3, 
+      <Box sx={{
+        p: 3,
         borderTop: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.08)'}`,
         display: 'flex',
         justifyContent: 'flex-end',

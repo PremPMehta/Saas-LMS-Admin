@@ -11,3 +11,24 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.new_user .css-1mq3koj-MuiFormControl-root-MuiTextField-root .MuiOutlinedInput-root {
+  background-color: unset !important;
+}
+.loading-text h2 {
+  transform: inherit !important;
+}
+.loading-text h3 {
+  transform: inherit !important;
+}
+.loading-text h6 {
+  transform: inherit !important;
+}
+.loading-text .progress-bar {
+  transform: inherit !important;
+  margin-bottom: 10px !important;
+  margin: 0 auto;
+}
+.loading-text p {
+  transform: inherit !important;
+}

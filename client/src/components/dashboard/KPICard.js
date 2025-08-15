@@ -124,7 +124,7 @@ const KPICard = ({
       }}
     >
       <CardContent sx={{ p: 3, position: 'relative' }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3, justifyContent: 'space-between' }}>
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <Typography

@@ -214,7 +214,7 @@ const UsersList = ({ users, onUserUpdate, onUserDelete, defaultRowsPerPage = 10 
   };
 
   return (
-    <Box>
+    <Box sx={{ p: 3 }}>
       {/* Search Bar */}
       <Box sx={{ mb: 3, p: 3, pb: 0 }}>
         <TextField
@@ -655,7 +655,7 @@ const UsersList = ({ users, onUserUpdate, onUserDelete, defaultRowsPerPage = 10 
             </Paper>
           )}
         </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 0 }}>
+        <DialogActions sx={{ p: 3}}>
           <Button onClick={handleCloseViewDialog} variant="outlined">
             Close
           </Button>
