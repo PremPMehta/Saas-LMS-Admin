@@ -263,8 +263,31 @@
         }
 
         .tech-card h4 {
-            color: #667eea;
-            margin-bottom: 15px;
+            color: #4f46e5;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .tech-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tech-list span {
+            color: #4a5568;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .tech-list span:hover {
+            background: #edf2f7;
+            border-left-color: #4f46e5;
+            transform: translateX(4px);
         }
 
         pre {
@@ -620,44 +643,44 @@
             <div class="tech-stack">
                 <div class="tech-card">
                     <h4>Frontend</h4>
-                    <ul>
-                        <li>React.js</li>
-                        <li>Material-UI (MUI)</li>
-                        <li>React Router</li>
-                        <li>Context API</li>
-                        <li>Axios</li>
-                    </ul>
+                    <div class="tech-list">
+                        <span>React.js</span>
+                        <span>Material-UI (MUI)</span>
+                        <span>React Router</span>
+                        <span>Context API</span>
+                        <span>Axios</span>
+                    </div>
                 </div>
 
                 <div class="tech-card">
                     <h4>Backend</h4>
-                    <ul>
-                        <li>Node.js</li>
-                        <li>Express.js</li>
-                        <li>JWT Authentication</li>
-                        <li>bcryptjs</li>
-                        <li>CORS</li>
-                    </ul>
+                    <div class="tech-list">
+                        <span>Node.js</span>
+                        <span>Express.js</span>
+                        <span>JWT Authentication</span>
+                        <span>bcryptjs</span>
+                        <span>CORS</span>
+                    </div>
                 </div>
 
                 <div class="tech-card">
                     <h4>Database</h4>
-                    <ul>
-                        <li>MongoDB</li>
-                        <li>Mongoose ODM</li>
-                        <li>MongoDB Compass</li>
-                        <li>Database Indexing</li>
-                    </ul>
+                    <div class="tech-list">
+                        <span>MongoDB</span>
+                        <span>Mongoose ODM</span>
+                        <span>MongoDB Compass</span>
+                        <span>Database Indexing</span>
+                    </div>
                 </div>
 
                 <div class="tech-card">
                     <h4>Development Tools</h4>
-                    <ul>
-                        <li>ESLint</li>
-                        <li>Git</li>
-                        <li>npm</li>
-                        <li>Nodemon</li>
-                    </ul>
+                    <div class="tech-list">
+                        <span>ESLint</span>
+                        <span>Git</span>
+                        <span>npm</span>
+                        <span>Nodemon</span>
+                    </div>
                 </div>
             </div>
 
