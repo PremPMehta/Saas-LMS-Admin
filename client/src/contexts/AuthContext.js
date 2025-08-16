@@ -84,6 +84,16 @@ export const AuthProvider = ({ children }) => {
     return !!token && !!user;
   };
 
+  // Handle token expiration/invalid token
+  const handleTokenError = useCallback(() => {
+    console.log('Token error detected, logging out...');
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    navigate('/login');
+  }, [navigate]);
+
   // Get current user
   const getCurrentUser = () => {
     return user;
@@ -92,6 +102,13 @@ export const AuthProvider = ({ children }) => {
   // Get auth token
   const getToken = () => {
     return token;
+  };
+
+  // Update user data (for first-time password change)
+  const updateUser = (updatedUserData) => {
+    const updatedUser = { ...user, ...updatedUserData };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   const value = {
@@ -103,6 +120,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     getCurrentUser,
     getToken,
+    updateUser,
+    handleTokenError,
   };
 
   return (

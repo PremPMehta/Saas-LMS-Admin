@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Storage - SaaS LMS Admin</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 20px;
+            text-align: center;
+        }
+        .button {
+            background: #1976d2;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .button:hover { background: #1565c0; }
+        .success { color: #4caf50; font-weight: bold; }
+        .info { background: #e3f2fd; padding: 15px; border-radius: 4px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Fix Login Issues</h1>
+    
+    <div class="info">
+        <p><strong>Having login or "cannot add data" issues?</strong></p>
+        <p>This happens when old authentication tokens become invalid.</p>
+        <p>Click the button below to clear all stored data and fix the issue.</p>
+    </div>
+    
+    <button class="button" onclick="clearStorage()">Clear Storage & Fix Login</button>
+    
+    <div id="result"></div>
+    
+    <div class="info">
+        <p><strong>After clearing:</strong></p>
+        <p>1. Go back to <a href="/">the main app</a></p>
+        <p>2. Login with: admin@multi-admin.com / Password@123</p>
+        <p>3. You'll be able to add/edit data normally</p>
+    </div>
+
+    <script>
+        function clearStorage() {
+            try {
+                // Clear localStorage
+                localStorage.clear();
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                
+                // Clear cookies (basic method)
+                document.cookie.split(";").forEach(function(c) { 
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+                
+                document.getElementById('result').innerHTML = 
+                    '<div class="success">✅ Storage cleared successfully!<br><br>' +
+                    '<a href="/" class="button">Go to Login Page</a></div>';
+                    
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    '<div style="color: red;">❌ Error: ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

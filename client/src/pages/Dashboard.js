@@ -44,7 +44,7 @@ const Dashboard = () => {
   const fetchDashboardStats = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       
       // Fetch user stats
       const userResponse = await axios.get('/api/users/stats', {
@@ -78,7 +78,7 @@ const Dashboard = () => {
   const fetchSubscriptionPlans = async () => {
     try {
       setPlansLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       const response = await axios.get('/api/plans?limit=6', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -138,36 +138,28 @@ const Dashboard = () => {
       value: stats.users.total || 0,
       description: `${stats.users.active || 0} active users`,
       icon: <PeopleIcon />,
-      color: 'primary',
-      trend: '+12.5%',
-      trendDirection: 'up'
+      color: 'primary'
     },
     {
       title: 'Active Academies',
       value: stats.academies.activeAcademies || 0,
       description: `${stats.academies.totalAcademies || 0} total academies`,
       icon: <SchoolIcon />,
-      color: 'success',
-      trend: '+8.2%',
-      trendDirection: 'up'
+      color: 'success'
     },
     {
       title: 'Subscription Plans',
       value: stats.plans.activePlans || 0,
       description: `${stats.plans.totalPlans || 0} total plans available`,
       icon: <AssignmentIcon />,
-      color: 'info',
-      trend: '+15.3%',
-      trendDirection: 'up'
+      color: 'info'
     },
     {
       title: 'Growth Rate',
       value: '+12.5%',
       description: 'Monthly growth rate',
       icon: <TrendingUpIcon />,
-      color: 'warning',
-      trend: '+2.1%',
-      trendDirection: 'up'
+      color: 'warning'
     },
   ];
 
@@ -220,8 +212,6 @@ const Dashboard = () => {
               description={kpi.description}
               icon={kpi.icon}
               color={kpi.color}
-              trend={kpi.trend}
-              trendDirection={kpi.trendDirection}
               isLoading={loading}
             />
           </Grid>

@@ -4,14 +4,27 @@
 
 SaaS-LMS Admin is a comprehensive Learning Management System (LMS) administration platform designed for educational institutions and training organizations. The system provides centralized management of academies, courses, users, and learning plans with role-based access control and real-time analytics.
 
-The platform enables administrators to manage multiple academies, create subscription plans, monitor user activities, and generate insights through an intuitive dashboard interface. It supports scalable operations with configurable limits and automated user provisioning.
+The platform enables administrators to manage multiple academies, create subscription plans, monitor user activities, and generate insights through an intuitive dashboard interface. It supports scalable operations with configurable limits, automated user provisioning, and a secure first-time login experience.
+
+## 🚀 Latest Updates (v2.0)
+
+### New Features Added:
+- **First-Time Login System**: Mandatory password change for new users with strength validation
+- **Dynamic KPI Cards**: Real-time data display from database instead of static values
+- **Enhanced User Creation**: Professional modal with default password notification
+- **Token Management**: Automatic token refresh and error handling
+- **Database Seeding**: Complete sample data population scripts
+- **Security Improvements**: Enhanced JWT validation and password policies
+- **UI/UX Enhancements**: Modern, responsive design with better user feedback
 
 ## Core Features
 
 ### User Management
 - **Role-based Access Control**: Admin, Standard User roles with granular permissions
 - **User Registration & Authentication**: Secure login with JWT token-based sessions
+- **First-Time Login Flow**: Mandatory password change with strength validation
 - **Profile Management**: User profile updates and status management
+- **Default Password System**: Secure initial password setup (Password@123)
 - **Bulk Operations**: Mass user creation and management capabilities
 
 ### Academy Management
@@ -27,16 +40,20 @@ The platform enables administrators to manage multiple academies, create subscri
 - **Popular Plan Highlighting**: Featured plan designation
 
 ### Dashboard & Analytics
-- **Real-time KPIs**: User counts, academy statistics, plan metrics
+- **Real-time KPIs**: Dynamic user counts, academy statistics, plan metrics from database
 - **Visual Analytics**: Interactive charts and data visualization
 - **Performance Monitoring**: System health and usage statistics
+- **Dynamic Descriptions**: Contextual KPI descriptions (e.g., "3 active, 1 inactive")
 - **Export Capabilities**: Data export in multiple formats
 
 ### Security & Authentication
-- **JWT Token Authentication**: Secure API access control
+- **JWT Token Authentication**: Secure API access control with automatic expiration handling
 - **Protected Routes**: Role-based endpoint protection
 - **Session Management**: Automatic token refresh and validation
-- **Data Encryption**: Sensitive data protection
+- **First-Time Password Security**: Mandatory password change with strength requirements
+- **Password Policies**: Uppercase, lowercase, number, special character requirements
+- **Token Error Handling**: Automatic cleanup and redirect on authentication failures
+- **Data Encryption**: Sensitive data protection with bcrypt hashing
 
 ## Tech Stack
 
@@ -162,9 +179,10 @@ flowchart TD
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - User authentication
+- `POST /api/auth/login` - User authentication (returns isFirstLogin status)
 - `POST /api/auth/register` - User registration
 - `GET /api/auth/me` - Get current user profile
+- `POST /api/auth/change-first-password` - First-time password change (protected)
 
 ### Academies
 - `GET /api/academies` - List all academies
@@ -189,30 +207,47 @@ flowchart TD
 ### User Model
 - `email`: String (unique, required)
 - `password`: String (hashed, required)
+- `firstName`: String (required)
+- `lastName`: String (required)
+- `phoneNumber`: String
+- `countryCode`: String (default: '+91')
 - `role`: String (enum: 'admin', 'user')
-- `status`: String (enum: 'active', 'inactive')
+- `status`: String (enum: 'active', 'inactive', 'pending')
+- `isFirstLogin`: Boolean (default: true)
+- `lastLoginAt`: Date
+- `isProfileComplete`: Boolean (default: false)
 - `createdAt`: Date
 - `updatedAt`: Date
 
 ### Academy Model
 - `name`: String (required)
-- `description`: String
-- `status`: String (enum: 'active', 'inactive')
-- `maxStudents`: Number
-- `maxEducators`: Number
+- `address`: String (required)
+- `contactName`: String (required)
+- `contactNumber`: String (required)
+- `countryCode`: String (required)
+- `subdomain`: String (unique, required)
+- `fullDomain`: String (unique, required)
+- `logo`: String (required, URL)
+- `subscriptionPlan`: String (required)
+- `status`: String (enum: 'Active', 'Inactive', 'Onhold')
+- `students`: Number (default: 0)
+- `courses`: Number (default: 0)
+- `createdBy`: ObjectId (ref: User)
 - `createdAt`: Date
 - `updatedAt`: Date
 
 ### Plan Model
 - `name`: String (required)
-- `price`: Number (required)
-- `period`: String (enum: 'month', 'year')
-- `features`: Array of Strings
-- `maxAcademies`: Number
-- `maxStudentsPerAcademy`: Number
-- `maxEducatorsPerAcademy`: Number
-- `popular`: Boolean
-- `status`: String (enum: 'active', 'inactive')
+- `price`: String (required, e.g., "$29")
+- `period`: String (enum: 'month', 'year', 'quarter')
+- `features`: Array of Strings (required)
+- `limits`: String (required, e.g., "1 academy, 100 students")
+- `maxAcademies`: Number (required)
+- `maxStudentsPerAcademy`: Number (required)
+- `maxEducatorsPerAcademy`: Number (required)
+- `popular`: Boolean (default: false)
+- `status`: String (enum: 'Active', 'Inactive', 'Onhold')
+- `createdBy`: ObjectId (ref: User)
 - `createdAt`: Date
 - `updatedAt`: Date
 
@@ -233,4 +268,100 @@ flowchart TD
 - **Caching**: Client-side caching for frequently accessed data
 - **Bundle Optimization**: Minimized and compressed production builds
 
+## Quick Setup Guide
+
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB Atlas account or local MongoDB installation
+- Git
+
+### Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/Saas-LMS-Admin.git
+   cd Saas-LMS-Admin
+   ```
+
+2. **Backend Setup**
+   ```bash
+   cd server
+   npm install
+   cp env.example .env
+   # Edit .env file with your MongoDB URI and JWT secret
+   node seed.js          # Create admin user
+   node seedData.js      # Populate sample data
+   npm run dev           # Start backend server (port 5001)
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd ../client
+   npm install
+   npm start            # Start frontend server (port 3000)
+   ```
+
+4. **Access the Application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5001
+   - Default Admin: admin@multi-admin.com / Password@123
+
+### Environment Variables
+
+Create a `.env` file in the `server` directory:
+
+```env
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/saasLmsAdmin
+JWT_SECRET=your-super-secret-jwt-key
+NODE_ENV=development
+PORT=5001
+```
+
+### First-Time User Experience
+
+1. **Admin Creates User**: Default password is `Password@123`
+2. **User First Login**: Mandatory password change modal appears
+3. **Password Change**: Strong password required (8+ chars, mixed case, numbers, symbols)
+4. **System Access**: Full access granted after successful password change
+
+## Demo Credentials
+
+### Admin Account
+- **Email**: admin@multi-admin.com
+- **Password**: Password@123
+- **Role**: Administrator (full access)
+
+### Test User Account
+- **Email**: demouser@example.com
+- **Password**: DemoPassword@456 (after first-time password change)
+- **Role**: Administrator
+
+## Troubleshooting
+
+### Common Issues
+
+1. **"Not authorized, token failed"**
+   - Clear browser local storage
+   - Login again to get fresh token
+
+2. **"Network error. Please try again."**
+   - Ensure backend is running on port 5001
+   - Check CORS configuration
+
+3. **Database connection issues**
+   - Verify MongoDB URI in .env file
+   - Check IP whitelist in MongoDB Atlas
+   - Ensure database name matches URI
+
+4. **KPI Cards showing 0**
+   - Clear browser storage for fresh authentication
+   - Verify database has seeded data
+
+### Debug Steps
+
+1. Check backend logs for errors
+2. Verify database connection
+3. Test API endpoints with curl/Postman
+4. Clear browser cache and storage
+5. Restart both frontend and backend servers
 

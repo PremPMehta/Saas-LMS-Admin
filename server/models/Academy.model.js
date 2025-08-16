@@ -52,8 +52,7 @@ const academySchema = new mongoose.Schema({
   },
   subscriptionPlan: {
     type: String,
-    required: [true, 'Subscription plan is required'],
-    enum: ['Basic', 'Standard', 'Premium']
+    required: [true, 'Subscription plan is required']
   },
   status: {
     type: String,

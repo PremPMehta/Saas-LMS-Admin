@@ -65,19 +65,24 @@ const DashboardOverview = () => {
       if (!response.ok) {
         if (response.status === 401) {
           console.error('Authentication failed - token may be expired');
-          // Optionally redirect to login
+          // Clear invalid token and redirect to login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
           return;
         }
         throw new Error(`Failed to fetch academies: ${response.status}`);
       }
       
       const data = await response.json();
+      const academies = data.data || data;
+      
       setDashboardData(prev => ({
         ...prev,
-        academies: data.data || data,
+        academies: academies,
         kpis: {
           ...prev.kpis,
-          totalAcademies: (data.data || data).length,
+          totalAcademies: academies.length,
         },
       }));
     } catch (err) {
@@ -109,14 +114,17 @@ const DashboardOverview = () => {
       if (!response.ok) {
         if (response.status === 401) {
           console.error('Authentication failed - token may be expired');
-          setPlansError('Authentication failed. Please login again.');
+          // Clear invalid token and redirect to login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
           return;
         }
         throw new Error(`Failed to fetch plans: ${response.status}`);
       }
       
       const data = await response.json();
-      const plans = data.data || data;
+      const plans = data.data?.plans || data.plans || [];
       
       // Transform the plans data to match the expected format
       const transformedPlans = plans.map(plan => ({
@@ -320,44 +328,36 @@ const DashboardOverview = () => {
               <KPICard
                 title="Total Academies"
                 value={dashboardData.kpis.totalAcademies.toString()}
-                subtitle="6 active, 2 inactive"
+                description={`${dashboardData.academies.filter(a => a.status === 'Active').length} active, ${dashboardData.academies.filter(a => a.status === 'Inactive').length} inactive`}
                 icon={<SchoolIcon />}
                 color="#4CAF50"
-                trend="+12%"
-                trendDirection="up"
               />
             </Grid>
             <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Total Plans"
                 value={dashboardData.kpis.totalPlans.toString()}
-                subtitle="Including free and premium tiers"
+                description={`${dashboardData.plans.filter(p => p.popular).length} popular, ${dashboardData.plans.length - dashboardData.plans.filter(p => p.popular).length} standard`}
                 icon={<AssignmentIcon />}
                 color="#2196F3"
-                trend="+5%"
-                trendDirection="up"
               />
             </Grid>
             <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Total Users"
                 value={dashboardData.kpis.totalUsers.toString()}
-                subtitle="2 educators, 2 students"
+                description="2 educators, 2 students"
                 icon={<PeopleIcon />}
                 color="#FF9800"
-                trend="+18%"
-                trendDirection="up"
               />
             </Grid>
             <Grid size={{xs:12,sm:6, lg:3}}>
               <KPICard
                 title="Courses Offered"
                 value={dashboardData.kpis.coursesOffered}
-                subtitle="Across all active academies"
+                description="Across all active academies"
                 icon={<BookIcon />}
                 color="#9C27B0"
-                trend="+25%"
-                trendDirection="up"
               />
             </Grid>
           </Grid>

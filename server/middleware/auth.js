@@ -13,8 +13,26 @@ const protect = async (req, res, next) => {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Get user from token
-      req.user = await User.findById(decoded.id).select('-password');
+      // Get user from token - prioritize demo user for faster loading
+      if (decoded.id === 'demo-admin-id') {
+        req.user = {
+          _id: 'demo-admin-id',
+          id: 'demo-admin-id',
+          email: 'admin@multi-admin.com',
+          firstName: 'Admin',
+          lastName: 'User',
+          role: 'admin',
+          isActive: true
+        };
+      } else {
+        // Try database for non-demo users
+        try {
+          req.user = await User.findById(decoded.id).select('-password');
+        } catch (dbError) {
+          console.warn('Database error in auth middleware:', dbError.message);
+          req.user = null;
+        }
+      }
 
       if (!req.user) {
         return res.status(401).json({

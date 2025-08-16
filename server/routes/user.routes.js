@@ -6,9 +6,9 @@ const {
   getUserById,
   createUser,
   updateUser,
-  updateUserProfile,
   deleteUser,
-  getUserStats
+  getUserStats,
+  updateUserPassword
 } = require('../controllers/user.controller');
 
 // Protected routes (require authentication)
@@ -29,8 +29,8 @@ router.post('/', createUser);
 // Update user
 router.put('/:id', updateUser);
 
-// Update user profile (for profile page)
-router.patch('/:id/profile', updateUserProfile);
+// Update user password
+router.patch('/:id/password', updateUserPassword);
 
 // Delete user
 router.delete('/:id', deleteUser);

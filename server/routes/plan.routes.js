@@ -10,7 +10,7 @@ router.use(protect);
 router.get('/stats/summary', planController.getPlanStats);
 
 // Get all plans
-router.get('/', planController.getPlans);
+router.get('/', planController.getAllPlans);
 
 // Get single plan by ID
 router.get('/:id', planController.getPlanById);

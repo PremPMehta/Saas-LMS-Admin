@@ -58,13 +58,17 @@ const Plans = () => {
       if (!plansResponse.ok) {
         if (plansResponse.status === 401) {
           console.error('Authentication failed - token may be expired');
+          // Clear invalid token and redirect to login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
           return;
         }
         throw new Error(`Failed to fetch plans: ${plansResponse.status}`);
       }
       
       const plansData = await plansResponse.json();
-      const plans = plansData.data || plansData;
+      const plans = plansData.data?.plans || plansData.plans || [];
 
       // Fetch KPI statistics
       const statsResponse = await fetch('http://localhost:5001/api/plans/stats/summary', {

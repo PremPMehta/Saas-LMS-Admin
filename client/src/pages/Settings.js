@@ -75,6 +75,16 @@ const Settings = () => {
     systemUptime: 0,
     lastBackup: null,
     databaseSize: 0,
+    serverLoad: 0,
+    memoryUsage: 0,
+    diskUsage: 0,
+    networkTraffic: 0,
+    apiRequests: 0,
+    responseTime: 0,
+    errorRate: 0,
+    sessionsActive: 0,
+    loginAttempts: 0,
+    successfulLogins: 0,
   });
 
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -102,14 +112,13 @@ const Settings = () => {
       if (response.ok) {
         const data = await response.json();
         setSystemStats(data.data || {});
+        setLastUpdated(new Date());
       } else {
-        // For demo purposes, create mock system stats
-        createMockSystemStats();
+        console.error('Failed to fetch system stats');
+        setLastUpdated(new Date());
       }
-      setLastUpdated(new Date());
     } catch (error) {
       console.error('Error fetching system stats:', error);
-      createMockSystemStats();
       setLastUpdated(new Date());
     }
   }, []);
@@ -117,11 +126,12 @@ const Settings = () => {
   // Load session settings from backend
   const loadSessionSettings = useCallback(async () => {
     try {
-      if (!user?.token) return;
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
 
       const response = await fetch('http://localhost:5001/api/settings/session', {
         headers: {
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
       
@@ -136,20 +146,21 @@ const Settings = () => {
       console.error('Error loading session settings:', error);
       createMockSessionSettings();
     }
-  }, [user?.token, sessionSettings]);
+  }, []);
 
   // Fetch access logs
   const fetchAccessLogs = useCallback(async () => {
     setIsLoading(true);
     try {
-      if (!user?.token) {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
         console.error('No authentication token found');
         return;
       }
 
       const response = await fetch(`http://localhost:5001/api/settings/access-logs?page=${page + 1}&limit=${rowsPerPage}`, {
         headers: {
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
       
@@ -321,7 +332,8 @@ const Settings = () => {
   const handleSaveSettings = async () => {
     setIsSaving(true);
     try {
-      if (!user?.token) {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
         console.error('No authentication token found');
         return;
       }
@@ -330,7 +342,7 @@ const Settings = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(sessionSettings),
       });
@@ -373,6 +385,22 @@ const Settings = () => {
   const getStatusColor = (status) => {
     return status === 'success' ? 'success' : 'error';
   };
+
+  // Auto-refresh system stats - placed after all functions are defined
+  useEffect(() => {
+    fetchSystemStats();
+    loadSessionSettings();
+    fetchAccessLogs();
+
+    if (autoRefresh) {
+      const interval = setInterval(() => {
+        fetchSystemStats();
+        fetchAccessLogs();
+      }, 30000); // Refresh every 30 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [fetchSystemStats, loadSessionSettings, fetchAccessLogs, autoRefresh]);
 
   if (!user || user.role !== 'admin') {
     return null; // Will redirect in useEffect
@@ -550,6 +578,113 @@ const Settings = () => {
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Database Size
+                  </Typography>
+                </Card>
+              </Grid>
+            </Grid>
+
+            {/* Additional Real-time Metrics */}
+            <Grid container spacing={3} sx={{ mt: 2 }}>
+              {/* Server Load */}
+              <Grid size={{ xs:12 , sm:6, md:3}}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography 
+                    variant="h4" 
+                    color={systemStats.serverLoad > 70 ? "error.main" : systemStats.serverLoad > 50 ? "warning.main" : "success.main"} 
+                    fontWeight={700}
+                  >
+                    {systemStats.serverLoad}%
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Server Load
+                  </Typography>
+                </Card>
+              </Grid>
+
+              {/* Memory Usage */}
+              <Grid size={{ xs:12 , sm:6, md:3}}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography 
+                    variant="h4" 
+                    color={systemStats.memoryUsage > 80 ? "error.main" : systemStats.memoryUsage > 60 ? "warning.main" : "success.main"} 
+                    fontWeight={700}
+                  >
+                    {systemStats.memoryUsage}%
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Memory Usage
+                  </Typography>
+                </Card>
+              </Grid>
+
+              {/* API Requests */}
+              <Grid size={{ xs:12 , sm:6, md:3}}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography variant="h4" color="primary" fontWeight={700}>
+                    {systemStats.apiRequests}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    API Requests/min
+                  </Typography>
+                </Card>
+              </Grid>
+
+              {/* Active Sessions */}
+              <Grid size={{ xs:12 , sm:6, md:3}}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    background: (theme) => theme.palette.mode === 'light'
+                      ? 'rgba(255, 255, 255, 0.9)'
+                      : 'rgba(26, 26, 26, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    border: (theme) => `1px solid ${theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'}`,
+                    borderRadius: 3,
+                    textAlign: 'center',
+                    p: 2,
+                  }}
+                >
+                  <Typography variant="h4" color="success.main" fontWeight={700}>
+                    {systemStats.sessionsActive}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Active Sessions
                   </Typography>
                 </Card>
               </Grid>

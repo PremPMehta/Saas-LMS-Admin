@@ -58,6 +58,10 @@ const Academies = () => {
       if (!academiesResponse.ok) {
         if (academiesResponse.status === 401) {
           console.error('Authentication failed - token may be expired');
+          // Clear invalid token and redirect to login
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
           return;
         }
         throw new Error(`Failed to fetch academies: ${academiesResponse.status}`);

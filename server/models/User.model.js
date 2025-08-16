@@ -88,6 +88,10 @@ const userSchema = new mongoose.Schema({
   lastLoginAt: {
     type: Date,
     default: null
+  },
+  isFirstLogin: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

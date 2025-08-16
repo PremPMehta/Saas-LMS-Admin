@@ -24,9 +24,9 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Check for user
-    const user = await User.findOne({ email: email.toLowerCase() });
-
+    // Find user in database
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -34,49 +34,35 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // Check if user is active
-    if (!user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Account is deactivated. Please contact administrator.'
-      });
-    }
-
     // Check password
-    const isPasswordValid = await user.comparePassword(password);
-
-    if (!isPasswordValid) {
-      // Log failed login attempt
-      await AccessLog.create({
-        userId: user._id,
-        ipAddress: req.ip || req.connection.remoteAddress || 'Unknown',
-        location: 'Unknown', // Can be enhanced with IP geolocation service
-        userAgent: req.get('User-Agent') || 'Unknown',
-        status: 'failed',
-        failureReason: 'Invalid password'
-      });
-
+    const isPasswordMatch = await user.comparePassword(password);
+    
+    if (!isPasswordMatch) {
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
 
-    // Update last login
+    // Update last login time
     user.lastLoginAt = new Date();
     await user.save();
 
-    // Log successful login
-    await AccessLog.create({
-      userId: user._id,
-      ipAddress: req.ip || req.connection.remoteAddress || 'Unknown',
-      location: 'Unknown', // Can be enhanced with IP geolocation service
-      userAgent: req.get('User-Agent') || 'Unknown',
-      status: 'success'
-    });
-
     // Generate token
     const token = generateToken(user._id);
+    
+    // Log access
+    try {
+      await AccessLog.create({
+        userId: user._id,
+        action: 'login',
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+        timestamp: new Date()
+      });
+    } catch (logError) {
+      console.log('Access log error (non-critical):', logError.message);
+    }
 
     res.status(200).json({
       success: true,
@@ -93,6 +79,7 @@ const loginUser = async (req, res) => {
           profilePicture: user.profilePicture,
           isProfileComplete: user.isProfileComplete,
           role: user.role,
+          isFirstLogin: user.isFirstLogin,
           lastLoginAt: user.lastLoginAt
         },
         token
@@ -157,8 +144,76 @@ const logoutUser = async (req, res) => {
   }
 };
 
+// @desc    Change password for first-time login
+// @route   POST /api/auth/change-first-password
+// @access  Private
+const changeFirstPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+
+    // Validate input
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password and new password are required'
+      });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+    if (!isCurrentPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Validate new password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must contain at least 8 characters with uppercase, lowercase, number, and special character'
+      });
+    }
+
+    // Update password and mark as not first login
+    user.password = newPassword;
+    user.isFirstLogin = false;
+    user.lastLoginAt = new Date();
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
+      data: {
+        isFirstLogin: false,
+        lastLoginAt: user.lastLoginAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Change first password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
 module.exports = {
   loginUser,
   getCurrentUser,
-  logoutUser
+  logoutUser,
+  changeFirstPassword
 }; 

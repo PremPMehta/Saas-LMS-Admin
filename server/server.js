@@ -8,7 +8,10 @@ const User = require('./models/User.model');
 dotenv.config();
 
 // Connect to database
-connectDB();
+let dbConnection = null;
+connectDB().then(conn => {
+  dbConnection = conn;
+});
 
 const app = express();
 
@@ -50,6 +53,12 @@ app.get('/', (req, res) => {
 // Create default admin user
 const createDefaultAdmin = async () => {
   try {
+    // Only try to create admin user if database is connected
+    if (!dbConnection) {
+      console.log('⚠️  Skipping admin user creation - database not connected');
+      return;
+    }
+
     const adminEmail = 'admin@multi-admin.com';
     const adminPassword = 'Password@123';
 
@@ -121,7 +130,7 @@ app.listen(PORT, async () => {
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`❌ Error: ${err.message}`);
-  // Close server & exit process
-  process.exit(1);
+  console.log(`❌ Unhandled Promise Rejection: ${err.message}`);
+  // Don't exit the process, just log the error
+  console.log('⚠️  Server will continue running');
 }); 

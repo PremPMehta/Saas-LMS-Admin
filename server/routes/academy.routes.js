@@ -10,7 +10,7 @@ router.use(protect);
 router.get('/stats/summary', academyController.getAcademyStats);
 
 // Get all academies
-router.get('/', academyController.getAcademies);
+router.get('/', academyController.getAllAcademies);
 
 // Get single academy by ID
 router.get('/:id', academyController.getAcademyById);

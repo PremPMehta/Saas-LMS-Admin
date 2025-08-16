@@ -5,13 +5,8 @@ import {
   Box,
   Typography,
   Avatar,
-  Chip,
   Skeleton,
 } from '@mui/material';
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-} from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const KPICard = ({ 
@@ -20,8 +15,6 @@ const KPICard = ({
   description, 
   icon, 
   color = 'primary',
-  trend,
-  trendDirection = 'up',
   isLoading = false
 }) => {
   const { mode } = useTheme();
@@ -40,13 +33,7 @@ const KPICard = ({
 
   const colorValue = getColorValue(color);
   
-  const getTrendColor = (direction) => {
-    return direction === 'up' ? '#4CAF50' : '#F44336';
-  };
 
-  const getTrendIcon = (direction) => {
-    return direction === 'up' ? <TrendingUpIcon /> : <TrendingDownIcon />;
-  };
 
   if (isLoading) {
     return (
@@ -141,25 +128,6 @@ const KPICard = ({
               >
                 {value}
               </Typography>
-              {trend && (
-                <Chip
-                  icon={getTrendIcon(trendDirection)}
-                  label={trend}
-                  size="small"
-                  sx={{
-                    ml: 1.5,
-                    backgroundColor: getTrendColor(trendDirection),
-                    color: 'white',
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                    height: 24,
-                    '& .MuiChip-icon': {
-                      color: 'white',
-                      fontSize: '1rem',
-                    },
-                  }}
-                />
-              )}
             </Box>
             <Typography
               variant="h6"

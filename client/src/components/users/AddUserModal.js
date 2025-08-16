@@ -30,6 +30,8 @@ import {
 
 const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
   const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
     role: 'admin',
     status: 'active',
@@ -45,6 +47,8 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
   useEffect(() => {
     if (editingUser) {
       setFormData({
+        firstName: editingUser.firstName || '',
+        lastName: editingUser.lastName || '',
         email: editingUser.email || '',
         role: editingUser.role || 'admin',
         status: editingUser.status || 'active',
@@ -52,6 +56,8 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
     } else {
       // Reset form for new user
       setFormData({
+        firstName: '',
+        lastName: '',
         email: '',
         role: 'admin',
         status: 'active',
@@ -62,6 +68,16 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
 
   const validateForm = () => {
     const newErrors = {};
+
+    // First name validation
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    // Last name validation
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
+    }
 
     // Email validation
     if (!formData.email.trim()) {
@@ -95,6 +111,8 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
       setIsSubmitting(true);
       try {
         const userData = {
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
           email: formData.email.trim().toLowerCase(),
           role: formData.role,
           status: formData.status,
@@ -153,6 +171,8 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
 
   const handleClose = () => {
     setFormData({
+      firstName: '',
+      lastName: '',
       email: '',
       role: 'admin',
       status: 'active',
@@ -212,6 +232,17 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
           </Typography>
           
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {/* Name */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <PersonIcon sx={{ fontSize: 20, opacity: 0.8 }} />
+              <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                {formData.firstName || formData.lastName 
+                  ? `${formData.firstName} ${formData.lastName}`.trim()
+                  : 'John Doe'
+                }
+              </Typography>
+            </Box>
+
             {/* Email */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <EmailIcon sx={{ fontSize: 20, opacity: 0.8 }} />
@@ -430,6 +461,30 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
                   />
                 </Grid>
               </Grid>
+
+              {/* Default Password Note - Only show for new users */}
+              {!editingUser && (
+                <Alert 
+                  severity="info" 
+                  icon={<LockIcon />}
+                  sx={{ 
+                    mb: 4,
+                    borderRadius: 2,
+                    '& .MuiAlert-icon': {
+                      color: 'primary.main'
+                    }
+                  }}
+                >
+                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 0.5 }}>
+                    Default Password Information
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    The user will be created with the default password: <strong>Password@123</strong>
+                    <br />
+                    They will be prompted to change this password on their first login.
+                  </Typography>
+                </Alert>
+              )}
 
               {/* Access Control Section */}
               <Typography variant="h6" sx={{ 
