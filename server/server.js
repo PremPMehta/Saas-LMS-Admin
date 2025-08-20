@@ -46,7 +46,9 @@ app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Welcome to BBR Tek Admin API',
-    version: '1.0.0'
+    version: '1.0.1',
+    cors: 'ALL_ORIGINS_ALLOWED',
+    timestamp: new Date().toISOString()
   });
 });
 
