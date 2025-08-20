@@ -201,12 +201,24 @@ const Discovery = () => {
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
             or{' '}
-            <Typography 
-              component="span" 
-              sx={{ color: '#4285f4', cursor: 'pointer', textDecoration: 'underline' }}
+            <Button
+              variant="text"
+              sx={{ 
+                color: '#4285f4',
+                textTransform: 'none',
+                fontSize: '1.25rem',
+                fontWeight: 400,
+                p: 0,
+                minWidth: 'auto',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  color: '#1976d2',
+                  textDecoration: 'underline'
+                }
+              }}
             >
               create your own
-            </Typography>
+            </Button>
           </Typography>
 
           {/* Search Bar */}
