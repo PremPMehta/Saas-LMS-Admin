@@ -6,7 +6,6 @@ import {
   TextField,
   InputAdornment,
   Chip,
-  Grid,
   Card,
   CardMedia,
   CardContent,
@@ -262,10 +261,23 @@ const Discovery = () => {
           </Box>
         </Box>
 
-        {/* Communities Grid */}
-        <Grid container spacing={3} sx={{ maxWidth: '1200px', mx: 'auto' }}>
+        {/* Communities Grid - Force 3 cards per row */}
+        <Box 
+          sx={{ 
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(3, 1fr)',
+              md: 'repeat(3, 1fr)',
+              lg: 'repeat(3, 1fr)',
+              xl: 'repeat(3, 1fr)'
+            },
+            gap: 3,
+            maxWidth: '1400px',
+            mx: 'auto'
+          }}
+        >
           {filteredCommunities.map((community, index) => (
-            <Grid item xs={12} sm={6} lg={4} key={community.id}>
               <Card 
                 sx={{ 
                   height: '100%',
@@ -355,9 +367,8 @@ const Discovery = () => {
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
           ))}
-        </Grid>
+        </Box>
 
         {/* No Results */}
         {filteredCommunities.length === 0 && (
