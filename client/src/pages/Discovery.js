@@ -153,7 +153,7 @@ const Discovery = () => {
     <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e9ecef', py: 2 }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography 
               variant="h4" 
@@ -188,7 +188,7 @@ const Discovery = () => {
       </Box>
 
       {/* Hero Section */}
-      <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography 
             variant="h2" 
@@ -263,9 +263,9 @@ const Discovery = () => {
         </Box>
 
         {/* Communities Grid */}
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ maxWidth: '1200px', mx: 'auto' }}>
           {filteredCommunities.map((community, index) => (
-            <Grid item xs={12} sm={6} md={4} key={community.id}>
+            <Grid item xs={12} sm={6} lg={4} key={community.id}>
               <Card 
                 sx={{ 
                   height: '100%',
