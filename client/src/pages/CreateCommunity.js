@@ -22,32 +22,68 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  Badge
+  Stack
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
   ArrowForward as ArrowForwardIcon,
-  School as SchoolIcon,
+  Business as BusinessIcon,
   People as PeopleIcon,
   Category as CategoryIcon,
-  Settings as SettingsIcon,
+  Payment as PaymentIcon,
   Check as CheckIcon,
-  Visibility as VisibilityIcon,
-  Lock as LockIcon,
-  Public as PublicIcon,
-  Star as StarIcon,
-  CheckCircle as CheckCircleIcon
+  CheckCircle as CheckCircleIcon,
+  TrendingUp as TrendingUpIcon,
+  Security as SecurityIcon,
+  Support as SupportIcon,
+  Analytics as AnalyticsIcon
 } from '@mui/icons-material';
 
-const steps = ['Community Details', 'Category & Audience', 'Choose Your Plan', 'Review & Launch'];
+const steps = ['Basic Information', 'Category Selection', 'Subscription Plan', 'Final Review'];
 
 const categories = [
-  { id: 'tech', label: '💻 Technology', description: 'Programming, AI, Web Development', color: '#2196f3' },
-  { id: 'business', label: '💼 Business', description: 'Entrepreneurship, Marketing, Sales', color: '#4caf50' },
-  { id: 'creative', label: '🎨 Creative', description: 'Design, Art, Photography', color: '#ff9800' },
-  { id: 'health', label: '🏃 Health & Fitness', description: 'Wellness, Nutrition, Exercise', color: '#f44336' },
-  { id: 'education', label: '📚 Education', description: 'Teaching, Learning, Academia', color: '#9c27b0' },
-  { id: 'lifestyle', label: '🌟 Lifestyle', description: 'Personal Development, Hobbies', color: '#607d8b' }
+  { 
+    id: 'tech', 
+    label: 'Technology', 
+    description: 'Software Development, AI, Data Science, Cybersecurity',
+    icon: '⚡',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+  },
+  { 
+    id: 'business', 
+    label: 'Business & Finance', 
+    description: 'Entrepreneurship, Investment, Management, Strategy',
+    icon: '💼',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+  },
+  { 
+    id: 'education', 
+    label: 'Education & Training', 
+    description: 'Professional Development, Certification, Skills Training',
+    icon: '🎓',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+  },
+  { 
+    id: 'healthcare', 
+    label: 'Healthcare & Wellness', 
+    description: 'Medical Training, Health Sciences, Wellness Programs',
+    icon: '⚕️',
+    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+  },
+  { 
+    id: 'creative', 
+    label: 'Creative Industries', 
+    description: 'Design, Media, Marketing, Content Creation',
+    icon: '🎨',
+    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+  },
+  { 
+    id: 'consulting', 
+    label: 'Professional Services', 
+    description: 'Consulting, Legal, Accounting, Advisory Services',
+    icon: '🏛️',
+    gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+  }
 ];
 
 const CreateCommunity = () => {
@@ -56,7 +92,7 @@ const CreateCommunity = () => {
     name: '',
     description: '',
     category: '',
-    audience: '',
+    targetAudience: '',
     selectedPlan: '',
     welcomeMessage: ''
   });
@@ -81,12 +117,62 @@ const CreateCommunity = () => {
         setError('');
       } catch (err) {
         console.error('Error fetching plans:', err);
-        setError('Failed to load subscription plans');
-        // Fallback to static plans
+        setError('Unable to load subscription plans');
+        // Professional fallback plans
         setSubscriptionPlans([
-          { _id: 'basic', name: 'Basic', price: '$19', features: ['Up to 100 members', 'Basic community features', 'Email support'], popular: false, limits: '1 academy, 100 students' },
-          { _id: 'pro', name: 'Pro', price: '$49', features: ['Up to 1000 members', 'Advanced features', 'Priority support', 'Analytics'], popular: true, limits: '5 academies, 1000 students' },
-          { _id: 'enterprise', name: 'Enterprise', price: '$99', features: ['Unlimited members', 'All premium features', '24/7 support', 'Custom branding'], popular: false, limits: 'Unlimited academies and students' }
+          { 
+            _id: 'starter', 
+            name: 'Starter', 
+            price: '$29', 
+            features: [
+              'Up to 500 members',
+              'Basic community features', 
+              'Email support',
+              'Mobile app access',
+              'Basic analytics'
+            ], 
+            popular: false, 
+            limits: 'Perfect for small communities',
+            maxAcademies: 1,
+            maxStudentsPerAcademy: 500
+          },
+          { 
+            _id: 'professional', 
+            name: 'Professional', 
+            price: '$79', 
+            features: [
+              'Up to 5,000 members',
+              'Advanced community features', 
+              'Priority support',
+              'Custom branding',
+              'Advanced analytics',
+              'API access',
+              'Integrations'
+            ], 
+            popular: true, 
+            limits: 'Most popular for growing businesses',
+            maxAcademies: 5,
+            maxStudentsPerAcademy: 5000
+          },
+          { 
+            _id: 'enterprise', 
+            name: 'Enterprise', 
+            price: '$199', 
+            features: [
+              'Unlimited members',
+              'Enterprise features', 
+              '24/7 dedicated support',
+              'White-label solution',
+              'Custom integrations',
+              'Advanced security',
+              'Compliance tools',
+              'Success manager'
+            ], 
+            popular: false, 
+            limits: 'For large organizations',
+            maxAcademies: 999,
+            maxStudentsPerAcademy: 999999
+          }
         ]);
       } finally {
         setLoading(false);
@@ -115,322 +201,312 @@ const CreateCommunity = () => {
     switch (step) {
       case 0:
         return (
-          <Container maxWidth="md">
-            <Paper elevation={0} sx={{ p: 6, borderRadius: 4, border: '1px solid #f0f0f0' }}>
-              <Box sx={{ textAlign: 'center', mb: 5 }}>
-                <Avatar sx={{ bgcolor: '#667eea', width: 80, height: 80, mx: 'auto', mb: 3 }}>
-                  <SchoolIcon sx={{ fontSize: 40 }} />
-                </Avatar>
-                <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, color: '#1a1a1a' }}>
-                  Create Your Community
-                </Typography>
-                <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 500, mx: 'auto' }}>
-                  Give your community a compelling name and description that attracts the right members
-                </Typography>
-              </Box>
+          <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+            <Box sx={{ mb: 6 }}>
+              <Typography variant="h3" sx={{ fontWeight: 600, mb: 2, color: '#1a1a1a', textAlign: 'center' }}>
+                Create Your Professional Community
+              </Typography>
+              <Typography variant="h6" color="text.secondary" sx={{ textAlign: 'center', maxWidth: 600, mx: 'auto' }}>
+                Build a thriving professional network with our enterprise-grade community platform
+              </Typography>
+            </Box>
 
+            <Paper elevation={0} sx={{ p: 6, border: '1px solid #e0e0e0', borderRadius: 2 }}>
               <Grid container spacing={4}>
                 <Grid item xs={12}>
-                  <Typography variant="h5" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
-                    Community Name *
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
+                    Community Name
                   </Typography>
                   <TextField
                     fullWidth
-                    placeholder="e.g., React Developers Hub, Digital Marketing Masters"
+                    placeholder="Enter your community name"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
+                    variant="outlined"
                     sx={{
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: 3,
-                        fontSize: '1.2rem',
-                        py: 1
+                        borderRadius: 1,
+                        backgroundColor: '#fafafa',
+                        '&:hover': {
+                          backgroundColor: '#f5f5f5'
+                        }
                       }
                     }}
                   />
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h5" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
-                    Description *
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
+                    Community Description
                   </Typography>
                   <TextField
                     fullWidth
                     multiline
-                    rows={5}
-                    placeholder="Describe what your community is about, what members will learn, and what makes it special. Be specific about the value you'll provide..."
+                    rows={4}
+                    placeholder="Describe your community's purpose, goals, and what members can expect"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
+                    variant="outlined"
                     sx={{
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: 3,
-                        fontSize: '1.1rem'
+                        borderRadius: 1,
+                        backgroundColor: '#fafafa',
+                        '&:hover': {
+                          backgroundColor: '#f5f5f5'
+                        }
                       }
                     }}
                   />
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                    <Typography variant="caption" color="text.secondary">
-                      A good description helps potential members understand your community's value
-                    </Typography>
-                    <Typography variant="caption" color={formData.description.length > 400 ? 'error' : 'text.secondary'}>
-                      {formData.description.length}/500
-                    </Typography>
-                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                    {formData.description.length}/1000 characters
+                  </Typography>
                 </Grid>
               </Grid>
             </Paper>
-          </Container>
+          </Box>
         );
 
       case 1:
         return (
-          <Container maxWidth="lg">
-            <Paper elevation={0} sx={{ p: 6, borderRadius: 4, border: '1px solid #f0f0f0' }}>
-              <Box sx={{ textAlign: 'center', mb: 5 }}>
-                <Avatar sx={{ bgcolor: '#667eea', width: 80, height: 80, mx: 'auto', mb: 3 }}>
-                  <CategoryIcon sx={{ fontSize: 40 }} />
-                </Avatar>
-                <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, color: '#1a1a1a' }}>
-                  Choose Category & Audience
-                </Typography>
-                <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
-                  Select the category that best fits your community and define your target audience
-                </Typography>
-              </Box>
+          <Box sx={{ maxWidth: 1000, mx: 'auto' }}>
+            <Box sx={{ mb: 6, textAlign: 'center' }}>
+              <Typography variant="h3" sx={{ fontWeight: 600, mb: 2, color: '#1a1a1a' }}>
+                Select Your Industry
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Choose the category that best represents your community focus
+              </Typography>
+            </Box>
 
-              <Box sx={{ mb: 5 }}>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, color: '#333', textAlign: 'center' }}>
-                  Select Category
-                </Typography>
-                <Grid container spacing={3}>
-                  {categories.map((category) => (
-                    <Grid item xs={12} md={6} lg={4} key={category.id}>
-                      <Card
-                        sx={{
-                          cursor: 'pointer',
-                          border: formData.category === category.id ? `3px solid ${category.color}` : '2px solid #f0f0f0',
-                          borderRadius: 4,
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            transform: 'translateY(-8px)',
-                            boxShadow: '0 12px 40px rgba(0,0,0,0.1)',
-                            borderColor: category.color
-                          },
-                          position: 'relative',
-                          overflow: 'visible'
-                        }}
-                        onClick={() => handleInputChange('category', category.id)}
-                      >
-                        {formData.category === category.id && (
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              top: -10,
-                              right: -10,
-                              bgcolor: category.color,
-                              borderRadius: '50%',
-                              width: 40,
-                              height: 40,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              boxShadow: 3
-                            }}
-                          >
-                            <CheckIcon sx={{ color: 'white', fontSize: 20 }} />
-                          </Box>
-                        )}
-                        <CardContent sx={{ p: 4, textAlign: 'center' }}>
-                          <Typography variant="h4" sx={{ mb: 2 }}>
+            <Grid container spacing={3}>
+              {categories.map((category) => (
+                <Grid item xs={12} md={6} key={category.id}>
+                  <Card
+                    sx={{
+                      cursor: 'pointer',
+                      border: formData.category === category.id ? '2px solid #1976d2' : '1px solid #e0e0e0',
+                      borderRadius: 2,
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+                        borderColor: '#1976d2'
+                      },
+                      height: '100%',
+                      position: 'relative'
+                    }}
+                    onClick={() => handleInputChange('category', category.id)}
+                  >
+                    <CardContent sx={{ p: 4, height: '100%' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 3 }}>
+                        <Box
+                          sx={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 2,
+                            background: category.gradient,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '24px',
+                            flexShrink: 0
+                          }}
+                        >
+                          {category.icon}
+                        </Box>
+                        <Box sx={{ flexGrow: 1 }}>
+                          <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#333' }}>
                             {category.label}
                           </Typography>
-                          <Typography variant="body1" color="text.secondary">
+                          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
                             {category.description}
                           </Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                        </Box>
+                        {formData.category === category.id && (
+                          <CheckCircleIcon sx={{ color: '#1976d2', fontSize: 28 }} />
+                        )}
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
-              </Box>
+              ))}
+            </Grid>
 
-              <Box>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, color: '#333', textAlign: 'center' }}>
+            <Box sx={{ mt: 6 }}>
+              <Paper elevation={0} sx={{ p: 4, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
                   Target Audience
                 </Typography>
                 <TextField
                   fullWidth
-                  placeholder="e.g., Beginner developers, Marketing professionals, Creative entrepreneurs..."
-                  value={formData.audience}
-                  onChange={(e) => handleInputChange('audience', e.target.value)}
+                  placeholder="Describe your ideal community members (e.g., Senior developers, C-level executives, Healthcare professionals)"
+                  value={formData.targetAudience}
+                  onChange={(e) => handleInputChange('targetAudience', e.target.value)}
+                  variant="outlined"
                   sx={{
-                    maxWidth: 600,
-                    mx: 'auto',
-                    display: 'block',
                     '& .MuiOutlinedInput-root': {
-                      borderRadius: 3,
-                      fontSize: '1.1rem',
-                      py: 1.5
+                      borderRadius: 1,
+                      backgroundColor: '#fafafa'
                     }
                   }}
                 />
-              </Box>
-            </Paper>
-          </Container>
+              </Paper>
+            </Box>
+          </Box>
         );
 
       case 2:
         return (
-          <Container maxWidth="lg">
-            <Paper elevation={0} sx={{ p: 6, borderRadius: 4, border: '1px solid #f0f0f0' }}>
-              <Box sx={{ textAlign: 'center', mb: 5 }}>
-                <Avatar sx={{ bgcolor: '#667eea', width: 80, height: 80, mx: 'auto', mb: 3 }}>
-                  <SettingsIcon sx={{ fontSize: 40 }} />
-                </Avatar>
-                <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, color: '#1a1a1a' }}>
-                  Choose Your Plan
-                </Typography>
-                <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
-                  Select the subscription plan that best fits your community's needs
-                </Typography>
+          <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+            <Box sx={{ mb: 6, textAlign: 'center' }}>
+              <Typography variant="h3" sx={{ fontWeight: 600, mb: 2, color: '#1a1a1a' }}>
+                Choose Your Subscription Plan
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Select the plan that best fits your community's scale and requirements
+              </Typography>
+            </Box>
+
+            {error && (
+              <Alert severity="info" sx={{ mb: 4, borderRadius: 1 }}>
+                {error}. Showing standard pricing options.
+              </Alert>
+            )}
+
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+                <CircularProgress size={50} />
               </Box>
-
-              {error && (
-                <Alert severity="warning" sx={{ mb: 4, borderRadius: 2 }}>
-                  {error} - Using fallback plans
-                </Alert>
-              )}
-
-              {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-                  <CircularProgress size={60} />
-                </Box>
-              ) : (
-                <Grid container spacing={4} sx={{ justifyContent: 'center' }}>
-                  {subscriptionPlans.map((plan) => (
-                    <Grid item xs={12} md={6} lg={4} key={plan._id}>
-                      <Badge
-                        badgeContent={plan.popular ? "POPULAR" : ""}
-                        color="error"
-                        sx={{
-                          width: '100%',
-                          '& .MuiBadge-badge': {
-                            top: 20,
-                            right: 20,
-                            fontSize: '0.7rem',
-                            fontWeight: 700
-                          }
-                        }}
-                      >
-                        <Card
+            ) : (
+              <Grid container spacing={4}>
+                {subscriptionPlans.map((plan) => (
+                  <Grid item xs={12} md={4} key={plan._id}>
+                    <Card
+                      sx={{
+                        cursor: 'pointer',
+                        border: formData.selectedPlan === plan._id ? '2px solid #1976d2' : '1px solid #e0e0e0',
+                        borderRadius: 2,
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          transform: 'translateY(-8px)',
+                          boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+                          borderColor: '#1976d2'
+                        },
+                        position: 'relative',
+                        height: '100%',
+                        ...(plan.popular && {
+                          borderColor: '#1976d2',
+                          boxShadow: '0 8px 30px rgba(25, 118, 210, 0.2)'
+                        })
+                      }}
+                      onClick={() => handleInputChange('selectedPlan', plan._id)}
+                    >
+                      {plan.popular && (
+                        <Box
                           sx={{
-                            cursor: 'pointer',
-                            border: formData.selectedPlan === plan._id ? '3px solid #667eea' : '2px solid #f0f0f0',
-                            borderRadius: 4,
-                            transition: 'all 0.3s ease',
-                            '&:hover': {
-                              transform: 'translateY(-8px)',
-                              boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-                              borderColor: '#667eea'
-                            },
-                            position: 'relative',
-                            height: '100%',
-                            ...(plan.popular && {
-                              transform: 'scale(1.05)',
-                              boxShadow: '0 15px 50px rgba(102, 126, 234, 0.3)'
-                            })
+                            position: 'absolute',
+                            top: -1,
+                            left: -1,
+                            right: -1,
+                            height: 4,
+                            background: 'linear-gradient(90deg, #1976d2, #42a5f5)',
+                            borderRadius: '2px 2px 0 0'
                           }}
-                          onClick={() => handleInputChange('selectedPlan', plan._id)}
-                        >
-                          <CardContent sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <Box sx={{ textAlign: 'center', mb: 3 }}>
-                              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#333' }}>
-                                {plan.name}
-                              </Typography>
-                              <Typography variant="h2" sx={{ fontWeight: 800, color: '#667eea', mb: 1 }}>
-                                {plan.price}
-                              </Typography>
-                              <Typography variant="body1" color="text.secondary">
-                                per month
-                              </Typography>
-                              {plan.limits && (
-                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontStyle: 'italic' }}>
-                                  {plan.limits}
-                                </Typography>
-                              )}
-                            </Box>
+                        />
+                      )}
+                      
+                      <CardContent sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                        {plan.popular && (
+                          <Chip 
+                            label="MOST POPULAR" 
+                            size="small" 
+                            sx={{ 
+                              mb: 2, 
+                              bgcolor: '#1976d2', 
+                              color: 'white',
+                              fontWeight: 600,
+                              alignSelf: 'flex-start'
+                            }} 
+                          />
+                        )}
 
-                            <Divider sx={{ mb: 3 }} />
+                        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#333' }}>
+                          {plan.name}
+                        </Typography>
+                        
+                        <Box sx={{ mb: 3 }}>
+                          <Typography variant="h3" sx={{ fontWeight: 700, color: '#1976d2' }}>
+                            {plan.price}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            per month, billed annually
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontStyle: 'italic' }}>
+                            {plan.limits}
+                          </Typography>
+                        </Box>
 
-                            <Box sx={{ flexGrow: 1 }}>
-                              <List dense>
-                                {(plan.features || []).map((feature, index) => (
-                                  <ListItem key={index} sx={{ px: 0 }}>
-                                    <ListItemIcon sx={{ minWidth: 30 }}>
-                                      <CheckCircleIcon sx={{ color: '#4caf50', fontSize: 20 }} />
-                                    </ListItemIcon>
-                                    <ListItemText 
-                                      primary={feature}
-                                      primaryTypographyProps={{
-                                        fontSize: '0.95rem',
-                                        color: '#555'
-                                      }}
-                                    />
-                                  </ListItem>
-                                ))}
-                              </List>
-                            </Box>
+                        <Divider sx={{ mb: 3 }} />
 
-                            {formData.selectedPlan === plan._id && (
-                              <Box
-                                sx={{
-                                  position: 'absolute',
-                                  top: -10,
-                                  right: -10,
-                                  bgcolor: '#667eea',
-                                  borderRadius: '50%',
-                                  width: 40,
-                                  height: 40,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  boxShadow: 3
-                                }}
-                              >
-                                <CheckIcon sx={{ color: 'white', fontSize: 20 }} />
-                              </Box>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </Badge>
-                    </Grid>
-                  ))}
-                </Grid>
-              )}
+                        <Box sx={{ flexGrow: 1 }}>
+                          <List dense sx={{ p: 0 }}>
+                            {(plan.features || []).map((feature, index) => (
+                              <ListItem key={index} sx={{ px: 0, py: 0.5 }}>
+                                <ListItemIcon sx={{ minWidth: 28 }}>
+                                  <CheckIcon sx={{ color: '#4caf50', fontSize: 18 }} />
+                                </ListItemIcon>
+                                <ListItemText 
+                                  primary={feature}
+                                  primaryTypographyProps={{
+                                    fontSize: '0.9rem',
+                                    color: '#555'
+                                  }}
+                                />
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Box>
 
-              <Box sx={{ mt: 5 }}>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, color: '#333', textAlign: 'center' }}>
+                        {formData.selectedPlan === plan._id && (
+                          <Box sx={{ mt: 3, textAlign: 'center' }}>
+                            <Chip 
+                              icon={<CheckIcon />}
+                              label="Selected" 
+                              color="primary" 
+                              sx={{ fontWeight: 600 }}
+                            />
+                          </Box>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
+
+            <Box sx={{ mt: 6 }}>
+              <Paper elevation={0} sx={{ p: 4, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
                   Welcome Message (Optional)
                 </Typography>
                 <TextField
                   fullWidth
                   multiline
-                  rows={4}
-                  placeholder="Write a welcoming message for new members joining your community..."
+                  rows={3}
+                  placeholder="Create a professional welcome message for new community members"
                   value={formData.welcomeMessage}
                   onChange={(e) => handleInputChange('welcomeMessage', e.target.value)}
+                  variant="outlined"
                   sx={{
-                    maxWidth: 700,
-                    mx: 'auto',
-                    display: 'block',
                     '& .MuiOutlinedInput-root': {
-                      borderRadius: 3,
-                      fontSize: '1.1rem'
+                      borderRadius: 1,
+                      backgroundColor: '#fafafa'
                     }
                   }}
                 />
-              </Box>
-            </Paper>
-          </Container>
+              </Paper>
+            </Box>
+          </Box>
         );
 
       case 3:
@@ -438,93 +514,107 @@ const CreateCommunity = () => {
         const selectedCategory = categories.find(c => c.id === formData.category);
         
         return (
-          <Container maxWidth="md">
-            <Paper elevation={0} sx={{ p: 6, borderRadius: 4, border: '1px solid #f0f0f0' }}>
-              <Box sx={{ textAlign: 'center', mb: 5 }}>
-                <Avatar sx={{ bgcolor: '#4caf50', width: 80, height: 80, mx: 'auto', mb: 3 }}>
-                  <CheckIcon sx={{ fontSize: 40 }} />
-                </Avatar>
-                <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, color: '#1a1a1a' }}>
-                  Review & Launch
-                </Typography>
-                <Typography variant="h6" color="text.secondary">
-                  Everything looks perfect! Ready to launch your community?
-                </Typography>
-              </Box>
+          <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+            <Box sx={{ mb: 6, textAlign: 'center' }}>
+              <Typography variant="h3" sx={{ fontWeight: 600, mb: 2, color: '#1a1a1a' }}>
+                Review Your Configuration
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Please review your community settings before launching
+              </Typography>
+            </Box>
 
-              <Card sx={{ mb: 4, borderRadius: 4, border: '2px solid #f0f0f0', overflow: 'hidden' }}>
-                <Box sx={{ bgcolor: selectedCategory?.color || '#667eea', p: 3, color: 'white' }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 60, height: 60 }}>
-                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                        {formData.name.charAt(0).toUpperCase()}
-                      </Typography>
-                    </Avatar>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                        {formData.name || 'Your Community Name'}
-                      </Typography>
-                      <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                        {selectedCategory?.label || 'Category'}
-                      </Typography>
-                    </Box>
+            <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2, overflow: 'hidden' }}>
+              <Box sx={{ bgcolor: '#f8f9fa', p: 4, borderBottom: '1px solid #e0e0e0' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <Avatar 
+                    sx={{ 
+                      width: 80, 
+                      height: 80, 
+                      bgcolor: '#1976d2',
+                      fontSize: '2rem',
+                      fontWeight: 600
+                    }}
+                  >
+                    {formData.name.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 600, mb: 1, color: '#1a1a1a' }}>
+                      {formData.name || 'Your Community Name'}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      {selectedCategory?.label || 'Category not selected'}
+                    </Typography>
                   </Box>
                 </Box>
-                
-                <CardContent sx={{ p: 4 }}>
-                  <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.7, color: '#555' }}>
-                    {formData.description || 'Your community description will appear here...'}
-                  </Typography>
+              </Box>
+              
+              <Box sx={{ p: 4 }}>
+                <Typography variant="body1" sx={{ mb: 4, lineHeight: 1.7, color: '#555' }}>
+                  {formData.description || 'No description provided'}
+                </Typography>
 
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <Box sx={{ p: 3, bgcolor: '#f8f9fa', borderRadius: 2 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#333' }}>
-                          Target Audience
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {formData.audience || 'Not specified'}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Box sx={{ p: 3, bgcolor: '#f8f9fa', borderRadius: 2 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: '#333' }}>
-                          Subscription Plan
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {selectedPlan?.name} - {selectedPlan?.price}/month
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  </Grid>
-
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3, pt: 3, borderTop: '1px solid #f0f0f0' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PeopleIcon sx={{ fontSize: 20, color: '#666' }} />
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={6}>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                        Target Audience
+                      </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        0 Members (Ready to grow!)
+                        {formData.targetAudience || 'Not specified'}
                       </Typography>
                     </Box>
-                    <Chip 
-                      label="Ready to Launch"
-                      color="success"
-                      sx={{ fontWeight: 600 }}
-                    />
-                  </Box>
-                </CardContent>
-              </Card>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Box>
+                      <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                        Subscription Plan
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {selectedPlan?.name} - {selectedPlan?.price}/month
+                      </Typography>
+                    </Box>
+                  </Grid>
 
-              <Box sx={{ bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', p: 4, borderRadius: 3, textAlign: 'center', color: 'white' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  🎉 Your community will be live immediately!
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  You can always modify settings and add content after launch
-                </Typography>
+                  {formData.welcomeMessage && (
+                    <Grid item xs={12}>
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
+                          Welcome Message
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {formData.welcomeMessage}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  )}
+                </Grid>
+
+                <Divider sx={{ my: 4 }} />
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <PeopleIcon sx={{ fontSize: 20, color: '#666' }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Ready for members
+                    </Typography>
+                  </Box>
+                  <Chip 
+                    label="Ready to Launch"
+                    color="success"
+                    sx={{ fontWeight: 600 }}
+                  />
+                </Box>
               </Box>
             </Paper>
-          </Container>
+
+            <Paper elevation={0} sx={{ mt: 4, p: 4, bgcolor: '#f8f9fa', border: '1px solid #e0e0e0', borderRadius: 2 }}>
+              <Typography variant="body1" sx={{ fontWeight: 500, textAlign: 'center', color: '#555' }}>
+                Your community will be created and ready for members immediately after launch.
+              </Typography>
+            </Paper>
+          </Box>
         );
 
       default:
@@ -537,7 +627,7 @@ const CreateCommunity = () => {
       case 0:
         return formData.name.trim() && formData.description.trim();
       case 1:
-        return formData.category && formData.audience.trim();
+        return formData.category && formData.targetAudience.trim();
       case 2:
         return formData.selectedPlan;
       default:
@@ -546,23 +636,21 @@ const CreateCommunity = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#fafbfc', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: '#ffffff', minHeight: '100vh' }}>
       {/* Header */}
-      <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e9ecef', py: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+      <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e0e0e0', py: 3 }}>
         <Container maxWidth="xl">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <SchoolIcon sx={{ fontSize: 36, color: '#667eea' }} />
+              <BusinessIcon sx={{ fontSize: 32, color: '#1976d2' }} />
               <Typography 
-                variant="h4" 
+                variant="h5" 
                 sx={{ 
-                  fontWeight: 800,
-                  background: 'linear-gradient(45deg, #667eea, #764ba2)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
+                  fontWeight: 700,
+                  color: '#1a1a1a'
                 }}
               >
-                skool
+                Community Platform
               </Typography>
             </Box>
             <Button 
@@ -571,14 +659,14 @@ const CreateCommunity = () => {
               href="/"
               sx={{ 
                 textTransform: 'none',
-                borderRadius: '30px',
-                px: 4,
-                py: 1.5,
-                borderColor: '#667eea',
-                color: '#667eea',
+                borderRadius: 1,
+                px: 3,
+                py: 1,
+                borderColor: '#e0e0e0',
+                color: '#666',
                 '&:hover': {
-                  bgcolor: '#667eea',
-                  color: 'white'
+                  borderColor: '#1976d2',
+                  color: '#1976d2'
                 }
               }}
             >
@@ -590,23 +678,26 @@ const CreateCommunity = () => {
 
       <Container maxWidth="xl" sx={{ py: 6 }}>
         {/* Progress Stepper */}
-        <Box sx={{ mb: 6 }}>
+        <Box sx={{ mb: 8 }}>
           <Stepper 
             activeStep={activeStep} 
             alternativeLabel
             sx={{
               '& .MuiStepLabel-root .Mui-completed': {
-                color: '#4caf50'
+                color: '#1976d2'
               },
               '& .MuiStepLabel-root .Mui-active': {
-                color: '#667eea'
+                color: '#1976d2'
+              },
+              '& .MuiStepConnector-line': {
+                borderColor: '#e0e0e0'
               }
             }}
           >
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>
-                  <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                  <Typography variant="body1" sx={{ fontWeight: 500, color: '#666' }}>
                     {label}
                   </Typography>
                 </StepLabel>
@@ -618,18 +709,18 @@ const CreateCommunity = () => {
             value={(activeStep / (steps.length - 1)) * 100} 
             sx={{ 
               mt: 3, 
-              height: 8, 
-              borderRadius: 4,
+              height: 4, 
+              borderRadius: 2,
               bgcolor: '#f0f0f0',
               '& .MuiLinearProgress-bar': {
-                bgcolor: '#667eea'
+                bgcolor: '#1976d2'
               }
             }}
           />
         </Box>
 
         {/* Step Content */}
-        <Box sx={{ mb: 6 }}>
+        <Box sx={{ mb: 8 }}>
           {getStepContent(activeStep)}
         </Box>
 
@@ -640,41 +731,40 @@ const CreateCommunity = () => {
             onClick={handleBack}
             startIcon={<ArrowBackIcon />}
             sx={{ 
-              px: 6, 
-              py: 2,
-              borderRadius: '30px',
+              px: 4, 
+              py: 1.5,
+              borderRadius: 1,
               textTransform: 'none',
-              fontSize: '1.1rem',
-              fontWeight: 600
+              fontSize: '1rem',
+              fontWeight: 500,
+              color: '#666'
             }}
           >
-            Back
+            Previous
           </Button>
           
           {activeStep === steps.length - 1 ? (
             <Button
               variant="contained"
               onClick={() => {
-                // Here you would normally save to backend
-                alert(`🎉 Community "${formData.name}" created successfully!\n\nPlan: ${subscriptionPlans.find(p => p._id === formData.selectedPlan)?.name}\nCategory: ${categories.find(c => c.id === formData.category)?.label}`);
+                const selectedPlan = subscriptionPlans.find(p => p._id === formData.selectedPlan);
+                const selectedCategory = categories.find(c => c.id === formData.category);
+                alert(`Community "${formData.name}" created successfully!\n\nPlan: ${selectedPlan?.name}\nCategory: ${selectedCategory?.label}\n\nYour community is now live and ready for members.`);
               }}
               sx={{ 
-                px: 8, 
-                py: 2,
-                borderRadius: '30px',
+                px: 6, 
+                py: 1.5,
+                borderRadius: 1,
                 textTransform: 'none',
-                fontSize: '1.2rem',
-                fontWeight: 700,
-                background: 'linear-gradient(45deg, #4caf50, #45a049)',
+                fontSize: '1rem',
+                fontWeight: 600,
+                bgcolor: '#1976d2',
                 '&:hover': {
-                  background: 'linear-gradient(45deg, #45a049, #3d8b40)',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 25px rgba(76, 175, 80, 0.4)'
-                },
-                transition: 'all 0.3s ease'
+                  bgcolor: '#1565c0'
+                }
               }}
             >
-              🚀 Launch Community
+              Launch Community
             </Button>
           ) : (
             <Button
@@ -683,22 +773,19 @@ const CreateCommunity = () => {
               disabled={!isStepValid(activeStep)}
               endIcon={<ArrowForwardIcon />}
               sx={{ 
-                px: 6, 
-                py: 2,
-                borderRadius: '30px',
+                px: 4, 
+                py: 1.5,
+                borderRadius: 1,
                 textTransform: 'none',
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                fontSize: '1rem',
+                fontWeight: 500,
+                bgcolor: '#1976d2',
                 '&:hover': {
-                  background: 'linear-gradient(45deg, #5a67d8, #6b46c1)',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)'
+                  bgcolor: '#1565c0'
                 },
                 '&:disabled': {
-                  background: '#ccc'
-                },
-                transition: 'all 0.3s ease'
+                  bgcolor: '#e0e0e0'
+                }
               }}
             >
               Continue
