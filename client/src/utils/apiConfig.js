@@ -1,4 +1,4 @@
-// Global API Configuration
+// Global API Configuration - Updated for CORS fix
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://saas-lms-admin.onrender.com';
 
 // Replace all localhost URLs with production URL
