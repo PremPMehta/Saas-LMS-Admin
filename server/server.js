@@ -17,37 +17,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // In development, allow localhost
-    if (process.env.NODE_ENV !== 'production') {
-      if (origin.includes('localhost')) {
-        return callback(null, true);
-      }
-    }
-    
-    // In production, allow Netlify domains
-    if (origin.includes('.netlify.app') || origin.includes('netlify.app')) {
-      return callback(null, true);
-    }
-    
-    // Allow your specific domains
-    const allowedOrigins = [
-      'https://comforting-babka-aa44fc.netlify.app',
-      'http://localhost:3000'
-    ];
-    
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    
-    // For debugging - log rejected origins
-    console.log('CORS rejected origin:', origin);
-    callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true
+  origin: true, // Allow all origins for testing
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
