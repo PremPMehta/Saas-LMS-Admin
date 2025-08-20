@@ -106,7 +106,7 @@ const CreateCommunity = () => {
       try {
         setLoading(true);
         const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://saas-lms-admin.onrender.com';
-        const response = await fetch(`${API_BASE_URL}/api/plans`);
+                    const response = await fetch(`${API_BASE_URL}/api/plans/public`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch plans');

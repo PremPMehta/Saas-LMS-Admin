@@ -59,6 +59,28 @@ const createPlan = async (req, res) => {
   }
 };
 
+// Get public plans (no auth required - for client onboarding)
+const getPublicPlans = async (req, res) => {
+  try {
+    const plans = await Plan.find({ status: 'Active' })
+      .select('name price period features limits popular maxAcademies maxStudentsPerAcademy')
+      .sort({ popular: -1, price: 1 });
+
+    res.status(200).json({
+      success: true,
+      plans: plans
+    });
+
+  } catch (error) {
+    console.error('Error fetching public plans:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+};
+
 // Get all plans
 const getAllPlans = async (req, res) => {
   try {
@@ -236,6 +258,7 @@ const getPlanStats = async (req, res) => {
 module.exports = {
   createPlan,
   getAllPlans,
+  getPublicPlans,
   getPlanById,
   updatePlan,
   deletePlan,

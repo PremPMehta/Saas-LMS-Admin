@@ -3,7 +3,10 @@ const router = express.Router();
 const { protect } = require('../middleware/auth');
 const planController = require('../controllers/plan.controller');
 
-// Apply authentication middleware to all routes
+// Public route for getting plans (for client onboarding)
+router.get('/public', planController.getPublicPlans);
+
+// Apply authentication middleware to protected routes
 router.use(protect);
 
 // Get plan statistics for KPI cards
