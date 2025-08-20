@@ -24,9 +24,10 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import KPICard from '../components/dashboard/KPICard';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 
 // Configure axios base URL
-axios.defaults.baseURL = 'http://localhost:5001';
+axios.defaults.baseURL = API_BASE_URL;
 
 const Dashboard = () => {
   const { mode } = useTheme();

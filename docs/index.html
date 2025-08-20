@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS-LMS Admin - Technical Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: #1a202c;
+            background: #f7fafc;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,255,255,.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><rect width="100" height="20" fill="url(%23a)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: white;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 60px;
+            max-width: none;
+        }
+
+        .update-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 48px;
+            border-radius: 16px;
+            margin-bottom: 60px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .update-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(180deg); }
+        }
+
+        .update-banner h2 {
+            font-size: 2.5rem;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+        }
+
+        .rocket {
+            font-size: 2.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        h2 {
+            color: #1a202c;
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin: 60px 0 32px 0;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        }
+
+        h3 {
+            color: #2d3748;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+        }
+
+        h4 {
+            color: #4f46e5;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+        }
+
+        p {
+            margin-bottom: 20px;
+            text-align: left;
+            color: #4a5568;
+            line-height: 1.7;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            position: relative;
+            color: #4a5568;
+        }
+
+        ul li::marker {
+            color: #4f46e5;
+            font-weight: bold;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 32px;
+            margin: 48px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: #4a5568;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+            border-color: #4f46e5;
+        }
+
+        .feature-card h4 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .feature-card ul {
+            color: #4a5568;
+        }
+
+        .feature-card li {
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .tech-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tech-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        .tech-card h4 {
+            color: #4f46e5;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .tech-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tech-list span {
+            color: #4a5568;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .tech-list span:hover {
+            background: #edf2f7;
+            border-left-color: #4f46e5;
+            transform: translateX(4px);
+        }
+
+        pre {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 24px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 24px 0;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', monospace;
+            border: 1px solid #2d3748;
+            position: relative;
+        }
+
+        pre::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        }
+
+        code {
+            background: #f7fafc;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', monospace;
+            color: #4f46e5;
+            font-size: 0.875em;
+            border: 1px solid #e2e8f0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+            border: none;
+        }
+
+        .diagram-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .mermaid-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .mermaid-placeholder *, .mermaid-placeholder h3, .mermaid-placeholder p, .mermaid-placeholder strong, .mermaid-placeholder em {
+            color: white !important;
+        }
+
+        .api-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .endpoint {
+            background: white;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+            font-family: monospace;
+        }
+
+        .endpoint.post {
+            border-left-color: #007bff;
+        }
+
+        .endpoint.put {
+            border-left-color: #ffc107;
+        }
+
+        .endpoint.delete {
+            border-left-color: #dc3545;
+        }
+
+        .credentials-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .credentials-box h4 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .credentials-box *, .credentials-box li, .credentials-box ul, .credentials-box strong, .credentials-box p {
+            color: white !important;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .warning-box *, .warning-box li, .warning-box ol, .warning-box ul, .warning-box strong {
+            color: white !important;
+        }
+
+        .error-box {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .error-box *, .error-box li, .error-box ol, .error-box ul, .error-box strong {
+            color: white !important;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .success-box *, .success-box li, .success-box ol, .success-box ul, .success-box strong, .success-box p, .success-box code {
+            color: white !important;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 40px;
+            margin-top: 40px;
+        }
+
+        .company-link {
+            color: #4f46e5 !important;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .company-link:hover {
+            color: white !important;
+            background: #4f46e5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .checkmark {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-working {
+            background: #d4edda;
+            color: #155724;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header {
+                padding: 60px 32px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .content {
+                padding: 32px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .feature-card {
+                padding: 24px;
+            }
+
+            .update-banner {
+                padding: 32px 24px;
+            }
+
+            h2 {
+                font-size: 1.875rem;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            width: 56px;
+            height: 56px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 32px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(79, 70, 229, 0.4);
+        }
+
+        .scroll-top:active {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SaaS-LMS Admin</h1>
+            <p>Technical Documentation - Comprehensive Learning Management System Administration Platform</p>
+        </div>
+
+        <div class="content">
+            <div class="update-banner">
+                <h2><span class="rocket">🚀</span> Latest Updates (v2.0)</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>🔐 First-Time Login System</h4>
+                        <p>Mandatory password change for new users with strength validation</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Dynamic KPI Cards</h4>
+                        <p>Real-time data display from database instead of static values</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>👥 Enhanced User Creation</h4>
+                        <p>Professional modal with default password notification</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔑 Token Management</h4>
+                        <p>Automatic token refresh and error handling</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🗃️ Database Seeding</h4>
+                        <p>Complete sample data population scripts</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎨 UI/UX Enhancements</h4>
+                        <p>Modern, responsive design with better user feedback</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Project Overview</h2>
+            <p>SaaS-LMS Admin is a comprehensive Learning Management System (LMS) administration platform designed for educational institutions and training organizations. The system provides centralized management of academies, courses, users, and learning plans with role-based access control and real-time analytics.</p>
+            
+            <p>The platform enables administrators to manage multiple academies, create subscription plans, monitor user activities, and generate insights through an intuitive dashboard interface. It supports scalable operations with configurable limits, automated user provisioning, and a secure first-time login experience.</p>
+
+            <h2>Core Features</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>👥 User Management</h4>
+                    <ul>
+                        <li>Role-based Access Control: Admin, Standard User roles</li>
+                        <li>Secure JWT token-based authentication</li>
+                        <li>First-Time Login Flow with password validation</li>
+                        <li>Profile Management and status tracking</li>
+                        <li>Default Password System (Password@123)</li>
+                        <li>Bulk user operations</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🏫 Academy Management</h4>
+                    <ul>
+                        <li>Multi-Academy Support</li>
+                        <li>Customizable academy settings</li>
+                        <li>Student & Educator capacity limits</li>
+                        <li>Active/Inactive status monitoring</li>
+                        <li>Subdomain management</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>💳 Plan Management</h4>
+                    <ul>
+                        <li>Flexible pricing tiers (Basic, Pro, Premium)</li>
+                        <li>Customizable features and limitations</li>
+                        <li>Monthly/Annual/Quarterly billing</li>
+                        <li>Popular plan highlighting</li>
+                        <li>Dynamic plan creation</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📊 Dashboard & Analytics</h4>
+                    <ul>
+                        <li>Real-time KPIs from database</li>
+                        <li>Interactive charts and visualization</li>
+                        <li>Performance monitoring</li>
+                        <li>Dynamic contextual descriptions</li>
+                        <li>Export capabilities</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔒 Security & Authentication</h4>
+                    <ul>
+                        <li>JWT Token Authentication with auto-expiration</li>
+                        <li>Protected Routes with role-based access</li>
+                        <li>First-Time Password Security</li>
+                        <li>Strong Password Policies</li>
+                        <li>Automatic token error handling</li>
+                        <li>bcrypt password encryption</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Tech Stack</h2>
+
+            <div class="tech-stack">
+                <div class="tech-card">
+                    <h4>Frontend</h4>
+                    <div class="tech-list">
+                        <span>React.js</span>
+                        <span>Material-UI (MUI)</span>
+                        <span>React Router</span>
+                        <span>Context API</span>
+                        <span>Axios</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <h4>Backend</h4>
+                    <div class="tech-list">
+                        <span>Node.js</span>
+                        <span>Express.js</span>
+                        <span>JWT Authentication</span>
+                        <span>bcryptjs</span>
+                        <span>CORS</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <h4>Database</h4>
+                    <div class="tech-list">
+                        <span>MongoDB</span>
+                        <span>Mongoose ODM</span>
+                        <span>MongoDB Compass</span>
+                        <span>Database Indexing</span>
+                    </div>
+                </div>
+
+                <div class="tech-card">
+                    <h4>Development Tools</h4>
+                    <div class="tech-list">
+                        <span>ESLint</span>
+                        <span>Git</span>
+                        <span>npm</span>
+                        <span>Nodemon</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2>System Architecture</h2>
+            <div class="diagram-container">
+                <div class="mermaid-placeholder">
+                    <h3>System Architecture Diagram</h3>
+                    <p><strong>Frontend Layer:</strong> React UI Components → React Router → Context Providers</p>
+                    <p><strong>API Layer:</strong> Authentication Middleware → API Controllers → Express Routes</p>
+                    <p><strong>Data Layer:</strong> Mongoose Models → MongoDB Database</p>
+                    <p><em>Note: This represents the data flow from user interface through API processing to database storage</em></p>
+                </div>
+            </div>
+
+            <h2>Role-Based Access Flow</h2>
+            <div class="diagram-container">
+                <div class="mermaid-placeholder">
+                    <h3>Authentication & Authorization Flow</h3>
+                    <p><strong>User Login</strong> → Authentication Check → Role Verification</p>
+                    <p><strong>Admin Role:</strong> Full access to manage academies, plans, users, and analytics</p>
+                    <p><strong>Standard User:</strong> Limited read-only access to academies and plans</p>
+                    <p><em>Note: Role-based permissions control access to different system features</em></p>
+                </div>
+            </div>
+
+            <h2>API Endpoints</h2>
+
+            <div class="api-section">
+                <h3>Authentication</h3>
+                <div class="endpoint post">POST /api/auth/login - User authentication (returns isFirstLogin status)</div>
+                <div class="endpoint post">POST /api/auth/register - User registration</div>
+                <div class="endpoint">GET /api/auth/me - Get current user profile</div>
+                <div class="endpoint post">POST /api/auth/change-first-password - First-time password change (protected)</div>
+
+                <h3>Academies</h3>
+                <div class="endpoint">GET /api/academies - List all academies</div>
+                <div class="endpoint post">POST /api/academies - Create new academy</div>
+                <div class="endpoint put">PUT /api/academies/:id - Update academy</div>
+                <div class="endpoint delete">DELETE /api/academies/:id - Delete academy</div>
+
+                <h3>Plans</h3>
+                <div class="endpoint">GET /api/plans - List all plans</div>
+                <div class="endpoint post">POST /api/plans - Create new plan</div>
+                <div class="endpoint put">PUT /api/plans/:id - Update plan</div>
+                <div class="endpoint delete">DELETE /api/plans/:id - Delete plan</div>
+
+                <h3>Users</h3>
+                <div class="endpoint">GET /api/users - List all users</div>
+                <div class="endpoint post">POST /api/users - Create new user</div>
+                <div class="endpoint put">PUT /api/users/:id - Update user</div>
+                <div class="endpoint delete">DELETE /api/users/:id - Delete user</div>
+            </div>
+
+            <h2>Data Models</h2>
+
+            <div class="table-container">
+                <h3>User Model</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>email</td><td>String</td><td>Unique, required</td></tr>
+                        <tr><td>password</td><td>String</td><td>Hashed, required</td></tr>
+                        <tr><td>firstName</td><td>String</td><td>Required</td></tr>
+                        <tr><td>lastName</td><td>String</td><td>Required</td></tr>
+                        <tr><td>phoneNumber</td><td>String</td><td>Optional</td></tr>
+                        <tr><td>countryCode</td><td>String</td><td>Default: '+91'</td></tr>
+                        <tr><td>role</td><td>String</td><td>Enum: 'admin', 'user'</td></tr>
+                        <tr><td>status</td><td>String</td><td>Enum: 'active', 'inactive', 'pending'</td></tr>
+                        <tr><td>isFirstLogin</td><td>Boolean</td><td>Default: true</td></tr>
+                        <tr><td>lastLoginAt</td><td>Date</td><td>Last login timestamp</td></tr>
+                        <tr><td>isProfileComplete</td><td>Boolean</td><td>Default: false</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h3>Academy Model</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>name</td><td>String</td><td>Required</td></tr>
+                        <tr><td>address</td><td>String</td><td>Required</td></tr>
+                        <tr><td>contactName</td><td>String</td><td>Required</td></tr>
+                        <tr><td>contactNumber</td><td>String</td><td>Required</td></tr>
+                        <tr><td>subdomain</td><td>String</td><td>Unique, required</td></tr>
+                        <tr><td>fullDomain</td><td>String</td><td>Auto-generated</td></tr>
+                        <tr><td>logo</td><td>String</td><td>Required URL</td></tr>
+                        <tr><td>subscriptionPlan</td><td>String</td><td>Required</td></tr>
+                        <tr><td>status</td><td>String</td><td>Enum: 'Active', 'Inactive', 'Onhold'</td></tr>
+                        <tr><td>students</td><td>Number</td><td>Default: 0</td></tr>
+                        <tr><td>courses</td><td>Number</td><td>Default: 0</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <h3>Plan Model</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>name</td><td>String</td><td>Required</td></tr>
+                        <tr><td>price</td><td>String</td><td>Required (e.g., "$29")</td></tr>
+                        <tr><td>period</td><td>String</td><td>Enum: 'month', 'year', 'quarter'</td></tr>
+                        <tr><td>features</td><td>Array</td><td>Array of Strings, required</td></tr>
+                        <tr><td>limits</td><td>String</td><td>Required (e.g., "1 academy, 100 students")</td></tr>
+                        <tr><td>maxAcademies</td><td>Number</td><td>Required</td></tr>
+                        <tr><td>maxStudentsPerAcademy</td><td>Number</td><td>Required</td></tr>
+                        <tr><td>maxEducatorsPerAcademy</td><td>Number</td><td>Required</td></tr>
+                        <tr><td>popular</td><td>Boolean</td><td>Default: false</td></tr>
+                        <tr><td>status</td><td>String</td><td>Enum: 'Active', 'Inactive', 'Onhold'</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Quick Setup Guide</h2>
+
+            <h3>Prerequisites</h3>
+            <ul>
+                <li>Node.js (v14 or higher)</li>
+                <li>MongoDB Atlas account or local MongoDB installation</li>
+                <li>Git</li>
+            </ul>
+
+            <h3>Installation Steps</h3>
+
+            <h4>1. Clone the repository</h4>
+            <pre><code>git clone https://github.com/PremPMehta/Saas-LMS-Admin.git
+cd Saas-LMS-Admin</code></pre>
+
+            <h4>2. Backend Setup</h4>
+            <pre><code>cd server
+npm install
+cp env.example .env
+# Edit .env file with your MongoDB URI and JWT secret
+node seed.js          # Create admin user
+node seedData.js      # Populate sample data
+npm run dev           # Start backend server (port 5001)</code></pre>
+
+            <h4>3. Frontend Setup</h4>
+            <pre><code>cd ../client
+npm install
+npm start            # Start frontend server (port 3000)</code></pre>
+
+            <h4>4. Access the Application</h4>
+            <ul>
+                <li>Frontend: <code>http://localhost:3000</code></li>
+                <li>Backend API: <code>http://localhost:5001</code></li>
+                <li>Default Admin: <code>admin@multi-admin.com / Password@123</code></li>
+            </ul>
+
+            <h3>Environment Variables</h3>
+            <p>Create a <code>.env</code> file in the <code>server</code> directory:</p>
+            <pre><code>MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/saasLmsAdmin
+JWT_SECRET=your-super-secret-jwt-key
+NODE_ENV=development
+PORT=5001</code></pre>
+
+            <h3>First-Time User Experience</h3>
+            <div class="success-box">
+                <h4>User Workflow</h4>
+                <ol>
+                    <li><strong>Admin Creates User:</strong> Default password is <code>Password@123</code></li>
+                    <li><strong>User First Login:</strong> Mandatory password change modal appears</li>
+                    <li><strong>Password Change:</strong> Strong password required (8+ chars, mixed case, numbers, symbols)</li>
+                    <li><strong>System Access:</strong> Full access granted after successful password change</li>
+                </ol>
+            </div>
+
+            <h2>Demo Credentials</h2>
+
+            <div class="credentials-box">
+                <h4>Admin Account</h4>
+                <ul>
+                    <li><strong>Email:</strong> admin@multi-admin.com</li>
+                    <li><strong>Password:</strong> Password@123</li>
+                    <li><strong>Role:</strong> Administrator (full access)</li>
+                </ul>
+            </div>
+
+            <div class="credentials-box">
+                <h4>Test User Account</h4>
+                <ul>
+                    <li><strong>Email:</strong> demouser@example.com</li>
+                    <li><strong>Password:</strong> DemoPassword@456 (after first-time password change)</li>
+                    <li><strong>Role:</strong> Administrator</li>
+                </ul>
+            </div>
+
+            <h2>System Status</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>User Creation & Management</td>
+                            <td><span class="status-working">✅ WORKING</span></td>
+                            <td>All CRUD operations functional</td>
+                        </tr>
+                        <tr>
+                            <td>First-Time Login Flow</td>
+                            <td><span class="status-working">✅ WORKING</span></td>
+                            <td>Password change modal with validation</td>
+                        </tr>
+                        <tr>
+                            <td>Academy Creation</td>
+                            <td><span class="status-working">✅ WORKING</span></td>
+                            <td>Full academy management system</td>
+                        </tr>
+                        <tr>
+                            <td>Plan Creation</td>
+                            <td><span class="status-working">✅ WORKING</span></td>
+                            <td>Dynamic subscription plan management</td>
+                        </tr>
+                        <tr>
+                            <td>Dynamic KPI Cards</td>
+                            <td><span class="status-working">✅ WORKING</span></td>
+                            <td>Real-time data from database</td>
+                        </tr>
+                        <tr>
+                            <td>Authentication System</td>
+                            <td><span class="status-working">✅ WORKING</span></td>
+                            <td>JWT with automatic error handling</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Troubleshooting</h2>
+
+            <div class="error-box">
+                <h4>Common Issues</h4>
+                <ol>
+                    <li><strong>"Not authorized, token failed"</strong>
+                        <ul>
+                            <li>Clear browser local storage</li>
+                            <li>Login again to get fresh token</li>
+                        </ul>
+                    </li>
+                    <li><strong>"Network error. Please try again."</strong>
+                        <ul>
+                            <li>Ensure backend is running on port 5001</li>
+                            <li>Check CORS configuration</li>
+                        </ul>
+                    </li>
+                    <li><strong>Database connection issues</strong>
+                        <ul>
+                            <li>Verify MongoDB URI in .env file</li>
+                            <li>Check IP whitelist in MongoDB Atlas</li>
+                            <li>Ensure database name matches URI</li>
+                        </ul>
+                    </li>
+                    <li><strong>KPI Cards showing 0</strong>
+                        <ul>
+                            <li>Clear browser storage for fresh authentication</li>
+                            <li>Verify database has seeded data</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <h4>Debug Steps</h4>
+                <ol>
+                    <li>Check backend logs for errors</li>
+                    <li>Verify database connection</li>
+                    <li>Test API endpoints with curl/Postman</li>
+                    <li>Clear browser cache and storage</li>
+                    <li>Restart both frontend and backend servers</li>
+                </ol>
+            </div>
+
+            <h2>Security Considerations</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🔐 Password Security</h4>
+                    <ul>
+                        <li>bcryptjs hashing with salt rounds</li>
+                        <li>Strong password policies enforced</li>
+                        <li>First-time login mandatory change</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔑 Token Management</h4>
+                    <ul>
+                        <li>JWT with expiration handling</li>
+                        <li>Automatic token cleanup</li>
+                        <li>Secure token validation</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🛡️ Route Protection</h4>
+                    <ul>
+                        <li>Role-based middleware</li>
+                        <li>API endpoint protection</li>
+                        <li>Input validation</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🌐 CORS & Environment</h4>
+                    <ul>
+                        <li>Proper CORS configuration</li>
+                        <li>Environment variable protection</li>
+                        <li>Secure data transmission</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Performance Optimization</h2>
+
+            <ul>
+                <li><strong>Component Optimization:</strong> React.memo and useMemo for expensive operations</li>
+                <li><strong>Lazy Loading:</strong> Code splitting for better initial load times</li>
+                <li><strong>Database Indexing:</strong> Optimized MongoDB queries with proper indexing</li>
+                <li><strong>Caching:</strong> Client-side caching for frequently accessed data</li>
+                <li><strong>Bundle Optimization:</strong> Minimized and compressed production builds</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <h3>🚀 SaaS-LMS Admin v2.0</h3>
+            <p>Ready for client demo and production deployment!</p>
+            <p>All systems tested and working perfectly.</p>
+            <p><em>Documentation generated on: <script>document.write(new Date().toLocaleDateString())</script></em></p>
+            <hr style="border: 1px solid rgba(255,255,255,0.2); margin: 30px 0;">
+            <p>Documented, Developed and Maintained by <a href="https://quirkbeestech.in" target="_blank" class="company-link">QuirkBees Technologies</a></p>
+        </div>
+    </div>
+
+    <button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">↑</button>
+
+    <script>
+        // Show/hide scroll to top button
+        window.addEventListener('scroll', function() {
+            const scrollTop = document.querySelector('.scroll-top');
+            if (window.pageYOffset > 300) {
+                scrollTop.style.display = 'flex';
+            } else {
+                scrollTop.style.display = 'none';
+            }
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

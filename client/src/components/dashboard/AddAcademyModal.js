@@ -34,6 +34,7 @@ import {
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import API_BASE_URL from '../../config/api';
 
 // Country codes for phone validation
 const countryCodes = [
@@ -49,7 +50,6 @@ const countryCodes = [
 ];
 
 // Configure axios base URL for this component only
-const API_BASE_URL = 'http://localhost:5001';
 
 const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
   const [formData, setFormData] = useState({
