@@ -203,6 +203,8 @@ const Discovery = () => {
             or{' '}
             <Button
               variant="text"
+              component="a"
+              href="/create-community"
               sx={{ 
                 color: '#4285f4',
                 textTransform: 'none',

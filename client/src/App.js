@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Discovery from './pages/Discovery';
+import CreateCommunity from './pages/CreateCommunity';
 
 // Create a clean theme for the client app
 const theme = createTheme({
@@ -41,6 +42,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Discovery />} />
             <Route path="/discovery" element={<Discovery />} />
+            <Route path="/create-community" element={<CreateCommunity />} />
             {/* Add more client routes here */}
           </Routes>
         </div>
