@@ -16,8 +16,7 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  People as PeopleIcon,
-  Star as StarIcon
+  People as PeopleIcon
 } from '@mui/icons-material';
 
 // Mock data for communities (will be replaced with API calls)
@@ -76,6 +75,33 @@ const mockCommunities = [
     members: 980,
     price: "$39/month",
     category: "Music"
+  },
+  {
+    id: 7,
+    name: "Entrepreneurship Bootcamp",
+    description: "Build your startup from idea to launch! Get mentorship, funding tips, and network with founders. 🚀",
+    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=200&fit=crop",
+    members: 1750,
+    price: "$49/month",
+    category: "Money"
+  },
+  {
+    id: 8,
+    name: "Digital Art & Design",
+    description: "Master digital art, UI/UX design, and creative tools. Showcase your work and get feedback! 🎨",
+    image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=200&fit=crop",
+    members: 2800,
+    price: "$25/month",
+    category: "Hobbies"
+  },
+  {
+    id: 9,
+    name: "Personal Development Hub",
+    description: "Transform your life with proven strategies for success, productivity, and personal growth. 📈",
+    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=200&fit=crop",
+    members: 3500,
+    price: "Free",
+    category: "Self-improvement"
   }
 ];
 
@@ -95,11 +121,10 @@ const categories = [
 const Discovery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [communities, setCommunities] = useState(mockCommunities);
   const [filteredCommunities, setFilteredCommunities] = useState(mockCommunities);
 
   useEffect(() => {
-    let filtered = communities;
+    let filtered = mockCommunities;
 
     // Filter by category
     if (selectedCategory !== 'all') {
@@ -115,7 +140,7 @@ const Discovery = () => {
     }
 
     setFilteredCommunities(filtered);
-  }, [searchTerm, selectedCategory, communities]);
+  }, [searchTerm, selectedCategory]);
 
   const formatMemberCount = (count) => {
     if (count >= 1000) {
@@ -240,7 +265,7 @@ const Discovery = () => {
         {/* Communities Grid */}
         <Grid container spacing={3}>
           {filteredCommunities.map((community, index) => (
-            <Grid item xs={12} md={4} key={community.id}>
+            <Grid item xs={12} sm={6} md={4} key={community.id}>
               <Card 
                 sx={{ 
                   height: '100%',
