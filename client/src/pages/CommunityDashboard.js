@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -48,6 +49,7 @@ import {
 } from '@mui/icons-material';
 
 const CommunityDashboard = () => {
+  const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [activeNav, setActiveNav] = useState('home');
 
@@ -294,6 +296,7 @@ const CommunityDashboard = () => {
                   <Button
                     variant="contained"
                     startIcon={<AddIcon />}
+                    onClick={() => navigate('/create-course')}
                     sx={{
                       background: '#000000',
                       color: '#ffffff',

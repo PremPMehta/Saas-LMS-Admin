@@ -15,6 +15,7 @@ import CreateCommunity from '../pages/CreateCommunity';
 import CommunitySetup from '../pages/CommunitySetup';
 import CommunityDashboard from '../pages/CommunityDashboard';
 import StudentDashboard from '../pages/StudentDashboard';
+import CreateCourse from '../pages/CreateCourse';
 import TestPage from '../pages/TestPage';
 
 const AppRoutes = () => {
@@ -115,6 +116,7 @@ const AppRoutes = () => {
       <Route path="/community-setup" element={<CommunitySetup />} />
       <Route path="/community-dashboard" element={<CommunityDashboard />} />
       <Route path="/student-dashboard" element={<StudentDashboard />} />
+      <Route path="/create-course" element={<CreateCourse />} />
       <Route path="/test" element={<TestPage />} />
       
       {/* Default redirect - redirect based on user role */}

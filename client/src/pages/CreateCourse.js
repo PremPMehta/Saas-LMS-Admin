@@ -43,6 +43,7 @@ import {
   CloudUpload as UploadIcon,
   Save as SaveIcon,
   Close as CloseIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -55,6 +56,7 @@ const CreateCourse = () => {
     targetAudience: '',
     category: '',
     contentType: '', // 'text' or 'video'
+    thumbnail: '',
   });
   const [chapters, setChapters] = useState([]);
   const [errors, setErrors] = useState({});
@@ -102,6 +104,17 @@ const CreateCourse = () => {
     setCourseData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleCourseThumbnailUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCourseData(prev => ({ ...prev, thumbnail: e.target.result }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -321,6 +334,48 @@ const CreateCourse = () => {
               </FormControl>
             </Grid>
 
+            {/* Course Thumbnail */}
+            <Grid item xs={12}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Course Thumbnail
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                {courseData.thumbnail && (
+                  <Box
+                    component="img"
+                    src={courseData.thumbnail}
+                    alt="Course thumbnail"
+                    sx={{
+                      width: 200,
+                      height: 120,
+                      objectFit: 'cover',
+                      borderRadius: 2,
+                      border: '2px solid #e0e0e0'
+                    }}
+                  />
+                )}
+                <Box>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    startIcon={<UploadIcon />}
+                    sx={{ mb: 1 }}
+                  >
+                    Upload Course Thumbnail
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleCourseThumbnailUpload}
+                    />
+                  </Button>
+                  <Typography variant="caption" color="text.secondary">
+                    Recommended size: 1200x675 pixels (16:9 ratio)
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+
             <Grid item xs={12}>
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Content Type
@@ -447,27 +502,27 @@ const CreateCourse = () => {
                         {chapter.description}
                       </Typography>
 
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography variant="caption" color="text.secondary">
-                          Duration: {chapter.videos.reduce((total, video) => total + (video.duration || 0), 0)} minutes
-                        </Typography>
-                        <Button
-                          size="small"
-                          startIcon={<AddIcon />}
-                          onClick={() => handleAddVideo(chapter.id)}
-                        >
-                          Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
-                        </Button>
-                      </Box>
+                                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                         <Typography variant="caption" color="text.secondary">
+                           {chapter.videos.length} {courseData.contentType === 'video' ? 'videos' : 'lessons'}
+                         </Typography>
+                         <Button
+                           size="small"
+                           startIcon={<AddIcon />}
+                           onClick={() => handleAddVideo(chapter.id)}
+                         >
+                           Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
+                         </Button>
+                       </Box>
 
                       {chapter.videos.length > 0 && (
                         <List sx={{ mt: 2, p: 0 }}>
                           {chapter.videos.map((video, videoIndex) => (
-                            <ListItem key={video.id} sx={{ px: 0, py: 1 }}>
-                              <ListItemText
-                                primary={`${videoIndex + 1}. ${video.title}`}
-                                secondary={`${video.duration || 0} minutes`}
-                              />
+                                                         <ListItem key={video.id} sx={{ px: 0, py: 1 }}>
+                               <ListItemText
+                                 primary={`${videoIndex + 1}. ${video.title}`}
+                                 secondary={video.videoType === 'upload' ? 'Uploaded Video' : `${video.videoType} video`}
+                               />
                               <ListItemSecondaryAction>
                                 <Box sx={{ display: 'flex', gap: 1 }}>
                                   <IconButton
@@ -539,16 +594,35 @@ const CreateCourse = () => {
                       </Typography>
                       <Chip label={courseData.targetAudience} size="small" />
                     </Box>
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Content Type
-                      </Typography>
-                      <Chip 
-                        label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'} 
-                        size="small"
-                        icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
-                      />
-                    </Box>
+                                         <Box sx={{ mb: 2 }}>
+                       <Typography variant="subtitle2" color="text.secondary">
+                         Content Type
+                       </Typography>
+                       <Chip 
+                         label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'} 
+                         size="small"
+                         icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
+                       />
+                     </Box>
+                     {courseData.thumbnail && (
+                       <Box>
+                         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                           Course Thumbnail
+                         </Typography>
+                         <Box
+                           component="img"
+                           src={courseData.thumbnail}
+                           alt="Course thumbnail"
+                           sx={{
+                             width: '100%',
+                             height: 120,
+                             objectFit: 'cover',
+                             borderRadius: 1,
+                             border: '1px solid #e0e0e0'
+                           }}
+                         />
+                       </Box>
+                     )}
                   </CardContent>
                 </Card>
               </Grid>
@@ -575,15 +649,15 @@ const CreateCourse = () => {
                         {chapters.reduce((total, chapter) => total + chapter.videos.length, 0)}
                       </Typography>
                     </Box>
-                    <Box>
+                    <Box sx={{ mb: 2 }}>
                       <Typography variant="subtitle2" color="text.secondary">
-                        Estimated Duration
+                        Course Type
                       </Typography>
-                      <Typography variant="h4" sx={{ fontWeight: 700, color: '#ff9800' }}>
-                        {chapters.reduce((total, chapter) => 
-                          total + chapter.videos.reduce((sum, video) => sum + (video.duration || 0), 0), 0
-                        )} min
-                      </Typography>
+                      <Chip 
+                        label={courseData.contentType === 'video' ? 'Video Course' : 'Text Course'} 
+                        size="small"
+                        color="primary"
+                      />
                     </Box>
                   </CardContent>
                 </Card>
@@ -761,8 +835,11 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    duration: '',
     content: '',
+    thumbnail: '',
+    videoType: 'upload', // 'upload', 'youtube', 'loom', 'vimeo'
+    videoUrl: '',
+    videoFile: null,
   });
 
   useEffect(() => {
@@ -770,26 +847,60 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
       setFormData({
         title: video.title,
         description: video.description,
-        duration: video.duration || '',
         content: video.content || '',
+        thumbnail: video.thumbnail || '',
+        videoType: video.videoType || 'upload',
+        videoUrl: video.videoUrl || '',
+        videoFile: video.videoFile || null,
       });
     } else {
       setFormData({
         title: '',
         description: '',
-        duration: '',
         content: '',
+        thumbnail: '',
+        videoType: 'upload',
+        videoUrl: '',
+        videoFile: null,
       });
     }
   }, [video]);
 
   const handleSubmit = () => {
     if (formData.title.trim() && formData.description.trim()) {
-      onSave({
-        ...formData,
-        duration: parseInt(formData.duration) || 0,
-      });
+      onSave(formData);
     }
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, videoFile: file }));
+    }
+  };
+
+  const handleThumbnailUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({ ...prev, thumbnail: e.target.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Helper functions to extract video IDs from URLs
+  const getYouTubeVideoId = (url) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const getVimeoVideoId = (url) => {
+    const regExp = /vimeo\.com\/([0-9]+)/;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
   };
 
   return (
@@ -808,6 +919,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
             />
           </Grid>
+          
           <Grid item xs={12}>
             <TextField
               fullWidth
@@ -818,35 +930,349 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
               rows={2}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Duration (minutes)"
-              type="number"
-              value={formData.duration}
-              onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
-              InputProps={{
-                endAdornment: <InputAdornment position="end">min</InputAdornment>,
-              }}
-            />
-          </Grid>
+
+          {/* Course Thumbnail */}
           <Grid item xs={12}>
-            {contentType === 'video' ? (
-              <TextField
-                fullWidth
-                label="Video URL or File"
-                placeholder="Enter video URL or upload file"
-                value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <UploadIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            ) : (
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+              Course Thumbnail
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              {formData.thumbnail && (
+                <Box
+                  component="img"
+                  src={formData.thumbnail}
+                  alt="Thumbnail preview"
+                  sx={{
+                    width: 100,
+                    height: 60,
+                    objectFit: 'cover',
+                    borderRadius: 1,
+                    border: '1px solid #e0e0e0'
+                  }}
+                />
+              )}
+              <Button
+                variant="outlined"
+                component="label"
+                startIcon={<UploadIcon />}
+              >
+                Upload Thumbnail
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleThumbnailUpload}
+                />
+              </Button>
+            </Box>
+          </Grid>
+
+          {contentType === 'video' && (
+            <>
+              {/* Video Type Selection */}
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+                  Video Source
+                </Typography>
+                <Grid container spacing={2}>
+                  {[
+                    { 
+                      value: 'upload', 
+                      label: 'Upload Video', 
+                      icon: <UploadIcon />,
+                      description: 'Upload video file directly',
+                      color: '#4285f4'
+                    },
+                    { 
+                      value: 'youtube', 
+                      label: 'YouTube Link', 
+                      icon: <PlayIcon />,
+                      description: 'Paste YouTube video URL',
+                      color: '#ff0000'
+                    },
+                    { 
+                      value: 'loom', 
+                      label: 'Loom Link', 
+                      icon: <PlayIcon />,
+                      description: 'Paste Loom video URL',
+                      color: '#625df5'
+                    },
+                    { 
+                      value: 'vimeo', 
+                      label: 'Vimeo Link', 
+                      icon: <PlayIcon />,
+                      description: 'Paste Vimeo video URL',
+                      color: '#1ab7ea'
+                    },
+                  ].map((type) => (
+                    <Grid item xs={12} sm={6} md={3} key={type.value}>
+                      <Card
+                        sx={{
+                          cursor: 'pointer',
+                          border: formData.videoType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
+                          background: formData.videoType === type.value ? '#f8f9ff' : '#ffffff',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            borderColor: type.color,
+                            background: '#f8f9ff',
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          }
+                        }}
+                        onClick={() => setFormData(prev => ({ ...prev, videoType: type.value }))}
+                      >
+                        <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                          <Box sx={{ 
+                            mb: 2,
+                            color: formData.videoType === type.value ? type.color : '#666666'
+                          }}>
+                            {React.cloneElement(type.icon, { fontSize: 32 })}
+                          </Box>
+                          <Typography variant="body1" sx={{ 
+                            fontWeight: 600,
+                            color: formData.videoType === type.value ? type.color : '#000000',
+                            mb: 1
+                          }}>
+                            {type.label}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {type.description}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+
+              {/* Video Content Based on Type */}
+              <Grid item xs={12}>
+                {formData.videoType === 'upload' ? (
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                      Upload Video File
+                    </Typography>
+                    <Card
+                      sx={{
+                        border: '2px dashed #e0e0e0',
+                        borderRadius: 2,
+                        p: 3,
+                        textAlign: 'center',
+                        background: formData.videoFile ? '#f8f9ff' : '#fafafa',
+                        borderColor: formData.videoFile ? '#4285f4' : '#e0e0e0',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          borderColor: '#4285f4',
+                          background: '#f8f9ff',
+                        }
+                      }}
+                    >
+                      {formData.videoFile ? (
+                        <Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                            <CheckCircleIcon sx={{ color: '#34a853', fontSize: 32 }} />
+                            <Box sx={{ textAlign: 'left' }}>
+                              <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                {formData.videoFile.name}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                {(formData.videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Button
+                            variant="outlined"
+                            component="label"
+                            startIcon={<UploadIcon />}
+                            size="small"
+                          >
+                            Change Video
+                            <input
+                              type="file"
+                              hidden
+                              accept="video/*"
+                              onChange={handleFileUpload}
+                            />
+                          </Button>
+                        </Box>
+                      ) : (
+                        <Box>
+                          <UploadIcon sx={{ fontSize: 48, color: '#4285f4', mb: 2 }} />
+                          <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                            Upload Video File
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Supported formats: MP4, MOV, AVI, WebM (Max 500MB)
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            component="label"
+                            startIcon={<UploadIcon />}
+                            sx={{
+                              background: '#4285f4',
+                              '&:hover': { background: '#3367d6' }
+                            }}
+                          >
+                            Choose Video File
+                            <input
+                              type="file"
+                              hidden
+                              accept="video/*"
+                              onChange={handleFileUpload}
+                            />
+                          </Button>
+                        </Box>
+                      )}
+                    </Card>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                      {formData.videoType.charAt(0).toUpperCase() + formData.videoType.slice(1)} Video URL
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      placeholder={`Paste your ${formData.videoType} video URL here`}
+                      value={formData.videoUrl}
+                      onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PlayIcon sx={{ color: '#4285f4' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          '&:hover fieldset': {
+                            borderColor: '#4285f4',
+                          },
+                          '&.Mui-focused fieldset': {
+                            borderColor: '#4285f4',
+                          },
+                        },
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                      Example: {formData.videoType === 'youtube' ? 'https://www.youtube.com/watch?v=VIDEO_ID' : 
+                               formData.videoType === 'vimeo' ? 'https://vimeo.com/VIDEO_ID' : 
+                               'https://www.loom.com/share/VIDEO_ID'}
+                    </Typography>
+                  </Box>
+                )}
+              </Grid>
+
+              {/* Video Preview */}
+              {(formData.videoUrl || formData.videoFile) && (
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+                    Video Preview
+                  </Typography>
+                  <Card sx={{ p: 3, background: '#f8f9fa' }}>
+                    {formData.videoType === 'upload' && formData.videoFile ? (
+                      <Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                          <PlayIcon sx={{ color: '#4285f4', fontSize: 24 }} />
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                              {formData.title || 'Uploaded Video'}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {formData.videoFile.name} • {(formData.videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box sx={{ 
+                          width: '100%', 
+                          height: 200, 
+                          background: '#000000',
+                          borderRadius: 2,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'relative',
+                          overflow: 'hidden'
+                        }}>
+                          <video
+                            controls
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain'
+                            }}
+                            src={URL.createObjectURL(formData.videoFile)}
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        </Box>
+                      </Box>
+                    ) : formData.videoUrl ? (
+                      <Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                          <PlayIcon sx={{ color: '#4285f4', fontSize: 24 }} />
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                              {formData.title || `${formData.videoType} Video`}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {formData.videoUrl}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box sx={{ 
+                          width: '100%', 
+                          height: 200, 
+                          background: '#000000',
+                          borderRadius: 2,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          position: 'relative',
+                          overflow: 'hidden'
+                        }}>
+                          {formData.videoType === 'youtube' && (
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={`https://www.youtube.com/embed/${getYouTubeVideoId(formData.videoUrl)}`}
+                              title="YouTube video player"
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          )}
+                          {formData.videoType === 'vimeo' && (
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={`https://player.vimeo.com/video/${getVimeoVideoId(formData.videoUrl)}`}
+                              title="Vimeo video player"
+                              frameBorder="0"
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowFullScreen
+                            />
+                          )}
+                          {formData.videoType === 'loom' && (
+                            <iframe
+                              width="100%"
+                              height="100%"
+                              src={formData.videoUrl.replace('/share/', '/embed/')}
+                              title="Loom video player"
+                              frameBorder="0"
+                              allowFullScreen
+                            />
+                          )}
+                        </Box>
+                      </Box>
+                    ) : null}
+                  </Card>
+                </Grid>
+              )}
+            </>
+          )}
+
+          {contentType === 'text' && (
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Lesson Content"
@@ -863,8 +1289,8 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                   ),
                 }}
               />
-            )}
-          </Grid>
+            </Grid>
+          )}
         </Grid>
       </DialogContent>
       <DialogActions>
