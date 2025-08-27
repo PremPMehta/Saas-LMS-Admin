@@ -38,6 +38,7 @@ import {
   Support as SupportIcon,
   Analytics as AnalyticsIcon
 } from '@mui/icons-material';
+import CommunitySuccessModal from '../components/CommunitySuccessModal';
 
 const steps = ['Basic Information', 'Category Selection', 'Subscription Plan', 'Final Review'];
 
@@ -98,6 +99,7 @@ const CreateCommunity = () => {
   });
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
   const [error, setError] = useState('');
 
   // Fetch subscription plans from API
@@ -747,9 +749,7 @@ const CreateCommunity = () => {
             <Button
               variant="contained"
               onClick={() => {
-                const selectedPlan = subscriptionPlans.find(p => p._id === formData.selectedPlan);
-                const selectedCategory = categories.find(c => c.id === formData.category);
-                alert(`Community "${formData.name}" created successfully!\n\nPlan: ${selectedPlan?.name}\nCategory: ${selectedCategory?.label}\n\nYour community is now live and ready for members.`);
+                setSuccessModalOpen(true);
               }}
               sx={{ 
                 px: 6, 
@@ -793,6 +793,39 @@ const CreateCommunity = () => {
           )}
         </Box>
       </Container>
+
+      {/* Success Modal */}
+      <CommunitySuccessModal
+        open={successModalOpen}
+        onClose={() => setSuccessModalOpen(false)}
+        communityData={{
+          name: formData.name,
+          description: formData.description,
+          category: categories.find(c => c.id === formData.category)?.label || 'General',
+          plan: subscriptionPlans.find(p => p._id === formData.selectedPlan)?.name || 'Basic',
+          price: subscriptionPlans.find(p => p._id === formData.selectedPlan)?.price || '$29',
+          period: subscriptionPlans.find(p => p._id === formData.selectedPlan)?.period || 'month',
+          subdomain: formData.name?.toLowerCase().replace(/\s+/g, '') || 'mycommunity',
+          fullDomain: `${formData.name?.toLowerCase().replace(/\s+/g, '') || 'mycommunity'}.bbrtek-lms.com`,
+          ownerName: 'Community Owner',
+          ownerEmail: 'owner@example.com',
+          ownerPhone: '+1 (555) 123-4567',
+          features: [
+            'Unlimited members',
+            'Advanced analytics',
+            'Custom branding',
+            'Priority support',
+            'API access',
+            'White-label options'
+          ],
+          limits: {
+            maxMembers: 'Unlimited',
+            maxCourses: 'Unlimited',
+            storage: '100GB',
+            bandwidth: 'Unlimited'
+          }
+        }}
+      />
     </Box>
   );
 };

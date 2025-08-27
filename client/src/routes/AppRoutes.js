@@ -10,6 +10,12 @@ import Plans from '../pages/Plans';
 import Users from '../pages/Users';
 import Profile from '../pages/Profile';
 import Settings from '../pages/Settings';
+import Discovery from '../pages/Discovery';
+import CreateCommunity from '../pages/CreateCommunity';
+import CommunitySetup from '../pages/CommunitySetup';
+import CommunityDashboard from '../pages/CommunityDashboard';
+import StudentDashboard from '../pages/StudentDashboard';
+import TestPage from '../pages/TestPage';
 
 const AppRoutes = () => {
   return (
@@ -103,9 +109,17 @@ const AppRoutes = () => {
         }
       />
       
+      {/* Client-side routes - no protection needed */}
+      <Route path="/discovery" element={<Discovery />} />
+      <Route path="/create-community" element={<CreateCommunity />} />
+      <Route path="/community-setup" element={<CommunitySetup />} />
+      <Route path="/community-dashboard" element={<CommunityDashboard />} />
+      <Route path="/student-dashboard" element={<StudentDashboard />} />
+      <Route path="/test" element={<TestPage />} />
+      
       {/* Default redirect - redirect based on user role */}
-      <Route path="/" element={<Navigate to="/academies" replace />} />
-      <Route path="*" element={<Navigate to="/academies" replace />} />
+      <Route path="/" element={<Navigate to="/discovery" replace />} />
+      <Route path="*" element={<Navigate to="/discovery" replace />} />
     </Routes>
   );
 };

@@ -17,6 +17,7 @@ import {
   Search as SearchIcon,
   People as PeopleIcon
 } from '@mui/icons-material';
+import LoginModal from '../components/LoginModal';
 
 // Mock data for communities (will be replaced with API calls)
 const mockCommunities = [
@@ -120,6 +121,7 @@ const categories = [
 const Discovery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [filteredCommunities, setFilteredCommunities] = useState(mockCommunities);
 
   useEffect(() => {
@@ -174,6 +176,7 @@ const Discovery = () => {
             </Typography>
             <Button 
               variant="outlined" 
+              onClick={() => setLoginModalOpen(true)}
               sx={{ 
                 textTransform: 'none',
                 borderRadius: '20px',
@@ -396,6 +399,17 @@ const Discovery = () => {
           </Box>
         )}
       </Container>
+
+      {/* Login Modal */}
+      <LoginModal
+        open={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLoginSuccess={(userData) => {
+          console.log('Login successful:', userData);
+          // Handle successful login - redirect or update state
+          setLoginModalOpen(false);
+        }}
+      />
     </Box>
   );
 };
