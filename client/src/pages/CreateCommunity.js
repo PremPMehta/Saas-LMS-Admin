@@ -215,7 +215,7 @@ const CreateCommunity = () => {
 
             <Paper elevation={0} sx={{ p: 6, border: '1px solid #e0e0e0', borderRadius: 2 }}>
               <Grid container spacing={4}>
-                <Grid item xs={12}>
+                <Grid item size={12}>
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
                     Community Name
                   </Typography>
@@ -237,7 +237,7 @@ const CreateCommunity = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item size={12}>
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#333' }}>
                     Community Description
                   </Typography>
@@ -282,7 +282,7 @@ const CreateCommunity = () => {
 
             <Grid container spacing={3}>
               {categories.map((category) => (
-                <Grid item xs={12} md={6} key={category.id}>
+                <Grid item size={{xs:12 , md:6}} key={category.id}>
                   <Card
                     sx={{
                       cursor: 'pointer',
@@ -382,7 +382,7 @@ const CreateCommunity = () => {
             ) : (
               <Grid container spacing={4}>
                 {subscriptionPlans.map((plan) => (
-                  <Grid item xs={12} md={4} key={plan._id}>
+                  <Grid item size={{xs:12 , md:4}} key={plan._id}>
                     <Card
                       sx={{
                         cursor: 'pointer',
@@ -557,7 +557,7 @@ const CreateCommunity = () => {
                 </Typography>
 
                 <Grid container spacing={4}>
-                  <Grid item xs={12} md={6}>
+                  <Grid item size={{xs: 12 , md:4 }}>
                     <Box>
                       <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
                         Target Audience
@@ -568,7 +568,7 @@ const CreateCommunity = () => {
                     </Box>
                   </Grid>
                   
-                  <Grid item xs={12} md={6}>
+                  <Grid item size={{xs: 12 , md:4 }}>
                     <Box>
                       <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
                         Subscription Plan
@@ -580,7 +580,7 @@ const CreateCommunity = () => {
                   </Grid>
 
                   {formData.welcomeMessage && (
-                    <Grid item xs={12}>
+                    <Grid item size={{xs: 12 , md:4 }}>
                       <Box>
                         <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#333' }}>
                           Welcome Message
