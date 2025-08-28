@@ -15,9 +15,12 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  People as PeopleIcon
+  People as PeopleIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  Business as BusinessIcon,
+  Person as PersonIcon
 } from '@mui/icons-material';
-import LoginModal from '../components/LoginModal';
+import { useNavigate } from 'react-router-dom';
 
 // Mock data for communities (will be replaced with API calls)
 const mockCommunities = [
@@ -119,9 +122,22 @@ const categories = [
 ];
 
 const Discovery = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (loginDropdownOpen && !event.target.closest('[data-login-dropdown]')) {
+        setLoginDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [loginDropdownOpen]);
   const [filteredCommunities, setFilteredCommunities] = useState(mockCommunities);
 
   useEffect(() => {
@@ -174,17 +190,79 @@ const Discovery = () => {
             >
               skool
             </Typography>
-            <Button 
-              variant="outlined" 
-              onClick={() => setLoginModalOpen(true)}
-              sx={{ 
-                textTransform: 'none',
-                borderRadius: '20px',
-                px: 3
-              }}
-            >
-              LOG IN
-            </Button>
+            <Box sx={{ position: 'relative' }} data-login-dropdown>
+              <Button 
+                variant="outlined" 
+                onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                endIcon={<KeyboardArrowDownIcon />}
+                sx={{ 
+                  textTransform: 'none',
+                  borderRadius: '20px',
+                  px: 3
+                }}
+              >
+                LOG IN
+              </Button>
+              
+              {loginDropdownOpen && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    mt: 1,
+                    bgcolor: 'white',
+                    borderRadius: 2,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                    border: '1px solid #e0e0e0',
+                    zIndex: 1000,
+                    minWidth: 200
+                  }}
+                >
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      navigate('/community-login');
+                      setLoginDropdownOpen(false);
+                    }}
+                    sx={{
+                      textTransform: 'none',
+                      justifyContent: 'flex-start',
+                      px: 3,
+                      py: 2,
+                      borderRadius: 0,
+                      borderBottom: '1px solid #f0f0f0',
+                      '&:hover': {
+                        bgcolor: '#f5f5f5'
+                      }
+                    }}
+                  >
+                    <BusinessIcon sx={{ mr: 2, fontSize: 20 }} />
+                    Sign in as Community
+                  </Button>
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      navigate('/login');
+                      setLoginDropdownOpen(false);
+                    }}
+                    sx={{
+                      textTransform: 'none',
+                      justifyContent: 'flex-start',
+                      px: 3,
+                      py: 2,
+                      borderRadius: 0,
+                      '&:hover': {
+                        bgcolor: '#f5f5f5'
+                      }
+                    }}
+                  >
+                    <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
+                    Sign in as User
+                  </Button>
+                </Box>
+              )}
+            </Box>
           </Box>
         </Container>
       </Box>
@@ -400,16 +478,7 @@ const Discovery = () => {
         )}
       </Container>
 
-      {/* Login Modal */}
-      <LoginModal
-        open={loginModalOpen}
-        onClose={() => setLoginModalOpen(false)}
-        onLoginSuccess={(userData) => {
-          console.log('Login successful:', userData);
-          // Handle successful login - redirect or update state
-          setLoginModalOpen(false);
-        }}
-      />
+
     </Box>
   );
 };

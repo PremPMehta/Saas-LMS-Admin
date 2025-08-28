@@ -32,7 +32,7 @@ import {
 } from '@mui/icons-material';
 
 // API base URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://saas-lms-admin.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
 const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   const [activeTab, setActiveTab] = useState(0);

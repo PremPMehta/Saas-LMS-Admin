@@ -7,6 +7,12 @@ const User = require('./models/User.model');
 // Load environment variables
 dotenv.config();
 
+// Set default JWT_SECRET if not provided
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
+  console.log('⚠️  Using default JWT_SECRET - change this in production');
+}
+
 // Connect to database
 let dbConnection = null;
 connectDB().then(conn => {
@@ -31,6 +37,9 @@ app.use('/api/academies', require('./routes/academy.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/plans', require('./routes/plan.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
+app.use('/api/data', require('./routes/data.routes'));
+app.use('/api/courses', require('./routes/course.routes'));
+app.use('/api/community-auth', require('./routes/communityAuth.routes'));
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -116,7 +125,7 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Start server
 app.listen(PORT, async () => {

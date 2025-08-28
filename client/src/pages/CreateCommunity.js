@@ -95,7 +95,11 @@ const CreateCommunity = () => {
     category: '',
     targetAudience: '',
     selectedPlan: '',
-    welcomeMessage: ''
+    welcomeMessage: '',
+    ownerEmail: '',
+    ownerPassword: '',
+    ownerName: '',
+    phoneNumber: ''
   });
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -107,7 +111,7 @@ const CreateCommunity = () => {
     const fetchPlans = async () => {
       try {
         setLoading(true);
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://saas-lms-admin.onrender.com';
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
                     const response = await fetch(`${API_BASE_URL}/api/plans/public`);
         
         if (!response.ok) {

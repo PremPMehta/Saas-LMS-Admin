@@ -44,8 +44,10 @@ import {
   Save as SaveIcon,
   Close as CloseIcon,
   CheckCircle as CheckCircleIcon,
+  Publish as PublishIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import courseApi from '../utils/courseApi';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -133,6 +135,9 @@ const CreateCourse = () => {
       if (chapters.length === 0) newErrors.chapters = 'At least one chapter is required';
     }
 
+    // For final step (step 2), we don't need additional validation
+    // The course can be published even without chapters
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -162,7 +167,10 @@ const CreateCourse = () => {
   };
 
   const handleAddVideo = (chapterId) => {
-    setSelectedChapter(chapters.find(ch => ch.id === chapterId));
+    console.log('Adding video to chapter:', chapterId);
+    const chapter = chapters.find(ch => ch.id === chapterId);
+    console.log('Found chapter:', chapter);
+    setSelectedChapter(chapter);
     setEditingVideo(null);
     setOpenVideoDialog(true);
   };
@@ -202,6 +210,10 @@ const CreateCourse = () => {
   };
 
   const handleSaveVideo = (videoData) => {
+    console.log('handleSaveVideo called with:', videoData);
+    console.log('selectedChapter:', selectedChapter);
+    console.log('editingVideo:', editingVideo);
+    
     if (editingVideo) {
       setChapters(prev => prev.map(chapter => {
         if (chapter.id === selectedChapter.id) {
@@ -219,29 +231,78 @@ const CreateCourse = () => {
         id: Date.now().toString(),
         ...videoData
       };
-      setChapters(prev => prev.map(chapter => {
-        if (chapter.id === selectedChapter.id) {
-          return {
-            ...chapter,
-            videos: [...chapter.videos, newVideo]
-          };
-        }
-        return chapter;
-      }));
+      console.log('Creating new video:', newVideo);
+      setChapters(prev => {
+        const updatedChapters = prev.map(chapter => {
+          if (chapter.id === selectedChapter.id) {
+            console.log('Adding video to chapter:', chapter.title);
+            return {
+              ...chapter,
+              videos: [...chapter.videos, newVideo]
+            };
+          }
+          return chapter;
+        });
+        console.log('Updated chapters:', updatedChapters);
+        return updatedChapters;
+      });
     }
     setOpenVideoDialog(false);
   };
 
   const handleSubmit = async () => {
+    console.log('handleSubmit called');
+    console.log('courseData:', courseData);
+    console.log('chapters:', chapters);
+    
+    // Validate final step
+    if (!validateStep(activeStep)) {
+      console.log('Validation failed');
+      setIsSubmitting(false);
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Create the course object for database
+      const courseDataForApi = {
+        title: courseData.title,
+        description: courseData.description,
+        category: courseData.category,
+        targetAudience: courseData.targetAudience,
+        contentType: courseData.contentType,
+        thumbnail: courseData.thumbnail || 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course',
+        status: 'published', // Set status to published directly
+        publishedAt: new Date().toISOString(), // Set publish date
+        chapters: chapters.map((chapter, index) => ({
+          title: chapter.title,
+          description: chapter.description,
+          order: index,
+          videos: chapter.videos.map((video, videoIndex) => ({
+            title: video.title,
+            description: video.description,
+            videoUrl: video.videoUrl,
+            videoType: video.videoType,
+            duration: video.duration || '0:00',
+            order: videoIndex
+          }))
+        })),
+        tags: [],
+        requirements: [],
+        learningOutcomes: [],
+        price: 0,
+        isFree: true
+      };
+
+      // Save to database via API
+      const response = await courseApi.createCourse(courseDataForApi);
+      console.log('Course saved to database:', response.course);
       
       // Redirect to dashboard with success message
       navigate('/community-dashboard', { 
         state: { 
-          message: 'Course created successfully!' 
+          message: 'Course published successfully!',
+          newCourse: response.course
         }
       });
     } catch (error) {
@@ -251,18 +312,79 @@ const CreateCourse = () => {
     }
   };
 
+  const handleSubmitDraft = async () => {
+    console.log('handleSubmitDraft called');
+    console.log('courseData:', courseData);
+    console.log('chapters:', chapters);
+    
+    // Validate final step
+    if (!validateStep(activeStep)) {
+      console.log('Validation failed');
+      setIsSubmitting(false);
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      // Create the course object for database (as draft)
+      const courseDataForApi = {
+        title: courseData.title,
+        description: courseData.description,
+        category: courseData.category,
+        targetAudience: courseData.targetAudience,
+        contentType: courseData.contentType,
+        thumbnail: courseData.thumbnail || 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course',
+        status: 'draft', // Set status to draft
+        chapters: chapters.map((chapter, index) => ({
+          title: chapter.title,
+          description: chapter.description,
+          order: index,
+          videos: chapter.videos.map((video, videoIndex) => ({
+            title: video.title,
+            description: video.description,
+            videoUrl: video.videoUrl,
+            videoType: video.videoType,
+            duration: video.duration || '0:00',
+            order: videoIndex
+          }))
+        })),
+        tags: [],
+        requirements: [],
+        learningOutcomes: [],
+        price: 0,
+        isFree: true
+      };
+
+      // Save to database via API
+      const response = await courseApi.createCourse(courseDataForApi);
+      console.log('Course saved as draft:', response.course);
+      
+      // Redirect to dashboard with success message
+      navigate('/community-dashboard', { 
+        state: { 
+          message: 'Course saved as draft successfully!',
+          newCourse: response.course
+        }
+      });
+    } catch (error) {
+      console.error('Error saving course as draft:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const getStepContent = (step) => {
     switch (step) {
       case 0:
         return (
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
+          <Grid  spacing={3}>
+            <Grid  lg={12} xs={12}>
               <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
                 Course Basic Information
               </Typography>
             </Grid>
             
-            <Grid item xs={12}>
+            <Grid  lg={12} xs={12}>
               <TextField
                 fullWidth
                 label="Course Title"
@@ -275,7 +397,7 @@ const CreateCourse = () => {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid  xs={12}>
               <TextField
                 fullWidth
                 label="Course Description"
@@ -290,7 +412,7 @@ const CreateCourse = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid  xs={6} md={6}>
               <FormControl fullWidth error={!!errors.targetAudience} sx={{ mb: 3 }}>
                 <InputLabel>Target Audience</InputLabel>
                 <Select
@@ -312,7 +434,7 @@ const CreateCourse = () => {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid  xs={6} md={6}>
               <FormControl fullWidth error={!!errors.category} sx={{ mb: 3 }}>
                 <InputLabel>Category</InputLabel>
                 <Select
@@ -369,7 +491,7 @@ const CreateCourse = () => {
                       onChange={handleCourseThumbnailUpload}
                     />
                   </Button>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" sx={{ marginLeft:"5px" }}>
                     Recommended size: 1200x675 pixels (16:9 ratio)
                   </Typography>
                 </Box>
@@ -506,13 +628,14 @@ const CreateCourse = () => {
                          <Typography variant="caption" color="text.secondary">
                            {chapter.videos.length} {courseData.contentType === 'video' ? 'videos' : 'lessons'}
                          </Typography>
-                         <Button
-                           size="small"
-                           startIcon={<AddIcon />}
-                           onClick={() => handleAddVideo(chapter.id)}
-                         >
-                           Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
-                         </Button>
+                                                 <Button
+                          size="small"
+                          startIcon={<AddIcon />}
+                          onClick={() => handleAddVideo(chapter.id)}
+                          disabled={!courseData.contentType}
+                        >
+                          Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
+                        </Button>
                        </Box>
 
                       {chapter.videos.length > 0 && (
@@ -717,19 +840,46 @@ const CreateCourse = () => {
               
               <Box>
                 {activeStep === steps.length - 1 ? (
-                  <Button
-                    variant="contained"
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
-                    sx={{
-                      background: '#34a853',
-                      '&:hover': { background: '#2d8f47' },
-                      px: 4
-                    }}
-                  >
-                    {isSubmitting ? 'Publishing...' : 'Publish Course'}
-                  </Button>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        console.log('Save as Draft clicked!');
+                        handleSubmitDraft();
+                      }}
+                      disabled={isSubmitting}
+                      startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
+                      sx={{
+                        borderColor: '#666666',
+                        color: '#666666',
+                        '&:hover': { 
+                          borderColor: '#333333',
+                          backgroundColor: '#f5f5f5'
+                        },
+                        px: 4
+                      }}
+                    >
+                      {isSubmitting ? 'Saving...' : 'Save as Draft'}
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        console.log('Publish Course clicked!');
+                        console.log('Current step:', activeStep);
+                        console.log('Total steps:', steps.length);
+                        handleSubmit();
+                      }}
+                      disabled={isSubmitting}
+                      startIcon={isSubmitting ? <CircularProgress size={20} /> : <PublishIcon />}
+                      sx={{
+                        background: '#34a853',
+                        '&:hover': { background: '#2d8f47' },
+                        px: 4
+                      }}
+                    >
+                      {isSubmitting ? 'Publishing...' : 'Publish Course'}
+                    </Button>
+                  </Box>
                 ) : (
                   <Button
                     variant="contained"
@@ -759,14 +909,16 @@ const CreateCourse = () => {
       />
 
       {/* Video Dialog */}
-      <VideoDialog
-        open={openVideoDialog}
-        onClose={() => setOpenVideoDialog(false)}
-        onSave={handleSaveVideo}
-        video={editingVideo}
-        contentType={courseData.contentType}
-        chapter={selectedChapter}
-      />
+      {courseData.contentType && (
+        <VideoDialog
+          open={openVideoDialog}
+          onClose={() => setOpenVideoDialog(false)}
+          onSave={handleSaveVideo}
+          video={editingVideo}
+          contentType={courseData.contentType}
+          chapter={selectedChapter}
+        />
+      )}
     </Box>
   );
 };
@@ -832,6 +984,7 @@ const ChapterDialog = ({ open, onClose, onSave, chapter }) => {
 
 // Video Dialog Component
 const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => {
+  console.log('VideoDialog props:', { open, video, contentType, chapter });
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -867,9 +1020,28 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
   }, [video]);
 
   const handleSubmit = () => {
-    if (formData.title.trim() && formData.description.trim()) {
-      onSave(formData);
+    // Validate required fields
+    if (!formData.title.trim()) {
+      alert('Please enter a video title');
+      return;
     }
+    if (!formData.description.trim()) {
+      alert('Please enter a video description');
+      return;
+    }
+    
+    // Validate video content based on type
+    if (formData.videoType === 'upload' && !formData.videoFile) {
+      alert('Please upload a video file');
+      return;
+    }
+    if (formData.videoType !== 'upload' && !formData.videoUrl.trim()) {
+      alert('Please enter a video URL');
+      return;
+    }
+    
+    console.log('Saving video data:', formData);
+    onSave(formData);
   };
 
   const handleFileUpload = (event) => {
@@ -892,13 +1064,22 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
 
   // Helper functions to extract video IDs from URLs
   const getYouTubeVideoId = (url) => {
+    if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
   const getVimeoVideoId = (url) => {
+    if (!url) return null;
     const regExp = /vimeo\.com\/([0-9]+)/;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
+  };
+
+  const getLoomVideoId = (url) => {
+    if (!url) return null;
+    const regExp = /loom\.com\/share\/([a-zA-Z0-9]+)/;
     const match = url.match(regExp);
     return match ? match[1] : null;
   };
@@ -975,36 +1156,38 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                   Video Source
                 </Typography>
                 <Grid container spacing={2}>
-                  {[
-                    { 
-                      value: 'upload', 
-                      label: 'Upload Video', 
-                      icon: <UploadIcon />,
-                      description: 'Upload video file directly',
-                      color: '#4285f4'
-                    },
-                    { 
-                      value: 'youtube', 
-                      label: 'YouTube Link', 
-                      icon: <PlayIcon />,
-                      description: 'Paste YouTube video URL',
-                      color: '#ff0000'
-                    },
-                    { 
-                      value: 'loom', 
-                      label: 'Loom Link', 
-                      icon: <PlayIcon />,
-                      description: 'Paste Loom video URL',
-                      color: '#625df5'
-                    },
-                    { 
-                      value: 'vimeo', 
-                      label: 'Vimeo Link', 
-                      icon: <PlayIcon />,
-                      description: 'Paste Vimeo video URL',
-                      color: '#1ab7ea'
-                    },
-                  ].map((type) => (
+                  {(() => {
+                    const videoTypes = [
+                      { 
+                        value: 'upload', 
+                        label: 'Upload Video', 
+                        icon: UploadIcon,
+                        description: 'Upload video file directly',
+                        color: '#4285f4'
+                      },
+                      { 
+                        value: 'youtube', 
+                        label: 'YouTube Link', 
+                        icon: PlayIcon,
+                        description: 'Paste YouTube video URL',
+                        color: '#ff0000'
+                      },
+                      { 
+                        value: 'loom', 
+                        label: 'Loom Link', 
+                        icon: PlayIcon,
+                        description: 'Paste Loom video URL',
+                        color: '#625df5'
+                      },
+                      { 
+                        value: 'vimeo', 
+                        label: 'Vimeo Link', 
+                        icon: PlayIcon,
+                        description: 'Paste Vimeo video URL',
+                        color: '#1ab7ea'
+                      },
+                    ];
+                    return videoTypes.map((type) => (
                     <Grid item xs={12} sm={6} md={3} key={type.value}>
                       <Card
                         sx={{
@@ -1026,7 +1209,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                             mb: 2,
                             color: formData.videoType === type.value ? type.color : '#666666'
                           }}>
-                            {React.cloneElement(type.icon, { fontSize: 32 })}
+                            <type.icon />
                           </Box>
                           <Typography variant="body1" sx={{ 
                             fontWeight: 600,
@@ -1041,7 +1224,8 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                         </CardContent>
                       </Card>
                     </Grid>
-                  ))}
+                  ));
+                  })()}
                 </Grid>
               </Grid>
 
@@ -1135,6 +1319,18 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                       placeholder={`Paste your ${formData.videoType} video URL here`}
                       value={formData.videoUrl}
                       onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
+                      error={formData.videoUrl && !(
+                        (formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl)) ||
+                        (formData.videoType === 'vimeo' && getVimeoVideoId(formData.videoUrl)) ||
+                        (formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl))
+                      )}
+                      helperText={
+                        formData.videoUrl && !(
+                          (formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl)) ||
+                          (formData.videoType === 'vimeo' && getVimeoVideoId(formData.videoUrl)) ||
+                          (formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl))
+                        ) ? `Invalid ${formData.videoType} URL format` : ''
+                      }
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -1212,16 +1408,23 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                           <PlayIcon sx={{ color: '#4285f4', fontSize: 24 }} />
                           <Box sx={{ flex: 1 }}>
                             <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                              {formData.title || `${formData.videoType} Video`}
+                              {formData.title || `${formData.videoType.charAt(0).toUpperCase() + formData.videoType.slice(1)} Video`}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                              {formData.videoUrl}
+                              {formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl) ? 
+                                `Video ID: ${getYouTubeVideoId(formData.videoUrl)}` :
+                                formData.videoType === 'vimeo' && getVimeoVideoId(formData.videoUrl) ?
+                                `Video ID: ${getVimeoVideoId(formData.videoUrl)}` :
+                                formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl) ?
+                                `Video ID: ${getLoomVideoId(formData.videoUrl)}` :
+                                formData.videoUrl
+                              }
                             </Typography>
                           </Box>
                         </Box>
                         <Box sx={{ 
                           width: '100%', 
-                          height: 200, 
+                          height: 300, 
                           background: '#000000',
                           borderRadius: 2,
                           display: 'flex',
@@ -1230,37 +1433,49 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                           position: 'relative',
                           overflow: 'hidden'
                         }}>
-                          {formData.videoType === 'youtube' && (
+                          {formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl) && (
                             <iframe
                               width="100%"
                               height="100%"
-                              src={`https://www.youtube.com/embed/${getYouTubeVideoId(formData.videoUrl)}`}
+                              src={`https://www.youtube.com/embed/${getYouTubeVideoId(formData.videoUrl)}?rel=0&modestbranding=1`}
                               title="YouTube video player"
                               frameBorder="0"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                               allowFullScreen
                             />
                           )}
-                          {formData.videoType === 'vimeo' && (
+                          {formData.videoType === 'vimeo' && getVimeoVideoId(formData.videoUrl) && (
                             <iframe
                               width="100%"
                               height="100%"
-                              src={`https://player.vimeo.com/video/${getVimeoVideoId(formData.videoUrl)}`}
+                              src={`https://player.vimeo.com/video/${getVimeoVideoId(formData.videoUrl)}?title=0&byline=0&portrait=0`}
                               title="Vimeo video player"
                               frameBorder="0"
                               allow="autoplay; fullscreen; picture-in-picture"
                               allowFullScreen
                             />
                           )}
-                          {formData.videoType === 'loom' && (
+                          {formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl) && (
                             <iframe
                               width="100%"
                               height="100%"
-                              src={formData.videoUrl.replace('/share/', '/embed/')}
+                              src={`https://www.loom.com/embed/${getLoomVideoId(formData.videoUrl)}`}
                               title="Loom video player"
                               frameBorder="0"
                               allowFullScreen
                             />
+                          )}
+                          {((formData.videoType === 'youtube' && !getYouTubeVideoId(formData.videoUrl)) ||
+                            (formData.videoType === 'vimeo' && !getVimeoVideoId(formData.videoUrl)) ||
+                            (formData.videoType === 'loom' && !getLoomVideoId(formData.videoUrl))) && (
+                            <Box sx={{ textAlign: 'center', color: 'white' }}>
+                              <Typography variant="h6" sx={{ mb: 2 }}>
+                                Invalid {formData.videoType} URL
+                              </Typography>
+                              <Typography variant="body2">
+                                Please enter a valid {formData.videoType} video URL
+                              </Typography>
+                            </Box>
                           )}
                         </Box>
                       </Box>
@@ -1295,7 +1510,13 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained">
+        <Button 
+          onClick={() => {
+            console.log('Add/Update button clicked');
+            handleSubmit();
+          }} 
+          variant="contained"
+        >
           {video ? 'Update' : 'Add'} {contentType === 'video' ? 'Video' : 'Lesson'}
         </Button>
       </DialogActions>

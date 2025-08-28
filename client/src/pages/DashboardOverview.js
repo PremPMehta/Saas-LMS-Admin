@@ -56,7 +56,7 @@ const DashboardOverview = () => {
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin.onrender.com'}/api/academies`, {
+              const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/academies`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -105,7 +105,7 @@ const DashboardOverview = () => {
         return;
       }
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin.onrender.com'}/api/plans`, {
+              const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/plans`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
