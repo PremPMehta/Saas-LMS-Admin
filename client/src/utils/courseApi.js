@@ -19,8 +19,14 @@ const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
+    console.log('🌐 API: Making request to:', apiUrl(endpoint));
+    console.log('🔑 API: Config:', config);
+    
     const response = await fetch(apiUrl(endpoint), config);
+    console.log('📡 API: Response status:', response.status);
+    
     const data = await response.json();
+    console.log('📄 API: Response data:', data);
 
     if (!response.ok) {
       throw new Error(data.message || 'API request failed');
@@ -28,7 +34,7 @@ const apiCall = async (endpoint, options = {}) => {
 
     return data;
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('❌ API Error:', error);
     throw error;
   }
 };
@@ -43,19 +49,20 @@ export const courseApi = {
     });
   },
 
-  // Get all courses
-  getCourses: async (filters = {}) => {
-    const queryParams = new URLSearchParams(filters).toString();
-    const endpoint = queryParams ? `/api/courses?${queryParams}` : '/api/courses';
-    console.log('🔍 getCourses called with endpoint:', endpoint);
-    const result = await apiCall(endpoint);
-    console.log('🔍 getCourses result:', result);
-    return result;
-  },
+          // Get all courses
+        getCourses: async (filters = {}) => {
+            const queryParams = new URLSearchParams(filters).toString();
+            const endpoint = queryParams ? `/api/courses?${queryParams}` : '/api/courses';
+            const result = await apiCall(endpoint);
+            return result;
+        },
 
   // Get a single course by ID
   getCourseById: async (courseId) => {
-    return apiCall(`/api/courses/${courseId}`);
+    console.log('🔍 API: Fetching course with ID:', courseId);
+    const result = await apiCall(`/api/courses/${courseId}`);
+    console.log('📊 API: Course result:', result);
+    return result;
   },
 
   // Update a course

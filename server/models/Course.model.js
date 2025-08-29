@@ -139,21 +139,24 @@ const courseSchema = new mongoose.Schema({
 courseSchema.index({ instructor: 1, status: 1 });
 courseSchema.index({ community: 1, status: 1 });
 courseSchema.index({ category: 1, status: 1 });
-courseSchema.index({ title: 'text', description: 'text' });
+// courseSchema.index({ title: 'text', description: 'text' }); // Temporarily disabled to fix memory issue
 
 // Virtual for total students count
 courseSchema.virtual('studentsCount').get(function() {
-  return this.students.length;
+  return this.students ? this.students.length : 0;
 });
 
 // Virtual for total chapters count
 courseSchema.virtual('chaptersCount').get(function() {
-  return this.chapters.length;
+  return this.chapters ? this.chapters.length : 0;
 });
 
 // Virtual for total videos count
 courseSchema.virtual('videosCount').get(function() {
-  return this.chapters.reduce((total, chapter) => total + chapter.videos.length, 0);
+  if (!this.chapters) return 0;
+  return this.chapters.reduce((total, chapter) => {
+    return total + (chapter.videos ? chapter.videos.length : 0);
+  }, 0);
 });
 
 // Ensure virtual fields are serialized

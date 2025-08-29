@@ -16,7 +16,9 @@ import CommunitySetup from '../pages/CommunitySetup';
 import CommunityDashboard from '../pages/CommunityDashboard';
 import StudentDashboard from '../pages/StudentDashboard';
 import CreateCourse from '../pages/CreateCourse';
+import EditCourse from '../pages/EditCourse';
 import Courses from '../pages/Courses';
+import CourseViewer from '../pages/CourseViewer';
 import CommunityLogin from '../pages/CommunityLogin';
 import TestPage from '../pages/TestPage';
 
@@ -119,7 +121,9 @@ const AppRoutes = () => {
       <Route path="/community-dashboard" element={<CommunityDashboard />} />
       <Route path="/student-dashboard" element={<StudentDashboard />} />
       <Route path="/create-course" element={<CreateCourse />} />
+      <Route path="/edit-course/:courseId" element={<EditCourse />} />
       <Route path="/courses" element={<Courses />} />
+      <Route path="/course-viewer/:courseId?" element={<CourseViewer />} />
       <Route path="/community-login" element={<CommunityLogin />} />
       <Route path="/test" element={<TestPage />} />
       

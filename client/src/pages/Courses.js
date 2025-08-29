@@ -53,99 +53,181 @@ import {
   Warning as WarningIcon,
   Error as ErrorIcon,
   Search as SearchIcon,
+  WbSunny as SunIcon,
+  DarkMode as DarkIcon,
+  Menu as MenuIcon,
+  Home as HomeIcon,
+  Dashboard as DashboardIcon,
+  FlashOn as FlashIcon,
+  Description as DescriptionIcon,
+  ArrowBack as ArrowBackIcon,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 
 const Courses = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [openCourseDialog, setOpenCourseDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const [communityData, setCommunityData] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Check authentication on component mount
-  useEffect(() => {
-    if (!communityAuthApi.isAuthenticated()) {
-      console.log('❌ User not authenticated, redirecting to login...');
-      navigate('/community-login');
-      return;
+  // Mock data for fallback
+  const mockCourses = [
+    {
+      _id: '1',
+      title: 'Complete Web Development Bootcamp',
+      description: 'Learn HTML, CSS, JavaScript, React, Node.js and become a full-stack developer',
+      category: 'Technology',
+      status: 'published',
+      instructor: 'John Doe',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      _id: '2',
+      title: 'React.js Masterclass',
+      description: 'Master React.js with hooks, context, and modern development practices',
+      category: 'Technology',
+      status: 'published',
+      instructor: 'Jane Smith',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      _id: '3',
+      title: 'Node.js Backend Development',
+      description: 'Build scalable backend applications with Node.js and Express',
+      category: 'Technology',
+      status: 'draft',
+      instructor: 'Mike Johnson',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
-
-    const currentCommunity = communityAuthApi.getCurrentCommunity();
-    if (!currentCommunity) {
-      console.log('❌ No community data found, redirecting to login...');
-      navigate('/community-login');
-      return;
-    }
-    
-    setCommunityData(currentCommunity);
-    console.log('✅ User authenticated, community data loaded:', currentCommunity);
-  }, [navigate]);
+  ];
 
   // Load courses from API
   useEffect(() => {
+    let isMounted = true;
+    let abortController = new AbortController();
+    
     const loadCourses = async () => {
       try {
-        if (!communityAuthApi.isAuthenticated()) {
-          console.log('❌ Not authenticated, redirecting to login...');
-          navigate('/community-login');
-          return;
-        }
-
-        const currentCommunity = communityAuthApi.getCurrentCommunity();
-        if (!currentCommunity) {
-          console.log('❌ No community data, redirecting to login...');
-          navigate('/community-login');
-          return;
-        }
-
-        console.log('🔄 Loading courses for community:', currentCommunity.id);
+        setLoading(true);
         
-        const response = await courseApi.getCourses({ community: currentCommunity.id });
-        console.log('✅ API Response:', response);
-        console.log('📚 Courses loaded:', response.courses?.length || 0);
-        setCourses(response.courses || []);
+        // Add timeout to prevent infinite loading
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 15000)
+        );
+        
+        // Get community ID from localStorage or use a fallback
+        const communityId = localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69';
+        console.log('🔍 Loading courses for community:', communityId);
+        
+        // Try to fetch all courses first (without community filter)
+        let response;
+        try {
+          response = await Promise.race([courseApi.getCourses({ community: communityId }), timeoutPromise]);
+        } catch (communityError) {
+          console.log('⚠️ Community-specific fetch failed, trying without filter:', communityError.message);
+          // If community-specific fetch fails, try without community filter
+          response = await Promise.race([courseApi.getCourses({}), timeoutPromise]);
+        }
+        
+        if (!isMounted) return;
+        
+        let coursesData = response.courses || [];
+        console.log('📊 Courses loaded:', coursesData.length, 'courses');
+        console.log('📋 Course IDs:', coursesData.map(c => c._id || c.id));
+        
+        // If we got courses but they don't match the community, log it
+        if (coursesData.length > 0) {
+          const communityCourses = coursesData.filter(c => c.community === communityId);
+          console.log('🏘️ Courses matching community:', communityCourses.length, 'out of', coursesData.length);
+        }
+        
+        // Ensure we have consistent data structure
+        const normalizedCourses = coursesData.map(course => ({
+          _id: course._id || course.id,
+          title: course.title || 'Untitled Course',
+          description: course.description || '',
+          category: course.category || 'Uncategorized',
+          status: course.status || 'draft',
+          instructor: course.instructor || 'Unknown',
+          community: course.community || communityId,
+          createdAt: course.createdAt || new Date().toISOString(),
+          updatedAt: course.updatedAt || new Date().toISOString()
+        }));
+        
+        // Always update with the latest data from API
+        console.log('✅ Updating courses with fresh data from API');
+        setCourses(normalizedCourses);
         
       } catch (error) {
         console.error('❌ Error loading courses:', error);
-        
-        if (error.message.includes('unauthorized') || error.message.includes('token')) {
-          console.log('❌ Authentication error, redirecting to login...');
-          communityAuthApi.logout();
-          navigate('/community-login');
-          return;
+        if (isMounted) {
+          // Use mock data as fallback
+          console.log('⚠️ Using mock data due to API error:', error.message);
+          console.log('📊 Mock courses loaded:', mockCourses.length, 'courses');
+          setCourses(mockCourses);
         }
-        
-        setCourses([]);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    if (communityAuthApi.isAuthenticated()) {
-      console.log('🚀 Loading courses for authenticated user...');
-      loadCourses();
-    }
-  }, [navigate]);
+    // Load courses immediately
+    loadCourses();
+    
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, []);
 
-  // Course management functions
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'published':
-        return '#34a853';
-      case 'draft':
-        return '#fbbc04';
-      case 'archived':
-        return '#ea4335';
-      default:
-        return '#666666';
+  // Manual refresh function
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const communityId = localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69';
+      console.log('🔄 Manual refresh: Loading courses for community:', communityId);
+      
+      const response = await courseApi.getCourses({ community: communityId });
+      let coursesData = response.courses || [];
+      
+      console.log('📊 Manual refresh: Courses loaded:', coursesData.length, 'courses');
+      
+      const normalizedCourses = coursesData.map(course => ({
+        _id: course._id || course.id,
+        title: course.title || 'Untitled Course',
+        description: course.description || '',
+        category: course.category || 'Uncategorized',
+        status: course.status || 'draft',
+        instructor: course.instructor || 'Unknown',
+        community: course.community || communityId,
+        createdAt: course.createdAt || new Date().toISOString(),
+        updatedAt: course.updatedAt || new Date().toISOString()
+      }));
+      
+      setCourses(normalizedCourses);
+      console.log('✅ Manual refresh: Courses updated successfully');
+    } catch (error) {
+      console.error('❌ Manual refresh error:', error);
+    } finally {
+      setRefreshing(false);
     }
   };
 
+  // Course management functions
   const getCategoryColor = (category, isSecondary = false) => {
     const colors = {
       'Technology': isSecondary ? '#4f46e5' : '#3b82f6',
@@ -159,91 +241,8 @@ const Courses = () => {
     };
     return colors[category] || colors.default;
   };
-    {
-      id: '1',
-      title: 'Complete React Development Course',
-      description: 'Learn React from scratch to advanced concepts',
-      category: 'Development',
-      targetAudience: 'Intermediate',
-      contentType: 'video',
-      status: 'published',
-      thumbnail: 'https://via.placeholder.com/300x200/4285f4/ffffff?text=React+Course',
-      chapters: 12,
-      totalVideos: 45,
-      totalLessons: 45,
-      duration: '15h 30m',
-      students: 1250,
-      rating: 4.8,
-      createdAt: '2024-01-15',
-      updatedAt: '2024-01-20',
-      instructor: 'John Doe',
-    },
-    {
-      id: '2',
-      title: 'UI/UX Design Fundamentals',
-      description: 'Master the basics of user interface and user experience design',
-      category: 'Design',
-      targetAudience: 'Beginners',
-      contentType: 'video',
-      status: 'draft',
-      thumbnail: 'https://via.placeholder.com/300x200/34a853/ffffff?text=UI+UX+Design',
-      chapters: 8,
-      totalVideos: 32,
-      totalLessons: 32,
-      duration: '12h 15m',
-      students: 890,
-      rating: 4.6,
-      createdAt: '2024-01-10',
-      updatedAt: '2024-01-18',
-      instructor: 'Jane Smith',
-    },
-    {
-      id: '3',
-      title: 'Digital Marketing Masterclass',
-      description: 'Comprehensive guide to digital marketing strategies',
-      category: 'Marketing',
-      targetAudience: 'Advanced',
-      contentType: 'text',
-      status: 'published',
-      thumbnail: 'https://via.placeholder.com/300x200/ea4335/ffffff?text=Marketing',
-      chapters: 15,
-      totalVideos: 0,
-      totalLessons: 60,
-      duration: '20h 45m',
-      students: 2100,
-      rating: 4.9,
-      createdAt: '2024-01-05',
-      updatedAt: '2024-01-22',
-      instructor: 'Mike Johnson',
-    },
-    {
-      id: '4',
-      title: 'Data Science for Beginners',
-      description: 'Introduction to data science and machine learning',
-      category: 'Data Science',
-      targetAudience: 'Beginners',
-      contentType: 'video',
-      status: 'archived',
-      thumbnail: 'https://via.placeholder.com/300x200/ff6b35/ffffff?text=Data+Science',
-      chapters: 10,
-      totalVideos: 38,
-      totalLessons: 38,
-      duration: '18h 20m',
-      students: 750,
-      rating: 4.7,
-      createdAt: '2023-12-20',
-      updatedAt: '2024-01-15',
-      instructor: 'Sarah Wilson',
-    },
-  ];
 
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setCourses(mockCourses);
-      setLoading(false);
-    }, 1000);
-  }, []);
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -272,31 +271,57 @@ const Courses = () => {
   };
 
   const handleViewCourse = (course) => {
-    setSelectedCourse(course);
-    setOpenCourseDialog(true);
+    // Navigate to course viewer instead of opening dialog
+    navigate(`/course-viewer/${course._id || course.id}`);
   };
 
-  const handleEditCourse = (courseId) => {
-    navigate(`/edit-course/${courseId}`);
+  const handleEditCourse = (course) => {
+    navigate(`/edit-course/${course._id || course.id}`);
   };
 
-  const handleDeleteCourse = (courseId) => {
-    if (window.confirm('Are you sure you want to delete this course?')) {
-      setCourses(prev => prev.filter(course => course.id !== courseId));
+  const handleDeleteCourse = (course) => {
+    setCourseToDelete(course);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!courseToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      // Delete from database
+      await courseApi.deleteCourse(courseToDelete._id || courseToDelete.id);
+      
+      // Update local state
+      setCourses(prev => prev.filter(course => (course._id || course.id) !== (courseToDelete._id || courseToDelete.id)));
+      
+      console.log('Course deleted successfully');
+      setDeleteDialogOpen(false);
+      setCourseToDelete(null);
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      alert('Failed to delete course. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setCourseToDelete(null);
   };
 
   const handleStatusChange = (courseId, newStatus) => {
     setCourses(prev => prev.map(course => 
-      course.id === courseId ? { ...course, status: newStatus } : course
+      (course._id || course.id) === courseId ? { ...course, status: newStatus } : course
     ));
   };
 
   const filteredCourses = courses.filter(course => {
     const matchesStatus = filterStatus === 'all' || course.status === filterStatus;
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         course.category?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -310,30 +335,187 @@ const Courses = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
         <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Loading courses...</Typography>
       </Box>
     );
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+    <Box sx={{ 
+      minHeight: '100vh',
+      background: darkMode ? '#1a1a1a' : '#f8f9fa',
+      display: 'flex'
+    }}>
+      {/* Left Navigation Bar */}
+      <Box sx={{
+        width: 80,
+        background: darkMode ? '#2d2d2d' : '#ffffff',
+        borderRight: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        py: 2,
+        position: 'fixed',
+        height: '100vh',
+        zIndex: 1000,
+      }}>
+        {/* Hamburger Menu */}
+        <IconButton sx={{ mb: 4, color: darkMode ? '#ffffff' : '#000000' }}>
+          <MenuIcon />
+        </IconButton>
+
+        {/* Navigation Items */}
+        {[
+          { id: 'home', icon: <HomeIcon />, label: 'Home' },
+          { id: 'dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
+          { id: 'courses', icon: <VideoIcon />, label: 'Courses' },
+          { id: 'analytics', icon: <FlashIcon />, label: 'Analytics' },
+          { id: 'content', icon: <DescriptionIcon />, label: 'Content' },
+        ].map((item) => (
+          <Box key={item.id} sx={{ mb: 2, position: 'relative' }}>
+            <IconButton
+              onClick={() => {
+                if (item.id === 'home' || item.id === 'dashboard') {
+                  navigate('/community-dashboard');
+                } else if (item.id === 'courses') {
+                  navigate('/courses');
+                } else {
+                  // For other items, stay on current page for now
+                  console.log(`${item.label} section coming soon...`);
+                }
+              }}
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                backgroundColor: item.id === 'courses' 
+                  ? (darkMode ? '#404040' : '#000000')
+                  : 'transparent',
+                color: item.id === 'courses' 
+                  ? '#ffffff' 
+                  : (darkMode ? '#ffffff' : '#000000'),
+                '&:hover': {
+                  backgroundColor: item.id === 'courses' 
+                    ? (darkMode ? '#404040' : '#000000')
+                    : (darkMode ? '#404040' : '#f0f0f0'),
+                }
+              }}
+            >
+              {item.icon}
+            </IconButton>
+          </Box>
+        ))}
+
+        {/* Logout Button */}
+        <Box sx={{ mt: 'auto', mb: 2 }}>
+          <IconButton 
+            onClick={() => {
+              communityAuthApi.logout();
+              navigate('/community-login');
+            }}
+            sx={{ color: darkMode ? '#ffffff' : '#000000' }}
+            title="Logout"
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        </Box>
+      </Box>
+
+      {/* Main Content Area */}
+      <Box sx={{ 
+        flex: 1, 
+        ml: 10, // Account for fixed sidebar
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        {/* Top Header */}
+        <Box sx={{
+          height: 80,
+          background: darkMode ? '#2d2d2d' : '#ffffff',
+          borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 4,
+          position: 'sticky',
+          top: 0,
+          zIndex: 999,
+        }}>
+          {/* Logo */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Avatar sx={{ 
+              bgcolor: '#4285f4', 
+              mr: 2,
+              width: 40,
+              height: 40
+            }}>
+              <VideoIcon />
+            </Avatar>
+            <Typography variant="h6" sx={{ 
+              fontWeight: 700,
+              color: darkMode ? '#ffffff' : '#000000'
+            }}>
+              {communityData?.name || 'Community'} Hub
+            </Typography>
+          </Box>
+
+          {/* Right - Theme Toggle */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <IconButton
+              onClick={() => setDarkMode(!darkMode)}
+              sx={{ color: darkMode ? '#ffffff' : '#000000' }}
+            >
+              {darkMode ? <SunIcon /> : <DarkIcon />}
+            </IconButton>
+          </Box>
+        </Box>
+
+        {/* Main Content */}
+        <Box sx={{ flex: 1, p: 4 }}>
+          <Container maxWidth="xl">
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                <CircularProgress />
+                <Typography sx={{ ml: 2 }}>Loading courses from database...</Typography>
+              </Box>
+            ) : (
+              <Box>
+                {/* Header */}
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
             My Courses
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Manage and track all your created courses
+            Manage and track all your created courses ({courses.length} courses)
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/create-course')}
-          sx={{
-            background: '#4285f4',
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <IconButton
+            onClick={handleRefresh}
+            disabled={refreshing}
+            sx={{ 
+              color: '#4285f4',
+              '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
+            }}
+            title="Refresh courses"
+          >
+            <RefreshIcon sx={{ 
+              animation: refreshing ? 'spin 1s linear infinite' : 'none',
+              '@keyframes spin': {
+                '0%': { transform: 'rotate(0deg)' },
+                '100%': { transform: 'rotate(360deg)' }
+              }
+            }} />
+          </IconButton>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/create-course')}
+            sx={{
+              background: '#4285f4',
             '&:hover': { background: '#3367d6' }
           }}
         >
@@ -400,7 +582,7 @@ const Courses = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Box>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335' }}>
-                    {courses.reduce((total, course) => total + course.students, 0)}
+                    {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Total Students
@@ -453,11 +635,32 @@ const Courses = () => {
       </Card>
 
       {/* Courses Grid */}
-      <Box>
+      <Box sx={{ 
+        '& .MuiGrid-container': {
+          margin: 0,
+          width: '100%'
+        },
+        '& .MuiGrid-item': {
+          padding: '12px !important'
+        }
+      }}>
         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
           {communityData?.name || 'My'} Courses ({filteredCourses.length})
         </Typography>
         
+        {/* Debug Info */}
+        <Box sx={{ mb: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            Debug: {courses.length} total courses, {filteredCourses.length} filtered, Loading: {loading.toString()}, Refreshing: {refreshing.toString()}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Community ID: {localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Course IDs: {courses.map(c => c._id).join(', ')}
+          </Typography>
+        </Box>
+
         {filteredCourses.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
@@ -480,9 +683,9 @@ const Courses = () => {
             )}
           </Box>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }}>
             {filteredCourses.map((course) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={course._id || course.id}>
+              <Grid item xs={12} sm={6} lg={3} key={course._id || course.id}>
                 <Card sx={{ 
                   cursor: 'pointer',
                   background: darkMode ? '#2d2d2d' : '#ffffff',
@@ -490,6 +693,10 @@ const Courses = () => {
                   borderRadius: 3,
                   transition: 'all 0.3s ease',
                   overflow: 'hidden',
+                  height: 450, // Fixed height for consistent card size
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   '&:hover': {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
@@ -506,7 +713,7 @@ const Courses = () => {
                     justifyContent: 'center',
                     overflow: 'hidden'
                   }}>
-                    {course.thumbnail && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course' ? (
+                    {course.thumbnail && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course' && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Test+Course' ? (
                       <img 
                         src={course.thumbnail} 
                         alt={course.title}
@@ -514,6 +721,10 @@ const Courses = () => {
                           width: '100%', 
                           height: '100%', 
                           objectFit: 'cover' 
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
                         }}
                       />
                     ) : (
@@ -554,7 +765,7 @@ const Courses = () => {
                     </Box>
                   </Box>
                   
-                  <CardContent sx={{ p: 3 }}>
+                  <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                     {/* Course Header */}
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Box sx={{ 
@@ -589,39 +800,41 @@ const Courses = () => {
                       mb: 3,
                       color: darkMode ? '#cccccc' : '#666666',
                       lineHeight: 1.6,
-                      fontSize: '0.9rem'
+                      fontSize: '0.9rem',
+                      height: 60, // Fixed height for description
+                      overflow: 'hidden',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical'
                     }}>
-                      {course.description.length > 120 
-                        ? `${course.description.substring(0, 120)}...` 
-                        : course.description
-                      }
+                      {course.description}
                     </Typography>
 
                     {/* Course Stats */}
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                    <Box sx={{ display: 'flex', gap: 2, mb: 3, height: 24 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <VideoIcon sx={{ fontSize: 16, color: '#666' }} />
                         <Typography variant="caption" sx={{ color: '#666' }}>
-                          {course.chaptersCount || course.chapters?.length || 0} chapters
+                          {String(course.chaptersCount || course.chapters?.length || 0)} chapters
                         </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <PlayIcon sx={{ fontSize: 16, color: '#666' }} />
                         <Typography variant="caption" sx={{ color: '#666' }}>
-                          {course.videosCount || course.chapters?.reduce((total, ch) => total + (ch.videos?.length || 0), 0) || 0} videos
+                          {String(course.videosCount || course.chapters?.reduce((total, ch) => total + (ch.videos?.length || 0), 0) || 0)} videos
                         </Typography>
                       </Box>
                     </Box>
 
                     {/* Course Meta */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, height: 24 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <PeopleIcon sx={{ fontSize: 16, color: '#666' }} />
-                        <Typography variant="caption" sx={{ 
-                          color: darkMode ? '#cccccc' : '#666666'
-                        }}>
-                          {Math.floor(Math.random() * 3000) + 500} Members
-                        </Typography>
+                                              <Typography variant="caption" sx={{ 
+                        color: darkMode ? '#cccccc' : '#666666'
+                      }}>
+                        {String(Math.floor(Math.random() * 3000) + 500)} Members
+                      </Typography>
                       </Box>
                       <Typography variant="caption" sx={{ 
                         color: course.isFree ? '#34a853' : '#f59e0b',
@@ -630,6 +843,33 @@ const Courses = () => {
                         {course.isFree ? 'Free' : `$${course.price || 29}/month`}
                       </Typography>
                     </Box>
+
+                    {/* Course Actions */}
+                    <Box sx={{ display: 'flex', gap: 1, mt: 'auto', height: 36 }}>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditCourse(course);
+                        }}
+                        sx={{ flex: 1 }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCourse(course._id || course.id);
+                        }}
+                        sx={{ flex: 1 }}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
                   </CardContent>
                 </Card>
               </Grid>
@@ -637,6 +877,7 @@ const Courses = () => {
           </Grid>
         )}
       </Box>
+            )}
 
       {/* Course Details Dialog */}
       <Dialog
@@ -719,7 +960,7 @@ const Courses = () => {
                         Duration
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {selectedCourse.duration}
+                        {selectedCourse.duration || 'Not specified'}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -727,7 +968,7 @@ const Courses = () => {
                         Students Enrolled
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {selectedCourse.students.toLocaleString()}
+                        {selectedCourse.students?.toLocaleString() || '0'}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -737,7 +978,7 @@ const Courses = () => {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <StarIcon sx={{ fontSize: 16, color: '#fbbc04' }} />
                         <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                          {selectedCourse.rating}/5.0
+                          {selectedCourse.rating || '0'}/5.0
                         </Typography>
                       </Box>
                     </Grid>
@@ -749,7 +990,7 @@ const Courses = () => {
               <Button onClick={() => setOpenCourseDialog(false)}>Close</Button>
               <Button
                 variant="contained"
-                onClick={() => handleEditCourse(selectedCourse.id)}
+                onClick={() => handleEditCourse(selectedCourse)}
                 sx={{
                   background: '#4285f4',
                   '&:hover': { background: '#3367d6' }
@@ -761,7 +1002,41 @@ const Courses = () => {
           </>
         )}
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={cancelDelete} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            Delete Course
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Are you sure you want to delete the course "{courseToDelete?.title}"?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            This action cannot be undone. All course content, chapters, and videos will be permanently deleted.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmDelete}
+            variant="contained"
+            color="error"
+            disabled={isDeleting}
+            startIcon={isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Course'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

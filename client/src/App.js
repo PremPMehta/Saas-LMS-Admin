@@ -1,47 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import AppRoutes from './routes/AppRoutes';
-
-// Create a clean theme for the client app
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#4285f4',
-    },
-    secondary: {
-      main: '#34a853',
-    },
-    background: {
-      default: '#f8f9fa',
-    },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h2: {
-      fontWeight: 700,
-    },
-    h6: {
-      fontWeight: 600,
-    },
-  },
-  shape: {
-    borderRadius: 12,
-  },
-});
+import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <div className="App">
-          <AppRoutes />
-        </div>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <AuthProvider>
+        <ThemeProvider>
+          <div className="App">
+            <AppRoutes />
+          </div>
+        </ThemeProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

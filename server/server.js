@@ -7,6 +7,12 @@ const User = require('./models/User.model');
 // Load environment variables
 dotenv.config();
 
+// Set MongoDB URI if not provided
+if (!process.env.MONGO_URI) {
+  process.env.MONGO_URI = 'mongodb+srv://premarch567:Z6qcWJ8m6iv4ZqRW@cluster0.lyzxobt.mongodb.net/saasLmsAdmin?retryWrites=true&w=majority&appName=Cluster0';
+  console.log('🔗 Using MongoDB Atlas connection');
+}
+
 // Set default JWT_SECRET if not provided
 if (!process.env.JWT_SECRET) {
   process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
