@@ -508,7 +508,7 @@ const CourseViewer = () => {
   useEffect(() => {
     const loadCourseData = async () => {
       setLoading(true);
-      
+
       try {
         if (courseId) {
           // Fetch specific course from API
@@ -519,12 +519,12 @@ const CourseViewer = () => {
               'Authorization': `Bearer ${localStorage.getItem('communityToken') || localStorage.getItem('token')}`
             }
           });
-          
+
           if (response.ok) {
             const data = await response.json();
             const course = data.course;
             console.log('📊 CourseViewer: API course data:', course);
-            
+
             if (course) {
               setSelectedCourse(course);
               if (course.chapters && course.chapters.length > 0) {
@@ -553,12 +553,12 @@ const CourseViewer = () => {
               'Authorization': `Bearer ${localStorage.getItem('communityToken') || localStorage.getItem('token')}`
             }
           });
-          
+
           if (response.ok) {
             const data = await response.json();
             const fetchedCourses = data.courses || [];
             console.log('📊 CourseViewer: API courses data:', fetchedCourses);
-            
+
             if (fetchedCourses.length > 0) {
               setCourses(fetchedCourses);
               findAndSelectCourse(fetchedCourses);
@@ -582,7 +582,7 @@ const CourseViewer = () => {
         setLoading(false);
       }
     };
-    
+
     // Helper function to find and select course
     const findAndSelectCourse = (coursesList) => {
       if (courseId && coursesList.length > 0) {
@@ -601,7 +601,7 @@ const CourseViewer = () => {
       }
       return false;
     };
-    
+
     loadCourseData();
   }, [courseId]);
 
@@ -636,13 +636,13 @@ const CourseViewer = () => {
 
   // Update video completion status in the course data
   const updateVideoCompletion = (videoId, completed) => {
-    setCourses(prevCourses => 
+    setCourses(prevCourses =>
       prevCourses.map(course => ({
         ...course,
         chapters: course.chapters?.map(chapter => ({
           ...chapter,
-          videos: chapter.videos?.map(video => 
-            video._id === videoId 
+          videos: chapter.videos?.map(video =>
+            video._id === videoId
               ? { ...video, completed }
               : video
           )
@@ -657,8 +657,8 @@ const CourseViewer = () => {
         ...prevCourse,
         chapters: prevCourse.chapters?.map(chapter => ({
           ...chapter,
-          videos: chapter.videos?.map(video => 
-            video._id === videoId 
+          videos: chapter.videos?.map(video =>
+            video._id === videoId
               ? { ...video, completed }
               : video
           )
@@ -695,7 +695,7 @@ const CourseViewer = () => {
     setSelectedCourse(null);
     setSelectedLecture(null);
     setActiveLectureId(null);
-    
+
     // Re-trigger the useEffect
     setTimeout(() => {
       const loadCourseData = async () => {
@@ -708,12 +708,12 @@ const CourseViewer = () => {
                 'Authorization': `Bearer ${localStorage.getItem('communityToken') || localStorage.getItem('token')}`
               }
             });
-            
+
             if (response.ok) {
               const data = await response.json();
               const course = data.course;
               console.log('📊 CourseViewer: Refreshed course data:', course);
-              
+
               if (course) {
                 setSelectedCourse(course);
                 if (course.chapters && course.chapters.length > 0) {
@@ -732,7 +732,7 @@ const CourseViewer = () => {
           setLoading(false);
         }
       };
-      
+
       loadCourseData();
     }, 100);
   };
@@ -789,7 +789,7 @@ const CourseViewer = () => {
   }
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       minHeight: '100vh',
       background: darkMode ? '#1a1a1a' : '#f8f9fa',
       display: 'flex'
@@ -829,14 +829,14 @@ const CourseViewer = () => {
                 width: 48,
                 height: 48,
                 borderRadius: '50%',
-                backgroundColor: activeNav === item.id 
+                backgroundColor: activeNav === item.id
                   ? (darkMode ? '#404040' : '#000000')
                   : 'transparent',
-                color: activeNav === item.id 
-                  ? '#ffffff' 
+                color: activeNav === item.id
+                  ? '#ffffff'
                   : (darkMode ? '#ffffff' : '#000000'),
                 '&:hover': {
-                  backgroundColor: activeNav === item.id 
+                  backgroundColor: activeNav === item.id
                     ? (darkMode ? '#404040' : '#000000')
                     : (darkMode ? '#404040' : '#f0f0f0'),
                 }
@@ -849,7 +849,7 @@ const CourseViewer = () => {
 
         {/* Logout Button */}
         <Box sx={{ mt: 'auto', mb: 2 }}>
-          <IconButton 
+          <IconButton
             onClick={handleLogout}
             sx={{ color: darkMode ? '#ffffff' : '#000000' }}
             title="Logout"
@@ -860,8 +860,8 @@ const CourseViewer = () => {
       </Box>
 
       {/* Main Content Area */}
-      <Box sx={{ 
-        flex: 1, 
+      <Box sx={{
+        flex: 1,
         ml: 10, // Account for fixed sidebar
         display: 'flex',
         flexDirection: 'column'
@@ -881,7 +881,7 @@ const CourseViewer = () => {
         }}>
           {/* Breadcrumbs */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Breadcrumbs 
+            <Breadcrumbs
               separator={<NavigateNextIcon fontSize="small" />}
               aria-label="breadcrumb"
             >
@@ -910,7 +910,7 @@ const CourseViewer = () => {
             <IconButton
               onClick={handleRefresh}
               title="Refresh course data"
-              sx={{ 
+              sx={{
                 color: darkMode ? '#ffffff' : '#000000',
                 '&:hover': {
                   backgroundColor: darkMode ? '#404040' : '#f0f0f0',
@@ -924,7 +924,7 @@ const CourseViewer = () => {
             <IconButton
               onClick={() => setDarkMode(!darkMode)}
               title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              sx={{ 
+              sx={{
                 color: darkMode ? '#ffffff' : '#000000',
                 '&:hover': {
                   backgroundColor: darkMode ? '#404040' : '#f0f0f0',
@@ -934,7 +934,7 @@ const CourseViewer = () => {
               {darkMode ? <SunIcon /> : <DarkIcon />}
             </IconButton>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Button
               variant="outlined"
@@ -943,7 +943,7 @@ const CourseViewer = () => {
             >
               Back to Courses
             </Button>
-            
+
             {/* Theme Toggle */}
             <IconButton
               onClick={() => setDarkMode(!darkMode)}
@@ -957,250 +957,250 @@ const CourseViewer = () => {
         {/* Course Content */}
         <Box sx={{ p: 3, flex: 1, overflow: 'hidden' }}>
           <Grid container spacing={3} sx={{ height: '100%' }}>
-            
+
             {/* Sidebar - Courses and Lectures */}
-            <Grid item xs={12} md={4} lg={3} sx={{ height: '100%' }}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1, overflow: 'hidden', p: 0 }}>
-              <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Courses & Lectures
-                </Typography>
-              </Box>
-              
-              <Box sx={{ overflow: 'auto', height: 'calc(100% - 80px)' }}>
-                {courses.map((course, index) => (
-                  <Accordion
-                    key={course._id}
-                    expanded={expandedAccordion === `panel${index}`}
-                    onChange={handleAccordionChange(`panel${index}`)}
-                    sx={{ 
-                      '&:before': { display: 'none' },
-                      boxShadow: 'none',
-                      borderBottom: 1,
-                      borderColor: 'divider'
-                    }}
-                  >
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      sx={{ 
-                        '&:hover': { backgroundColor: 'action.hover' },
-                        cursor: 'pointer'
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Course selected:', course.title);
-                        handleCourseSelect(course);
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                        {/* Course Thumbnail */}
-                        <Box
+            <Grid item size={{xs: 12, md: 4, lg: 4 }} sx={{ height: '100%' }}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flexGrow: 1, overflow: 'hidden', p: 0 }}>
+                  <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      Courses & Lectures
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ overflow: 'auto', height: 'calc(100% - 80px)' }}>
+                    {courses.map((course, index) => (
+                      <Accordion
+                        key={course._id}
+                        expanded={expandedAccordion === `panel${index}`}
+                        onChange={handleAccordionChange(`panel${index}`)}
+                        sx={{
+                          '&:before': { display: 'none' },
+                          boxShadow: 'none',
+                          borderBottom: 1,
+                          borderColor: 'divider'
+                        }}
+                      >
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
                           sx={{
-                            width: 60,
-                            height: 40,
-                            borderRadius: 1,
-                            background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            fontSize: '12px',
-                            fontWeight: 600
+                            '&:hover': { backgroundColor: 'action.hover' },
+                            cursor: 'pointer'
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Course selected:', course.title);
+                            handleCourseSelect(course);
                           }}
                         >
-                          {course.title.charAt(0)}
-                        </Box>
-                        
-                        {/* Course Info */}
-                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                            {course.title}
-                          </Typography>
-                          <Chip 
-                            label={course.status} 
-                            size="small" 
-                            color={getStatusColor(course.status)}
-                            sx={{ fontSize: '10px' }}
-                          />
-                        </Box>
-                      </Box>
-                    </AccordionSummary>
-                    
-                    <AccordionDetails sx={{ p: 0 }}>
-                      <Box sx={{ pl: 2 }}>
-                        {course.chapters?.map((chapter) => (
-                          <Box key={chapter._id} sx={{ mb: 2 }}>
-                            <Typography variant="caption" sx={{ 
-                              color: 'text.secondary', 
-                              fontWeight: 600,
-                              display: 'block',
-                              mb: 1
-                            }}>
-                              {chapter.title}
-                            </Typography>
-                            
-                            {chapter.videos?.map((video) => (
-                              <Box
-                                key={video._id}
-                                sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: 1,
-                                  p: 1,
-                                  borderRadius: 1,
-                                  cursor: 'pointer',
-                                  backgroundColor: activeLectureId === video._id ? 'action.selected' : 'transparent',
-                                  '&:hover': { backgroundColor: 'action.hover' }
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Video clicked:', video.title, video._id);
-                                  handleLectureSelect(video);
-                                }}
-                              >
-                                {video.completed ? (
-                                  <CheckIcon sx={{ fontSize: 16, color: 'success.main' }} />
-                                ) : (
-                                  <CircleIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                )}
-                                
-                                {video.type === 'VIDEO' ? (
-                                  <VideoIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                                ) : (
-                                  <TextIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                                )}
-                                
-                                <Typography variant="caption" sx={{ 
-                                  flexGrow: 1,
-                                  color: activeLectureId === video._id ? 'primary.main' : 'text.primary'
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+                            {/* Course Thumbnail */}
+                            <Box
+                              sx={{
+                                width: 60,
+                                height: 40,
+                                borderRadius: 1,
+                                background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                fontSize: '12px',
+                                fontWeight: 600
+                              }}
+                            >
+                              {course.title.charAt(0)}
+                            </Box>
+
+                            {/* Course Info */}
+                            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                              <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                {course.title}
+                              </Typography>
+                              <Chip
+                                label={course.status}
+                                size="small"
+                                color={getStatusColor(course.status)}
+                                sx={{ fontSize: '10px' }}
+                              />
+                            </Box>
+                          </Box>
+                        </AccordionSummary>
+
+                        <AccordionDetails sx={{ p: 0 }}>
+                          <Box sx={{ pl: 2 }}>
+                            {course.chapters?.map((chapter) => (
+                              <Box key={chapter._id} sx={{ mb: 2 }}>
+                                <Typography variant="caption" sx={{
+                                  color: 'text.secondary',
+                                  fontWeight: 600,
+                                  display: 'block',
+                                  mb: 1
                                 }}>
-                                  {video.title}
+                                  {chapter.title}
                                 </Typography>
+
+                                {chapter.videos?.map((video) => (
+                                  <Box
+                                    key={video._id}
+                                    sx={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 1,
+                                      p: 1,
+                                      borderRadius: 1,
+                                      cursor: 'pointer',
+                                      backgroundColor: activeLectureId === video._id ? 'action.selected' : 'transparent',
+                                      '&:hover': { backgroundColor: 'action.hover' }
+                                    }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      console.log('Video clicked:', video.title, video._id);
+                                      handleLectureSelect(video);
+                                    }}
+                                  >
+                                    {video.completed ? (
+                                      <CheckIcon sx={{ fontSize: 16, color: 'success.main' }} />
+                                    ) : (
+                                      <CircleIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                                    )}
+
+                                    {video.type === 'VIDEO' ? (
+                                      <VideoIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                                    ) : (
+                                      <TextIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+                                    )}
+
+                                    <Typography variant="caption" sx={{
+                                      flexGrow: 1,
+                                      color: activeLectureId === video._id ? 'primary.main' : 'text.primary'
+                                    }}>
+                                      {video.title}
+                                    </Typography>
+                                  </Box>
+                                ))}
                               </Box>
                             ))}
                           </Box>
-                        ))}
-                      </Box>
-                    </AccordionDetails>
-                  </Accordion>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        {/* Main Content Area */}
-        <Grid item xs={12} md={8} lg={9} sx={{ height: '100%' }}>
-          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardContent sx={{ flexGrow: 1, p: 0, display: 'flex', flexDirection: 'column' }}>
-              
-              {selectedLecture ? (
-                <>
-                  {/* Debug info */}
-                  <Box sx={{ p: 1, backgroundColor: '#f0f0f0', fontSize: '12px' }}>
-                    Debug: {selectedLecture.title} | Type: {selectedLecture.type} | Content: {selectedLecture.content?.substring(0, 50)}...
+                        </AccordionDetails>
+                      </Accordion>
+                    ))}
                   </Box>
-                  
-                  {/* Video/Content Player */}
-                  <Box sx={{ 
-                    height: '60%', 
-                    backgroundColor: '#000',
-                    position: 'relative'
-                  }}>
-                    {selectedLecture.type === 'VIDEO' ? (
-                      <iframe
-                        key={selectedLecture._id} // Force re-render when video changes
-                        src={getEmbedUrl(selectedLecture.content)}
-                        title={selectedLecture.title}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          border: 'none'
-                        }}
-                        allowFullScreen
-                      />
-                    ) : (
-                      <Box sx={{ 
-                        p: 3, 
-                        height: '100%', 
-                        overflow: 'auto',
-                        backgroundColor: 'background.paper'
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Main Content Area */}
+            <Grid item size={{xs: 12, md: 8, lg: 8 }} sx={{ height: '100%' }}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flexGrow: 1, p: 0, display: 'flex', flexDirection: 'column' }}>
+
+                  {selectedLecture ? (
+                    <>
+                      {/* Debug info */}
+                      <Box sx={{ p: 1, backgroundColor: '#f0f0f0', fontSize: '12px' }}>
+                        Debug: {selectedLecture.title} | Type: {selectedLecture.type} | Content: {selectedLecture.content?.substring(0, 50)}...
+                      </Box>
+
+                      {/* Video/Content Player */}
+                      <Box sx={{
+                        height: '60%',
+                        backgroundColor: '#000',
+                        position: 'relative'
                       }}>
-                        <Typography variant="h6" sx={{ mb: 2 }}>
-                          {selectedLecture.title}
-                        </Typography>
-                        <Typography variant="body1">
-                          {selectedLecture.content}
-                        </Typography>
+                        {selectedLecture.type === 'VIDEO' ? (
+                          <iframe
+                            key={selectedLecture._id} // Force re-render when video changes
+                            src={getEmbedUrl(selectedLecture.content)}
+                            title={selectedLecture.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              border: 'none'
+                            }}
+                            allowFullScreen
+                          />
+                        ) : (
+                          <Box sx={{
+                            p: 3,
+                            height: '100%',
+                            overflow: 'auto',
+                            backgroundColor: 'background.paper'
+                          }}>
+                            <Typography variant="h6" sx={{ mb: 2 }}>
+                              {selectedLecture.title}
+                            </Typography>
+                            <Typography variant="body1">
+                              {selectedLecture.content}
+                            </Typography>
+                          </Box>
+                        )}
                       </Box>
-                    )}
-                  </Box>
-                  
-                  {/* Lecture Details */}
-                  <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider' }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                      <Box>
-                        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
-                          {selectedLecture.title}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                          {selectedLecture.description}
-                        </Typography>
+
+                      {/* Lecture Details */}
+                      <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                          <Box>
+                            <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+                              {selectedLecture.title}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                              {selectedLecture.description}
+                            </Typography>
+                          </Box>
+
+                          <Button
+                            variant="contained"
+                            startIcon={selectedLecture.completed ? <CheckIcon /> : <PlayIcon />}
+                            onClick={() => {
+                              const newCompletedStatus = !selectedLecture.completed;
+                              // Update the selected lecture state
+                              setSelectedLecture({
+                                ...selectedLecture,
+                                completed: newCompletedStatus
+                              });
+                              // Update the completion status in the course data structure
+                              updateVideoCompletion(selectedLecture._id, newCompletedStatus);
+                            }}
+                          >
+                            {selectedLecture.completed ? 'Completed' : 'Mark Complete'}
+                          </Button>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                          <Chip
+                            icon={<VideoIcon />}
+                            label={selectedLecture.type}
+                            size="small"
+                            variant="outlined"
+                          />
+                        </Box>
                       </Box>
-                      
-                      <Button
-                        variant="contained"
-                        startIcon={selectedLecture.completed ? <CheckIcon /> : <PlayIcon />}
-                        onClick={() => {
-                          const newCompletedStatus = !selectedLecture.completed;
-                          // Update the selected lecture state
-                          setSelectedLecture({
-                            ...selectedLecture,
-                            completed: newCompletedStatus
-                          });
-                          // Update the completion status in the course data structure
-                          updateVideoCompletion(selectedLecture._id, newCompletedStatus);
-                        }}
-                      >
-                        {selectedLecture.completed ? 'Completed' : 'Mark Complete'}
-                      </Button>
+                    </>
+                  ) : (
+                    <Box sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      p: 3
+                    }}>
+                      <VideoIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                      <Typography variant="h6" sx={{ mb: 1 }}>
+                        Select a lecture to start learning
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+                        Choose a course and lecture from the sidebar to begin your learning journey
+                      </Typography>
                     </Box>
-                    
-                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                      <Chip 
-                        icon={<VideoIcon />} 
-                        label={selectedLecture.type} 
-                        size="small" 
-                        variant="outlined"
-                      />
-                    </Box>
-                  </Box>
-                </>
-              ) : (
-                <Box sx={{ 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  justifyContent: 'center', 
-                  alignItems: 'center', 
-                  height: '100%',
-                  p: 3
-                }}>
-                  <VideoIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-                  <Typography variant="h6" sx={{ mb: 1 }}>
-                    Select a lecture to start learning
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
-                    Choose a course and lecture from the sidebar to begin your learning journey
-                  </Typography>
-                </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Box>
       </Box>
     </Box>

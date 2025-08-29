@@ -367,7 +367,6 @@ const Courses = () => {
         {[
           { icon: <HomeIcon />, label: 'Home', path: '/community-dashboard' },
           { icon: <VideoIcon />, label: 'Courses', path: '/courses' },
-          { icon: <PeopleIcon />, label: 'Admins', path: '/community-admins' },
           { icon: <DashboardIcon />, label: 'Dashboard', path: '/dashboard' },
           { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
           { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
@@ -504,7 +503,7 @@ const Courses = () => {
 
                 {/* Stats Cards */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item size={{xs:12, sm:6 , md:3}}>
                     <Card>
                       <CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -521,7 +520,7 @@ const Courses = () => {
                       </CardContent>
                     </Card>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item size={{xs:12, sm:6 , md:3}}>
                     <Card>
                       <CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -538,7 +537,7 @@ const Courses = () => {
                       </CardContent>
                     </Card>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item size={{xs:12, sm:6 , md:3}}>
                     <Card>
                       <CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -555,7 +554,7 @@ const Courses = () => {
                       </CardContent>
                     </Card>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item size={{xs:12, sm:6 , md:3}}>
                     <Card>
                       <CardContent>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -578,7 +577,7 @@ const Courses = () => {
                 <Card sx={{ mb: 3 }}>
                   <CardContent>
                     <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} md={6}>
+                      <Grid item size={{xs:12, md:6}}>
                         <TextField
                           fullWidth
                           placeholder="Search courses..."
@@ -589,7 +588,7 @@ const Courses = () => {
                           }}
                         />
                       </Grid>
-                      <Grid item xs={12} md={3}>
+                      <Grid item size={{xs:12, md:6}}>
                         <FormControl fullWidth>
                           <InputLabel>Status</InputLabel>
                           <Select
@@ -604,7 +603,7 @@ const Courses = () => {
                           </Select>
                         </FormControl>
                       </Grid>
-                      <Grid item xs={12} md={3}>
+                      <Grid item size={{xs:12, md:6}}>
                         <Typography variant="body2" color="text.secondary">
                           Showing {filteredCourses.length} of {courses.length} courses
                         </Typography>
@@ -664,7 +663,7 @@ const Courses = () => {
                   ) : (
                     <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }}>
                       {filteredCourses.map((course) => (
-                        <Grid item xs={12} sm={6} lg={3} key={course._id || course.id}>
+                        <Grid item size={{xs:12, sm:6 , md:6 , lg:4}} key={course._id || course.id}>
                           <Card sx={{ 
                             cursor: 'pointer',
                             background: darkMode ? '#2d2d2d' : '#ffffff',

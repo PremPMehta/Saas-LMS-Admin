@@ -394,7 +394,7 @@ const CommunityDashboard = () => {
               </Typography>
               
               <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item size={{xs:12, sm:6 , md:3}}>
                   <Card sx={{ p: 3, textAlign: 'center' }}>
                     <Typography variant="h4" sx={{ color: '#4285f4', mb: 1 }}>
                       {courses.length}
@@ -404,7 +404,7 @@ const CommunityDashboard = () => {
                     </Typography>
                   </Card>
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item size={{xs:12, sm:6 , md:3}}>
                   <Card sx={{ p: 3, textAlign: 'center' }}>
                     <Typography variant="h4" sx={{ color: '#34a853', mb: 1 }}>
                       {courses.filter(c => c.status === 'published').length}
@@ -414,7 +414,7 @@ const CommunityDashboard = () => {
                     </Typography>
                   </Card>
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item size={{xs:12, sm:6 , md:3}}>
                   <Card sx={{ p: 3, textAlign: 'center' }}>
                     <Typography variant="h4" sx={{ color: '#fbbc04', mb: 1 }}>
                       {courses.filter(c => c.status === 'draft').length}
@@ -424,7 +424,7 @@ const CommunityDashboard = () => {
                     </Typography>
                   </Card>
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid item size={{xs:12, sm:6 , md:3}}>
                   <Card sx={{ p: 3, textAlign: 'center' }}>
                     <Typography variant="h4" sx={{ color: '#ea4335', mb: 1 }}>
                       {courses.filter(c => c.status === 'archived').length}

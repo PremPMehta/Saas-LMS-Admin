@@ -410,13 +410,13 @@ const EditCourse = () => {
       {/* Step Content */}
       {activeStep === 0 && (
         <Grid container spacing={3}>
-          <Grid item lg={12} xs={12}>
-            <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+          <Grid item size={12}>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
               Edit Course Information
             </Typography>
           </Grid>
           
-          <Grid item lg={12} xs={12}>
+          <Grid item size={12}>
             <TextField
               fullWidth
               label="Course Title"
@@ -429,7 +429,7 @@ const EditCourse = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item size={12}>
             <TextField
               fullWidth
               label="Course Description"
@@ -445,24 +445,24 @@ const EditCourse = () => {
           </Grid>
 
           {/* Show read-only information for restricted fields */}
-          <Grid item xs={12}>
+          <Grid item size={12}>
             <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
               Course Settings (Read Only)
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
+              <Grid item size={{xs:12 , md:4}}>
                 <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f8f9fa' }}>
                   <Typography variant="subtitle2" color="text.secondary">Category</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>{courseData.category}</Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item size={{xs:12 , md:4}}>
                 <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f8f9fa' }}>
                   <Typography variant="subtitle2" color="text.secondary">Target Audience</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>{courseData.targetAudience}</Typography>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item size={{xs:12 , md:4}}>
                 <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f8f9fa' }}>
                   <Typography variant="subtitle2" color="text.secondary">Content Type</Typography>
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
