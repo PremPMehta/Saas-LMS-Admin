@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import {
   Box,
   Container,
@@ -814,8 +811,25 @@ const EditCourse = () => {
             videoFile: null,
           });
           
-          // Rich text editor state
-          const [editorState, setEditorState] = useState(EditorState.createEmpty());
+          // Quill editor modules and formats
+          const quillModules = {
+            toolbar: [
+              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              [{ 'align': [] }],
+              ['link', 'image'],
+              ['clean']
+            ],
+          };
+
+          const quillFormats = [
+            'header',
+            'bold', 'italic', 'underline', 'strike',
+            'list', 'bullet',
+            'align',
+            'link', 'image'
+          ];
 
           useEffect(() => {
             console.log('🎬 VideoDialog: video prop changed:', video);
@@ -832,19 +846,7 @@ const EditCourse = () => {
                 videoFile: video.videoFile || null,
               });
               
-              // Convert HTML content to editor state
-              if (video.content) {
-                try {
-                  const contentBlock = htmlToDraft(video.content);
-                  if (contentBlock) {
-                    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-                    setEditorState(EditorState.createWithContent(contentState));
-                  }
-                } catch (error) {
-                  console.log('Error converting HTML to editor state:', error);
-                  setEditorState(EditorState.createEmpty());
-                }
-              }
+
             } else {
               console.log('🆕 VideoDialog: Resetting form data for new video');
               setFormData({
@@ -856,7 +858,7 @@ const EditCourse = () => {
                 videoUrl: '',
                 videoFile: null,
               });
-              setEditorState(EditorState.createEmpty());
+
             }
           }, [video]);
 
@@ -1423,106 +1425,47 @@ const EditCourse = () => {
                       </Typography>
                       <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
                         <Box sx={{ 
-                          '& .rdw-editor-wrapper': {
+                          '& .ql-container': {
                             border: '1px solid #e0e0e0',
                             borderRadius: '4px',
-                            overflow: 'hidden'
+                            fontSize: '14px',
+                            fontFamily: 'inherit'
                           },
-                          '& .rdw-editor-toolbar': {
+                          '& .ql-toolbar': {
                             backgroundColor: '#f8f9fa',
                             borderBottom: '1px solid #e0e0e0',
-                            padding: '8px',
-                            margin: '0'
+                            borderTop: '1px solid #e0e0e0',
+                            borderLeft: '1px solid #e0e0e0',
+                            borderRight: '1px solid #e0e0e0',
+                            borderRadius: '4px 4px 0 0'
                           },
-                          '& .rdw-editor-main': {
+                          '& .ql-editor': {
                             minHeight: '200px',
                             padding: '12px',
                             fontSize: '14px',
                             fontFamily: 'inherit'
                           },
-                          '& .rdw-option-wrapper': {
-                            border: '1px solid #e0e0e0',
-                            borderRadius: '2px',
-                            margin: '0 2px'
+                          '& .ql-snow .ql-picker': {
+                            color: '#333'
                           },
-                          '& .rdw-option-wrapper:hover': {
-                            backgroundColor: '#e3f2fd'
+                          '& .ql-snow .ql-stroke': {
+                            stroke: '#333'
                           },
-                          '& .rdw-option-active': {
-                            backgroundColor: '#4285f4',
-                            color: 'white'
+                          '& .ql-snow .ql-fill': {
+                            fill: '#333'
+                          },
+                          '& .ql-snow .ql-picker-options': {
+                            backgroundColor: 'white',
+                            border: '1px solid #ccc'
                           }
                         }}>
-                          <Editor
-                            editorState={editorState}
-                            onEditorStateChange={(newEditorState) => {
-                              setEditorState(newEditorState);
-                              const htmlContent = draftToHtml(convertToRaw(newEditorState.getCurrentContent()));
-                              setFormData(prev => ({ ...prev, content: htmlContent }));
-                            }}
-                            toolbar={{
-                              options: ['inline', 'blockType', 'list', 'textAlign', 'link', 'emoji', 'image', 'remove', 'history'],
-                              inline: {
-                                inDropdown: false,
-                                className: undefined,
-                                component: undefined,
-                                dropdownClassName: undefined,
-                                options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
-                                bold: { className: undefined },
-                                italic: { className: undefined },
-                                underline: { className: undefined },
-                                strikethrough: { className: undefined },
-                                monospace: { className: undefined },
-                              },
-                              blockType: {
-                                inDropdown: true,
-                                className: undefined,
-                                component: undefined,
-                                dropdownClassName: undefined,
-                                options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'Blockquote', 'Code'],
-                              },
-                              list: {
-                                inDropdown: false,
-                                className: undefined,
-                                component: undefined,
-                                dropdownClassName: undefined,
-                                options: ['unordered', 'ordered'],
-                              },
-                              textAlign: {
-                                inDropdown: false,
-                                className: undefined,
-                                component: undefined,
-                                dropdownClassName: undefined,
-                                options: ['left', 'center', 'right', 'justify'],
-                              },
-                              link: {
-                                inDropdown: false,
-                                className: undefined,
-                                component: undefined,
-                                dropdownClassName: undefined,
-                                options: ['link', 'unlink'],
-                              },
-                              emoji: {
-                                className: undefined,
-                                component: undefined,
-                                popupClassName: undefined,
-                                emojis: [
-                                  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
-                                  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
-                                  '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
-                                  '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
-                                  '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬'
-                                ],
-                              },
-                              history: {
-                                inDropdown: false,
-                                className: undefined,
-                                component: undefined,
-                                dropdownClassName: undefined,
-                                options: ['undo', 'redo'],
-                              },
-                            }}
+                          <ReactQuill
+                            value={formData.content}
+                            onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                            modules={quillModules}
+                            formats={quillFormats}
                             placeholder="Enter your lesson content here..."
+                            theme="snow"
                           />
                         </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
