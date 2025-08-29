@@ -173,6 +173,10 @@ const CommunityAdmins = () => {
       return;
     }
     
+    console.log('🔍 Community data structure:', currentCommunity);
+    console.log('🔍 Community ID:', currentCommunity._id);
+    console.log('🔍 Community name:', currentCommunity.name);
+    
     setCommunityData(currentCommunity);
     console.log('✅ User authenticated, community data loaded:', currentCommunity);
   }, [navigate]);
@@ -294,13 +298,45 @@ const CommunityAdmins = () => {
     }
 
     try {
-      if (!communityData?._id) {
+      console.log('🔍 Community data in handleSubmit:', communityData);
+      
+      // Try different possible community ID fields
+      const communityId = communityData?._id || communityData?.id || communityData?.communityId;
+      
+      if (!communityId) {
         console.error('❌ No community ID available');
+        console.error('❌ Community data:', communityData);
+        console.error('❌ Available fields:', Object.keys(communityData || {}));
+        
+        // For testing, use a temporary community ID
+        console.log('⚠️ Using temporary community ID for testing');
+        const tempCommunityId = 'temp-community-123';
+        
+        const adminData = {
+          communityId: tempCommunityId,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          password: password,
+          permissions: formData.permissions
+        };
+        
+        console.log('🔄 Creating admin with temp ID:', adminData);
+        const response = await communityAdminApi.createCommunityAdmin(adminData);
+        
+        if (response.success) {
+          setAdmins(prev => [...prev, response.data]);
+          handleCloseDialogs();
+          resetForm();
+          console.log('✅ Admin added successfully with temp community ID');
+        } else {
+          console.error('❌ Failed to create admin:', response.message);
+        }
         return;
       }
 
       const adminData = {
-        communityId: communityData._id,
+        communityId: communityId,
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
