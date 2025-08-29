@@ -38,6 +38,7 @@ import {
   Delete as DeleteIcon,
   VideoLibrary as VideoIcon,
   TextFields as TextIcon,
+  Description as DescriptionIcon,
   PlayArrow as PlayIcon,
   DragIndicator as DragIcon,
   CloudUpload as UploadIcon,
