@@ -368,6 +368,20 @@ const CommunityAdmins = () => {
     return permission ? <CheckCircleIcon color="success" /> : <WarningIcon color="disabled" />;
   };
 
+  // Handle permission toggle changes
+  const handlePermissionChange = (key, checked) => {
+    const newPermissions = {
+      ...formData.permissions,
+      [key]: checked
+    };
+    console.log(`🔄 Permission "${key}" changed to: ${checked}`);
+    console.log('📋 Updated permissions:', newPermissions);
+    setFormData({
+      ...formData,
+      permissions: newPermissions
+    });
+  };
+
   // Sorting function
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -463,13 +477,24 @@ const CommunityAdmins = () => {
           { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
           { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
         ].map((item, index) => (
-          <Box key={index} sx={{ mb: 2 }}>
+          <Box key={index} sx={{ mb: 2, position: 'relative' }}>
             <IconButton
               onClick={() => navigate(item.path)}
               sx={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                backgroundColor: window.location.pathname === item.path 
+                  ? (darkMode ? '#404040' : '#000000')
+                  : 'transparent',
                 color: window.location.pathname === item.path 
-                  ? (darkMode ? '#ffffff' : '#000000')
-                  : (darkMode ? '#404040' : '#f0f0f0'),
+                  ? '#ffffff' 
+                  : (darkMode ? '#ffffff' : '#000000'),
+                '&:hover': {
+                  backgroundColor: window.location.pathname === item.path 
+                    ? (darkMode ? '#404040' : '#000000')
+                    : (darkMode ? '#404040' : '#f0f0f0'),
+                }
               }}
             >
               {item.icon}
@@ -920,13 +945,7 @@ const CommunityAdmins = () => {
                       control={
                         <Switch
                           checked={value}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            permissions: {
-                              ...formData.permissions,
-                              [key]: e.target.checked
-                            }
-                          })}
+                          onChange={(e) => handlePermissionChange(key, e.target.checked)}
                         />
                       }
                       label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
@@ -998,13 +1017,7 @@ const CommunityAdmins = () => {
                       control={
                         <Switch
                           checked={value}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            permissions: {
-                              ...formData.permissions,
-                              [key]: e.target.checked
-                            }
-                          })}
+                          onChange={(e) => handlePermissionChange(key, e.target.checked)}
                         />
                       }
                       label={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
