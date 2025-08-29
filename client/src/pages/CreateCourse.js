@@ -1004,6 +1004,8 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
     videoType: 'upload', // 'upload', 'youtube', 'loom', 'vimeo'
     videoUrl: '',
     videoFile: null,
+    pdfFile: null, // For PDF uploads
+    contentType: 'video', // 'video', 'text', 'pdf'
   });
 
   useEffect(() => {
@@ -1016,6 +1018,8 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
         videoType: video.videoType || 'upload',
         videoUrl: video.videoUrl || '',
         videoFile: video.videoFile || null,
+        pdfFile: video.pdfFile || null,
+        contentType: video.contentType || 'video',
       });
     } else {
       setFormData({
@@ -1026,32 +1030,49 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
         videoType: 'upload',
         videoUrl: '',
         videoFile: null,
+        pdfFile: null,
+        contentType: contentType === 'video' ? 'video' : contentType,
       });
     }
-  }, [video]);
+  }, [video, contentType]);
 
   const handleSubmit = () => {
     // Validate required fields
     if (!formData.title.trim()) {
-      alert('Please enter a video title');
+      alert(`Please enter a ${contentType} title`);
       return;
     }
     if (!formData.description.trim()) {
-      alert('Please enter a video description');
+      alert(`Please enter a ${contentType} description`);
       return;
     }
 
-    // Validate video content based on type
-    if (formData.videoType === 'upload' && !formData.videoFile) {
-      alert('Please upload a video file');
-      return;
-    }
-    if (formData.videoType !== 'upload' && !formData.videoUrl.trim()) {
-      alert('Please enter a video URL');
-      return;
+    // Validate content based on type
+    if (contentType === 'video') {
+      // Video validation
+      if (formData.videoType === 'upload' && !formData.videoFile) {
+        alert('Please upload a video file');
+        return;
+      }
+      if (formData.videoType !== 'upload' && !formData.videoUrl.trim()) {
+        alert('Please enter a video URL');
+        return;
+      }
+    } else if (contentType === 'text') {
+      // Text validation - content is optional for text lectures
+      if (!formData.content.trim()) {
+        alert('Please enter some content for the text lecture');
+        return;
+      }
+    } else if (contentType === 'pdf') {
+      // PDF validation
+      if (!formData.pdfFile) {
+        alert('Please upload a PDF file');
+        return;
+      }
     }
 
-    console.log('Saving video data:', formData);
+    console.log(`Saving ${contentType} data:`, formData);
     onSave(formData);
   };
 
@@ -1059,6 +1080,17 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
     const file = event.target.files[0];
     if (file) {
       setFormData(prev => ({ ...prev, videoFile: file }));
+    }
+  };
+
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.type === 'application/pdf') {
+        setFormData(prev => ({ ...prev, pdfFile: file }));
+      } else {
+        alert('Please upload a PDF file');
+      }
     }
   };
 
@@ -1240,6 +1272,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
             </Box>
           </Grid>
 
+          {/* Content Type Specific Sections */}
           {contentType === 'video' && (
             <>
               {/* Video Type Selection */}
@@ -1580,22 +1613,181 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
 
           {contentType === 'text' && (
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Lesson Content"
-                placeholder="Enter lesson content or upload document"
-                value={formData.content}
-                onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                multiline
-                rows={4}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <TextIcon />
-                    </InputAdornment>
-                  ),
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                Lesson Content
+              </Typography>
+              <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
+                <Box sx={{ 
+                  minHeight: 200, 
+                  maxHeight: 400, 
+                  overflow: 'auto',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: 1,
+                  p: 2,
+                  '&:focus-within': {
+                    borderColor: '#4285f4',
+                    boxShadow: '0 0 0 2px rgba(66, 133, 244, 0.2)'
+                  }
+                }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    gap: 1, 
+                    mb: 2, 
+                    pb: 1, 
+                    borderBottom: '1px solid #e0e0e0',
+                    flexWrap: 'wrap'
+                  }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => document.execCommand('bold', false, null)}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      <strong>B</strong>
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => document.execCommand('italic', false, null)}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      <em>I</em>
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => document.execCommand('underline', false, null)}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      <u>U</u>
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => document.execCommand('insertUnorderedList', false, null)}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      • List
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => document.execCommand('insertOrderedList', false, null)}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      1. List
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => document.execCommand('createLink', false, prompt('Enter URL:'))}
+                      sx={{ minWidth: 'auto', px: 1 }}
+                    >
+                      🔗 Link
+                    </Button>
+                  </Box>
+                  <Box
+                    contentEditable
+                    suppressContentEditableWarning
+                    onInput={(e) => setFormData(prev => ({ ...prev, content: e.target.innerHTML }))}
+                    dangerouslySetInnerHTML={{ __html: formData.content }}
+                    sx={{
+                      minHeight: 150,
+                      outline: 'none',
+                      '& p': { margin: '8px 0' },
+                      '& ul, & ol': { margin: '8px 0', paddingLeft: '20px' },
+                      '& a': { color: '#4285f4', textDecoration: 'underline' },
+                      '& strong': { fontWeight: 'bold' },
+                      '& em': { fontStyle: 'italic' },
+                      '& u': { textDecoration: 'underline' }
+                    }}
+                    placeholder="Enter your lesson content here... Use the toolbar above to format your text."
+                  />
+                </Box>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                  💡 Tip: Use the toolbar above to format your text with bold, italic, lists, and links.
+                </Typography>
+              </Card>
+            </Grid>
+          )}
+
+          {contentType === 'pdf' && (
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                Upload PDF Document
+              </Typography>
+              <Card
+                sx={{
+                  border: '2px dashed #e0e0e0',
+                  borderRadius: 2,
+                  p: 3,
+                  textAlign: 'center',
+                  background: formData.pdfFile ? '#f8f9ff' : '#fafafa',
+                  borderColor: formData.pdfFile ? '#4285f4' : '#e0e0e0',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    borderColor: '#4285f4',
+                    background: '#f8f9ff',
+                  }
                 }}
-              />
+              >
+                {formData.pdfFile ? (
+                  <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <CheckCircleIcon sx={{ color: '#34a853', fontSize: 32 }} />
+                      <Box sx={{ textAlign: 'left' }}>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                          {formData.pdfFile.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {(formData.pdfFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      startIcon={<UploadIcon />}
+                      size="small"
+                    >
+                      Change PDF
+                      <input
+                        type="file"
+                        hidden
+                        accept=".pdf"
+                        onChange={handlePdfUpload}
+                      />
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box>
+                    <DescriptionIcon sx={{ fontSize: 48, color: '#4285f4', mb: 2 }} />
+                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                      Upload PDF Document
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Supported format: PDF (Max 50MB)
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      component="label"
+                      startIcon={<UploadIcon />}
+                      sx={{
+                        background: '#4285f4',
+                        '&:hover': { background: '#3367d6' }
+                      }}
+                    >
+                      Choose PDF File
+                      <input
+                        type="file"
+                        hidden
+                        accept=".pdf"
+                        onChange={handlePdfUpload}
+                      />
+                    </Button>
+                  </Box>
+                )}
+              </Card>
             </Grid>
           )}
         </Grid>
