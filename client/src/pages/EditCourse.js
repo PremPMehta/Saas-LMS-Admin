@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
+import { Editor } from 'react-simple-wysiwyg';
 import {
   Box,
   Container,
@@ -1401,37 +1401,37 @@ const EditCourse = () => {
                       </Typography>
                       <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
                         <Box sx={{ 
-                          '& .tox-tinymce': {
+                          '& .rswe-container': {
                             border: '1px solid #e0e0e0',
-                            borderRadius: '4px'
+                            borderRadius: '4px',
+                            overflow: 'hidden'
                           },
-                          '& .tox .tox-toolbar': {
-                            backgroundColor: '#f8f9fa'
+                          '& .rswe-toolbar': {
+                            backgroundColor: '#f8f9fa',
+                            borderBottom: '1px solid #e0e0e0',
+                            padding: '8px'
+                          },
+                          '& .rswe-editor': {
+                            minHeight: '200px',
+                            padding: '12px',
+                            fontSize: '14px',
+                            fontFamily: 'inherit'
                           }
                         }}>
                           <Editor
-                            apiKey="your-tinymce-api-key" // You can get a free API key from TinyMCE
                             value={formData.content}
-                            onEditorChange={(content) => setFormData(prev => ({ ...prev, content }))}
-                            init={{
-                              height: 300,
-                              menubar: false,
-                              plugins: [
-                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                              ],
-                              toolbar: 'undo redo | blocks | ' +
-                                'bold italic forecolor | alignleft aligncenter ' +
-                                'alignright alignjustify | bullist numlist outdent indent | ' +
-                                'removeformat | help',
-                              content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }',
-                              placeholder: 'Enter your lesson content here...'
+                            onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                            placeholder="Enter your lesson content here..."
+                            containerProps={{
+                              style: {
+                                border: 'none',
+                                borderRadius: '4px'
+                              }
                             }}
                           />
                         </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                          💡 Tip: Use the rich text editor toolbar above to format your content with headers, bold, italic, lists, colors, alignment, links, and images.
+                          💡 Tip: Use the rich text editor toolbar above to format your content with bold, italic, lists, links, and more.
                         </Typography>
                       </Card>
                     </Grid>
