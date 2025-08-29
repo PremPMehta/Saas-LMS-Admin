@@ -17,11 +17,14 @@ import {
   TextField,
   Grid,
   Chip,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListItemSecondaryAction,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
   Divider,
   Alert,
   CircularProgress,
@@ -33,6 +36,7 @@ import {
   FormControlLabel,
   Tooltip,
   Badge,
+  TableSortLabel,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -66,6 +70,12 @@ const CommunityAdmins = () => {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Table pagination and sorting
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [orderBy, setOrderBy] = useState('name');
+  const [order, setOrder] = useState('asc');
   
   // Dialog states
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -369,6 +379,55 @@ const CommunityAdmins = () => {
     return permission ? <CheckCircleIcon color="success" /> : <WarningIcon color="disabled" />;
   };
 
+  // Sorting function
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
+  // Pagination functions
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Sort admins
+  const sortedAdmins = React.useMemo(() => {
+    const sorted = [...admins].sort((a, b) => {
+      let aValue = a[orderBy];
+      let bValue = b[orderBy];
+      
+      // Handle nested properties
+      if (orderBy === 'permissions') {
+        aValue = Object.values(a.permissions).filter(Boolean).length;
+        bValue = Object.values(b.permissions).filter(Boolean).length;
+      }
+      
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (order === 'desc') {
+        return bValue > aValue ? 1 : -1;
+      }
+      return aValue > bValue ? 1 : -1;
+    });
+    
+    return sorted;
+  }, [admins, orderBy, order]);
+
+  // Paginate admins
+  const paginatedAdmins = React.useMemo(() => {
+    const startIndex = page * rowsPerPage;
+    return sortedAdmins.slice(startIndex, startIndex + rowsPerPage);
+  }, [sortedAdmins, page, rowsPerPage]);
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -605,7 +664,7 @@ const CommunityAdmins = () => {
               </Grid>
             </Grid>
 
-            {/* Admins List */}
+            {/* Admins Data Table */}
             <Card>
               <CardContent>
                 <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
@@ -629,68 +688,126 @@ const CommunityAdmins = () => {
                     </Button>
                   </Box>
                 ) : (
-                  <List>
-                    {admins.map((admin, index) => (
-                      <React.Fragment key={admin._id}>
-                        <ListItem sx={{ py: 2 }}>
-                          <ListItemAvatar>
-                            <Avatar sx={{ bgcolor: getRoleColor(admin.role) }}>
-                              {admin.name.charAt(0)}
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                                  {admin.name}
+                  <>
+                    <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid', borderColor: 'divider' }}>
+                      <Table sx={{ minWidth: 650 }} aria-label="admin table">
+                        <TableHead>
+                          <TableRow sx={{ backgroundColor: 'background.default' }}>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                              <TableSortLabel
+                                active={orderBy === 'name'}
+                                direction={orderBy === 'name' ? order : 'asc'}
+                                onClick={() => handleRequestSort('name')}
+                              >
+                                Admin Name
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                              <TableSortLabel
+                                active={orderBy === 'email'}
+                                direction={orderBy === 'email' ? order : 'asc'}
+                                onClick={() => handleRequestSort('email')}
+                              >
+                                Email
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                              <TableSortLabel
+                                active={orderBy === 'role'}
+                                direction={orderBy === 'role' ? order : 'asc'}
+                                onClick={() => handleRequestSort('role')}
+                              >
+                                Role
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                              <TableSortLabel
+                                active={orderBy === 'status'}
+                                direction={orderBy === 'status' ? order : 'asc'}
+                                onClick={() => handleRequestSort('status')}
+                              >
+                                Status
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                              <TableSortLabel
+                                active={orderBy === 'joinedDate'}
+                                direction={orderBy === 'joinedDate' ? order : 'asc'}
+                                onClick={() => handleRequestSort('joinedDate')}
+                              >
+                                Joined Date
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>
+                              <TableSortLabel
+                                active={orderBy === 'permissions'}
+                                direction={orderBy === 'permissions' ? order : 'asc'}
+                                onClick={() => handleRequestSort('permissions')}
+                              >
+                                Permissions
+                              </TableSortLabel>
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: 600, textAlign: 'center' }}>
+                              Actions
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {paginatedAdmins.map((admin) => (
+                            <TableRow
+                              key={admin._id}
+                              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                              <TableCell>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                  <Avatar sx={{ bgcolor: getRoleColor(admin.role), width: 32, height: 32 }}>
+                                    {admin.name.charAt(0)}
+                                  </Avatar>
+                                  <Box>
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                      {admin.name}
+                                    </Typography>
+                                    {admin.phone && (
+                                      <Typography variant="caption" color="text.secondary">
+                                        {admin.phone}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                </Box>
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2">
+                                  {admin.email}
                                 </Typography>
+                              </TableCell>
+                              <TableCell>
                                 <Chip 
                                   label={admin.role} 
                                   size="small" 
                                   color={getRoleColor(admin.role)}
+                                  sx={{ textTransform: 'capitalize' }}
                                 />
+                              </TableCell>
+                              <TableCell>
                                 <Chip 
                                   label={admin.status} 
                                   size="small" 
                                   color={getStatusColor(admin.status)}
+                                  sx={{ textTransform: 'capitalize' }}
                                 />
-                              </Box>
-                            }
-                            secondary={
-                              <Box sx={{ mt: 1 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                    <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                    <Typography variant="body2" color="text.secondary">
-                                      {admin.email}
-                                    </Typography>
-                                  </Box>
-                                  {admin.phone && (
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                      <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                      <Typography variant="body2" color="text.secondary">
-                                        {admin.phone}
-                                      </Typography>
-                                    </Box>
-                                  )}
-                                </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Typography variant="caption" color="text.secondary">
-                                    Joined: {admin.joinedDate}
+                              </TableCell>
+                              <TableCell>
+                                <Typography variant="body2">
+                                  {admin.joinedDate}
+                                </Typography>
+                                {admin.lastLogin && (
+                                  <Typography variant="caption" color="text.secondary" display="block">
+                                    Last: {admin.lastLogin}
                                   </Typography>
-                                  {admin.lastLogin && (
-                                    <>
-                                      <Typography variant="caption" color="text.secondary">•</Typography>
-                                      <Typography variant="caption" color="text.secondary">
-                                        Last login: {admin.lastLogin}
-                                      </Typography>
-                                    </>
-                                  )}
-                                </Box>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                                  <Typography variant="caption" color="text.secondary">
-                                    Permissions:
-                                  </Typography>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                   {Object.entries(admin.permissions).map(([key, value]) => (
                                     <Tooltip key={key} title={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}>
                                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -699,32 +816,47 @@ const CommunityAdmins = () => {
                                     </Tooltip>
                                   ))}
                                 </Box>
-                              </Box>
-                            }
-                          />
-                          <ListItemSecondaryAction>
-                            <Box sx={{ display: 'flex', gap: 1 }}>
-                              <IconButton
-                                onClick={() => handleEditAdminClick(admin)}
-                                sx={{ color: '#4285f4' }}
-                                title="Edit admin"
-                              >
-                                <EditIcon />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => handleDeleteAdminClick(admin)}
-                                sx={{ color: '#ea4335' }}
-                                title="Delete admin"
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Box>
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                        {index < admins.length - 1 && <Divider />}
-                      </React.Fragment>
-                    ))}
-                  </List>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                                  <Tooltip title="Edit admin">
+                                    <IconButton
+                                      onClick={() => handleEditAdminClick(admin)}
+                                      size="small"
+                                      sx={{ color: '#4285f4' }}
+                                    >
+                                      <EditIcon fontSize="small" />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip title="Delete admin">
+                                    <IconButton
+                                      onClick={() => handleDeleteAdminClick(admin)}
+                                      size="small"
+                                      sx={{ color: '#ea4335' }}
+                                    >
+                                      <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Box>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    
+                    {/* Pagination */}
+                    <TablePagination
+                      rowsPerPageOptions={[5, 10, 25]}
+                      component="div"
+                      count={admins.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                      sx={{ mt: 2 }}
+                    />
+                  </>
                 )}
               </CardContent>
             </Card>
