@@ -88,14 +88,10 @@ const CommunityAdmins = () => {
     name: '',
     email: '',
     phone: '',
-    role: 'admin',
     permissions: {
       canCreateCourses: true,
       canEditCourses: true,
-      canDeleteCourses: false,
-      canManageAdmins: false,
-      canViewAnalytics: true,
-      canManageStudents: true
+      canDeleteCourses: false
     }
   });
   
@@ -118,10 +114,7 @@ const CommunityAdmins = () => {
       permissions: {
         canCreateCourses: true,
         canEditCourses: true,
-        canDeleteCourses: false,
-        canManageAdmins: false,
-        canViewAnalytics: true,
-        canManageStudents: true
+        canDeleteCourses: false
       }
     },
     {
@@ -264,6 +257,7 @@ const CommunityAdmins = () => {
       const newAdmin = {
         _id: Date.now().toString(),
         ...formData,
+        role: 'admin', // Set default role
         status: 'active',
         joinedDate: new Date().toISOString().split('T')[0],
         lastLogin: null
@@ -327,7 +321,6 @@ const CommunityAdmins = () => {
       name: admin.name,
       email: admin.email,
       phone: admin.phone,
-      role: admin.role,
       permissions: { ...admin.permissions }
     });
     setPassword('');
@@ -352,14 +345,10 @@ const CommunityAdmins = () => {
       name: '',
       email: '',
       phone: '',
-      role: 'admin',
       permissions: {
         canCreateCourses: true,
         canEditCourses: true,
-        canDeleteCourses: false,
-        canManageAdmins: false,
-        canViewAnalytics: true,
-        canManageStudents: true
+        canDeleteCourses: false
       }
     });
     setPassword('');
@@ -738,15 +727,6 @@ const CommunityAdmins = () => {
                                 Joined Date
                               </TableSortLabel>
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>
-                              <TableSortLabel
-                                active={orderBy === 'permissions'}
-                                direction={orderBy === 'permissions' ? order : 'asc'}
-                                onClick={() => handleRequestSort('permissions')}
-                              >
-                                Permissions
-                              </TableSortLabel>
-                            </TableCell>
                             <TableCell sx={{ fontWeight: 600, textAlign: 'center' }}>
                               Actions
                             </TableCell>
@@ -806,18 +786,7 @@ const CommunityAdmins = () => {
                                   </Typography>
                                 )}
                               </TableCell>
-                              <TableCell>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                  {Object.entries(admin.permissions).map(([key, value]) => (
-                                    <Tooltip key={key} title={key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}>
-                                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        {getPermissionIcon(value)}
-                                      </Box>
-                                    </Tooltip>
-                                  ))}
-                                </Box>
-                              </TableCell>
-                              <TableCell align="center">
+                                                             <TableCell align="center">
                                 <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                                   <Tooltip title="Edit admin">
                                     <IconButton
@@ -903,19 +872,6 @@ const CommunityAdmins = () => {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Role</InputLabel>
-                <Select
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  label="Role"
-                >
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="moderator">Moderator</MenuItem>
-                </Select>
-              </FormControl>
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
@@ -1028,19 +984,6 @@ const CommunityAdmins = () => {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Role</InputLabel>
-                <Select
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  label="Role"
-                >
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="moderator">Moderator</MenuItem>
-                </Select>
-              </FormControl>
             </Grid>
             
             {/* Permissions Section */}
