@@ -888,27 +888,108 @@ const EditCourse = () => {
             }
           };
 
-          // Helper functions to extract video IDs from URLs
-          const getYouTubeVideoId = (url) => {
-            if (!url) return null;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-          };
+            // Enhanced helper functions to extract video IDs from URLs
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
+    
+    // Handle various YouTube URL formats
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/watch\?.*&v=)([^#&?]{11})/,
+      /youtube\.com\/watch\?.*v=([^#&?]{11})/,
+      /youtu\.be\/([^#&?]{11})/,
+      /youtube\.com\/embed\/([^#&?]{11})/,
+      /youtube\.com\/v\/([^#&?]{11})/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1] && match[1].length === 11) {
+        return match[1];
+      }
+    }
+    return null;
+  };
 
-          const getVimeoVideoId = (url) => {
-            if (!url) return null;
-            const regExp = /vimeo\.com\/([0-9]+)/;
-            const match = url.match(regExp);
-            return match ? match[1] : null;
-          };
+  const getVimeoVideoId = (url) => {
+    if (!url) return null;
+    
+    // Handle various Vimeo URL formats
+    const patterns = [
+      /vimeo\.com\/([0-9]+)/,
+      /vimeo\.com\/groups\/[^\/]+\/videos\/([0-9]+)/,
+      /vimeo\.com\/channels\/[^\/]+\/([0-9]+)/,
+      /player\.vimeo\.com\/video\/([0-9]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return null;
+  };
 
-          const getLoomVideoId = (url) => {
-            if (!url) return null;
-            const regExp = /loom\.com\/share\/([a-zA-Z0-9]+)/;
-            const match = url.match(regExp);
-            return match ? match[1] : null;
-          };
+  const getLoomVideoId = (url) => {
+    if (!url) return null;
+    
+    // Handle various Loom URL formats
+    const patterns = [
+      /loom\.com\/share\/([a-zA-Z0-9]+)/,
+      /loom\.com\/embed\/([a-zA-Z0-9]+)/,
+      /useloom\.com\/share\/([a-zA-Z0-9]+)/,
+      /useloom\.com\/embed\/([a-zA-Z0-9]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return null;
+  };
+
+  // Enhanced URL validation function
+  const validateVideoUrl = (url, videoType) => {
+    if (!url || !url.trim()) return false;
+    
+    const trimmedUrl = url.trim();
+    
+    switch (videoType) {
+      case 'youtube':
+        return getYouTubeVideoId(trimmedUrl) !== null;
+      case 'vimeo':
+        return getVimeoVideoId(trimmedUrl) !== null;
+      case 'loom':
+        return getLoomVideoId(trimmedUrl) !== null;
+      case 'upload':
+        return true; // File uploads are handled separately
+      default:
+        return false;
+    }
+  };
+
+  // Get embed URL for preview
+  const getEmbedUrl = (url, videoType) => {
+    if (!url || !url.trim()) return '';
+    
+    const trimmedUrl = url.trim();
+    
+    switch (videoType) {
+      case 'youtube':
+        const youtubeId = getYouTubeVideoId(trimmedUrl);
+        return youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : '';
+      case 'vimeo':
+        const vimeoId = getVimeoVideoId(trimmedUrl);
+        return vimeoId ? `https://player.vimeo.com/video/${vimeoId}` : '';
+      case 'loom':
+        const loomId = getLoomVideoId(trimmedUrl);
+        return loomId ? `https://www.loom.com/embed/${loomId}` : '';
+      default:
+        return trimmedUrl;
+    }
+  };
 
           return (
             <Dialog 
@@ -1151,17 +1232,11 @@ const EditCourse = () => {
                               placeholder={`Paste your ${formData.videoType} video URL here`}
                               value={formData.videoUrl}
                               onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
-                              error={formData.videoUrl && !(
-                                (formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl)) ||
-                                (formData.videoType === 'vimeo' && getVimeoVideoId(formData.videoUrl)) ||
-                                (formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl))
-                              )}
+                              error={formData.videoUrl && !validateVideoUrl(formData.videoUrl, formData.videoType)}
                               helperText={
-                                formData.videoUrl && !(
-                                  (formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl)) ||
-                                  (formData.videoType === 'vimeo' && getVimeoVideoId(formData.videoUrl)) ||
-                                  (formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl))
-                                ) ? `Invalid ${formData.videoType} URL format` : ''
+                                formData.videoUrl && !validateVideoUrl(formData.videoUrl, formData.videoType) 
+                                  ? `Invalid ${formData.videoType} URL format. Please check the URL and try again.` 
+                                  : ''
                               }
                               InputProps={{
                                 startAdornment: (
