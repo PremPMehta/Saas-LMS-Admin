@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Editor } from 'react-simple-wysiwyg';
+import { Editor, EditorProvider } from 'react-simple-wysiwyg';
 import {
   Box,
   Container,
@@ -1637,17 +1637,19 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                             fontFamily: 'inherit'
                           }
                         }}>
-                          <Editor
-                            value={formData.content}
-                            onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                            placeholder="Enter your lesson content here..."
-                            containerProps={{
-                              style: {
-                                border: 'none',
-                                borderRadius: '4px'
-                              }
-                            }}
-                          />
+                          <EditorProvider>
+                            <Editor
+                              value={formData.content}
+                              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                              placeholder="Enter your lesson content here..."
+                              containerProps={{
+                                style: {
+                                  border: 'none',
+                                  borderRadius: '4px'
+                                }
+                              }}
+                            />
+                          </EditorProvider>
                         </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
                           💡 Tip: Use the rich text editor toolbar above to format your content with bold, italic, lists, links, and more.
