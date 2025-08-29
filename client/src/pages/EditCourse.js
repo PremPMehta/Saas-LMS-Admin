@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
 import {
   Box,
   Container,
@@ -1395,22 +1396,44 @@ const EditCourse = () => {
 
                   {contentType === 'text' && (
                     <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Lesson Content"
-                        placeholder="Enter lesson content or upload document"
-                        value={formData.content}
-                        onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                        multiline
-                        rows={4}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <TextIcon />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
+                      <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                        Lesson Content
+                      </Typography>
+                      <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
+                        <Box sx={{ 
+                          '& .tox-tinymce': {
+                            border: '1px solid #e0e0e0',
+                            borderRadius: '4px'
+                          },
+                          '& .tox .tox-toolbar': {
+                            backgroundColor: '#f8f9fa'
+                          }
+                        }}>
+                          <Editor
+                            apiKey="your-tinymce-api-key" // You can get a free API key from TinyMCE
+                            value={formData.content}
+                            onEditorChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                            init={{
+                              height: 300,
+                              menubar: false,
+                              plugins: [
+                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                              ],
+                              toolbar: 'undo redo | blocks | ' +
+                                'bold italic forecolor | alignleft aligncenter ' +
+                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                'removeformat | help',
+                              content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }',
+                              placeholder: 'Enter your lesson content here...'
+                            }}
+                          />
+                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                          💡 Tip: Use the rich text editor toolbar above to format your content with headers, bold, italic, lists, colors, alignment, links, and images.
+                        </Typography>
+                      </Card>
                     </Grid>
                   )}
                 </Grid>

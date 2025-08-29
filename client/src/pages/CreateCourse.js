@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Editor } from '@tinymce/tinymce-react';
 import {
   Box,
   Container,
@@ -1612,105 +1613,48 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
             </>
           )}
 
-          {contentType === 'text' && (
-            <Grid item xs={12}>
-              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                Lesson Content
-              </Typography>
-              <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
-                <Box sx={{ 
-                  minHeight: 200, 
-                  maxHeight: 400, 
-                  overflow: 'auto',
-                  border: '1px solid #e0e0e0',
-                  borderRadius: 1,
-                  p: 2,
-                  '&:focus-within': {
-                    borderColor: '#4285f4',
-                    boxShadow: '0 0 0 2px rgba(66, 133, 244, 0.2)'
-                  }
-                }}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    gap: 1, 
-                    mb: 2, 
-                    pb: 1, 
-                    borderBottom: '1px solid #e0e0e0',
-                    flexWrap: 'wrap'
-                  }}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => document.execCommand('bold', false, null)}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      <strong>B</strong>
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => document.execCommand('italic', false, null)}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      <em>I</em>
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => document.execCommand('underline', false, null)}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      <u>U</u>
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => document.execCommand('insertUnorderedList', false, null)}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      • List
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => document.execCommand('insertOrderedList', false, null)}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      1. List
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => document.execCommand('createLink', false, prompt('Enter URL:'))}
-                      sx={{ minWidth: 'auto', px: 1 }}
-                    >
-                      🔗 Link
-                    </Button>
-                  </Box>
-                  <Box
-                    contentEditable
-                    suppressContentEditableWarning
-                    onInput={(e) => setFormData(prev => ({ ...prev, content: e.target.innerHTML }))}
-                    dangerouslySetInnerHTML={{ __html: formData.content }}
-                    sx={{
-                      minHeight: 150,
-                      outline: 'none',
-                      '& p': { margin: '8px 0' },
-                      '& ul, & ol': { margin: '8px 0', paddingLeft: '20px' },
-                      '& a': { color: '#4285f4', textDecoration: 'underline' },
-                      '& strong': { fontWeight: 'bold' },
-                      '& em': { fontStyle: 'italic' },
-                      '& u': { textDecoration: 'underline' }
-                    }}
-                    placeholder="Enter your lesson content here... Use the toolbar above to format your text."
-                  />
-                </Box>
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                  💡 Tip: Use the toolbar above to format your text with bold, italic, lists, and links.
-                </Typography>
-              </Card>
-            </Grid>
-          )}
+                            {contentType === 'text' && (
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                        Lesson Content
+                      </Typography>
+                      <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
+                        <Box sx={{ 
+                          '& .tox-tinymce': {
+                            border: '1px solid #e0e0e0',
+                            borderRadius: '4px'
+                          },
+                          '& .tox .tox-toolbar': {
+                            backgroundColor: '#f8f9fa'
+                          }
+                        }}>
+                          <Editor
+                            apiKey="your-tinymce-api-key" // You can get a free API key from TinyMCE
+                            value={formData.content}
+                            onEditorChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                            init={{
+                              height: 300,
+                              menubar: false,
+                              plugins: [
+                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                              ],
+                              toolbar: 'undo redo | blocks | ' +
+                                'bold italic forecolor | alignleft aligncenter ' +
+                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                'removeformat | help',
+                              content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }',
+                              placeholder: 'Enter your lesson content here...'
+                            }}
+                          />
+                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                          💡 Tip: Use the rich text editor toolbar above to format your content with headers, bold, italic, lists, colors, alignment, links, and images.
+                        </Typography>
+                      </Card>
+                    </Grid>
+                  )}
 
           {contentType === 'pdf' && (
             <Grid item xs={12}>
