@@ -234,6 +234,7 @@ const CommunityDashboard = () => {
     { id: 'home', icon: <HomeIcon />, label: 'Home' },
     { id: 'dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
     { id: 'courses', icon: <DescriptionIcon />, label: 'Courses' },
+    { id: 'admins', icon: <PeopleIcon />, label: 'Admins' },
     { id: 'analytics', icon: <FlashIcon />, label: 'Analytics' },
     { id: 'content', icon: <DescriptionIcon />, label: 'Content' },
   ];
@@ -269,6 +270,8 @@ const CommunityDashboard = () => {
               onClick={() => {
                 if (item.id === 'courses') {
                   navigate('/courses');
+                } else if (item.id === 'admins') {
+                  navigate('/community-admins');
                 } else {
                   setActiveNav(item.id);
                 }

@@ -19,6 +19,7 @@ import CreateCourse from '../pages/CreateCourse';
 import EditCourse from '../pages/EditCourse';
 import Courses from '../pages/Courses';
 import CourseViewer from '../pages/CourseViewer';
+import CommunityAdmins from '../pages/CommunityAdmins';
 import CommunityLogin from '../pages/CommunityLogin';
 import TestPage from '../pages/TestPage';
 
@@ -119,6 +120,7 @@ const AppRoutes = () => {
       <Route path="/create-community" element={<CreateCommunity />} />
       <Route path="/community-setup" element={<CommunitySetup />} />
       <Route path="/community-dashboard" element={<CommunityDashboard />} />
+      <Route path="/community-admins" element={<CommunityAdmins />} />
       <Route path="/student-dashboard" element={<StudentDashboard />} />
       <Route path="/create-course" element={<CreateCourse />} />
       <Route path="/edit-course/:courseId" element={<EditCourse />} />
