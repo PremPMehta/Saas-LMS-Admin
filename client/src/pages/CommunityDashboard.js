@@ -235,8 +235,8 @@ const CommunityDashboard = () => {
     { id: 'dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
     { id: 'courses', icon: <DescriptionIcon />, label: 'Courses' },
     { id: 'admins', icon: <PeopleIcon />, label: 'Admins' },
-    { id: 'analytics', icon: <FlashIcon />, label: 'Analytics' },
-    { id: 'content', icon: <DescriptionIcon />, label: 'Content' },
+    // { id: 'analytics', icon: <FlashIcon />, label: 'Analytics' },
+    // { id: 'content', icon: <DescriptionIcon />, label: 'Content' },
   ];
 
   return (
@@ -436,11 +436,11 @@ const CommunityDashboard = () => {
                 </Grid>
               </Grid>
 
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
+              <Box sx={{ textAlign: 'end', py: 4 }}>
+                {/* <Typography variant="h6" sx={{ mb: 2 }}>
                   Quick Actions
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                </Typography> */}
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'end', flexWrap: 'wrap' }}>
                   <Button
                     variant="contained"
                     startIcon={<AddIcon />}

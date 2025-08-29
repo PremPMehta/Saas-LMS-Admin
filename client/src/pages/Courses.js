@@ -368,8 +368,8 @@ const Courses = () => {
           { icon: <HomeIcon />, label: 'Home', path: '/community-dashboard' },
           { icon: <VideoIcon />, label: 'Courses', path: '/courses' },
           { icon: <DashboardIcon />, label: 'Dashboard', path: '/dashboard' },
-          { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
-          { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
+          // { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
+          // { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
         ].map((item, index) => (
           <Box key={index} sx={{ mb: 2 }}>
             <IconButton

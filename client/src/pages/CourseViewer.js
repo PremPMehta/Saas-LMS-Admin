@@ -737,96 +737,29 @@ const CourseViewer = () => {
     }, 100);
   };
 
-  // Enhanced helper functions to extract video IDs from URLs
-  const getYouTubeVideoId = (url) => {
-    if (!url) return null;
-    
-    // Handle various YouTube URL formats
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/watch\?.*&v=)([^#&?]{11})/,
-      /youtube\.com\/watch\?.*v=([^#&?]{11})/,
-      /youtu\.be\/([^#&?]{11})/,
-      /youtube\.com\/embed\/([^#&?]{11})/,
-      /youtube\.com\/v\/([^#&?]{11})/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1] && match[1].length === 11) {
-        return match[1];
-      }
-    }
-    return null;
-  };
-
-  const getVimeoVideoId = (url) => {
-    if (!url) return null;
-    
-    // Handle various Vimeo URL formats
-    const patterns = [
-      /vimeo\.com\/([0-9]+)/,
-      /vimeo\.com\/groups\/[^\/]+\/videos\/([0-9]+)/,
-      /vimeo\.com\/channels\/[^\/]+\/([0-9]+)/,
-      /player\.vimeo\.com\/video\/([0-9]+)/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    return null;
-  };
-
-  const getLoomVideoId = (url) => {
-    if (!url) return null;
-    
-    // Handle various Loom URL formats
-    const patterns = [
-      /loom\.com\/share\/([a-zA-Z0-9]+)/,
-      /loom\.com\/embed\/([a-zA-Z0-9]+)/,
-      /useloom\.com\/share\/([a-zA-Z0-9]+)/,
-      /useloom\.com\/embed\/([a-zA-Z0-9]+)/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    return null;
-  };
-
-  // Enhanced get embed URL for video content
+  // Get embed URL for video content
   const getEmbedUrl = (url) => {
     console.log('Processing URL:', url);
     if (!url) return "";
 
-    const trimmedUrl = url.trim();
-    
-    // Check for YouTube URLs
-    const youtubeId = getYouTubeVideoId(trimmedUrl);
-    if (youtubeId) {
-      const embedUrl = `https://www.youtube.com/embed/${youtubeId}`;
+    if (url.includes("youtube.com/watch?v=")) {
+      const videoId = url.split("v=")[1].split("&")[0];
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
       console.log('YouTube embed URL:', embedUrl);
       return embedUrl;
     }
 
-    // Check for Vimeo URLs
-    const vimeoId = getVimeoVideoId(trimmedUrl);
-    if (vimeoId) {
-      const embedUrl = `https://player.vimeo.com/video/${vimeoId}`;
-      console.log('Vimeo embed URL:', embedUrl);
+    if (url.includes("youtu.be/")) {
+      const videoId = url.split("youtu.be/")[1].split("?")[0];
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      console.log('YouTube short embed URL:', embedUrl);
       return embedUrl;
     }
 
-    // Check for Loom URLs
-    const loomId = getLoomVideoId(trimmedUrl);
-    if (loomId) {
-      const embedUrl = `https://www.loom.com/embed/${loomId}`;
-      console.log('Loom embed URL:', embedUrl);
+    if (url.includes("vimeo.com/")) {
+      const videoId = url.split("vimeo.com/")[1].split("?")[0];
+      const embedUrl = `https://player.vimeo.com/video/${videoId}`;
+      console.log('Vimeo embed URL:', embedUrl);
       return embedUrl;
     }
 

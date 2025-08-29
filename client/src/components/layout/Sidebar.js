@@ -43,8 +43,8 @@ const Sidebar = () => {
       { text: 'Plans', icon: <AssignmentIcon />, path: '/plans', roles: ['admin', 'user'] },
       { text: 'Users', icon: <PeopleIcon />, path: '/users', roles: ['admin'] },
       { text: 'Community Admins', icon: <AdminPanelIcon />, path: '/community-admins', roles: ['admin'] },
-      { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', roles: ['admin'] },
-      { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'] },
+      // { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', roles: ['admin'] },
+      // { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'] },
     ];
 
     // Filter menu items based on user role

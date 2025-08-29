@@ -603,9 +603,9 @@ const CommunityAdmins = () => {
           { icon: <HomeIcon />, label: 'Home', path: '/community-dashboard' },
           { icon: <VideoIcon />, label: 'Courses', path: '/courses' },
           { icon: <PeopleIcon />, label: 'Admins', path: '/community-admins' },
-          { icon: <DashboardIcon />, label: 'Dashboard', path: '/dashboard' },
-          { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
-          { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
+          // { icon: <DashboardIcon />, label: 'Dashboard', path: '/dashboard' },
+          // { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
+          // { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
         ].map((item, index) => (
           <Box key={index} sx={{ mb: 2, position: 'relative' }}>
             <IconButton
@@ -738,7 +738,7 @@ const CommunityAdmins = () => {
 
             {/* Stats Cards */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -755,7 +755,7 @@ const CommunityAdmins = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -772,7 +772,7 @@ const CommunityAdmins = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -789,7 +789,7 @@ const CommunityAdmins = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -997,7 +997,7 @@ const CommunityAdmins = () => {
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={3} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs: 12 , md: 4}}>
               <TextField
                 fullWidth
                 label="Full Name"
@@ -1008,7 +1008,7 @@ const CommunityAdmins = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs: 12 , md: 4}}>
               <TextField
                 fullWidth
                 label="Email"
@@ -1020,7 +1020,7 @@ const CommunityAdmins = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs: 12 , md: 4}}>
               <TextField
                 fullWidth
                 label="Phone Number"
@@ -1028,7 +1028,7 @@ const CommunityAdmins = () => {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs: 12 , md: 6}}>
               <TextField
                 fullWidth
                 label="Password"
@@ -1050,7 +1050,7 @@ const CommunityAdmins = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs: 12 , md: 6}}>
               <TextField
                 fullWidth
                 label="Confirm Password"
@@ -1103,7 +1103,7 @@ const CommunityAdmins = () => {
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={3} sx={{ mt: 1 }}>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs:12 , md:4}}>
               <TextField
                 fullWidth
                 label="Full Name"
@@ -1114,7 +1114,7 @@ const CommunityAdmins = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs:12 , md:4}}>
               <TextField
                 fullWidth
                 label="Email"
@@ -1126,7 +1126,7 @@ const CommunityAdmins = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item size={{xs:12 , md:4}}>
               <TextField
                 fullWidth
                 label="Phone Number"

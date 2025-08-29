@@ -593,88 +593,92 @@ const CreateCourse = () => {
               </Card>
             ) : (
               <List sx={{ p: 0 }}>
-                {chapters.map((chapter, index) => (
-                  <Card key={chapter.id} sx={{ mb: 2 }}>
-                    <CardContent sx={{ p: 3 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <DragIcon sx={{ color: 'text.secondary', cursor: 'grab' }} />
-                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                            Chapter {index + 1}: {chapter.title}
-                          </Typography>
-                          <Chip
-                            label={`${chapter.videos.length} ${courseData.contentType === 'video' ? 'videos' : 'lessons'}`}
-                            size="small"
-                            color="primary"
-                          />
-                        </Box>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleEditChapter(chapter)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDeleteChapter(chapter.id)}
-                            color="error"
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Box>
-                      </Box>
+                <Grid container spacing={2}>
+                  {chapters.map((chapter, index) => (
+                      <Grid item size={{ xs: 12, md: 6 }}>
+                        <Card key={chapter.id} sx={{ mb: 2 }}>
+                          <CardContent sx={{ p: 3 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <DragIcon sx={{ color: 'text.secondary', cursor: 'grab' }} />
+                                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                  Chapter {index + 1}: {chapter.title}
+                                </Typography>
+                                <Chip
+                                  label={`${chapter.videos.length} ${courseData.contentType === 'video' ? 'videos' : 'lessons'}`}
+                                  size="small"
+                                  color="primary"
+                                />
+                              </Box>
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleEditChapter(chapter)}
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleDeleteChapter(chapter.id)}
+                                  color="error"
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </Box>
+                            </Box>
 
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        {chapter.description}
-                      </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                              {chapter.description}
+                            </Typography>
 
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography variant="caption" color="text.secondary">
-                          {chapter.videos.length} {courseData.contentType === 'video' ? 'videos' : 'lessons'}
-                        </Typography>
-                        <Button
-                          size="small"
-                          startIcon={<AddIcon />}
-                          onClick={() => handleAddVideo(chapter.id)}
-                          disabled={!courseData.contentType}
-                        >
-                          Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
-                        </Button>
-                      </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Typography variant="caption" color="text.secondary">
+                                {chapter.videos.length} {courseData.contentType === 'video' ? 'videos' : 'lessons'}
+                              </Typography>
+                              <Button
+                                size="small"
+                                startIcon={<AddIcon />}
+                                onClick={() => handleAddVideo(chapter.id)}
+                                disabled={!courseData.contentType}
+                              >
+                                Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
+                              </Button>
+                            </Box>
 
-                      {chapter.videos.length > 0 && (
-                        <List sx={{ mt: 2, p: 0 }}>
-                          {chapter.videos.map((video, videoIndex) => (
-                            <ListItem key={video.id} sx={{ px: 0, py: 1 }}>
-                              <ListItemText
-                                primary={`${videoIndex + 1}. ${video.title}`}
-                                secondary={video.videoType === 'upload' ? 'Uploaded Video' : `${video.videoType} video`}
-                              />
-                              <ListItemSecondaryAction>
-                                <Box sx={{ display: 'flex', gap: 1 }}>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleEditVideo(video, chapter.id)}
-                                  >
-                                    <EditIcon />
-                                  </IconButton>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleDeleteVideo(video.id, chapter.id)}
-                                    color="error"
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </Box>
-                              </ListItemSecondaryAction>
-                            </ListItem>
-                          ))}
-                        </List>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                            {chapter.videos.length > 0 && (
+                              <List sx={{ mt: 2, p: 0 }}>
+                                {chapter.videos.map((video, videoIndex) => (
+                                  <ListItem key={video.id} sx={{ px: 0, py: 1 }}>
+                                    <ListItemText
+                                      primary={`${videoIndex + 1}. ${video.title}`}
+                                      secondary={video.videoType === 'upload' ? 'Uploaded Video' : `${video.videoType} video`}
+                                    />
+                                    <ListItemSecondaryAction>
+                                      <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => handleEditVideo(video, chapter.id)}
+                                        >
+                                          <EditIcon />
+                                        </IconButton>
+                                        <IconButton
+                                          size="small"
+                                          onClick={() => handleDeleteVideo(video.id, chapter.id)}
+                                          color="error"
+                                        >
+                                          <DeleteIcon />
+                                        </IconButton>
+                                      </Box>
+                                    </ListItemSecondaryAction>
+                                  </ListItem>
+                                ))}
+                              </List>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                  ))}
+                </Grid>
               </List>
             )}
           </Box>
@@ -688,7 +692,7 @@ const CreateCourse = () => {
             </Typography>
 
             <Grid container spacing={3}>
-              <Grid item size={{ xs: 12, md: 4 }}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <Card sx={{ mb: 3 }}>
                   <CardContent>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
@@ -763,7 +767,7 @@ const CreateCourse = () => {
                 </Card>
               </Grid>
 
-              <Grid item size={{ xs: 12, md: 8 }}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
@@ -1622,7 +1626,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
           )}
 
                             {contentType === 'text' && (
-                    <Grid item xs={12}>
+                    <Grid item size={12}>
                       <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                         Lesson Content
                       </Typography>
