@@ -242,8 +242,6 @@ const Courses = () => {
     return colors[category] || colors.default;
   };
 
-
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'published':
@@ -311,18 +309,13 @@ const Courses = () => {
     setCourseToDelete(null);
   };
 
-  const handleStatusChange = (courseId, newStatus) => {
-    setCourses(prev => prev.map(course => 
-      (course._id || course.id) === courseId ? { ...course, status: newStatus } : course
-    ));
-  };
-
+  // Filter courses based on search and status
   const filteredCourses = courses.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         course.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || course.status === filterStatus;
-    const matchesSearch = course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.category?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
+    return matchesSearch && matchesStatus;
   });
 
   const formatDate = (dateString) => {
@@ -343,12 +336,8 @@ const Courses = () => {
   }
 
   return (
-    <Box sx={{ 
-      minHeight: '100vh',
-      background: darkMode ? '#1a1a1a' : '#f8f9fa',
-      display: 'flex'
-    }}>
-      {/* Left Navigation Bar */}
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: darkMode ? '#1a1a1a' : '#f5f5f5' }}>
+      {/* Sidebar */}
       <Box sx={{
         width: 80,
         background: darkMode ? '#2d2d2d' : '#ffffff',
@@ -359,48 +348,36 @@ const Courses = () => {
         py: 2,
         position: 'fixed',
         height: '100vh',
-        zIndex: 1000,
+        zIndex: 1000
       }}>
-        {/* Hamburger Menu */}
-        <IconButton sx={{ mb: 4, color: darkMode ? '#ffffff' : '#000000' }}>
-          <MenuIcon />
-        </IconButton>
+        {/* Logo */}
+        <Box sx={{ mb: 4 }}>
+          <Avatar sx={{ 
+            bgcolor: '#4285f4', 
+            width: 50, 
+            height: 50,
+            fontSize: '1.5rem',
+            fontWeight: 'bold'
+          }}>
+            {communityData?.name?.charAt(0) || 'C'}
+          </Avatar>
+        </Box>
 
         {/* Navigation Items */}
         {[
-          { id: 'home', icon: <HomeIcon />, label: 'Home' },
-          { id: 'dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
-          { id: 'courses', icon: <VideoIcon />, label: 'Courses' },
-          { id: 'analytics', icon: <FlashIcon />, label: 'Analytics' },
-          { id: 'content', icon: <DescriptionIcon />, label: 'Content' },
-        ].map((item) => (
-          <Box key={item.id} sx={{ mb: 2, position: 'relative' }}>
+          { icon: <HomeIcon />, label: 'Home', path: '/community-dashboard' },
+          { icon: <VideoIcon />, label: 'Courses', path: '/courses' },
+          { icon: <DashboardIcon />, label: 'Dashboard', path: '/dashboard' },
+          { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
+          { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
+        ].map((item, index) => (
+          <Box key={index} sx={{ mb: 2 }}>
             <IconButton
-              onClick={() => {
-                if (item.id === 'home' || item.id === 'dashboard') {
-                  navigate('/community-dashboard');
-                } else if (item.id === 'courses') {
-                  navigate('/courses');
-                } else {
-                  // For other items, stay on current page for now
-                  console.log(`${item.label} section coming soon...`);
-                }
-              }}
+              onClick={() => navigate(item.path)}
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '50%',
-                backgroundColor: item.id === 'courses' 
-                  ? (darkMode ? '#404040' : '#000000')
-                  : 'transparent',
-                color: item.id === 'courses' 
-                  ? '#ffffff' 
-                  : (darkMode ? '#ffffff' : '#000000'),
-                '&:hover': {
-                  backgroundColor: item.id === 'courses' 
-                    ? (darkMode ? '#404040' : '#000000')
-                    : (darkMode ? '#404040' : '#f0f0f0'),
-                }
+                color: window.location.pathname === item.path 
+                  ? (darkMode ? '#ffffff' : '#000000')
+                  : (darkMode ? '#404040' : '#f0f0f0'),
               }}
             >
               {item.icon}
@@ -484,556 +461,545 @@ const Courses = () => {
               <Box>
                 {/* Header */}
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-            My Courses
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Manage and track all your created courses ({courses.length} courses)
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <IconButton
-            onClick={handleRefresh}
-            disabled={refreshing}
-            sx={{ 
-              color: '#4285f4',
-              '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
-            }}
-            title="Refresh courses"
-          >
-            <RefreshIcon sx={{ 
-              animation: refreshing ? 'spin 1s linear infinite' : 'none',
-              '@keyframes spin': {
-                '0%': { transform: 'rotate(0deg)' },
-                '100%': { transform: 'rotate(360deg)' }
-              }
-            }} />
-          </IconButton>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => navigate('/create-course')}
-            sx={{
-              background: '#4285f4',
-            '&:hover': { background: '#3367d6' }
-          }}
-        >
-          Create New Course
-        </Button>
-      </Box>
-
-      {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4' }}>
-                    {courses.length}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Courses
-                  </Typography>
-                </Box>
-                <VideoIcon sx={{ fontSize: 40, color: '#4285f4' }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853' }}>
-                    {courses.filter(c => c.status === 'published').length}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Published
-                  </Typography>
-                </Box>
-                <CheckCircleIcon sx={{ fontSize: 40, color: '#34a853' }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#fbbc04' }}>
-                    {courses.filter(c => c.status === 'draft').length}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Drafts
-                  </Typography>
-                </Box>
-                <WarningIcon sx={{ fontSize: 40, color: '#fbbc04' }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335' }}>
-                    {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Students
-                  </Typography>
-                </Box>
-                <PeopleIcon sx={{ fontSize: 40, color: '#ea4335' }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Filters and Search */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                placeholder="Search courses by title, description, or category..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Status Filter</InputLabel>
-                <Select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  label="Status Filter"
-                >
-                  <MenuItem value="all">All Courses</MenuItem>
-                  <MenuItem value="published">Published</MenuItem>
-                  <MenuItem value="draft">Draft</MenuItem>
-                  <MenuItem value="archived">Archived</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Typography variant="body2" color="text.secondary">
-                Showing {filteredCourses.length} of {courses.length} courses
-              </Typography>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Courses Grid */}
-      <Box sx={{ 
-        '& .MuiGrid-container': {
-          margin: 0,
-          width: '100%'
-        },
-        '& .MuiGrid-item': {
-          padding: '12px !important'
-        }
-      }}>
-        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-          {communityData?.name || 'My'} Courses ({filteredCourses.length})
-        </Typography>
-        
-        {/* Debug Info */}
-        <Box sx={{ mb: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            Debug: {courses.length} total courses, {filteredCourses.length} filtered, Loading: {loading.toString()}, Refreshing: {refreshing.toString()}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Community ID: {localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69'}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Course IDs: {courses.map(c => c._id).join(', ')}
-          </Typography>
-        </Box>
-
-        {filteredCourses.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              No courses found
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 3 }}>
-              {searchTerm || filterStatus !== 'all' 
-                ? 'Try adjusting your search or filters' 
-                : 'Create your first course to get started'
-              }
-            </Typography>
-            {!searchTerm && filterStatus === 'all' && (
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => navigate('/create-course')}
-              >
-                Create First Course
-              </Button>
-            )}
-          </Box>
-        ) : (
-          <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }}>
-            {filteredCourses.map((course) => (
-              <Grid item xs={12} sm={6} lg={3} key={course._id || course.id}>
-                <Card sx={{ 
-                  cursor: 'pointer',
-                  background: darkMode ? '#2d2d2d' : '#ffffff',
-                  border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-                  borderRadius: 3,
-                  transition: 'all 0.3s ease',
-                  overflow: 'hidden',
-                  height: 450, // Fixed height for consistent card size
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-                  }
-                }} onClick={() => handleViewCourse(course)}>
-                  
-                  {/* Course Thumbnail */}
-                  <Box sx={{ 
-                    height: 200, 
-                    background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden'
-                  }}>
-                    {course.thumbnail && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course' && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Test+Course' ? (
-                      <img 
-                        src={course.thumbnail} 
-                        alt={course.title}
-                        style={{ 
-                          width: '100%', 
-                          height: '100%', 
-                          objectFit: 'cover' 
-                        }}
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex';
-                        }}
-                      />
-                    ) : (
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '100%',
-                        background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
-                      }}>
-                        <Typography variant="h2" sx={{ 
-                          color: 'white', 
-                          fontWeight: 'bold',
-                          textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
-                        }}>
-                          {course.title.charAt(0).toUpperCase()}
-                        </Typography>
-                      </Box>
-                    )}
-                    
-                    {/* Status Badge */}
-                    <Box sx={{ 
-                      position: 'absolute',
-                      top: 12,
-                      right: 12,
-                      px: 1.5, 
-                      py: 0.5, 
-                      borderRadius: 2,
-                      bgcolor: getStatusColor(course.status),
-                      color: 'white',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      backdropFilter: 'blur(10px)',
-                      backgroundColor: `${getStatusColor(course.status)}CC`
-                    }}>
-                      {course.status}
-                    </Box>
-                  </Box>
-                  
-                  <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                    {/* Course Header */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Box sx={{ 
-                        width: 32, 
-                        height: 32, 
-                        borderRadius: '50%', 
-                        bgcolor: getCategoryColor(course.category),
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mr: 2
-                      }}>
-                        <Typography variant="body2" sx={{ 
-                          color: 'white', 
-                          fontWeight: 'bold',
-                          fontSize: '1rem'
-                        }}>
-                          {course.title.charAt(0).toUpperCase()}
-                        </Typography>
-                      </Box>
-                      <Typography variant="h6" sx={{ 
-                        fontWeight: 600,
-                        color: darkMode ? '#ffffff' : '#000000',
-                        flex: 1
-                      }}>
-                        {course.title}
-                      </Typography>
-                    </Box>
-
-                    {/* Course Description */}
-                    <Typography variant="body2" sx={{ 
-                      mb: 3,
-                      color: darkMode ? '#cccccc' : '#666666',
-                      lineHeight: 1.6,
-                      fontSize: '0.9rem',
-                      height: 60, // Fixed height for description
-                      overflow: 'hidden',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: 'vertical'
-                    }}>
-                      {course.description}
+                  <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                      My Courses
                     </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      Manage and track all your created courses ({courses.length} courses)
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <IconButton
+                      onClick={handleRefresh}
+                      disabled={refreshing}
+                      sx={{ 
+                        color: '#4285f4',
+                        '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
+                      }}
+                      title="Refresh courses"
+                    >
+                      <RefreshIcon sx={{ 
+                        animation: refreshing ? 'spin 1s linear infinite' : 'none',
+                        '@keyframes spin': {
+                          '0%': { transform: 'rotate(0deg)' },
+                          '100%': { transform: 'rotate(360deg)' }
+                        }
+                      }} />
+                    </IconButton>
+                    <Button
+                      variant="contained"
+                      startIcon={<AddIcon />}
+                      onClick={() => navigate('/create-course')}
+                      sx={{
+                        background: '#4285f4',
+                        '&:hover': { background: '#3367d6' }
+                      }}
+                    >
+                      Create New Course
+                    </Button>
+                  </Box>
+                </Box>
 
-                    {/* Course Stats */}
-                    <Box sx={{ display: 'flex', gap: 2, mb: 3, height: 24 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <VideoIcon sx={{ fontSize: 16, color: '#666' }} />
-                        <Typography variant="caption" sx={{ color: '#666' }}>
-                          {String(course.chaptersCount || course.chapters?.length || 0)} chapters
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <PlayIcon sx={{ fontSize: 16, color: '#666' }} />
-                        <Typography variant="caption" sx={{ color: '#666' }}>
-                          {String(course.videosCount || course.chapters?.reduce((total, ch) => total + (ch.videos?.length || 0), 0) || 0)} videos
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    {/* Course Meta */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, height: 24 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <PeopleIcon sx={{ fontSize: 16, color: '#666' }} />
-                                              <Typography variant="caption" sx={{ 
-                        color: darkMode ? '#cccccc' : '#666666'
-                      }}>
-                        {String(Math.floor(Math.random() * 3000) + 500)} Members
-                      </Typography>
-                      </Box>
-                      <Typography variant="caption" sx={{ 
-                        color: course.isFree ? '#34a853' : '#f59e0b',
-                        fontWeight: 600
-                      }}>
-                        {course.isFree ? 'Free' : `$${course.price || 29}/month`}
-                      </Typography>
-                    </Box>
-
-                    {/* Course Actions */}
-                    <Box sx={{ display: 'flex', gap: 1, mt: 'auto', height: 36 }}>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditCourse(course);
-                        }}
-                        sx={{ flex: 1 }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        color="error"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteCourse(course._id || course.id);
-                        }}
-                        sx={{ flex: 1 }}
-                      >
-                        Delete
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        )}
-      </Box>
-            )}
-
-      {/* Course Details Dialog */}
-      <Dialog
-        open={openCourseDialog}
-        onClose={() => setOpenCourseDialog(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        {selectedCourse && (
-          <>
-            <DialogTitle>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Course Details
-                </Typography>
-                <Chip
-                  icon={getStatusIcon(selectedCourse.status)}
-                  label={selectedCourse.status.charAt(0).toUpperCase() + selectedCourse.status.slice(1)}
-                  color={getStatusColor(selectedCourse.status)}
-                />
-              </Box>
-            </DialogTitle>
-            <DialogContent>
-              <Grid container spacing={3}>
-                <Grid item xs={12} md={4}>
-                  <Box
-                    component="img"
-                    src={selectedCourse.thumbnail}
-                    alt={selectedCourse.title}
-                    sx={{
-                      width: '100%',
-                      height: 200,
-                      objectFit: 'cover',
-                      borderRadius: 2,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} md={8}>
-                  <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
-                    {selectedCourse.title}
-                  </Typography>
-                  <Typography variant="body1" sx={{ mb: 3 }}>
-                    {selectedCourse.description}
-                  </Typography>
-                  
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Category
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {selectedCourse.category}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Target Audience
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {selectedCourse.targetAudience}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Content Type
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {selectedCourse.contentType === 'video' ? (
-                          <VideoIcon sx={{ fontSize: 20, color: '#4285f4' }} />
-                        ) : (
-                          <TextIcon sx={{ fontSize: 20, color: '#34a853' }} />
-                        )}
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                          {selectedCourse.contentType === 'video' ? 'Video Based' : 'Text Based'}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Duration
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {selectedCourse.duration || 'Not specified'}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Students Enrolled
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {selectedCourse.students?.toLocaleString() || '0'}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Rating
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <StarIcon sx={{ fontSize: 16, color: '#fbbc04' }} />
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                          {selectedCourse.rating || '0'}/5.0
-                        </Typography>
-                      </Box>
-                    </Grid>
+                {/* Stats Cards */}
+                <Grid container spacing={3} sx={{ mb: 4 }}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Card>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Box>
+                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4' }}>
+                              {courses.length}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Total Courses
+                            </Typography>
+                          </Box>
+                          <VideoIcon sx={{ fontSize: 40, color: '#4285f4' }} />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Card>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Box>
+                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853' }}>
+                              {courses.filter(c => c.status === 'published').length}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Published
+                            </Typography>
+                          </Box>
+                          <CheckCircleIcon sx={{ fontSize: 40, color: '#34a853' }} />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Card>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Box>
+                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#fbbc04' }}>
+                              {courses.filter(c => c.status === 'draft').length}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Drafts
+                            </Typography>
+                          </Box>
+                          <WarningIcon sx={{ fontSize: 40, color: '#fbbc04' }} />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Card>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Box>
+                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335' }}>
+                              {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Total Students
+                            </Typography>
+                          </Box>
+                          <PeopleIcon sx={{ fontSize: 40, color: '#ea4335' }} />
+                        </Box>
+                      </CardContent>
+                    </Card>
                   </Grid>
                 </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenCourseDialog(false)}>Close</Button>
-              <Button
-                variant="contained"
-                onClick={() => handleEditCourse(selectedCourse)}
-                sx={{
-                  background: '#4285f4',
-                  '&:hover': { background: '#3367d6' }
-                }}
-              >
-                Edit Course
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={cancelDelete} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Delete Course
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Are you sure you want to delete the course "{courseToDelete?.title}"?
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            This action cannot be undone. All course content, chapters, and videos will be permanently deleted.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} disabled={isDeleting}>
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmDelete}
-            variant="contained"
-            color="error"
-            disabled={isDeleting}
-            startIcon={isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete Course'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+                {/* Filters and Search */}
+                <Card sx={{ mb: 3 }}>
+                  <CardContent>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12} md={6}>
+                        <TextField
+                          fullWidth
+                          placeholder="Search courses..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          InputProps={{
+                            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={3}>
+                        <FormControl fullWidth>
+                          <InputLabel>Status</InputLabel>
+                          <Select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            label="Status"
+                          >
+                            <MenuItem value="all">All Status</MenuItem>
+                            <MenuItem value="published">Published</MenuItem>
+                            <MenuItem value="draft">Draft</MenuItem>
+                            <MenuItem value="archived">Archived</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} md={3}>
+                        <Typography variant="body2" color="text.secondary">
+                          Showing {filteredCourses.length} of {courses.length} courses
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+
+                {/* Courses Grid */}
+                <Box sx={{ 
+                  '& .MuiGrid-container': {
+                    margin: 0,
+                    width: '100%'
+                  },
+                  '& .MuiGrid-item': {
+                    padding: '12px !important'
+                  }
+                }}>
+                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                    {communityData?.name || 'My'} Courses ({filteredCourses.length})
+                  </Typography>
+                  
+                  {/* Debug Info */}
+                  <Box sx={{ mb: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Debug: {courses.length} total courses, {filteredCourses.length} filtered, Loading: {loading.toString()}, Refreshing: {refreshing.toString()}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Community ID: {localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Course IDs: {courses.map(c => c._id).join(', ')}
+                    </Typography>
+                  </Box>
+
+                  {filteredCourses.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 8 }}>
+                      <Typography variant="h6" sx={{ mb: 2 }}>
+                        No courses found
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 3 }}>
+                        {searchTerm || filterStatus !== 'all' 
+                          ? 'Try adjusting your search or filters' 
+                          : 'Create your first course to get started'
+                        }
+                      </Typography>
+                      {!searchTerm && filterStatus === 'all' && (
+                        <Button
+                          variant="contained"
+                          startIcon={<AddIcon />}
+                          onClick={() => navigate('/create-course')}
+                        >
+                          Create First Course
+                        </Button>
+                      )}
+                    </Box>
+                  ) : (
+                    <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }}>
+                      {filteredCourses.map((course) => (
+                        <Grid item xs={12} sm={6} lg={3} key={course._id || course.id}>
+                          <Card sx={{ 
+                            cursor: 'pointer',
+                            background: darkMode ? '#2d2d2d' : '#ffffff',
+                            border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+                            borderRadius: 3,
+                            transition: 'all 0.3s ease',
+                            overflow: 'hidden',
+                            height: 450, // Fixed height for consistent card size
+                            width: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                            }
+                          }} onClick={() => handleViewCourse(course)}>
+                            
+                            {/* Course Thumbnail */}
+                            <Box sx={{ 
+                              height: 200, 
+                              background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
+                              position: 'relative',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              overflow: 'hidden'
+                            }}>
+                              {course.thumbnail && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course' && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Test+Course' ? (
+                                <img 
+                                  src={course.thumbnail} 
+                                  alt={course.title}
+                                  style={{ 
+                                    width: '100%', 
+                                    height: '100%', 
+                                    objectFit: 'cover' 
+                                  }}
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                  }}
+                                />
+                              ) : (
+                                <Box sx={{ 
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  width: '100%',
+                                  height: '100%',
+                                  background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
+                                }}>
+                                  <Typography variant="h2" sx={{ 
+                                    color: 'white', 
+                                    fontWeight: 'bold',
+                                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+                                  }}>
+                                    {course.title.charAt(0).toUpperCase()}
+                                  </Typography>
+                                </Box>
+                              )}
+                              
+                              {/* Status Badge */}
+                              <Box sx={{ 
+                                position: 'absolute',
+                                top: 12,
+                                right: 12,
+                                px: 1.5, 
+                                py: 0.5, 
+                                borderRadius: 2,
+                                bgcolor: getStatusColor(course.status),
+                                color: 'white',
+                                fontSize: '0.75rem',
+                                fontWeight: 600,
+                                backdropFilter: 'blur(10px)',
+                                backgroundColor: `${getStatusColor(course.status)}CC`
+                              }}>
+                                {course.status}
+                              </Box>
+                            </Box>
+                            
+                            <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                              {/* Course Header */}
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                <Box sx={{ 
+                                  width: 32, 
+                                  height: 32, 
+                                  borderRadius: '50%', 
+                                  bgcolor: getCategoryColor(course.category),
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  mr: 2
+                                }}>
+                                  <Typography variant="caption" sx={{ color: 'white', fontWeight: 'bold' }}>
+                                    {course.category.charAt(0)}
+                                  </Typography>
+                                </Box>
+                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                  {course.category}
+                                </Typography>
+                              </Box>
+                              
+                              {/* Course Title */}
+                              <Typography variant="h6" sx={{ 
+                                fontWeight: 600, 
+                                mb: 1,
+                                color: darkMode ? '#ffffff' : '#000000',
+                                lineHeight: 1.3
+                              }}>
+                                {course.title}
+                              </Typography>
+                              
+                              {/* Course Description */}
+                              <Typography variant="body2" sx={{ 
+                                color: 'text.secondary',
+                                mb: 2,
+                                flexGrow: 1,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden'
+                              }}>
+                                {course.description}
+                              </Typography>
+                              
+                              {/* Course Meta */}
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                  By {course.instructor}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                  {new Date(course.createdAt).toLocaleDateString()}
+                                </Typography>
+                              </Box>
+                              
+                              {/* Action Buttons */}
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewCourse(course);
+                                  }}
+                                  sx={{ flex: 1 }}
+                                >
+                                  View
+                                </Button>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditCourse(course);
+                                  }}
+                                  sx={{ flex: 1 }}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="error"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteCourse(course._id || course.id);
+                                  }}
+                                  sx={{ flex: 1 }}
+                                >
+                                  Delete
+                                </Button>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )}
+                </Box>
+              </Box>
+            )}
+
+            {/* Course Details Dialog */}
+            <Dialog
+              open={openCourseDialog}
+              onClose={() => setOpenCourseDialog(false)}
+              maxWidth="md"
+              fullWidth
+            >
+              {selectedCourse && (
+                <>
+                  <DialogTitle>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        Course Details
+                      </Typography>
+                      <Chip
+                        icon={getStatusIcon(selectedCourse.status)}
+                        label={selectedCourse.status.charAt(0).toUpperCase() + selectedCourse.status.slice(1)}
+                        color={getStatusColor(selectedCourse.status)}
+                      />
+                    </Box>
+                  </DialogTitle>
+                  <DialogContent>
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} md={4}>
+                        <Box
+                          component="img"
+                          src={selectedCourse.thumbnail}
+                          alt={selectedCourse.title}
+                          sx={{
+                            width: '100%',
+                            height: 200,
+                            objectFit: 'cover',
+                            borderRadius: 2,
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={8}>
+                        <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
+                          {selectedCourse.title}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 3 }}>
+                          {selectedCourse.description}
+                        </Typography>
+                        
+                        <Grid container spacing={2}>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Category
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                              {selectedCourse.category}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Target Audience
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                              {selectedCourse.targetAudience}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Content Type
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              {selectedCourse.contentType === 'video' ? (
+                                <VideoIcon sx={{ fontSize: 20, color: '#4285f4' }} />
+                              ) : (
+                                <TextIcon sx={{ fontSize: 20, color: '#34a853' }} />
+                              )}
+                              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                {selectedCourse.contentType === 'video' ? 'Video Based' : 'Text Based'}
+                              </Typography>
+                            </Box>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Duration
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                              {selectedCourse.duration || 'Not specified'}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Students Enrolled
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                              {selectedCourse.students?.toLocaleString() || '0'}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Rating
+                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <StarIcon sx={{ fontSize: 16, color: '#fbbc04' }} />
+                              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                                {selectedCourse.rating || '0'}/5.0
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenCourseDialog(false)}>Close</Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => handleEditCourse(selectedCourse)}
+                      sx={{
+                        background: '#4285f4',
+                        '&:hover': { background: '#3367d6' }
+                      }}
+                    >
+                      Edit Course
+                    </Button>
+                  </DialogActions>
+                </>
+              )}
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onClose={cancelDelete} maxWidth="sm" fullWidth>
+              <DialogTitle>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Delete Course
+                </Typography>
+              </DialogTitle>
+              <DialogContent>
+                <Typography variant="body1" sx={{ mb: 2 }}>
+                  Are you sure you want to delete the course "{courseToDelete?.title}"?
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  This action cannot be undone. All course content, chapters, and videos will be permanently deleted.
+                </Typography>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={cancelDelete} disabled={isDeleting}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmDelete}
+                  variant="contained"
+                  color="error"
+                  disabled={isDeleting}
+                  startIcon={isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />}
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Course'}
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Container>
         </Box>
       </Box>
     </Box>
