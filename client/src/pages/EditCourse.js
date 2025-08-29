@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Editor, EditorProvider } from 'react-simple-wysiwyg';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import {
   Box,
   Container,
@@ -809,6 +813,9 @@ const EditCourse = () => {
             videoUrl: '',
             videoFile: null,
           });
+          
+          // Rich text editor state
+          const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
           useEffect(() => {
             console.log('🎬 VideoDialog: video prop changed:', video);
@@ -824,6 +831,20 @@ const EditCourse = () => {
                 videoUrl: video.videoUrl || '',
                 videoFile: video.videoFile || null,
               });
+              
+              // Convert HTML content to editor state
+              if (video.content) {
+                try {
+                  const contentBlock = htmlToDraft(video.content);
+                  if (contentBlock) {
+                    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+                    setEditorState(EditorState.createWithContent(contentState));
+                  }
+                } catch (error) {
+                  console.log('Error converting HTML to editor state:', error);
+                  setEditorState(EditorState.createEmpty());
+                }
+              }
             } else {
               console.log('🆕 VideoDialog: Resetting form data for new video');
               setFormData({
@@ -835,6 +856,7 @@ const EditCourse = () => {
                 videoUrl: '',
                 videoFile: null,
               });
+              setEditorState(EditorState.createEmpty());
             }
           }, [video]);
 
@@ -1401,39 +1423,110 @@ const EditCourse = () => {
                       </Typography>
                       <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
                         <Box sx={{ 
-                          '& .rswe-container': {
+                          '& .rdw-editor-wrapper': {
                             border: '1px solid #e0e0e0',
                             borderRadius: '4px',
                             overflow: 'hidden'
                           },
-                          '& .rswe-toolbar': {
+                          '& .rdw-editor-toolbar': {
                             backgroundColor: '#f8f9fa',
                             borderBottom: '1px solid #e0e0e0',
-                            padding: '8px'
+                            padding: '8px',
+                            margin: '0'
                           },
-                          '& .rswe-editor': {
+                          '& .rdw-editor-main': {
                             minHeight: '200px',
                             padding: '12px',
                             fontSize: '14px',
                             fontFamily: 'inherit'
+                          },
+                          '& .rdw-option-wrapper': {
+                            border: '1px solid #e0e0e0',
+                            borderRadius: '2px',
+                            margin: '0 2px'
+                          },
+                          '& .rdw-option-wrapper:hover': {
+                            backgroundColor: '#e3f2fd'
+                          },
+                          '& .rdw-option-active': {
+                            backgroundColor: '#4285f4',
+                            color: 'white'
                           }
                         }}>
-                          <EditorProvider>
-                            <Editor
-                              value={formData.content}
-                              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                              placeholder="Enter your lesson content here..."
-                              containerProps={{
-                                style: {
-                                  border: 'none',
-                                  borderRadius: '4px'
-                                }
-                              }}
-                            />
-                          </EditorProvider>
+                          <Editor
+                            editorState={editorState}
+                            onEditorStateChange={(newEditorState) => {
+                              setEditorState(newEditorState);
+                              const htmlContent = draftToHtml(convertToRaw(newEditorState.getCurrentContent()));
+                              setFormData(prev => ({ ...prev, content: htmlContent }));
+                            }}
+                            toolbar={{
+                              options: ['inline', 'blockType', 'list', 'textAlign', 'link', 'emoji', 'image', 'remove', 'history'],
+                              inline: {
+                                inDropdown: false,
+                                className: undefined,
+                                component: undefined,
+                                dropdownClassName: undefined,
+                                options: ['bold', 'italic', 'underline', 'strikethrough', 'monospace'],
+                                bold: { className: undefined },
+                                italic: { className: undefined },
+                                underline: { className: undefined },
+                                strikethrough: { className: undefined },
+                                monospace: { className: undefined },
+                              },
+                              blockType: {
+                                inDropdown: true,
+                                className: undefined,
+                                component: undefined,
+                                dropdownClassName: undefined,
+                                options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'Blockquote', 'Code'],
+                              },
+                              list: {
+                                inDropdown: false,
+                                className: undefined,
+                                component: undefined,
+                                dropdownClassName: undefined,
+                                options: ['unordered', 'ordered'],
+                              },
+                              textAlign: {
+                                inDropdown: false,
+                                className: undefined,
+                                component: undefined,
+                                dropdownClassName: undefined,
+                                options: ['left', 'center', 'right', 'justify'],
+                              },
+                              link: {
+                                inDropdown: false,
+                                className: undefined,
+                                component: undefined,
+                                dropdownClassName: undefined,
+                                options: ['link', 'unlink'],
+                              },
+                              emoji: {
+                                className: undefined,
+                                component: undefined,
+                                popupClassName: undefined,
+                                emojis: [
+                                  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+                                  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+                                  '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
+                                  '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+                                  '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬'
+                                ],
+                              },
+                              history: {
+                                inDropdown: false,
+                                className: undefined,
+                                component: undefined,
+                                dropdownClassName: undefined,
+                                options: ['undo', 'redo'],
+                              },
+                            }}
+                            placeholder="Enter your lesson content here..."
+                          />
                         </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                          💡 Tip: Use the rich text editor toolbar above to format your content with bold, italic, lists, links, and more.
+                          💡 Tip: Use the professional toolbar above to format your content with headers, bold, italic, lists, alignment, links, emojis, and more!
                         </Typography>
                       </Card>
                     </Grid>
