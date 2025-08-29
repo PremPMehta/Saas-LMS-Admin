@@ -70,6 +70,7 @@ const CommunityAdmins = () => {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   
   // Table pagination and sorting
   const [page, setPage] = useState(0);
@@ -187,19 +188,21 @@ const CommunityAdmins = () => {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 1000));
         setAdmins(mockAdmins);
+        setInitialLoadComplete(true);
         console.log('📊 Admins loaded:', mockAdmins.length, 'admins');
       } catch (error) {
         console.error('❌ Error loading admins:', error);
         setAdmins(mockAdmins); // Fallback to mock data
+        setInitialLoadComplete(true);
       } finally {
         setLoading(false);
       }
     };
 
-    if (communityData) {
+    if (communityData && !initialLoadComplete) {
       loadAdmins();
     }
-  }, [communityData]);
+  }, [communityData, initialLoadComplete]);
 
   // Manual refresh function
   const handleRefresh = async () => {
@@ -207,7 +210,7 @@ const CommunityAdmins = () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500));
-      setAdmins(mockAdmins);
+      // Don't reset to mock data, just refresh the current state
       console.log('✅ Admins refreshed successfully');
     } catch (error) {
       console.error('❌ Refresh error:', error);
@@ -263,7 +266,21 @@ const CommunityAdmins = () => {
         lastLogin: null
       };
       
-      setAdmins(prev => [...prev, newAdmin]);
+      // Check for duplicates before adding
+      setAdmins(prev => {
+        const isDuplicate = prev.some(admin => 
+          admin.email === newAdmin.email || admin._id === newAdmin._id
+        );
+        
+        if (isDuplicate) {
+          console.log('⚠️ Admin already exists, not adding duplicate');
+          return prev;
+        }
+        
+        console.log('✅ Adding new admin:', newAdmin);
+        return [...prev, newAdmin];
+      });
+      
       handleCloseDialogs();
       resetForm();
       console.log('✅ Admin added successfully');
