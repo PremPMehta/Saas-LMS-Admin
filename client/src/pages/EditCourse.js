@@ -1424,7 +1424,7 @@ const EditCourse = () => {
                           }
                         }}>
                           <Editor
-                            apiKey="your-api-key-here"
+                            apiKey="jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"
                             value={formData.content}
                             onEditorChange={handleEditorChange}
                             init={{
