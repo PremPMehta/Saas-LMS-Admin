@@ -245,35 +245,51 @@ const CommunityAdmins = () => {
 
   // Form validation
   const validateForm = () => {
+    console.log('🔍 Validating form...');
     const errors = {};
     
     if (!formData.name.trim()) {
       errors.name = 'Name is required';
+      console.log('❌ Name validation failed');
     }
     
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
+      console.log('❌ Email validation failed');
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = 'Email is invalid';
+      console.log('❌ Email format validation failed');
     }
     
     if (!password) {
       errors.password = 'Password is required';
+      console.log('❌ Password validation failed');
     } else if (password.length < 6) {
       errors.password = 'Password must be at least 6 characters';
+      console.log('❌ Password length validation failed');
     }
     
     if (password !== confirmPassword) {
       errors.confirmPassword = 'Passwords do not match';
+      console.log('❌ Password confirmation validation failed');
     }
     
+    console.log('📋 Validation errors:', errors);
     setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    const isValid = Object.keys(errors).length === 0;
+    console.log('✅ Form validation result:', isValid);
+    return isValid;
   };
 
   // Handle form submission
   const handleSubmit = async () => {
+    console.log('🔘 Add Admin button clicked!');
+    console.log('📋 Form data:', formData);
+    console.log('🔑 Password:', password);
+    console.log('🔐 Confirm password:', confirmPassword);
+    
     if (!validateForm()) {
+      console.log('❌ Form validation failed');
       return;
     }
 
