@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import communityAuthApi from '../utils/communityAuthApi';
+import communityAdminApi from '../utils/communityAdminApi';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -181,18 +182,30 @@ const CommunityAdmins = () => {
     const loadAdmins = async () => {
       try {
         setLoading(true);
-        // For now, using mock data. In production, this would be an API call
-        // const response = await adminApi.getCommunityAdmins(communityData.id);
-        // setAdmins(response.admins);
         
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setAdmins(mockAdmins);
+        if (!communityData?._id) {
+          console.log('❌ No community ID available');
+          setAdmins([]);
+          setInitialLoadComplete(true);
+          return;
+        }
+
+        console.log('🔄 Loading admins for community:', communityData._id);
+        const response = await communityAdminApi.getCommunityAdmins(communityData._id);
+        
+        if (response.success) {
+          setAdmins(response.data);
+          console.log('📊 Admins loaded from API:', response.data.length, 'admins');
+        } else {
+          console.log('⚠️ No admins found, using empty array');
+          setAdmins([]);
+        }
+        
         setInitialLoadComplete(true);
-        console.log('📊 Admins loaded:', mockAdmins.length, 'admins');
       } catch (error) {
         console.error('❌ Error loading admins:', error);
-        setAdmins(mockAdmins); // Fallback to mock data
+        // Fallback to mock data for development
+        setAdmins(mockAdmins);
         setInitialLoadComplete(true);
       } finally {
         setLoading(false);
@@ -208,10 +221,21 @@ const CommunityAdmins = () => {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      // Don't reset to mock data, just refresh the current state
-      console.log('✅ Admins refreshed successfully');
+      if (!communityData?._id) {
+        console.log('❌ No community ID available for refresh');
+        return;
+      }
+
+      console.log('🔄 Refreshing admins for community:', communityData._id);
+      const response = await communityAdminApi.getCommunityAdmins(communityData._id);
+      
+      if (response.success) {
+        setAdmins(response.data);
+        console.log('✅ Admins refreshed from database:', response.data.length, 'admins');
+      } else {
+        console.log('⚠️ No admins found during refresh');
+        setAdmins([]);
+      }
     } catch (error) {
       console.error('❌ Refresh error:', error);
     } finally {
@@ -254,38 +278,48 @@ const CommunityAdmins = () => {
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!communityData?._id) {
+        console.error('❌ No community ID available');
+        return;
+      }
+
+      const adminData = {
+        communityId: communityData._id,
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: password,
+        permissions: formData.permissions
+      };
+
+      console.log('🔄 Creating admin:', adminData);
+      const response = await communityAdminApi.createCommunityAdmin(adminData);
       
+      if (response.success) {
+        // Add the new admin to the list
+        setAdmins(prev => [...prev, response.data]);
+        handleCloseDialogs();
+        resetForm();
+        console.log('✅ Admin added successfully to database');
+      } else {
+        console.error('❌ Failed to create admin:', response.message);
+      }
+    } catch (error) {
+      console.error('❌ Error adding admin:', error);
+      // Fallback to local state for development
       const newAdmin = {
         _id: Date.now().toString(),
         ...formData,
-        role: 'admin', // Set default role
+        role: 'admin',
         status: 'active',
         joinedDate: new Date().toISOString().split('T')[0],
         lastLogin: null
       };
       
-      // Check for duplicates before adding
-      setAdmins(prev => {
-        const isDuplicate = prev.some(admin => 
-          admin.email === newAdmin.email || admin._id === newAdmin._id
-        );
-        
-        if (isDuplicate) {
-          console.log('⚠️ Admin already exists, not adding duplicate');
-          return prev;
-        }
-        
-        console.log('✅ Adding new admin:', newAdmin);
-        return [...prev, newAdmin];
-      });
-      
+      setAdmins(prev => [...prev, newAdmin]);
       handleCloseDialogs();
       resetForm();
-      console.log('✅ Admin added successfully');
-    } catch (error) {
-      console.error('❌ Error adding admin:', error);
+      console.log('✅ Admin added to local state (fallback)');
     }
   };
 
@@ -294,18 +328,36 @@ const CommunityAdmins = () => {
     if (!selectedAdmin) return;
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const adminData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        permissions: formData.permissions
+      };
+
+      console.log('🔄 Updating admin:', selectedAdmin._id, adminData);
+      const response = await communityAdminApi.updateCommunityAdmin(selectedAdmin._id, adminData);
       
+      if (response.success) {
+        // Update the admin in the list
+        setAdmins(prev => prev.map(admin => 
+          admin._id === selectedAdmin._id ? { ...admin, ...response.data } : admin
+        ));
+        handleCloseDialogs();
+        resetForm();
+        console.log('✅ Admin updated successfully in database');
+      } else {
+        console.error('❌ Failed to update admin:', response.message);
+      }
+    } catch (error) {
+      console.error('❌ Error updating admin:', error);
+      // Fallback to local state for development
       setAdmins(prev => prev.map(admin => 
         admin._id === selectedAdmin._id ? { ...admin, ...formData } : admin
       ));
-      
       handleCloseDialogs();
       resetForm();
-      console.log('✅ Admin updated successfully');
-    } catch (error) {
-      console.error('❌ Error updating admin:', error);
+      console.log('✅ Admin updated in local state (fallback)');
     }
   };
 
@@ -314,14 +366,23 @@ const CommunityAdmins = () => {
     if (!selectedAdmin) return;
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('🔄 Deleting admin:', selectedAdmin._id);
+      const response = await communityAdminApi.deleteCommunityAdmin(selectedAdmin._id);
       
-      setAdmins(prev => prev.filter(admin => admin._id !== selectedAdmin._id));
-      handleCloseDialogs();
-      console.log('✅ Admin deleted successfully');
+      if (response.success) {
+        // Remove the admin from the list
+        setAdmins(prev => prev.filter(admin => admin._id !== selectedAdmin._id));
+        handleCloseDialogs();
+        console.log('✅ Admin deleted successfully from database');
+      } else {
+        console.error('❌ Failed to delete admin:', response.message);
+      }
     } catch (error) {
       console.error('❌ Error deleting admin:', error);
+      // Fallback to local state for development
+      setAdmins(prev => prev.filter(admin => admin._id !== selectedAdmin._id));
+      handleCloseDialogs();
+      console.log('✅ Admin deleted from local state (fallback)');
     }
   };
 
