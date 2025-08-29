@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { Editor } from '@tinymce/tinymce-react';
 import {
   Box,
   Container,
@@ -811,25 +810,10 @@ const EditCourse = () => {
             videoFile: null,
           });
           
-          // Quill editor modules and formats
-          const quillModules = {
-            toolbar: [
-              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-              ['bold', 'italic', 'underline', 'strike'],
-              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-              [{ 'align': [] }],
-              ['link', 'image'],
-              ['clean']
-            ],
+          // TinyMCE editor configuration
+          const handleEditorChange = (content) => {
+            setFormData(prev => ({ ...prev, content }));
           };
-
-          const quillFormats = [
-            'header',
-            'bold', 'italic', 'underline', 'strike',
-            'list', 'bullet',
-            'align',
-            'link', 'image'
-          ];
 
           useEffect(() => {
             console.log('🎬 VideoDialog: video prop changed:', video);
@@ -1425,47 +1409,39 @@ const EditCourse = () => {
                       </Typography>
                       <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
                         <Box sx={{ 
-                          '& .ql-container': {
+                          '& .tox-tinymce': {
                             border: '1px solid #e0e0e0',
                             borderRadius: '4px',
                             fontSize: '14px',
                             fontFamily: 'inherit'
                           },
-                          '& .ql-toolbar': {
+                          '& .tox-toolbar': {
                             backgroundColor: '#f8f9fa',
-                            borderBottom: '1px solid #e0e0e0',
-                            borderTop: '1px solid #e0e0e0',
-                            borderLeft: '1px solid #e0e0e0',
-                            borderRight: '1px solid #e0e0e0',
-                            borderRadius: '4px 4px 0 0'
+                            borderBottom: '1px solid #e0e0e0'
                           },
-                          '& .ql-editor': {
-                            minHeight: '200px',
-                            padding: '12px',
-                            fontSize: '14px',
-                            fontFamily: 'inherit'
-                          },
-                          '& .ql-snow .ql-picker': {
-                            color: '#333'
-                          },
-                          '& .ql-snow .ql-stroke': {
-                            stroke: '#333'
-                          },
-                          '& .ql-snow .ql-fill': {
-                            fill: '#333'
-                          },
-                          '& .ql-snow .ql-picker-options': {
-                            backgroundColor: 'white',
-                            border: '1px solid #ccc'
+                          '& .tox-edit-area': {
+                            minHeight: '200px'
                           }
                         }}>
-                          <ReactQuill
+                          <Editor
+                            apiKey="your-api-key-here"
                             value={formData.content}
-                            onChange={(content) => setFormData(prev => ({ ...prev, content }))}
-                            modules={quillModules}
-                            formats={quillFormats}
-                            placeholder="Enter your lesson content here..."
-                            theme="snow"
+                            onEditorChange={handleEditorChange}
+                            init={{
+                              height: 300,
+                              menubar: false,
+                              plugins: [
+                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                              ],
+                              toolbar: 'undo redo | blocks | ' +
+                                'bold italic forecolor | alignleft aligncenter ' +
+                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                'removeformat | help',
+                              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                              placeholder: 'Enter your lesson content here...'
+                            }}
                           />
                         </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
