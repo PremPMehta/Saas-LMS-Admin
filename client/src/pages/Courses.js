@@ -88,6 +88,7 @@ const Courses = () => {
       category: 'Technology',
       status: 'published',
       instructor: 'John Doe',
+      thumbnail: 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Web+Dev',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -117,20 +118,20 @@ const Courses = () => {
   useEffect(() => {
     let isMounted = true;
     let abortController = new AbortController();
-    
+
     const loadCourses = async () => {
       try {
         setLoading(true);
-        
+
         // Add timeout to prevent infinite loading
-        const timeoutPromise = new Promise((_, reject) => 
+        const timeoutPromise = new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Request timeout')), 15000)
         );
-        
+
         // Get community ID from localStorage or use a fallback
         const communityId = localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69';
         console.log('🔍 Loading courses for community:', communityId);
-        
+
         // Try to fetch all courses first (without community filter)
         let response;
         try {
@@ -140,19 +141,19 @@ const Courses = () => {
           // If community-specific fetch fails, try without community filter
           response = await Promise.race([courseApi.getCourses({}), timeoutPromise]);
         }
-        
+
         if (!isMounted) return;
-        
+
         let coursesData = response.courses || [];
         console.log('📊 Courses loaded:', coursesData.length, 'courses');
         console.log('📋 Course IDs:', coursesData.map(c => c._id || c.id));
-        
+
         // If we got courses but they don't match the community, log it
         if (coursesData.length > 0) {
           const communityCourses = coursesData.filter(c => c.community === communityId);
           console.log('🏘️ Courses matching community:', communityCourses.length, 'out of', coursesData.length);
         }
-        
+
         // Ensure we have consistent data structure
         const normalizedCourses = coursesData.map(course => ({
           _id: course._id || course.id,
@@ -165,11 +166,11 @@ const Courses = () => {
           createdAt: course.createdAt || new Date().toISOString(),
           updatedAt: course.updatedAt || new Date().toISOString()
         }));
-        
+
         // Always update with the latest data from API
         console.log('✅ Updating courses with fresh data from API');
         setCourses(normalizedCourses);
-        
+
       } catch (error) {
         console.error('❌ Error loading courses:', error);
         if (isMounted) {
@@ -187,7 +188,7 @@ const Courses = () => {
 
     // Load courses immediately
     loadCourses();
-    
+
     return () => {
       isMounted = false;
       abortController.abort();
@@ -200,12 +201,12 @@ const Courses = () => {
     try {
       const communityId = localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69';
       console.log('🔄 Manual refresh: Loading courses for community:', communityId);
-      
+
       const response = await courseApi.getCourses({ community: communityId });
       let coursesData = response.courses || [];
-      
+
       console.log('📊 Manual refresh: Courses loaded:', coursesData.length, 'courses');
-      
+
       const normalizedCourses = coursesData.map(course => ({
         _id: course._id || course.id,
         title: course.title || 'Untitled Course',
@@ -214,10 +215,11 @@ const Courses = () => {
         status: course.status || 'draft',
         instructor: course.instructor || 'Unknown',
         community: course.community || communityId,
+        thumbnail: course.thumbnail || null, // Add thumbnail field
         createdAt: course.createdAt || new Date().toISOString(),
         updatedAt: course.updatedAt || new Date().toISOString()
       }));
-      
+
       setCourses(normalizedCourses);
       console.log('✅ Manual refresh: Courses updated successfully');
     } catch (error) {
@@ -284,15 +286,15 @@ const Courses = () => {
 
   const confirmDelete = async () => {
     if (!courseToDelete) return;
-    
+
     setIsDeleting(true);
     try {
-      // Delete from database
+      // Delete course (soft delete - archived in backend)
       await courseApi.deleteCourse(courseToDelete._id || courseToDelete.id);
-      
-      // Update local state
+
+      // Update local state - remove from visible courses (they're now archived)
       setCourses(prev => prev.filter(course => (course._id || course.id) !== (courseToDelete._id || courseToDelete.id)));
-      
+
       console.log('Course deleted successfully');
       setDeleteDialogOpen(false);
       setCourseToDelete(null);
@@ -309,13 +311,15 @@ const Courses = () => {
     setCourseToDelete(null);
   };
 
-  // Filter courses based on search and status
+  // Filter courses based on search and status (always exclude archived courses)
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.category.toLowerCase().includes(searchTerm.toLowerCase());
+      course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || course.status === filterStatus;
-    return matchesSearch && matchesStatus;
+    // Always exclude archived courses from listing
+    const isNotArchived = course.status !== 'archived';
+    return matchesSearch && matchesStatus && isNotArchived;
   });
 
   const formatDate = (dateString) => {
@@ -352,9 +356,9 @@ const Courses = () => {
       }}>
         {/* Logo */}
         <Box sx={{ mb: 4 }}>
-          <Avatar sx={{ 
-            bgcolor: '#4285f4', 
-            width: 50, 
+          <Avatar sx={{
+            bgcolor: '#4285f4',
+            width: 50,
             height: 50,
             fontSize: '1.5rem',
             fontWeight: 'bold'
@@ -375,7 +379,7 @@ const Courses = () => {
             <IconButton
               onClick={() => navigate(item.path)}
               sx={{
-                color: window.location.pathname === item.path 
+                color: window.location.pathname === item.path
                   ? (darkMode ? '#ffffff' : '#000000')
                   : (darkMode ? '#404040' : '#f0f0f0'),
               }}
@@ -387,7 +391,7 @@ const Courses = () => {
 
         {/* Logout Button */}
         <Box sx={{ mt: 'auto', mb: 2 }}>
-          <IconButton 
+          <IconButton
             onClick={() => {
               communityAuthApi.logout();
               navigate('/community-login');
@@ -401,8 +405,8 @@ const Courses = () => {
       </Box>
 
       {/* Main Content Area */}
-      <Box sx={{ 
-        flex: 1, 
+      <Box sx={{
+        flex: 1,
         ml: 10, // Account for fixed sidebar
         display: 'flex',
         flexDirection: 'column'
@@ -422,15 +426,15 @@ const Courses = () => {
         }}>
           {/* Logo */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar sx={{ 
-              bgcolor: '#4285f4', 
+            <Avatar sx={{
+              bgcolor: '#4285f4',
               mr: 2,
               width: 40,
               height: 40
             }}>
               <VideoIcon />
             </Avatar>
-            <Typography variant="h6" sx={{ 
+            <Typography variant="h6" sx={{
               fontWeight: 700,
               color: darkMode ? '#ffffff' : '#000000'
             }}>
@@ -450,7 +454,7 @@ const Courses = () => {
         </Box>
 
         {/* Main Content */}
-        <Box sx={{ flex: 1, p: 4 }}>
+        <Box sx={{ flex: 1, px: 1, py: 4 }}>
           <Container maxWidth="xl">
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
@@ -462,7 +466,7 @@ const Courses = () => {
                 {/* Header */}
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
                   <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
                       My Courses
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
@@ -473,13 +477,13 @@ const Courses = () => {
                     <IconButton
                       onClick={handleRefresh}
                       disabled={refreshing}
-                      sx={{ 
+                      sx={{
                         color: '#4285f4',
                         '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                       }}
                       title="Refresh courses"
                     >
-                      <RefreshIcon sx={{ 
+                      <RefreshIcon sx={{
                         animation: refreshing ? 'spin 1s linear infinite' : 'none',
                         '@keyframes spin': {
                           '0%': { transform: 'rotate(0deg)' },
@@ -503,117 +507,161 @@ const Courses = () => {
 
                 {/* Stats Cards */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
-                  <Grid item size={{xs:12, sm:6 , md:3}}>
-                    <Card>
-                      <CardContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Box>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4' }}>
-                              {courses.length}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              Total Courses
-                            </Typography>
-                          </Box>
-                          <VideoIcon sx={{ fontSize: 40, color: '#4285f4' }} />
+                  {/* Total Courses */}
+                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Card
+                      sx={{
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'linear-gradient(45deg, #ffffff 30%, #edf3ff 90%)',
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            bgcolor: '#e8f0fe',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <VideoIcon sx={{ color: '#4285f4' }} />
                         </Box>
-                      </CardContent>
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4', mb: 0 }}>
+                            {courses.length}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Total Courses
+                          </Typography>
+                        </Box>
+                      </Box>
                     </Card>
                   </Grid>
-                  <Grid item size={{xs:12, sm:6 , md:3}}>
-                    <Card>
-                      <CardContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Box>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853' }}>
-                              {courses.filter(c => c.status === 'published').length}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              Published
-                            </Typography>
-                          </Box>
-                          <CheckCircleIcon sx={{ fontSize: 40, color: '#34a853' }} />
+
+                  {/* Published */}
+                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Card
+                      sx={{
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'linear-gradient(45deg, #ffffff 30%, #e9fbea 90%)',
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            bgcolor: '#e6f4ea',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <CheckCircleIcon sx={{ color: '#34a853' }} />
                         </Box>
-                      </CardContent>
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853', mb: 0 }}>
+                            {courses.filter(c => c.status === 'published').length}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Published
+                          </Typography>
+                        </Box>
+                      </Box>
                     </Card>
                   </Grid>
-                  <Grid item size={{xs:12, sm:6 , md:3}}>
-                    <Card>
-                      <CardContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Box>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#fbbc04' }}>
-                              {courses.filter(c => c.status === 'draft').length}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              Drafts
-                            </Typography>
-                          </Box>
-                          <WarningIcon sx={{ fontSize: 40, color: '#fbbc04' }} />
+
+                  {/* Drafts */}
+                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Card
+                      sx={{
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'linear-gradient(45deg, #ffffff 30%, #fff9e5 90%)',
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            bgcolor: '#fef7e0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <WarningIcon sx={{ color: '#fbbc04' }} />
                         </Box>
-                      </CardContent>
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fbbc04', mb: 0 }}>
+                            {courses.filter(c => c.status === 'draft').length}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Drafts
+                          </Typography>
+                        </Box>
+                      </Box>
                     </Card>
                   </Grid>
-                  <Grid item size={{xs:12, sm:6 , md:3}}>
-                    <Card>
-                      <CardContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Box>
-                            <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335' }}>
-                              {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              Total Students
-                            </Typography>
-                          </Box>
-                          <PeopleIcon sx={{ fontSize: 40, color: '#ea4335' }} />
+
+                  {/* Total Students */}
+                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Card
+                      sx={{
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'linear-gradient(45deg, #ffffff 30%, #ffecec 90%)',
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            bgcolor: '#fce8e6',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <PeopleIcon sx={{ color: '#ea4335' }} />
                         </Box>
-                      </CardContent>
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335', mb: 0 }}>
+                            {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Total Students
+                          </Typography>
+                        </Box>
+                      </Box>
                     </Card>
                   </Grid>
                 </Grid>
 
+
                 {/* Filters and Search */}
-                <Card sx={{ mb: 3 }}>
-                  <CardContent>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item size={{xs:12, md:6}}>
-                        <TextField
-                          fullWidth
-                          placeholder="Search courses..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          InputProps={{
-                            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                          }}
-                        />
-                      </Grid>
-                      <Grid item size={{xs:12, md:6}}>
-                        <FormControl fullWidth>
-                          <InputLabel>Status</InputLabel>
-                          <Select
-                            value={filterStatus}
-                            onChange={(e) => setFilterStatus(e.target.value)}
-                            label="Status"
-                          >
-                            <MenuItem value="all">All Status</MenuItem>
-                            <MenuItem value="published">Published</MenuItem>
-                            <MenuItem value="draft">Draft</MenuItem>
-                            <MenuItem value="archived">Archived</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      <Grid item size={{xs:12, md:6}}>
-                        <Typography variant="body2" color="text.secondary">
-                          Showing {filteredCourses.length} of {courses.length} courses
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
+
 
                 {/* Courses Grid */}
-                <Box sx={{ 
+                <Box sx={{
                   '& .MuiGrid-container': {
                     margin: 0,
                     width: '100%'
@@ -625,9 +673,51 @@ const Courses = () => {
                   <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
                     {communityData?.name || 'My'} Courses ({filteredCourses.length})
                   </Typography>
-                  
+
+                  <Card sx={{mb: 1, background: darkMode ? '#2d2d2d' : 'transparent', boxShadow: 'none' , border: "none", p:0}}>
+                    <CardContent sx={{p:0}}>
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item size={{ xs: 3, md: 3 }}>
+                          <TextField
+                            fullWidth
+                            placeholder="Search courses..."
+                            value={searchTerm}
+                            size='small'
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            InputProps={{
+                              startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                            }}
+                          />
+                        </Grid>
+                        <Grid item size={{ xs: 6, md: 6 }}>
+                          
+                        </Grid>
+                        <Grid item size={{ xs: 3, md: 3 }}>
+                          <FormControl fullWidth size='small'>
+                            
+                            <Select
+                              value={filterStatus}
+                              onChange={(e) => setFilterStatus(e.target.value)}
+                             
+                            >
+                              <MenuItem value="Select Status" selected >Select Status</MenuItem>
+                              <MenuItem value="all">All Courses</MenuItem>
+                              <MenuItem value="published">Published</MenuItem>
+                              <MenuItem value="draft">Draft</MenuItem>
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                        <Grid item size={{ xs: 12, md: 12 }}>
+                          <Typography variant="body2" color="text.secondary">
+                            Showing {filteredCourses.length} of {courses.length} courses
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+
                   {/* Debug Info */}
-                  <Box sx={{ mb: 2, p: 2, bgcolor: '#f5f5f5', borderRadius: 1 }}>
+                  <Box sx={{ mb: 2, p: 0, bgcolor: '#f5f5f5', borderRadius: 1 }}>
                     <Typography variant="body2" color="text.secondary">
                       Debug: {courses.length} total courses, {filteredCourses.length} filtered, Loading: {loading.toString()}, Refreshing: {refreshing.toString()}
                     </Typography>
@@ -637,6 +727,12 @@ const Courses = () => {
                     <Typography variant="body2" color="text.secondary">
                       Course IDs: {courses.map(c => c._id).join(', ')}
                     </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Thumbnails: {courses.map(c => c.thumbnail ? '✅' : '❌').join(', ')}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Sample Thumbnail URLs: {courses.slice(0, 3).map(c => c.thumbnail || 'none').join(', ')}
+                    </Typography>
                   </Box>
 
                   {filteredCourses.length === 0 ? (
@@ -645,8 +741,8 @@ const Courses = () => {
                         No courses found
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 3 }}>
-                        {searchTerm || filterStatus !== 'all' 
-                          ? 'Try adjusting your search or filters' 
+                        {searchTerm || filterStatus !== 'all'
+                          ? 'Try adjusting your search or filters'
                           : 'Create your first course to get started'
                         }
                       </Typography>
@@ -663,8 +759,8 @@ const Courses = () => {
                   ) : (
                     <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }}>
                       {filteredCourses.map((course) => (
-                        <Grid item size={{xs:12, sm:6 , md:6 , lg:4}} key={course._id || course.id}>
-                          <Card sx={{ 
+                        <Grid item size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={course._id || course.id}>
+                          <Card sx={{
                             cursor: 'pointer',
                             background: darkMode ? '#2d2d2d' : '#ffffff',
                             border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
@@ -680,10 +776,10 @@ const Courses = () => {
                               boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
                             }
                           }} onClick={() => handleViewCourse(course)}>
-                            
+
                             {/* Course Thumbnail */}
-                            <Box sx={{ 
-                              height: 200, 
+                            <Box sx={{
+                              height: 200,
                               background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
                               position: 'relative',
                               display: 'flex',
@@ -691,46 +787,53 @@ const Courses = () => {
                               justifyContent: 'center',
                               overflow: 'hidden'
                             }}>
-                              {course.thumbnail && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course' && course.thumbnail !== 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Test+Course' ? (
-                                <img 
-                                  src={course.thumbnail} 
+                              {course.thumbnail && course.thumbnail.trim() !== '' ? (
+                                <img
+                                  src={course.thumbnail}
                                   alt={course.title}
-                                  style={{ 
-                                    width: '100%', 
-                                    height: '100%', 
-                                    objectFit: 'cover' 
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
                                   }}
                                   onError={(e) => {
+                                    console.log('Thumbnail failed to load:', course.thumbnail);
                                     e.target.style.display = 'none';
-                                    e.target.nextSibling.style.display = 'flex';
+                                    // Show fallback when image fails
+                                    const fallback = e.target.parentElement.querySelector('.thumbnail-fallback');
+                                    if (fallback) fallback.style.display = 'flex';
                                   }}
                                 />
-                              ) : (
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
+                              ) : null}
+
+                              {/* Fallback Thumbnail (shown when no thumbnail or image fails) */}
+                              <Box
+                                className="thumbnail-fallback"
+                                sx={{
+                                  display: course.thumbnail && course.thumbnail.trim() !== '' ? 'none' : 'flex',
+                                  alignItems: 'center',
                                   justifyContent: 'center',
                                   width: '100%',
                                   height: '100%',
                                   background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
+                                }}
+                              >
+                                <Typography variant="h2" sx={{
+                                  color: 'white',
+                                  fontWeight: 'bold',
+                                  textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
                                 }}>
-                                  <Typography variant="h2" sx={{ 
-                                    color: 'white', 
-                                    fontWeight: 'bold',
-                                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
-                                  }}>
-                                    {course.title.charAt(0).toUpperCase()}
-                                  </Typography>
-                                </Box>
-                              )}
-                              
+                                  {course.title.charAt(0).toUpperCase()}
+                                </Typography>
+                              </Box>
+
                               {/* Status Badge */}
-                              <Box sx={{ 
+                              <Box sx={{
                                 position: 'absolute',
                                 top: 12,
                                 right: 12,
-                                px: 1.5, 
-                                py: 0.5, 
+                                px: 1.5,
+                                py: 0.5,
                                 borderRadius: 2,
                                 bgcolor: getStatusColor(course.status),
                                 color: 'white',
@@ -742,14 +845,14 @@ const Courses = () => {
                                 {course.status}
                               </Box>
                             </Box>
-                            
+
                             <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                               {/* Course Header */}
                               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Box sx={{ 
-                                  width: 32, 
-                                  height: 32, 
-                                  borderRadius: '50%', 
+                                <Box sx={{
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: '50%',
                                   bgcolor: getCategoryColor(course.category),
                                   display: 'flex',
                                   alignItems: 'center',
@@ -764,19 +867,19 @@ const Courses = () => {
                                   {course.category}
                                 </Typography>
                               </Box>
-                              
+
                               {/* Course Title */}
-                              <Typography variant="h6" sx={{ 
-                                fontWeight: 600, 
+                              <Typography variant="h6" sx={{
+                                fontWeight: 600,
                                 mb: 1,
                                 color: darkMode ? '#ffffff' : '#000000',
                                 lineHeight: 1.3
                               }}>
                                 {course.title}
                               </Typography>
-                              
+
                               {/* Course Description */}
-                              <Typography variant="body2" sx={{ 
+                              <Typography variant="body2" sx={{
                                 color: 'text.secondary',
                                 mb: 2,
                                 flexGrow: 1,
@@ -787,7 +890,7 @@ const Courses = () => {
                               }}>
                                 {course.description}
                               </Typography>
-                              
+
                               {/* Course Meta */}
                               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
@@ -797,7 +900,7 @@ const Courses = () => {
                                   {new Date(course.createdAt).toLocaleDateString()}
                                 </Typography>
                               </Box>
-                              
+
                               {/* Action Buttons */}
                               <Box sx={{ display: 'flex', gap: 1 }}>
                                 <Button
@@ -828,7 +931,7 @@ const Courses = () => {
                                   color="error"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    handleDeleteCourse(course._id || course.id);
+                                    handleDeleteCourse(course);
                                   }}
                                   sx={{ flex: 1 }}
                                 >
@@ -888,7 +991,7 @@ const Courses = () => {
                         <Typography variant="body1" sx={{ mb: 3 }}>
                           {selectedCourse.description}
                         </Typography>
-                        
+
                         <Grid container spacing={2}>
                           <Grid item xs={6}>
                             <Typography variant="subtitle2" color="text.secondary">
@@ -969,7 +1072,7 @@ const Courses = () => {
               )}
             </Dialog>
 
-            {/* Delete Confirmation Dialog */}
+            {/* Delete Course Confirmation Dialog */}
             <Dialog open={deleteDialogOpen} onClose={cancelDelete} maxWidth="sm" fullWidth>
               <DialogTitle>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -981,7 +1084,7 @@ const Courses = () => {
                   Are you sure you want to delete the course "{courseToDelete?.title}"?
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  This action cannot be undone. All course content, chapters, and videos will be permanently deleted.
+                  This action cannot be undone. The course will be permanently removed from your course listing.
                 </Typography>
               </DialogContent>
               <DialogActions>

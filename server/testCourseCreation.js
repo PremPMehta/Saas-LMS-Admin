@@ -1,81 +1,71 @@
 const mongoose = require('mongoose');
 const Course = require('./models/Course.model');
-const Community = require('./models/Community.model');
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/saasLmsAdmin', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+require('dotenv').config();
 
 const testCourseCreation = async () => {
   try {
-    console.log('🔍 Testing course creation...');
-    
-    // First, let's check if we have any communities
-    const communities = await Community.find().limit(1);
-    console.log('📊 Found communities:', communities.length);
-    
-    if (communities.length === 0) {
-      console.log('❌ No communities found. Please create a community first.');
-      return;
-    }
-    
-    const testCommunity = communities[0];
-    console.log('✅ Using community:', testCommunity.name);
-    
-    // Create a test course
+    console.log('🔗 Connecting to MongoDB...');
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('✅ Connected to MongoDB');
+
+    // Create a test course directly
     const testCourse = new Course({
-      title: 'Test Course - API Check',
-      description: 'This is a test course to verify the API is working',
+      title: 'Test Course for Publishing',
+      description: 'This is a test course to check if publishing works',
       category: 'Technology',
       targetAudience: 'Beginners',
       contentType: 'video',
+      status: 'published',
       thumbnail: 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Test+Course',
-      status: 'draft',
-      instructor: testCommunity._id, // Use community as instructor for now
-      community: testCommunity._id,
+      instructor: new mongoose.Types.ObjectId(), // Dummy instructor ID
+      community: new mongoose.Types.ObjectId(), // Dummy community ID
       chapters: [
         {
-          title: 'Introduction',
-          description: 'Welcome to the course',
+          title: 'Test Chapter 1',
+          description: 'Test chapter description',
           order: 0,
           videos: [
             {
-              title: 'Getting Started',
-              description: 'Learn the basics',
-              videoUrl: 'https://example.com/video1',
+              title: 'Test Video 1',
+              description: 'Test video description',
+              videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
               videoType: 'youtube',
               duration: '10:00',
               order: 0
             }
           ]
         }
-      ],
-      tags: ['test', 'api'],
-      requirements: ['Basic knowledge'],
-      learningOutcomes: ['Understand the system'],
-      price: 0,
-      isFree: true
+      ]
     });
-    
+
+    console.log('📝 Attempting to save test course...');
     const savedCourse = await testCourse.save();
     console.log('✅ Test course created successfully!');
-    console.log('📝 Course ID:', savedCourse._id);
-    console.log('📝 Course Title:', savedCourse.title);
-    
-    // Now let's test fetching courses
-    const allCourses = await Course.find({ community: testCommunity._id });
-    console.log('📚 Total courses for this community:', allCourses.length);
-    
+    console.log('📊 Course ID:', savedCourse._id);
+    console.log('📝 Title:', savedCourse.title);
+    console.log('📊 Status:', savedCourse.status);
+    console.log('📚 Chapters:', savedCourse.chapters.length);
+
+    // Try to find the course
+    const foundCourse = await Course.findById(savedCourse._id);
+    console.log('🔍 Found course:', foundCourse ? 'YES' : 'NO');
+
     // Clean up - delete the test course
     await Course.findByIdAndDelete(savedCourse._id);
     console.log('🧹 Test course cleaned up');
-    
+
   } catch (error) {
     console.error('❌ Error testing course creation:', error);
+    
+    if (error.name === 'ValidationError') {
+      console.log('📋 Validation errors:');
+      Object.keys(error.errors).forEach(key => {
+        console.log(`  - ${key}: ${error.errors[key].message}`);
+      });
+    }
   } finally {
-    mongoose.connection.close();
+    await mongoose.disconnect();
+    console.log('🔌 Disconnected from MongoDB');
   }
 };
 

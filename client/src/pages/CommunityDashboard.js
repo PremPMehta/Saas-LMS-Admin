@@ -25,6 +25,10 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
+import SchoolIcon from '@mui/icons-material/School';
+import PublicIcon from '@mui/icons-material/Public';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import ArchiveIcon from '@mui/icons-material/Archive';
 import {
   Menu as MenuIcon,
   Home as HomeIcon,
@@ -64,27 +68,26 @@ const CommunityDashboard = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [openCourseDialog, setOpenCourseDialog] = useState(false);
   const [communityData, setCommunityData] = useState(null);
-  
+
   console.log('🎯 CommunityDashboard rendered with courses:', courses.length);
 
-  // Check authentication on component mount
+  // Check authentication on component mount - TEMPORARILY DISABLED FOR TESTING
   useEffect(() => {
-    if (!communityAuthApi.isAuthenticated()) {
-      console.log('❌ User not authenticated, redirecting to login...');
-      navigate('/community-login');
-      return;
-    }
-
-    // Get community data
-    const currentCommunity = communityAuthApi.getCurrentCommunity();
-    if (!currentCommunity) {
-      console.log('❌ No community data found, redirecting to login...');
-      navigate('/community-login');
-      return;
-    }
+    // TEMPORARILY DISABLED AUTH CHECK
+    console.log('🔓 Auth check temporarily disabled for testing');
     
-    setCommunityData(currentCommunity);
-    console.log('✅ User authenticated, community data loaded:', currentCommunity);
+    // Set mock community data for testing
+    const mockCommunityData = {
+      id: 'test-community-123',
+      name: 'Test Community',
+      description: 'This is a test community for development purposes',
+      logo: 'https://via.placeholder.com/100x100/4285f4/ffffff?text=TC',
+      memberCount: 150,
+      courseCount: 12
+    };
+    
+    setCommunityData(mockCommunityData);
+    console.log('✅ Mock community data loaded for testing:', mockCommunityData);
   }, [navigate]);
 
   // Load courses from API
@@ -106,16 +109,16 @@ const CommunityDashboard = () => {
         }
 
         console.log('🔄 Loading courses for community:', currentCommunity.id);
-        
+
         // Load courses for the authenticated community
         const response = await courseApi.getCourses({ community: currentCommunity.id });
         console.log('✅ API Response:', response);
         console.log('📚 Courses loaded:', response.courses?.length || 0);
         setCourses(response.courses || []);
-        
+
       } catch (error) {
         console.error('❌ Error loading courses:', error);
-        
+
         // If it's an authentication error, redirect to login
         if (error.message.includes('unauthorized') || error.message.includes('token')) {
           console.log('❌ Authentication error, redirecting to login...');
@@ -123,7 +126,7 @@ const CommunityDashboard = () => {
           navigate('/community-login');
           return;
         }
-        
+
         setCourses([]);
       }
     };
@@ -206,10 +209,10 @@ const CommunityDashboard = () => {
       try {
         // Delete from database
         await courseApi.deleteCourse(courseId);
-        
+
         // Update local state
         setCourses(prev => prev.filter(course => course._id !== courseId));
-        
+
         console.log('Course deleted successfully');
       } catch (error) {
         console.error('Error deleting course:', error);
@@ -240,7 +243,7 @@ const CommunityDashboard = () => {
   ];
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       minHeight: '100vh',
       background: darkMode ? '#1a1a1a' : '#f8f9fa',
       display: 'flex'
@@ -280,14 +283,14 @@ const CommunityDashboard = () => {
                 width: 48,
                 height: 48,
                 borderRadius: '50%',
-                backgroundColor: activeNav === item.id 
+                backgroundColor: activeNav === item.id
                   ? (darkMode ? '#404040' : '#000000')
                   : 'transparent',
-                color: activeNav === item.id 
-                  ? '#ffffff' 
+                color: activeNav === item.id
+                  ? '#ffffff'
                   : (darkMode ? '#ffffff' : '#000000'),
                 '&:hover': {
-                  backgroundColor: activeNav === item.id 
+                  backgroundColor: activeNav === item.id
                     ? (darkMode ? '#404040' : '#000000')
                     : (darkMode ? '#404040' : '#f0f0f0'),
                 }
@@ -300,7 +303,7 @@ const CommunityDashboard = () => {
 
         {/* Logout Button */}
         <Box sx={{ mt: 'auto', mb: 2 }}>
-          <IconButton 
+          <IconButton
             onClick={handleLogout}
             sx={{ color: darkMode ? '#ffffff' : '#000000' }}
             title="Logout"
@@ -311,8 +314,8 @@ const CommunityDashboard = () => {
       </Box>
 
       {/* Main Content Area */}
-      <Box sx={{ 
-        flex: 1, 
+      <Box sx={{
+        flex: 1,
         ml: 10, // Account for fixed sidebar
         display: 'flex',
         flexDirection: 'column'
@@ -332,15 +335,15 @@ const CommunityDashboard = () => {
         }}>
           {/* Logo */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar sx={{ 
-              bgcolor: '#4285f4', 
+            <Avatar sx={{
+              bgcolor: '#4285f4',
               mr: 2,
               width: 40,
               height: 40
             }}>
               <DashboardIcon />
             </Avatar>
-            <Typography variant="h6" sx={{ 
+            <Typography variant="h6" sx={{
               fontWeight: 700,
               color: darkMode ? '#ffffff' : '#000000'
             }}>
@@ -374,8 +377,8 @@ const CommunityDashboard = () => {
             <IconButton sx={{ color: darkMode ? '#ffffff' : '#000000' }}>
               <NotificationsIcon />
             </IconButton>
-            <Avatar sx={{ 
-              width: 40, 
+            <Avatar sx={{
+              width: 40,
               height: 40,
               bgcolor: '#34a853'
             }}>
@@ -389,52 +392,160 @@ const CommunityDashboard = () => {
           {/* Home/Dashboard View */}
           {activeNav === 'home' ? (
             <Box>
-              <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>
+              <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: darkMode ? '#ffffff' : '#000000', fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
                 Welcome to {communityData?.name || 'Your'} Dashboard
               </Typography>
-              
+
               <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item size={{xs:12, sm:6 , md:3}}>
-                  <Card sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ color: '#4285f4', mb: 1 }}>
-                      {courses.length}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Total Courses
-                    </Typography>
+                {/* Total Courses */}
+                <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card
+                    sx={{
+                      p: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(237, 235, 255) 90%)',
+                      borderRadius: 3,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          bgcolor: '#e8f0fe',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <SchoolIcon sx={{ color: '#4285f4' }} />
+                      </Box>
+                      <Box>
+                        <Typography variant="h4" sx={{ color: '#4285f4', mb: 0 }}>
+                          {courses.length}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Total Courses
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Card>
                 </Grid>
-                <Grid item size={{xs:12, sm:6 , md:3}}>
-                  <Card sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ color: '#34a853', mb: 1 }}>
-                      {courses.filter(c => c.status === 'published').length}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Published
-                    </Typography>
+
+                {/* Published */}
+                <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card
+                    sx={{
+                      p: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(232, 248, 235) 90%)',
+                      borderRadius: 3,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          bgcolor: '#e6f4ea',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <PublicIcon sx={{ color: '#34a853' }} />
+                      </Box>
+                      <Box>
+                        <Typography variant="h4" sx={{ color: '#34a853', mb: 0 }}>
+                          {courses.filter(c => c.status === 'published').length}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Published
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Card>
                 </Grid>
-                <Grid item size={{xs:12, sm:6 , md:3}}>
-                  <Card sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ color: '#fbbc04', mb: 1 }}>
-                      {courses.filter(c => c.status === 'draft').length}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Drafts
-                    </Typography>
+
+                {/* Drafts */}
+                <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card
+                    sx={{
+                      p: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 249, 225) 90%)',
+                      borderRadius: 3,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          bgcolor: '#fef7e0',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <EditNoteIcon sx={{ color: '#fbbc04' }} />
+                      </Box>
+                      <Box>
+                        <Typography variant="h4" sx={{ color: '#fbbc04', mb: 0 }}>
+                          {courses.filter(c => c.status === 'draft').length}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Drafts
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Card>
                 </Grid>
-                <Grid item size={{xs:12, sm:6 , md:3}}>
-                  <Card sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ color: '#ea4335', mb: 1 }}>
-                      {courses.filter(c => c.status === 'archived').length}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Archived
-                    </Typography>
+
+                {/* Archived */}
+                <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card
+                    sx={{
+                      p: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 235, 232) 90%)',
+                      borderRadius: 3,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          bgcolor: '#fce8e6',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <ArchiveIcon sx={{ color: '#ea4335' }} />
+                      </Box>
+                      <Box>
+                        <Typography variant="h4" sx={{ color: '#ea4335', mb: 0 }}>
+                          {courses.filter(c => c.status === 'archived').length}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Archived
+                        </Typography>
+                      </Box>
+                    </Box>
                   </Card>
                 </Grid>
               </Grid>
+
 
               <Box sx={{ textAlign: 'end', py: 4 }}>
                 {/* <Typography variant="h6" sx={{ mb: 2 }}>
@@ -493,14 +604,14 @@ const CommunityDashboard = () => {
                       <Typography variant="body1" sx={{ mb: 2 }}>
                         {selectedCourse.description}
                       </Typography>
-                      
+
                       <Typography variant="subtitle2" sx={{ color: '#666666' }}>
                         Category
                       </Typography>
                       <Typography variant="body1" sx={{ mb: 2 }}>
                         {selectedCourse.category}
                       </Typography>
-                      
+
                       <Typography variant="subtitle2" sx={{ color: '#666666' }}>
                         Target Audience
                       </Typography>
@@ -520,7 +631,7 @@ const CommunityDashboard = () => {
                       <Typography variant="subtitle2" sx={{ color: '#666666' }}>
                         Status
                       </Typography>
-                      <Box sx={{ 
+                      <Box sx={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         px: 1.5,
@@ -558,14 +669,14 @@ const CommunityDashboard = () => {
                                 Videos ({chapter.videos.length}):
                               </Typography>
                               {chapter.videos.map((video, videoIndex) => (
-                                <Box key={videoIndex} sx={{ 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
-                                  gap: 1, 
-                                  p: 1, 
-                                  bgcolor: '#f5f5f5', 
-                                  borderRadius: 1, 
-                                  mb: 0.5 
+                                <Box key={videoIndex} sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 1,
+                                  p: 1,
+                                  bgcolor: '#f5f5f5',
+                                  borderRadius: 1,
+                                  mb: 0.5
                                 }}>
                                   <PlayCircleOutlineIcon sx={{ fontSize: 16, color: '#666' }} />
                                   <Typography variant="body2" sx={{ flex: 1 }}>

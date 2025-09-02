@@ -11,19 +11,24 @@ import {
   CardContent,
   Avatar,
   Button,
-  Paper
+  Paper,
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import {
   Search as SearchIcon,
   People as PeopleIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
   Business as BusinessIcon,
-  Person as PersonIcon
+  Person as PersonIcon,
+  PlayArrow as PlayIcon,
+  Description as DescriptionIcon,
+  TextFields as TextIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { courseApi } from '../utils/courseApi';
 
-// Mock data for communities (will be replaced with API calls)
-const mockCommunities = [
+const communities = [
   {
     id: 1,
     name: "Modern Web Development",
@@ -126,6 +131,9 @@ const Discovery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -138,26 +146,52 @@ const Discovery = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [loginDropdownOpen]);
-  const [filteredCommunities, setFilteredCommunities] = useState(mockCommunities);
+  const [filteredCommunities, setFilteredCommunities] = useState([]);
 
+  // Fetch courses from database
   useEffect(() => {
-    let filtered = mockCommunities;
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        const response = await courseApi.getCourses({ status: 'published' });
+        console.log('Fetched courses:', response);
+        
+        if (response.success && response.courses) {
+          setCourses(response.courses);
+          setFilteredCommunities(response.courses);
+        } else {
+          setError('Failed to fetch courses');
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+        setError('Failed to load courses. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // Filter courses based on search and category
+  useEffect(() => {
+    let filtered = courses;
 
     // Filter by category
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(community => community.category === selectedCategory);
+      filtered = filtered.filter(course => course.category === selectedCategory);
     }
 
     // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(community =>
-        community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        community.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(course =>
+        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     setFilteredCommunities(filtered);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, courses]);
 
   const formatMemberCount = (count) => {
     if (count >= 1000) {
@@ -278,14 +312,13 @@ const Discovery = () => {
               fontSize: { xs: '2rem', md: '3rem' }
             }}
           >
-            Discover communities
+            Discover courses
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
             or{' '}
             <Button
               variant="text"
-              component="a"
-              href="/create-community"
+              onClick={() => navigate('/create-course')}
               sx={{ 
                 color: '#4285f4',
                 textTransform: 'none',
@@ -300,7 +333,7 @@ const Discovery = () => {
                 }
               }}
             >
-              create your own
+              create your own course
             </Button>
           </Typography>
 
@@ -317,7 +350,7 @@ const Discovery = () => {
           >
             <TextField
               fullWidth
-              placeholder="Search for anything"
+              placeholder="Search for courses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
@@ -356,24 +389,44 @@ const Discovery = () => {
           </Box>
         </Box>
 
+        {/* Loading and Error States */}
+        {loading && (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <CircularProgress size={60} />
+            <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>
+              Loading courses...
+            </Typography>
+          </Box>
+        )}
+
+        {error && (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Alert severity="error" sx={{ maxWidth: 600, mx: 'auto' }}>
+              {error}
+            </Alert>
+          </Box>
+        )}
+
         {/* Communities Grid - Force 3 cards per row */}
-        <Box 
-          sx={{ 
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(3, 1fr)',
-              md: 'repeat(3, 1fr)',
-              lg: 'repeat(3, 1fr)',
-              xl: 'repeat(3, 1fr)'
-            },
-            gap: 3,
-            maxWidth: '1400px',
-            mx: 'auto'
-          }}
-        >
-          {filteredCommunities.map((community, index) => (
+        {!loading && !error && (
+          <Box 
+            sx={{ 
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(3, 1fr)',
+                md: 'repeat(3, 1fr)',
+                lg: 'repeat(3, 1fr)',
+                xl: 'repeat(3, 1fr)'
+              },
+              gap: 3,
+              maxWidth: '1400px',
+              mx: 'auto'
+            }}
+          >
+            {filteredCommunities.map((community, index) => (
               <Card 
+                key={community.id || index}
                 sx={{ 
                   height: '100%',
                   display: 'flex',
@@ -413,8 +466,8 @@ const Discovery = () => {
                 <CardMedia
                   component="img"
                   height="160"
-                  image={community.image}
-                  alt={community.name}
+                  image={community.thumbnail || `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`}
+                  alt={community.title}
                 />
                 
                 <CardContent sx={{ flexGrow: 1, p: 3 }}>
@@ -428,10 +481,10 @@ const Discovery = () => {
                         fontSize: '0.75rem'
                       }}
                     >
-                      {community.name.charAt(0)}
+                      {community.title.charAt(0)}
                     </Avatar>
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                      {community.name}
+                      {community.title}
                     </Typography>
                   </Box>
                   
@@ -443,33 +496,52 @@ const Discovery = () => {
                     {community.description}
                   </Typography>
                   
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Chip
+                        icon={community.contentType === 'video' ? <PlayIcon /> : <TextIcon />}
+                        label={community.contentType === 'video' ? 'Video Course' : 'Text Course'}
+                        size="small"
+                        variant="outlined"
+                        color={community.contentType === 'video' ? 'primary' : 'warning'}
+                      />
+                      <Chip
+                        label={community.category}
+                        size="small"
+                        variant="outlined"
+                        color="default"
+                      />
+                    </Box>
+                  </Box>
+                  
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PeopleIcon sx={{ fontSize: '1rem', mr: 0.5, color: 'text.secondary' }} />
                       <Typography variant="body2" color="text.secondary">
-                        {formatMemberCount(community.members)} Members
+                        {community.chapters?.length || 0} Chapters
                       </Typography>
                     </Box>
                     <Typography 
                       variant="body2" 
                       sx={{ 
                         fontWeight: 'bold',
-                        color: community.price === 'Free' ? 'success.main' : 'text.primary'
+                        color: 'success.main'
                       }}
                     >
-                      {community.price}
+                      Free
                     </Typography>
                   </Box>
                 </CardContent>
               </Card>
-          ))}
-        </Box>
+            ))}
+          </Box>
+        )}
 
         {/* No Results */}
-        {filteredCommunities.length === 0 && (
+        {!loading && !error && filteredCommunities.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary">
-              No communities found matching your criteria
+              No courses found matching your criteria
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               Try adjusting your search or category filter

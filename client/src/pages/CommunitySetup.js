@@ -360,7 +360,7 @@ const CommunitySetup = () => {
 
         <Grid container spacing={4}>
           {/* Left Side - Form */}
-          <Grid item xs={12} md={7}>
+          <Grid item size={{xs:12, md:7}} >
             <Card sx={{
               borderRadius: 3,
               background: 'rgba(255,255,255,0.95)',
@@ -585,7 +585,7 @@ const CommunitySetup = () => {
           </Grid>
 
           {/* Right Side - Preview */}
-          <Grid item xs={12} md={5}>
+          <Grid item size={{xs:12, md:5}}>
             <Card sx={{
               height: 'fit-content',
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',

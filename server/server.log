@@ -1,0 +1,1056 @@
+(node:78051) [MONGOOSE] Warning: Duplicate schema index on {"email":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+🚀 Server running on port 5001
+🌍 Environment: development
+📊 Database: mongodb://localhost:27017/saasLmsAdmin
+⚠️  Skipping admin user creation - database not connected
+🎯 BBR Tek Admin Server is ready!
+✅ MongoDB Connected: localhost
+🔍 Backend: Fetching courses with filter: {}
+📊 Backend: Found 17 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b241cb62160d82eda0e8b1'),
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { status: 'published' }
+📊 Backend: Found 7 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b241cb62160d82eda0e8b1'),
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1972af8bc9ed67994546b')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+Error deleting course: CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Course"
+    at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:251:11)
+    at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+    at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+    at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+    at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+    at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+    at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+    at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async exports.deleteCourse (/Users/premmehta/Documents/Saas-LMS-Admin/server/controllers/course.controller.js:226:20) {
+  stringValue: '"undefined"',
+  messageFormat: undefined,
+  kind: 'ObjectId',
+  value: 'undefined',
+  path: '_id',
+  reason: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+      at new ObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/bson/lib/bson.cjs:2538:23)
+      at castObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast/objectid.js:25:12)
+      at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:249:12)
+      at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+      at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+      at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+      at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+      at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+      at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+      at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80),
+  valueType: 'string'
+}
+Error deleting course: CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Course"
+    at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:251:11)
+    at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+    at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+    at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+    at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+    at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+    at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+    at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async exports.deleteCourse (/Users/premmehta/Documents/Saas-LMS-Admin/server/controllers/course.controller.js:226:20) {
+  stringValue: '"undefined"',
+  messageFormat: undefined,
+  kind: 'ObjectId',
+  value: 'undefined',
+  path: '_id',
+  reason: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+      at new ObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/bson/lib/bson.cjs:2538:23)
+      at castObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast/objectid.js:25:12)
+      at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:249:12)
+      at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+      at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+      at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+      at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+      at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+      at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+      at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80),
+  valueType: 'string'
+}
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+Error deleting course: CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Course"
+    at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:251:11)
+    at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+    at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+    at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+    at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+    at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+    at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+    at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async exports.deleteCourse (/Users/premmehta/Documents/Saas-LMS-Admin/server/controllers/course.controller.js:226:20) {
+  stringValue: '"undefined"',
+  messageFormat: undefined,
+  kind: 'ObjectId',
+  value: 'undefined',
+  path: '_id',
+  reason: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+      at new ObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/bson/lib/bson.cjs:2538:23)
+      at castObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast/objectid.js:25:12)
+      at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:249:12)
+      at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+      at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+      at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+      at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+      at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+      at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+      at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80),
+  valueType: 'string'
+}
+Error deleting course: CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Course"
+    at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:251:11)
+    at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+    at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+    at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+    at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+    at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+    at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+    at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async exports.deleteCourse (/Users/premmehta/Documents/Saas-LMS-Admin/server/controllers/course.controller.js:226:20) {
+  stringValue: '"undefined"',
+  messageFormat: undefined,
+  kind: 'ObjectId',
+  value: 'undefined',
+  path: '_id',
+  reason: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+      at new ObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/bson/lib/bson.cjs:2538:23)
+      at castObjectId (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast/objectid.js:25:12)
+      at SchemaObjectId.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schema/objectId.js:249:12)
+      at SchemaType.applySetters (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1258:12)
+      at SchemaType.castForQuery (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/schemaType.js:1676:17)
+      at cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/cast.js:390:32)
+      at Query.cast (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:5055:12)
+      at Query._castConditions (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:2351:10)
+      at model.Query._findOneAndDelete (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:3593:8)
+      at model.Query.exec (/Users/premmehta/Documents/Saas-LMS-Admin/server/node_modules/mongoose/lib/query.js:4604:80),
+  valueType: 'string'
+}
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 16 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b23eddb7ff748bab6f4114'),
+  new ObjectId('68b1a30f2d97fc82f0100a82'),
+  new ObjectId('68b198d43afc9ec81f44c626'),
+  new ObjectId('68b198ce3afc9ec81f44c620'),
+  new ObjectId('68b198c83afc9ec81f44c61a'),
+  new ObjectId('68b1981df8bc9ed679945567'),
+  new ObjectId('68b197adf8bc9ed67994552b'),
+  new ObjectId('68b197a6f8bc9ed679945525'),
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9'),
+  new ObjectId('68b18ea9e6abd11eefa2d775'),
+  new ObjectId('68b18cb5e6abd11eefa2d681')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 6 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 6 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 6 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9')
+]
+🔍 Backend: Fetching courses with filter: { community: '68b1a201d42efbd40ace6b75' }
+📊 Backend: Found 6 courses
+📋 Backend: Course IDs: [
+  new ObjectId('68b19748f8bc9ed6799454cf'),
+  new ObjectId('68b1972af8bc9ed67994546b'),
+  new ObjectId('68b1971df8bc9ed679945465'),
+  new ObjectId('68b19714f8bc9ed67994545f'),
+  new ObjectId('68b1970bf8bc9ed679945459'),
+  new ObjectId('68b18fcd1acce420e9ba59b9')
+]

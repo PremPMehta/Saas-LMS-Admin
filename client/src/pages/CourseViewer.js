@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {
   Box,
   Card,
@@ -15,8 +18,14 @@ import {
   useTheme,
   useMediaQuery,
   Breadcrumbs,
-  Link
-} from '@mui/material';
+  Link,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Slider,
+  Tooltip
+} from '@mui/material'; 
 import {
   ExpandMore as ExpandMoreIcon,
   PlayArrow as PlayIcon,
@@ -43,6 +52,9 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 
+// Configure PDF.js worker
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
 const CourseViewer = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -56,8 +68,15 @@ const CourseViewer = () => {
   const [activeLectureId, setActiveLectureId] = useState(null);
   const [expandedAccordion, setExpandedAccordion] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [videoLoading, setVideoLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [activeNav, setActiveNav] = useState('courses');
+  
+  // PDF state
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [scale, setScale] = useState(1.0);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   // Mock data for testing with 3-4 videos per lecture
   const mockCourses = [
@@ -632,6 +651,16 @@ const CourseViewer = () => {
     console.log('Setting activeLectureId to:', lecture._id);
     setSelectedLecture(lecture);
     setActiveLectureId(lecture._id);
+    
+    // Reset PDF state when switching lectures
+    setPageNumber(1);
+    setScale(1.0);
+    setNumPages(null);
+    
+    // Set video loading state for video lectures
+    if (lecture.type === 'VIDEO' || lecture.videoType) {
+      setVideoLoading(true);
+    }
   };
 
   // Update video completion status in the course data
@@ -796,25 +825,37 @@ const CourseViewer = () => {
     }}>
       {/* Left Navigation Bar */}
       <Box sx={{
-        width: 80,
+        width: { xs: '100%', md: 80 },
         background: darkMode ? '#2d2d2d' : '#ffffff',
-        borderRight: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+        borderRight: { xs: 'none', md: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}` },
+        borderBottom: { xs: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`, md: 'none' },
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: { xs: 'row', md: 'column' },
         alignItems: 'center',
-        py: 2,
-        position: 'fixed',
-        height: '100vh',
+        justifyContent: { xs: 'space-around', md: 'flex-start' },
+        py: { xs: 1, md: 2 },
+        position: { xs: 'fixed', md: 'fixed' },
+        height: { xs: 60, md: '100vh' },
+        top: { xs: 0, md: 0 },
+        left: { xs: 0, md: 0 },
         zIndex: 1000,
       }}>
         {/* Hamburger Menu */}
-        <IconButton sx={{ mb: 4, color: darkMode ? '#ffffff' : '#000000' }}>
+        <IconButton sx={{ 
+          mb: { xs: 0, md: 4 }, 
+          color: darkMode ? '#ffffff' : '#000000',
+          display: { xs: 'none', md: 'flex' }
+        }}>
           <MenuIcon />
         </IconButton>
 
         {/* Navigation Items */}
         {navItems.map((item) => (
-          <Box key={item.id} sx={{ mb: 2, position: 'relative' }}>
+          <Box key={item.id} sx={{ 
+            mb: { xs: 0, md: 2 }, 
+            position: 'relative',
+            display: { xs: 'flex', md: 'block' }
+          }}>
             <IconButton
               onClick={() => {
                 if (item.id === 'home') {
@@ -826,8 +867,8 @@ const CourseViewer = () => {
                 }
               }}
               sx={{
-                width: 48,
-                height: 48,
+                width: { xs: 40, md: 48 },
+                height: { xs: 40, md: 48 },
                 borderRadius: '50%',
                 backgroundColor: activeNav === item.id
                   ? (darkMode ? '#404040' : '#000000')
@@ -848,10 +889,18 @@ const CourseViewer = () => {
         ))}
 
         {/* Logout Button */}
-        <Box sx={{ mt: 'auto', mb: 2 }}>
+        <Box sx={{ 
+          mt: { xs: 0, md: 'auto' }, 
+          mb: { xs: 0, md: 2 },
+          display: { xs: 'flex', md: 'block' }
+        }}>
           <IconButton
             onClick={handleLogout}
-            sx={{ color: darkMode ? '#ffffff' : '#000000' }}
+            sx={{ 
+              color: darkMode ? '#ffffff' : '#000000',
+              width: { xs: 40, md: 48 },
+              height: { xs: 40, md: 48 }
+            }}
             title="Logout"
           >
             <ArrowBackIcon />
@@ -862,19 +911,20 @@ const CourseViewer = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: { xs: 0, md: 10 }, // Account for fixed sidebar
+        mt: { xs: 8, md: 0 }, // Account for mobile top navigation
         display: 'flex',
         flexDirection: 'column'
       }}>
         {/* Top Header */}
         <Box sx={{
-          height: 80,
+          height: { xs: 60, md: 80 },
           background: darkMode ? '#2d2d2d' : '#ffffff',
           borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: 4,
+          px: { xs: 2, md: 4 },
           position: 'sticky',
           top: 0,
           zIndex: 999,
@@ -955,11 +1005,10 @@ const CourseViewer = () => {
         </Box>
 
         {/* Course Content */}
-        <Box sx={{ p: 3, flex: 1, overflow: 'hidden' }}>
-          <Grid container spacing={3} sx={{ height: '100%' }}>
-
+        <Box sx={{ p: { xs: 1, md: 3 }, flex: 1, overflow: 'hidden' }}>
+          <Grid container spacing={2}>
             {/* Sidebar - Courses and Lectures */}
-            <Grid item size={{xs: 12, md: 4, lg: 4 }} sx={{ height: '100%' }}>
+            <Grid size={{xs:12, md:4, lg:3}} sx={{ height: { xs: 'auto', md: '100%' } }}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <CardContent sx={{ flexGrow: 1, overflow: 'hidden', p: 0 }}>
                   <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
@@ -969,213 +1018,620 @@ const CourseViewer = () => {
                   </Box>
 
                   <Box sx={{ overflow: 'auto', height: 'calc(100% - 80px)' }}>
-                    {courses.map((course, index) => (
-                      <Accordion
-                        key={course._id}
-                        expanded={expandedAccordion === `panel${index}`}
-                        onChange={handleAccordionChange(`panel${index}`)}
-                        sx={{
-                          '&:before': { display: 'none' },
-                          boxShadow: 'none',
-                          borderBottom: 1,
-                          borderColor: 'divider'
-                        }}
-                      >
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          sx={{
-                            '&:hover': { backgroundColor: 'action.hover' },
-                            cursor: 'pointer'
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('Course selected:', course.title);
-                            handleCourseSelect(course);
-                          }}
-                        >
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
-                            {/* Course Thumbnail */}
-                            <Box
-                              sx={{
-                                width: 60,
-                                height: 40,
-                                borderRadius: 1,
-                                background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontSize: '12px',
-                                fontWeight: 600
-                              }}
-                            >
-                              {course.title.charAt(0)}
-                            </Box>
-
-                            {/* Course Info */}
-                            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                              <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                {course.title}
-                              </Typography>
-                              <Chip
-                                label={course.status}
-                                size="small"
-                                color={getStatusColor(course.status)}
-                                sx={{ fontSize: '10px' }}
-                              />
-                            </Box>
+                    {selectedCourse && (
+                      <Box>
+                        {/* Simple Course Header */}
+                        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                          <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+                            {selectedCourse.title}
+                          </Typography>
+                          
+                          {/* Course Content Type Indicator */}
+                          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                            <Chip
+                              icon={selectedCourse.contentType === 'video' ? <VideoIcon fontSize="small" /> : <TextIcon fontSize="small" />}
+                              label={selectedCourse.contentType === 'video' ? 'Video Course' : 'Text Course'}
+                              size="small"
+                              variant="outlined"
+                              color={selectedCourse.contentType === 'video' ? 'primary' : 'warning'}
+                              sx={{ fontSize: '12px', px: 1, py: 0.5 }}
+                            />
+                            <Chip
+                              label={selectedCourse.status}
+                              size="small"
+                              variant="outlined"
+                              color={selectedCourse.status === 'published' ? 'success' : 'warning'}
+                            />
                           </Box>
-                        </AccordionSummary>
+                        </Box>
 
-                        <AccordionDetails sx={{ p: 0 }}>
-                          <Box sx={{ pl: 2 }}>
-                            {course.chapters?.map((chapter) => (
-                              <Box key={chapter._id} sx={{ mb: 2 }}>
-                                <Typography variant="caption" sx={{
-                                  color: 'text.secondary',
-                                  fontWeight: 600,
-                                  display: 'block',
-                                  mb: 1
+                        {/* Simple List of Chapters and Videos */}
+                        {selectedCourse.chapters?.map((chapter) => (
+                          <Box key={chapter._id} sx={{ mb: 3, p: 2 }}>
+                            <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
+                              📚 {chapter.title}
+                            </Typography>
+                            
+                            {chapter.videos?.map((video) => (
+                              <Box
+                                key={video._id}
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: 1,
+                                  p: 1.5,
+                                  cursor: 'pointer',
+                                  backgroundColor: activeLectureId === video._id ? 'action.selected' : 'transparent',
+                                  '&:hover': { backgroundColor: 'action.hover' },
+                                  mb: 0.5,
+                                  ml: 2,
+                                  borderRadius: 1,
+                                  border: activeLectureId === video._id ? 1 : 0,
+                                  borderColor: 'primary.main'
+                                }}
+                                onClick={() => handleLectureSelect(video)}
+                              >
+                                {video.completed ? (
+                                  <CheckIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                                ) : (
+                                  <CircleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                )}
+
+                                {/* Content Type Icon */}
+                                <Box sx={{ 
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  width: 24,
+                                  height: 24,
+                                  borderRadius: '50%',
+                                  backgroundColor: (video.type === 'VIDEO' || video.videoType) ? '#4285f4' : 
+                                                   video.type === 'PDF' ? '#34a853' : '#f59e0b',
+                                  color: 'white',
+                                  fontSize: '12px'
                                 }}>
-                                  {chapter.title}
+                                  {(video.type === 'VIDEO' || video.videoType) ? '▶️' : 
+                                   video.type === 'PDF' ? '📄' : '📝'}
+                                </Box>
+
+                                <Box sx={{ flex: 1, minWidth: 0 }}>
+                                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                    {video.title}
+                                  </Typography>
+                                                                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                  {video.type === 'PDF' ? 'PDF Document' : video.duration || 'Text Content'}
                                 </Typography>
-
-                                {chapter.videos?.map((video) => (
-                                  <Box
-                                    key={video._id}
-                                    sx={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: 1,
-                                      p: 1,
-                                      borderRadius: 1,
-                                      cursor: 'pointer',
-                                      backgroundColor: activeLectureId === video._id ? 'action.selected' : 'transparent',
-                                      '&:hover': { backgroundColor: 'action.hover' }
-                                    }}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      console.log('Video clicked:', video.title, video._id);
-                                      handleLectureSelect(video);
-                                    }}
-                                  >
-                                    {video.completed ? (
-                                      <CheckIcon sx={{ fontSize: 16, color: 'success.main' }} />
-                                    ) : (
-                                      <CircleIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                                    )}
-
-                                    {video.type === 'VIDEO' ? (
-                                      <VideoIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                                    ) : (
-                                      <TextIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                                    )}
-
-                                    <Typography variant="caption" sx={{
-                                      flexGrow: 1,
-                                      color: activeLectureId === video._id ? 'primary.main' : 'text.primary'
-                                    }}>
-                                      {video.title}
-                                    </Typography>
-                                  </Box>
-                                ))}
+                                </Box>
                               </Box>
                             ))}
                           </Box>
-                        </AccordionDetails>
-                      </Accordion>
-                    ))}
+                        ))}
+                      </Box>
+                    )}
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
 
             {/* Main Content Area */}
-            <Grid item size={{xs: 12, md: 8, lg: 8 }} sx={{ height: '100%' }}>
+            <Grid size={{xs:12, md:8, lg:9}} sx={{ height: { xs: 'auto', md: '100%' } }}>
               <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <CardContent sx={{ flexGrow: 1, p: 0, display: 'flex', flexDirection: 'column' }}>
-
                   {selectedLecture ? (
                     <>
-                      {/* Debug info */}
-                      <Box sx={{ p: 1, backgroundColor: '#f0f0f0', fontSize: '12px' }}>
-                        Debug: {selectedLecture.title} | Type: {selectedLecture.type} | Content: {selectedLecture.content?.substring(0, 50)}...
+                      {/* Debug Info */}
+                      <Box sx={{ p: 2, backgroundColor: '#f5f5f5', borderBottom: 1, borderColor: 'divider' }}>
+                        <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '12px' }}>
+                          Debug: Video Type: {selectedLecture.type || 'undefined'}, VideoType: {selectedLecture.videoType || 'undefined'}, URL: {selectedLecture.videoUrl || selectedLecture.content || 'none'}
+                        </Typography>
                       </Box>
-
+                      
                       {/* Video/Content Player */}
                       <Box sx={{
-                        height: '60%',
+                        height: { xs: '300px', sm: '400px', md: '500px', lg: '600px' },
+                        maxHeight: '70vh',
+                        minHeight: '300px',
                         backgroundColor: '#000',
-                        position: 'relative'
+                        position: 'relative',
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        aspectRatio: { xs: '4/3', sm: '16/10', md: '16/9' },
+                        width: '100%',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
                       }}>
-                        {selectedLecture.type === 'VIDEO' ? (
-                          <iframe
-                            key={selectedLecture._id} // Force re-render when video changes
-                            src={getEmbedUrl(selectedLecture.content)}
-                            title={selectedLecture.title}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              border: 'none'
-                            }}
-                            allowFullScreen
-                          />
-                        ) : (
+                        {selectedLecture.type === 'PDF' ? (
+                          // Enhanced PDF Viewer with react-pdf
                           <Box sx={{
-                            p: 3,
                             height: '100%',
-                            overflow: 'auto',
-                            backgroundColor: 'background.paper'
+                            overflow: 'hidden',
+                            backgroundColor: 'background.paper',
+                            display: 'flex',
+                            flexDirection: 'column'
                           }}>
-                            <Typography variant="h6" sx={{ mb: 2 }}>
-                              {selectedLecture.title}
-                            </Typography>
-                            <Typography variant="body1">
-                              {selectedLecture.content}
-                            </Typography>
+                            {/* PDF Header with Controls */}
+                            <Box sx={{
+                              p: 2,
+                              borderBottom: 1,
+                              borderColor: 'divider',
+                              backgroundColor: 'background.paper',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              gap: 1
+                            }}>
+                              <Typography variant="h6" sx={{ color: 'primary.main' }}>
+                                📄 {selectedLecture.title}
+                              </Typography>
+                              
+                              {/* PDF Controls */}
+                              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                                {/* Page Navigation */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Button
+                                    variant="outlined"
+                                    size="small"
+                                    disabled={pageNumber <= 1}
+                                    onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
+                                  >
+                                    ← Prev
+                                  </Button>
+                                  <Typography variant="body2" sx={{ minWidth: '60px', textAlign: 'center' }}>
+                                    {pageNumber} / {numPages || '?'}
+                                  </Typography>
+                                  <Button
+                                    variant="outlined"
+                                    size="small"
+                                    disabled={pageNumber >= (numPages || 1)}
+                                    onClick={() => setPageNumber(Math.min(numPages || 1, pageNumber + 1))}
+                                  >
+                                    Next →
+                                  </Button>
+                                </Box>
+                                
+                                {/* Zoom Controls */}
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: '120px' }}>
+                                  <Typography variant="caption">Zoom:</Typography>
+                                  <Slider
+                                    value={scale}
+                                    onChange={(e, newValue) => setScale(newValue)}
+                                    min={0.5}
+                                    max={2.0}
+                                    step={0.1}
+                                    size="small"
+                                    sx={{ width: '80px' }}
+                                  />
+                                  <Typography variant="caption" sx={{ minWidth: '30px' }}>
+                                    {Math.round(scale * 100)}%
+                                  </Typography>
+                                </Box>
+                                
+                                {/* Action Buttons */}
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => window.open(selectedLecture.content, '_blank')}
+                                >
+                                  Download
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => window.open(selectedLecture.content, '_blank')}
+                                >
+                                  New Tab
+                                </Button>
+                              </Box>
+                            </Box>
+                            
+                            {/* PDF Viewer with react-pdf */}
+                            <Box sx={{ 
+                              flex: 1, 
+                              p: 2, 
+                              overflow: 'auto',
+                              backgroundColor: '#f5f5f5',
+                              display: 'flex',
+                              justifyContent: 'center'
+                            }}>
+                              {pdfLoading && (
+                                <Box sx={{ 
+                                  display: 'flex', 
+                                  flexDirection: 'column',
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  height: '100%'
+                                }}>
+                                  <CircularProgress size={60} />
+                                  <Typography variant="h6" sx={{ mt: 2 }}>
+                                    Loading PDF...
+                                  </Typography>
+                                </Box>
+                              )}
+                              
+                              <Document
+                                file={selectedLecture.content}
+                                onLoadSuccess={({ numPages }) => {
+                                  setNumPages(numPages);
+                                  setPdfLoading(false);
+                                }}
+                                onLoadError={(error) => {
+                                  console.error('PDF load error:', error);
+                                  setPdfLoading(false);
+                                }}
+                                onLoadProgress={() => setPdfLoading(true)}
+                                loading={
+                                  <Box sx={{ 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    alignItems: 'center', 
+                                    justifyContent: 'center',
+                                    height: '200px'
+                                  }}>
+                                    <CircularProgress size={40} />
+                                    <Typography variant="body2" sx={{ mt: 1 }}>
+                                      Loading PDF...
+                                    </Typography>
+                                  </Box>
+                                }
+                              >
+                                <Page
+                                  pageNumber={pageNumber}
+                                  scale={scale}
+                                  renderTextLayer={true}
+                                  renderAnnotationLayer={true}
+                                  onLoadSuccess={() => setPdfLoading(false)}
+                                />
+                              </Document>
+                            </Box>
+                          </Box>
+                        ) : (selectedLecture.type === 'VIDEO' || selectedLecture.videoType) ? (
+                          // Video Player
+                          <Box sx={{ 
+                            position: 'relative', 
+                            width: '100%', 
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}>
+                            {/* Video Player - Always Visible */}
+                            <Box
+                              id="video-player-container"
+                              sx={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                p: { xs: 1, sm: 2 },
+                                minHeight: { xs: '250px', sm: '300px' },
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                cursor: 'pointer',
+                                '&:focus': {
+                                  outline: '2px solid #1976d2',
+                                  outlineOffset: '2px'
+                                }
+                              }}
+                              tabIndex={0}
+                              role="button"
+                              aria-label="Video player container"
+                            >
+                              {selectedLecture.videoUrl || selectedLecture.content ? (
+                                <>
+                                  {/* Loading State */}
+                                  {videoLoading && (
+                                    <Box 
+                                      role="status"
+                                      aria-label="Loading video content"
+                                      sx={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center', 
+                                        height: '100%',
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundColor: 'rgba(0,0,0,0.8)',
+                                        zIndex: 1,
+                                        backdropFilter: 'blur(2px)',
+                                        transition: 'opacity 0.3s ease-in-out',
+                                        animation: 'fadeIn 0.3s ease-in-out',
+                                        '@keyframes fadeIn': {
+                                          from: { opacity: 0 },
+                                          to: { opacity: 1 }
+                                        }
+                                    }}>
+                                      <CircularProgress size={60} sx={{ color: 'white' }} />
+                                      <Typography variant="h6" sx={{ ml: 2, color: 'white', fontWeight: 500 }}>
+                                        Loading Video...
+                                      </Typography>
+                                    </Box>
+                                  )}
+                                  
+                                  <iframe
+                                    key={selectedLecture._id}
+                                    src={getEmbedUrl(selectedLecture.videoUrl || selectedLecture.content)}
+                                    title={selectedLecture.title}
+                                    style={{
+                                      width: '100%',
+                                      height: '100%',
+                                      border: 'none',
+                                      borderRadius: '8px'
+                                    }}
+                                    allowFullScreen
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    onLoadStart={() => setVideoLoading(true)}
+                                    onLoad={() => setVideoLoading(false)}
+                                    onError={() => {
+                                      setVideoLoading(false);
+                                      console.error('Video failed to load');
+                                    }}
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer"
+                                  />
+                                </>
+                              ) : (
+                                <Box sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '100%',
+                                  color: 'white',
+                                  textAlign: 'center',
+                                  p: 3,
+                                  backgroundColor: 'rgba(0,0,0,0.6)'
+                                }}>
+                                  <VideoIcon sx={{ fontSize: 60, mb: 2, opacity: 0.7 }} />
+                                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 500 }}>
+                                    No Video Available
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ opacity: 0.8, maxWidth: '300px' }}>
+                                    This lecture doesn't have a video attached. Please select a different lecture or contact support.
+                                  </Typography>
+                                </Box>
+                              )}
+                              {/* Video Controls Overlay */}
+                              <Box sx={{
+                                position: 'absolute',
+                                top: { xs: 5, sm: 10 },
+                                right: { xs: 5, sm: 10 },
+                                display: 'flex',
+                                gap: { xs: 0.5, sm: 1 },
+                                flexDirection: { xs: 'column', sm: 'row' }
+                              }}>
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  onClick={() => {
+                                    const iframe = document.querySelector('iframe');
+                                    if (iframe) {
+                                      if (iframe.requestFullscreen) {
+                                        iframe.requestFullscreen();
+                                      } else if (iframe.webkitRequestFullscreen) {
+                                        iframe.webkitRequestFullscreen();
+                                      } else if (iframe.msRequestFullscreen) {
+                                        iframe.msRequestFullscreen();
+                                      }
+                                    }
+                                  }}
+                                  sx={{
+                                    backgroundColor: 'rgba(0,0,0,0.8)',
+                                    color: 'white',
+                                    fontSize: { xs: '10px', sm: '12px' },
+                                    px: { xs: 1, sm: 2 },
+                                    py: { xs: 0.5, sm: 1 },
+                                    '&:hover': { backgroundColor: 'rgba(0,0,0,0.9)' }
+                                  }}
+                                >
+                                  Fullscreen
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => {
+                                    const videoContainer = document.getElementById('video-player-container');
+                                    if (videoContainer) {
+                                      videoContainer.style.display = 'none';
+                                    }
+                                  }}
+                                  sx={{
+                                    backgroundColor: 'rgba(0,0,0,0.8)',
+                                    color: 'white',
+                                    borderColor: 'white',
+                                    fontSize: { xs: '10px', sm: '12px' },
+                                    px: { xs: 1, sm: 2 },
+                                    py: { xs: 0.5, sm: 1 },
+                                    '&:hover': { 
+                                      backgroundColor: 'rgba(0,0,0,0.9)',
+                                      borderColor: 'white'
+                                    }
+                                  }}
+                                >
+                                  Back to Preview
+                                </Button>
+                              </Box>
+                            </Box>
+                          </Box>
+                        ) : (
+                          // Text Content Display
+                          <Box sx={{
+                            height: '100%',
+                            overflow: 'hidden',
+                            backgroundColor: 'background.paper',
+                            display: 'flex',
+                            flexDirection: 'column'
+                          }}>
+                            {/* Text Content Header */}
+                            <Box sx={{ 
+                              p: 2, 
+                              borderBottom: 1, 
+                              borderColor: 'divider',
+                              backgroundColor: 'background.paper',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Typography variant="h6" sx={{ color: 'primary.main' }}>
+                                  📝 {selectedLecture.title}
+                                </Typography>
+                                <Chip
+                                  icon={<TextIcon />}
+                                  label="Rich Text Content"
+                                  size="small"
+                                  variant="outlined"
+                                  color="warning"
+                                />
+                              </Box>
+                            </Box>
+                            
+                            {/* Text Content Display */}
+                            <Box sx={{ flex: 1, p: 3, overflow: 'auto' }}>
+                              <Box
+                                dangerouslySetInnerHTML={{ __html: selectedLecture.content }}
+                                sx={{
+                                  '& h1, & h2, & h3, & h4, & h5, & h6': {
+                                    color: 'primary.main',
+                                    marginTop: 2,
+                                    marginBottom: 1
+                                  },
+                                  '& p': {
+                                    marginBottom: 1.5,
+                                    lineHeight: 1.6
+                                  },
+                                  '& ul, & ol': {
+                                    marginBottom: 1.5,
+                                    paddingLeft: 3
+                                  },
+                                  '& li': {
+                                    marginBottom: 0.5
+                                  },
+                                  '& strong': {
+                                    fontWeight: 600
+                                  },
+                                  '& blockquote': {
+                                    borderLeft: '4px solid #4285f4',
+                                    paddingLeft: 2,
+                                    marginLeft: 0,
+                                    fontStyle: 'italic',
+                                    backgroundColor: '#f8f9fa'
+                                  },
+                                  '& code': {
+                                    backgroundColor: '#f1f3f4',
+                                    padding: '2px 4px',
+                                    borderRadius: 2,
+                                    fontFamily: 'monospace'
+                                  }
+                                }}
+                              />
+                            </Box>
                           </Box>
                         )}
                       </Box>
 
                       {/* Lecture Details */}
-                      <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                          <Box>
-                            <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+                      <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', backgroundColor: 'background.paper' }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
                               {selectedLecture.title}
                             </Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2, lineHeight: 1.6 }}>
                               {selectedLecture.description}
                             </Typography>
+                            
+                            {/* Content Type Specific Info */}
+                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+                              <Chip
+                                icon={selectedLecture.type === 'VIDEO' ? <VideoIcon fontSize="small" /> : 
+                                      selectedLecture.type === 'PDF' ? <DescriptionIcon fontSize="small" /> : <TextIcon fontSize="small" />}
+                                label={selectedLecture.type}
+                                size="small"
+                                variant="outlined"
+                                color={selectedLecture.type === 'VIDEO' ? 'primary' : 
+                                       selectedLecture.type === 'PDF' ? 'secondary' : 'warning'}
+                                        sx={{ fontSize: '12px', px: 1, py: 0.5 }}
+                              />
+                              {selectedLecture.duration && (
+                                <Chip
+                                  label={selectedLecture.duration}
+                                  size="small"
+                                  variant="outlined"
+                                  color="info"
+                                />
+                              )}
+                              {selectedLecture.type === 'VIDEO' && (
+                                <Chip
+                                  icon={<PlayIcon />}
+                                  label="Video Player"
+                                  size="small"
+                                  variant="outlined"
+                                  color="success"
+                                />
+                              )}
+                              {selectedLecture.type === 'TEXT' && (
+                                <Chip
+                                  icon={<TextIcon />}
+                                  label="Rich Text Content"
+                                  size="small"
+                                  variant="outlined"
+                                  color="warning"
+                                />
+                              )}
+                              {selectedLecture.type === 'PDF' && (
+                                <Chip
+                                  icon={<DescriptionIcon />}
+                                  label="PDF Document"
+                                  size="small"
+                                  variant="outlined"
+                                  color="secondary"
+                                />
+                              )}
+                            </Box>
                           </Box>
 
-                          <Button
-                            variant="contained"
-                            startIcon={selectedLecture.completed ? <CheckIcon /> : <PlayIcon />}
-                            onClick={() => {
-                              const newCompletedStatus = !selectedLecture.completed;
-                              // Update the selected lecture state
-                              setSelectedLecture({
-                                ...selectedLecture,
-                                completed: newCompletedStatus
-                              });
-                              // Update the completion status in the course data structure
-                              updateVideoCompletion(selectedLecture._id, newCompletedStatus);
-                            }}
-                          >
-                            {selectedLecture.completed ? 'Completed' : 'Mark Complete'}
-                          </Button>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                          <Chip
-                            icon={<VideoIcon />}
-                            label={selectedLecture.type}
-                            size="small"
-                            variant="outlined"
-                          />
+                          <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
+                            <Button
+                              variant="contained"
+                              startIcon={selectedLecture.completed ? <CheckIcon /> : <PlayIcon />}
+                              onClick={() => {
+                                const newCompletedStatus = !selectedLecture.completed;
+                                setSelectedLecture({
+                                  ...selectedLecture,
+                                  completed: newCompletedStatus
+                                });
+                                updateVideoCompletion(selectedLecture._id, newCompletedStatus);
+                              }}
+                              sx={{
+                                minWidth: 140,
+                                backgroundColor: selectedLecture.completed ? 'success.main' : 'primary.main',
+                                '&:hover': {
+                                  backgroundColor: selectedLecture.completed ? 'success.dark' : 'primary.dark'
+                                }
+                              }}
+                            >
+                              {selectedLecture.completed ? 'Completed' : 'Mark Complete'}
+                            </Button>
+                            
+                            {selectedLecture.type === 'VIDEO' && (
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() => {
+                                  const iframe = document.querySelector('iframe');
+                                  if (iframe && iframe.requestFullscreen) {
+                                    iframe.requestFullscreen();
+                                  }
+                                }}
+                              >
+                                Fullscreen
+                              </Button>
+                            )}
+                          </Box>
                         </Box>
                       </Box>
                     </>

@@ -10,6 +10,11 @@ const videoSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  content: {
+    type: String,
+    required: false,
+    default: ''
+  },
   videoUrl: {
     type: String,
     required: false,
@@ -20,6 +25,12 @@ const videoSchema = new mongoose.Schema({
     enum: ['upload', 'youtube', 'vimeo', 'loom'],
     required: false,
     default: 'youtube'
+  },
+  type: {
+    type: String,
+    enum: ['VIDEO', 'TEXT', 'PDF'],
+    required: false,
+    default: 'VIDEO'
   },
   duration: {
     type: String,
@@ -78,6 +89,14 @@ const courseSchema = new mongoose.Schema({
     type: String,
     enum: ['draft', 'published', 'archived'],
     default: 'draft'
+  },
+  publishedAt: {
+    type: Date,
+    default: null
+  },
+  archivedAt: {
+    type: Date,
+    default: null
   },
   thumbnail: {
     type: String,

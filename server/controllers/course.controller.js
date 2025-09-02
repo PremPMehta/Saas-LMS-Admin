@@ -50,8 +50,10 @@ exports.createCourse = async (req, res) => {
       ...chapter,
       videos: (chapter.videos || []).map(video => ({
         ...video,
-        videoUrl: video.videoUrl || 'https://example.com/placeholder-video', // Provide default if empty
+        content: video.content || video.videoUrl || '', // Handle both content and videoUrl
+        videoUrl: video.videoUrl || video.content || 'https://example.com/placeholder-video',
         videoType: video.videoType || 'youtube',
+        type: video.type || 'VIDEO', // Set type field
         duration: video.duration || '0:00',
         order: video.order || 0
       }))
@@ -65,6 +67,8 @@ exports.createCourse = async (req, res) => {
       targetAudience,
       contentType,
       thumbnail,
+      status: req.body.status || 'draft', // Set status from request body or default to draft
+      publishedAt: req.body.status === 'published' ? new Date() : null, // Set publishedAt if status is published
       chapters: cleanChapters,
       instructor,
       community: communityId,
@@ -126,11 +130,18 @@ exports.getCourses = async (req, res) => {
     console.log('🔍 Backend: Fetching courses with filter:', filter);
 
     const courses = await Course.find(filter)
-      .select('title description category targetAudience contentType status thumbnail instructor community createdAt updatedAt')
       .sort({ createdAt: -1 }); // Sort by newest first, remove limit to get all courses
 
     console.log('📊 Backend: Found', courses.length, 'courses');
     console.log('📋 Backend: Course IDs:', courses.map(c => c._id));
+    
+    // Debug: Check if crypto course has chapters
+    const cryptoCourse = courses.find(c => c.title && c.title.includes('Crypto Trading Mastery'));
+    if (cryptoCourse) {
+      console.log('🔍 Debug: Crypto course chapters length:', cryptoCourse.chapters ? cryptoCourse.chapters.length : 'null');
+      console.log('🔍 Debug: Crypto course chaptersCount virtual:', cryptoCourse.chaptersCount);
+      console.log('🔍 Debug: Crypto course videosCount virtual:', cryptoCourse.videosCount);
+    }
 
     res.status(200).json({
       success: true,
@@ -219,10 +230,18 @@ exports.updateCourse = async (req, res) => {
   }
 };
 
-// Delete a course
+// Delete a course (Soft Delete - Archive)
 exports.deleteCourse = async (req, res) => {
   try {
-    const course = await Course.findByIdAndDelete(req.params.id);
+    // Soft delete: Update status to 'archived' instead of physically deleting
+    const course = await Course.findByIdAndUpdate(
+      req.params.id,
+      { 
+        status: 'archived',
+        archivedAt: new Date()
+      },
+      { new: true }
+    );
 
     if (!course) {
       return res.status(404).json({
@@ -233,14 +252,15 @@ exports.deleteCourse = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Course deleted successfully'
+      message: 'Course archived successfully',
+      course
     });
 
   } catch (error) {
-    console.error('Error deleting course:', error);
+    console.error('Error archiving course:', error);
     res.status(500).json({
       success: false,
-      message: 'Error deleting course',
+      message: 'Error archiving course',
       error: error.message
     });
   }

@@ -283,8 +283,11 @@ const CreateCourse = () => {
           videos: chapter.videos.map((video, videoIndex) => ({
             title: video.title,
             description: video.description,
-            videoUrl: video.videoUrl,
-            videoType: video.videoType,
+            content: video.content || video.videoUrl || '', // Send content for text/PDF
+            videoUrl: video.videoUrl || video.content || '', // Send videoUrl for videos
+            videoType: video.videoType || 'youtube',
+            type: video.contentType === 'pdf' ? 'PDF' : 
+                  video.contentType === 'text' ? 'TEXT' : 'VIDEO', // Properly map content type
             duration: video.duration || '0:00',
             order: videoIndex
           }))
@@ -344,8 +347,11 @@ const CreateCourse = () => {
           videos: chapter.videos.map((video, videoIndex) => ({
             title: video.title,
             description: video.description,
-            videoUrl: video.videoUrl,
-            videoType: video.videoType,
+            content: video.content || video.videoUrl || '', // Send content for text/PDF
+            videoUrl: video.videoUrl || video.content || '', // Send videoUrl for videos
+            videoType: video.videoType || 'youtube',
+            type: video.contentType === 'pdf' ? 'PDF' : 
+                  video.contentType === 'text' ? 'TEXT' : 'VIDEO', // Properly map content type
             duration: video.duration || '0:00',
             order: videoIndex
           }))
@@ -695,6 +701,26 @@ const CreateCourse = () => {
               <Grid item size={{ xs: 12, md: 6 }}>
                 <Card sx={{ mb: 3 }}>
                   <CardContent>
+                  {courseData.thumbnail && (
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                          Course Thumbnail
+                        </Typography>
+                        <Box
+                          component="img"
+                          src={courseData.thumbnail}
+                          alt="Course thumbnail"
+                          sx={{
+                            width: '100%',
+                            height: 200,
+                            borderRadius: 2,
+                            objectFit: 'cover',
+                            borderRadius: 1,
+                            border: '1px solid #e0e0e0'
+                          }}
+                        />
+                      </Box>
+                    )}
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                       Course Details
                     </Typography>
@@ -744,25 +770,7 @@ const CreateCourse = () => {
                         icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
                       />
                     </Box>
-                    {courseData.thumbnail && (
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                          Course Thumbnail
-                        </Typography>
-                        <Box
-                          component="img"
-                          src={courseData.thumbnail}
-                          alt="Course thumbnail"
-                          sx={{
-                            width: '100%',
-                            height: 120,
-                            objectFit: 'cover',
-                            borderRadius: 1,
-                            border: '1px solid #e0e0e0'
-                          }}
-                        />
-                      </Box>
-                    )}
+                  
                   </CardContent>
                 </Card>
               </Grid>
@@ -773,23 +781,24 @@ const CreateCourse = () => {
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                       Course Structure
                     </Typography>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Total Chapters
-                      </Typography>
-                      <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4' }}>
-                        {chapters.length}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Total {courseData.contentType === 'video' ? 'Videos' : 'Lessons'}
-                      </Typography>
-                      <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853' }}>
-                        {chapters.reduce((total, chapter) => total + chapter.videos.length, 0)}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between' }}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Total Chapters
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4' }}>
+                          {chapters.length}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Total {courseData.contentType === 'video' ? 'Videos' : 'Lessons'}
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853' }}>
+                          {chapters.reduce((total, chapter) => total + chapter.videos.length, 0)}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
                       <Typography variant="subtitle2" color="text.secondary">
                         Course Type
                       </Typography>
@@ -799,6 +808,8 @@ const CreateCourse = () => {
                         color="primary"
                       />
                     </Box>
+                    </Box>
+                   
                   </CardContent>
                 </Card>
               </Grid>
@@ -1097,11 +1108,59 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
     }
   };
 
-  const handlePdfUpload = (event) => {
+  const handleContentTypeChange = (newContentType) => {
+    console.log('Content type changed to:', newContentType);
+    setFormData(prev => ({ 
+      ...prev, 
+      contentType: newContentType,
+      // Clear content when switching types
+      content: newContentType === 'pdf' ? '' : prev.content,
+      pdfFile: newContentType === 'pdf' ? prev.pdfFile : null
+    }));
+  };
+
+  const handlePdfUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
       if (file.type === 'application/pdf') {
-        setFormData(prev => ({ ...prev, pdfFile: file }));
+        try {
+          // Create FormData for file upload
+          const formData = new FormData();
+          formData.append('pdf', file);
+          
+          // Upload PDF to server
+          console.log('Uploading PDF file:', file.name, file.size, file.type);
+          
+          const response = await fetch('/api/upload/pdf', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          console.log('Upload response status:', response.status);
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Upload response error:', errorText);
+            throw new Error(`PDF upload failed: ${response.status} ${errorText}`);
+          }
+          
+          const result = await response.json();
+          console.log('Upload response result:', result);
+          
+          // Update form data with PDF URL and set content type
+          setFormData(prev => ({ 
+            ...prev, 
+            pdfFile: file,
+            content: result.url, // Store the uploaded PDF URL (using 'url' from response)
+            contentType: 'pdf' // Ensure content type is set
+          }));
+          
+          console.log('PDF uploaded successfully:', result.url);
+          alert(`PDF uploaded successfully: ${file.name}`);
+        } catch (error) {
+          console.error('Error uploading PDF:', error);
+          alert('Failed to upload PDF. Please try again.');
+        }
       } else {
         alert('Please upload a PDF file');
       }
@@ -1626,53 +1685,202 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
           )}
 
                             {contentType === 'text' && (
-                    <Grid item size={12}>
-                      <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                        Lesson Content
-                      </Typography>
-                      <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
-                        <Box sx={{ 
-                          '& .tox-tinymce': {
-                            border: '1px solid #e0e0e0',
-                            borderRadius: '4px',
-                            fontSize: '14px',
-                            fontFamily: 'inherit'
-                          },
-                          '& .tox-toolbar': {
-                            backgroundColor: '#f8f9fa',
-                            borderBottom: '1px solid #e0e0e0'
-                          },
-                          '& .tox-edit-area': {
-                            minHeight: '200px'
-                          }
-                        }}>
-                          <Editor
-                            apiKey="jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"
-                            value={formData.content}
-                            onEditorChange={handleEditorChange}
-                            init={{
-                              height: 300,
-                              menubar: false,
-                              plugins: [
-                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                              ],
-                              toolbar: 'undo redo | blocks | ' +
-                                'bold italic forecolor | alignleft aligncenter ' +
-                                'alignright alignjustify | bullist numlist outdent indent | ' +
-                                'removeformat | help',
-                              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                              placeholder: 'Enter your lesson content here...'
-                            }}
-                          />
-                        </Box>
-                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                          💡 Tip: Use the professional toolbar above to format your content with headers, bold, italic, lists, alignment, links, emojis, and more!
-                        </Typography>
-                      </Card>
-                    </Grid>
-                  )}
+                              <>
+                                {/* Content Type Selection for Text Courses */}
+                                <Grid item size={12}>
+                                  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+                                    Choose Content Type
+                                  </Typography>
+                                  <Grid container spacing={2}>
+                                    {[
+                                      {
+                                        value: 'write',
+                                        label: 'Write Own Content',
+                                        icon: TextIcon,
+                                        description: 'Use rich text editor to write your lesson',
+                                        color: '#4285f4'
+                                      },
+                                      {
+                                        value: 'pdf',
+                                        label: 'Upload PDF',
+                                        icon: DescriptionIcon,
+                                        description: 'Upload a PDF document as lesson content',
+                                        color: '#34a853'
+                                      }
+                                    ].map((type) => (
+                                      <Grid item size={{ xs: 12, sm: 6 }} key={type.value}>
+                                        <Card
+                                          onClick={() => handleContentTypeChange(type.value)}
+                                          sx={{
+                                            cursor: 'pointer',
+                                            border: formData.contentType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
+                                            background: formData.contentType === type.value ? '#f8f9ff' : '#ffffff',
+                                            transition: 'all 0.3s ease',
+                                            '&:hover': {
+                                              borderColor: type.color,
+                                              background: '#f8f9ff',
+                                              transform: 'translateY(-2px)',
+                                              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                            }
+                                          }}
+
+                                        >
+                                          <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                                            <Box sx={{
+                                              mb: 2,
+                                              color: formData.contentType === type.value ? type.color : '#666666'
+                                            }}>
+                                              <type.icon sx={{ fontSize: 32 }} />
+                                            </Box>
+                                            <Typography variant="body1" sx={{
+                                              fontWeight: 600,
+                                              color: formData.contentType === type.value ? type.color : '#000000',
+                                              mb: 1
+                                            }}>
+                                              {type.label}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                              {type.description}
+                                            </Typography>
+                                          </CardContent>
+                                        </Card>
+                                      </Grid>
+                                    ))}
+                                  </Grid>
+                                </Grid>
+
+                                {/* Write Own Content Section */}
+                                {formData.contentType === 'write' && (
+                                  <Grid item size={12}>
+                                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                                      Write Your Lesson Content
+                                    </Typography>
+                                    <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
+                                      <Box sx={{ 
+                                        '& .tox-tinymce': {
+                                          border: '1px solid #e0e0e0',
+                                          borderRadius: '4px',
+                                          fontSize: '14px',
+                                          fontFamily: 'inherit'
+                                        },
+                                        '& .tox-toolbar': {
+                                          backgroundColor: '#f8f9fa',
+                                          borderBottom: '1px solid #e0e0e0'
+                                        },
+                                        '& .tox-edit-area': {
+                                          minHeight: '200px'
+                                        }
+                                      }}>
+                                        <Editor
+                                          apiKey="jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"
+                                          value={formData.content}
+                                          onEditorChange={handleEditorChange}
+                                          init={{
+                                            height: 300,
+                                            menubar: false,
+                                            plugins: [
+                                              'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                              'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                              'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                                            ],
+                                            toolbar: 'undo redo | blocks | ' +
+                                              'bold italic forecolor | alignleft aligncenter ' +
+                                              'alignright alignjustify | bullist numlist outdent indent | ' +
+                                              'removeformat | help',
+                                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                                            placeholder: 'Enter your lesson content here...'
+                                          }}
+                                        />
+                                      </Box>
+                                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                        💡 Tip: Use the professional toolbar above to format your content with headers, bold, italic, lists, alignment, links, emojis, and more!
+                                      </Typography>
+                                    </Card>
+                                  </Grid>
+                                )}
+
+                                {/* PDF Upload Section for Text Courses */}
+                                {formData.contentType === 'pdf' && (
+                                  <Grid item size={12}>
+                                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+                                      Upload PDF Document
+                                    </Typography>
+                                    <Card
+                                      sx={{
+                                        border: '2px dashed #e0e0e0',
+                                        borderRadius: 2,
+                                        p: 3,
+                                        textAlign: 'center',
+                                        background: formData.pdfFile ? '#f8f9ff' : '#fafafa',
+                                        borderColor: formData.pdfFile ? '#4285f4' : '#e0e0e0',
+                                        transition: 'all 0.3s ease',
+                                        '&:hover': {
+                                          borderColor: '#4285f4',
+                                          background: '#f8f9ff',
+                                        }
+                                      }}
+                                    >
+                                      {formData.pdfFile ? (
+                                        <Box>
+                                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                                            <CheckCircleIcon sx={{ color: '#34a853', fontSize: 32 }} />
+                                            <Box sx={{ textAlign: 'left' }}>
+                                              <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                                                {formData.pdfFile.name}
+                                              </Typography>
+                                              <Typography variant="body2" color="text.secondary">
+                                                {(formData.pdfFile.size / (1024 * 1024)).toFixed(2)} MB
+                                              </Typography>
+                                            </Box>
+                                          </Box>
+                                          <Button
+                                            variant="outlined"
+                                            component="label"
+                                            startIcon={<UploadIcon />}
+                                            size="small"
+                                          >
+                                            Change PDF
+                                            <input
+                                              type="file"
+                                              hidden
+                                              accept=".pdf"
+                                              onChange={handlePdfUpload}
+                                            />
+                                          </Button>
+                                        </Box>
+                                      ) : (
+                                        <Box>
+                                          <DescriptionIcon sx={{ fontSize: 48, color: '#4285f4', mb: 2 }} />
+                                          <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+                                            Upload PDF Document
+                                          </Typography>
+                                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                            Supported format: PDF (Max 50MB)
+                                          </Typography>
+                                          <Button
+                                            variant="contained"
+                                            component="label"
+                                            startIcon={<UploadIcon />}
+                                            sx={{
+                                              background: '#4285f4',
+                                              '&:hover': { background: '#3367d6' }
+                                            }}
+                                          >
+                                            Choose PDF File
+                                            <input
+                                              type="file"
+                                              hidden
+                                              accept=".pdf"
+                                              onChange={handlePdfUpload}
+                                            />
+                                          </Button>
+                                        </Box>
+                                      )}
+                                    </Card>
+                                  </Grid>
+                                )}
+                              </>
+                            )}
 
           {contentType === 'pdf' && (
             <Grid item xs={12}>

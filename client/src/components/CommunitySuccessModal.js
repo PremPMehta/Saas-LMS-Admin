@@ -134,9 +134,9 @@ const CommunitySuccessModal = ({ open, onClose, communityData }) => {
       </DialogTitle>
 
       <DialogContent sx={{ p: 0, position: 'relative', zIndex: 2 }}>
-        <Grid container>
+        <Grid container spacing={0}>
           {/* Left Side - Community Overview */}
-          <Grid item xs={12} md={6} sx={{ p: 4 }}>
+          <Grid item size={{xs:12, md:6}} sx={{ p: 2 }}>
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               {/* Community Card */}
               <Card sx={{
@@ -261,7 +261,7 @@ const CommunitySuccessModal = ({ open, onClose, communityData }) => {
           </Grid>
 
           {/* Right Side - Features & Actions */}
-          <Grid item xs={12} md={6} sx={{ p: 4 }}>
+          <Grid item size={{xs:12, md:6}}  sx={{ p: 2 }}>
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                              {/* Next Steps */}
                <Card sx={{

@@ -47,6 +47,10 @@ app.use('/api/data', require('./routes/data.routes'));
 app.use('/api/courses', require('./routes/course.routes'));
 app.use('/api/community-auth', require('./routes/communityAuth.routes'));
 app.use('/api/community-admins', require('./routes/communityAdmin.routes'));
+app.use('/api/upload', require('./routes/upload.routes'));
+
+// Serve uploaded files statically
+app.use('/uploads', express.static('uploads'));
 
 // Health check route
 app.get('/api/health', (req, res) => {
