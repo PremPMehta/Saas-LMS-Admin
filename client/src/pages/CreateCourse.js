@@ -342,6 +342,10 @@ const CreateCourse = () => {
 
     setIsSubmitting(true);
     try {
+      // Get community ID for course association
+      const communityId = localStorage.getItem('communityId');
+      console.log('Creating course for community ID:', communityId);
+
       // Create the course object for database
       const courseDataForApi = {
         title: courseData.title,
@@ -352,6 +356,7 @@ const CreateCourse = () => {
         thumbnail: courseData.thumbnail || 'http://localhost:5001/uploads/default-course-thumbnail.jpg',
         status: 'published', // Set status to published directly
         publishedAt: new Date().toISOString(), // Set publish date
+        community: communityId, // Associate course with community
         chapters: chapters.map((chapter, index) => ({
           title: chapter.title,
           description: chapter.description,
@@ -420,6 +425,10 @@ const CreateCourse = () => {
 
     setIsSubmitting(true);
     try {
+      // Get community ID for course association
+      const communityId = localStorage.getItem('communityId');
+      console.log('Creating draft course for community ID:', communityId);
+
       // Create the course object for database (as draft)
       const courseDataForApi = {
         title: courseData.title,
@@ -429,6 +438,7 @@ const CreateCourse = () => {
         contentType: courseData.contentType,
         thumbnail: courseData.thumbnail || 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course',
         status: 'draft', // Set status to draft
+        community: communityId, // Associate course with community
         chapters: chapters.map((chapter, index) => ({
           title: chapter.title,
           description: chapter.description,
