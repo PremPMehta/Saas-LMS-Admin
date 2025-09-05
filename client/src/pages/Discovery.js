@@ -26,6 +26,7 @@ import {
   TextFields as TextIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
 
 const communities = [
@@ -132,6 +133,9 @@ const Discovery = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const [courses, setCourses] = useState([]);
+  
+  // Get community URLs for proper navigation
+  const communityUrls = getCommunityUrls();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -335,7 +339,13 @@ const Discovery = () => {
             or{' '}
             <Button
               variant="text"
-              onClick={() => navigate('/create-course')}
+              onClick={() => {
+                if (communityUrls) {
+                  navigate(communityUrls.createCourse);
+                } else {
+                  navigate('/create-course');
+                }
+              }}
               sx={{ 
                 color: '#4285f4',
                 textTransform: 'none',
