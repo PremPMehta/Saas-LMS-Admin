@@ -1587,7 +1587,7 @@ const EditCourse = () => {
                           }
                         }}>
                           <Editor
-                            apiKey="jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"
+                            apiKey={process.env.REACT_APP_TINYMCE_API_KEY || "jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"}
                             value={formData.content}
                             onEditorChange={handleEditorChange}
                             init={{

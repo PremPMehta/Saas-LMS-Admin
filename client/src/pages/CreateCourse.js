@@ -1840,7 +1840,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                         }
                                       }}>
                                         <Editor
-                                          apiKey="jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"
+                                          apiKey={process.env.REACT_APP_TINYMCE_API_KEY || "jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"}
                                           value={formData.content}
                                           onEditorChange={handleEditorChange}
                                           init={{
@@ -1856,7 +1856,10 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                               'alignright alignjustify | bullist numlist outdent indent | ' +
                                               'removeformat | help',
                                             content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                                            placeholder: 'Enter your lesson content here...'
+                                            placeholder: 'Enter your lesson content here...',
+                                            // Fallback configuration if API key fails
+                                            base_url: 'https://cdn.tiny.cloud/1',
+                                            suffix: '.min'
                                           }}
                                         />
                                       </Box>
