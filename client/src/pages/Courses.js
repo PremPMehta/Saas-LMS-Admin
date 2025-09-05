@@ -541,7 +541,13 @@ const Courses = () => {
                     <Button
                       variant="contained"
                       startIcon={<AddIcon />}
-                      onClick={() => navigate('/create-course')}
+                      onClick={() => {
+                        if (communityUrls) {
+                          navigate(communityUrls.createCourse);
+                        } else {
+                          navigate('/create-course');
+                        }
+                      }}
                       sx={{
                         background: '#4285f4',
                         '&:hover': { background: '#3367d6' }
@@ -780,7 +786,13 @@ const Courses = () => {
                         <Button
                           variant="contained"
                           startIcon={<AddIcon />}
-                          onClick={() => navigate('/create-course')}
+                          onClick={() => {
+                            if (communityUrls) {
+                              navigate(communityUrls.createCourse);
+                            } else {
+                              navigate('/create-course');
+                            }
+                          }}
                         >
                           Create First Course
                         </Button>

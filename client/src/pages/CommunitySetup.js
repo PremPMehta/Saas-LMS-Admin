@@ -304,7 +304,9 @@ const CommunitySetup = () => {
         localStorage.removeItem('communitySetupData');
         
         // Redirect to community dashboard
-        navigate('/community-dashboard', { 
+        const communityUrl = getCommunityUrl(setupData.name, 'dashboard');
+        console.log('Redirecting to community URL after setup:', communityUrl);
+        navigate(communityUrl, { 
           state: { 
             communityData: setupData,
             message: 'Community setup completed successfully!' 

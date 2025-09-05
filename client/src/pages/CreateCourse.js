@@ -48,11 +48,19 @@ import {
   CheckCircle as CheckCircleIcon,
   Publish as PublishIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import courseApi from '../utils/courseApi';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
+  const { communityName } = useParams();
+  
+  // Get community-specific URLs
+  const communityUrls = communityName ? getCommunityUrls(communityName) : null;
+  
+  // Debug logging
+  console.log('CreateCourse component loaded:', { communityName, communityUrls });
   const [activeStep, setActiveStep] = useState(0);
   const [courseData, setCourseData] = useState({
     title: '',
@@ -373,7 +381,19 @@ const CreateCourse = () => {
       console.log('Course saved to database:', response.course);
 
       // Redirect to dashboard with success message
-      navigate('/community-dashboard', {
+      console.log('Redirecting after course creation:', { communityName, communityUrls });
+      let redirectUrl;
+      if (communityUrls) {
+        redirectUrl = communityUrls.dashboard;
+      } else if (communityName) {
+        // Fallback: construct URL manually if communityUrls is not available
+        redirectUrl = `/${communityName}/dashboard`;
+      } else {
+        // Last resort: redirect to courses page
+        redirectUrl = '/courses';
+      }
+      console.log('Redirect URL:', redirectUrl);
+      navigate(redirectUrl, {
         state: {
           message: 'Course published successfully!',
           newCourse: response.course
@@ -438,7 +458,19 @@ const CreateCourse = () => {
       console.log('Course saved as draft:', response.course);
 
       // Redirect to dashboard with success message
-      navigate('/community-dashboard', {
+      console.log('Redirecting after draft save:', { communityName, communityUrls });
+      let redirectUrl;
+      if (communityUrls) {
+        redirectUrl = communityUrls.dashboard;
+      } else if (communityName) {
+        // Fallback: construct URL manually if communityUrls is not available
+        redirectUrl = `/${communityName}/dashboard`;
+      } else {
+        // Last resort: redirect to courses page
+        redirectUrl = '/courses';
+      }
+      console.log('Redirect URL:', redirectUrl);
+      navigate(redirectUrl, {
         state: {
           message: 'Course saved as draft successfully!',
           newCourse: response.course
@@ -901,7 +933,20 @@ const CreateCourse = () => {
       <Container maxWidth="lg">
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <IconButton onClick={() => navigate('/community-dashboard')} sx={{ mr: 2 }}>
+          <IconButton onClick={() => {
+            let backUrl;
+            if (communityUrls) {
+              backUrl = communityUrls.dashboard;
+            } else if (communityName) {
+              // Fallback: construct URL manually if communityUrls is not available
+              backUrl = `/${communityName}/dashboard`;
+            } else {
+              // Last resort: redirect to courses page
+              backUrl = '/courses';
+            }
+            console.log('Back button navigation:', { communityName, communityUrls, backUrl });
+            navigate(backUrl);
+          }} sx={{ mr: 2 }}>
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
@@ -1094,10 +1139,16 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
     pdfFile: null, // For PDF uploads
     contentType: 'video', // 'video', 'text', 'pdf'
   });
+  const [editorError, setEditorError] = useState(false);
   
   // TinyMCE editor configuration
   const handleEditorChange = (content) => {
     setFormData(prev => ({ ...prev, content }));
+  };
+
+  // Fallback textarea handler
+  const handleTextareaChange = (event) => {
+    setFormData(prev => ({ ...prev, content: event.target.value }));
   };
 
   useEffect(() => {
@@ -1824,47 +1875,93 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                       Write Your Lesson Content
                                     </Typography>
                                     <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
-                                      <Box sx={{ 
-                                        '& .tox-tinymce': {
-                                          border: '1px solid #e0e0e0',
-                                          borderRadius: '4px',
-                                          fontSize: '14px',
-                                          fontFamily: 'inherit'
-                                        },
-                                        '& .tox-toolbar': {
-                                          backgroundColor: '#f8f9fa',
-                                          borderBottom: '1px solid #e0e0e0'
-                                        },
-                                        '& .tox-edit-area': {
-                                          minHeight: '200px'
-                                        }
-                                      }}>
-                                        <Editor
-                                          apiKey={process.env.REACT_APP_TINYMCE_API_KEY || "jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"}
-                                          value={formData.content}
-                                          onEditorChange={handleEditorChange}
-                                          init={{
-                                            height: 300,
-                                            menubar: false,
-                                            plugins: [
-                                              'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                                              'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                                              'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                                            ],
-                                            toolbar: 'undo redo | blocks | ' +
-                                              'bold italic forecolor | alignleft aligncenter ' +
-                                              'alignright alignjustify | bullist numlist outdent indent | ' +
-                                              'removeformat | help',
-                                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                                            placeholder: 'Enter your lesson content here...',
-                                            // Fallback configuration if API key fails
-                                            base_url: 'https://cdn.tiny.cloud/1',
-                                            suffix: '.min'
-                                          }}
-                                        />
-                                      </Box>
+                                      {!editorError ? (
+                                        <Box sx={{ 
+                                          '& .tox-tinymce': {
+                                            border: '1px solid #e0e0e0',
+                                            borderRadius: '4px',
+                                            fontSize: '14px',
+                                            fontFamily: 'inherit'
+                                          },
+                                          '& .tox-toolbar': {
+                                            backgroundColor: '#f8f9fa',
+                                            borderBottom: '1px solid #e0e0e0'
+                                          },
+                                          '& .tox-edit-area': {
+                                            minHeight: '200px'
+                                          }
+                                        }}>
+                                          <Editor
+                                            value={formData.content}
+                                            onEditorChange={handleEditorChange}
+                                            onInit={(evt, editor) => {
+                                              console.log('TinyMCE editor initialized successfully');
+                                            }}
+                                            onLoadContent={(editor) => {
+                                              console.log('TinyMCE content loaded');
+                                            }}
+                                            init={{
+                                              height: 300,
+                                              menubar: false,
+                                              plugins: [
+                                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                                              ],
+                                              toolbar: 'undo redo | blocks | ' +
+                                                'bold italic forecolor | alignleft aligncenter ' +
+                                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                                'removeformat | help',
+                                              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                                              placeholder: 'Enter your lesson content here...',
+                                              // Use CDN without API key validation
+                                              base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0',
+                                              suffix: '.min',
+                                              // Disable API key validation
+                                              license_key: 'gpl',
+                                              // Add error handling
+                                              setup: (editor) => {
+                                                editor.on('LoadError', (e) => {
+                                                  console.error('TinyMCE load error:', e);
+                                                  setEditorError(true);
+                                                });
+                                              }
+                                            }}
+                                          />
+                                        </Box>
+                                      ) : (
+                                        <Box>
+                                          <Typography variant="body2" color="warning.main" sx={{ mb: 2 }}>
+                                            ⚠️ Rich text editor failed to load. Using fallback text editor.
+                                          </Typography>
+                                          <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={12}
+                                            value={formData.content}
+                                            onChange={handleTextareaChange}
+                                            placeholder="Enter your lesson content here... You can use HTML tags for formatting: &lt;h1&gt;Title&lt;/h1&gt;, &lt;p&gt;Paragraph&lt;/p&gt;, &lt;strong&gt;Bold&lt;/strong&gt;, &lt;em&gt;Italic&lt;/em&gt;, &lt;ul&gt;&lt;li&gt;List item&lt;/li&gt;&lt;/ul&gt;"
+                                            sx={{
+                                              '& .MuiOutlinedInput-root': {
+                                                fontFamily: 'monospace',
+                                                fontSize: '14px'
+                                              }
+                                            }}
+                                          />
+                                          <Button
+                                            size="small"
+                                            onClick={() => setEditorError(false)}
+                                            sx={{ mt: 1 }}
+                                          >
+                                            Try Rich Text Editor Again
+                                          </Button>
+                                        </Box>
+                                      )}
                                       <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
                                         💡 Tip: Use the professional toolbar above to format your content with headers, bold, italic, lists, alignment, links, emojis, and more!
+                                      </Typography>
+                                      <Typography variant="caption" color="warning.main" sx={{ mt: 1, display: 'block' }}>
+                                        ⚠️ If the editor doesn't load, you can use HTML tags directly: &lt;h1&gt;Title&lt;/h1&gt;, &lt;p&gt;Paragraph&lt;/p&gt;, &lt;strong&gt;Bold&lt;/strong&gt;, &lt;em&gt;Italic&lt;/em&gt;, &lt;ul&gt;&lt;li&gt;List item&lt;/li&gt;&lt;/ul&gt;
                                       </Typography>
                                     </Card>
                                   </Grid>

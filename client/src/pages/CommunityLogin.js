@@ -71,9 +71,9 @@ const CommunityLogin = () => {
           navigate(communityUrl);
         }, 1500);
       } else {
-        // Fallback to generic dashboard if community info is not available
+        // Fallback to discovery page if community info is not available
         setTimeout(() => {
-          navigate('/community-dashboard');
+          navigate('/discovery');
         }, 1500);
       }
 
