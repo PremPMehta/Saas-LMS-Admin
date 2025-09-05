@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import courseApi from '../utils/courseApi';
 import communityAuthApi from '../utils/communityAuthApi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
 import {
   Box,
   Container,
@@ -66,6 +67,10 @@ import {
 
 const Courses = () => {
   const navigate = useNavigate();
+  const { communityName } = useParams();
+  
+  // Get community-specific URLs
+  const communityUrls = communityName ? getCommunityUrls(communityName) : null;
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -89,6 +94,9 @@ const Courses = () => {
       status: 'published',
       instructor: 'John Doe',
       thumbnail: 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Web+Dev',
+      targetAudience: 'Beginners',
+      contentType: 'video',
+      subType: 'YouTube',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -99,6 +107,9 @@ const Courses = () => {
       category: 'Technology',
       status: 'published',
       instructor: 'Jane Smith',
+      targetAudience: 'Intermediate',
+      contentType: 'video',
+      subType: 'Loom',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -109,6 +120,9 @@ const Courses = () => {
       category: 'Technology',
       status: 'draft',
       instructor: 'Mike Johnson',
+      targetAudience: 'Advanced',
+      contentType: 'text',
+      subType: 'PDF',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
@@ -128,25 +142,33 @@ const Courses = () => {
           setTimeout(() => reject(new Error('Request timeout')), 15000)
         );
 
-        // Get community ID from localStorage or use a fallback
-        const communityId = localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69';
+        // Get community ID from authenticated user's community data
+        const community = communityAuthApi.getCurrentCommunity();
+        const communityId = community ? (community._id || community.id) : localStorage.getItem('communityId');
+        
+        if (!communityId) {
+          console.log('❌ No community ID found - user not authenticated or no community data');
+          setCourses([]);
+          setLoading(false);
+          return;
+        }
+        
         console.log('🔍 Loading courses for community:', communityId);
 
-        // Try to fetch all courses first (without community filter)
+        // Fetch courses for the specific community only
         let response;
         try {
           response = await Promise.race([courseApi.getCourses({ community: communityId }), timeoutPromise]);
         } catch (communityError) {
-          console.log('⚠️ Community-specific fetch failed, trying without filter:', communityError.message);
-          // If community-specific fetch fails, try without community filter
-          response = await Promise.race([courseApi.getCourses({}), timeoutPromise]);
+          console.log('⚠️ Community-specific fetch failed:', communityError.message);
+          // If community-specific fetch fails, return empty array instead of all courses
+          response = { courses: [] };
         }
 
         if (!isMounted) return;
 
         let coursesData = response.courses || [];
         console.log('📊 Courses loaded:', coursesData.length, 'courses');
-        console.log('📋 Course IDs:', coursesData.map(c => c._id || c.id));
 
         // If we got courses but they don't match the community, log it
         if (coursesData.length > 0) {
@@ -155,17 +177,30 @@ const Courses = () => {
         }
 
         // Ensure we have consistent data structure
-        const normalizedCourses = coursesData.map(course => ({
-          _id: course._id || course.id,
-          title: course.title || 'Untitled Course',
-          description: course.description || '',
-          category: course.category || 'Uncategorized',
-          status: course.status || 'draft',
-          instructor: course.instructor || 'Unknown',
-          community: course.community || communityId,
-          createdAt: course.createdAt || new Date().toISOString(),
-          updatedAt: course.updatedAt || new Date().toISOString()
-        }));
+        const normalizedCourses = coursesData.map(course => {
+          console.log('📊 Course data for normalization:', {
+            title: course.title,
+            thumbnail: course.thumbnail,
+            thumbnailType: typeof course.thumbnail,
+            thumbnailLength: course.thumbnail ? course.thumbnail.length : 0
+          });
+          
+          return {
+            _id: course._id || course.id,
+            title: course.title || 'Untitled Course',
+            description: course.description || '',
+            category: course.category || 'Uncategorized',
+            status: course.status || 'draft',
+            instructor: course.instructor || 'Unknown',
+            community: course.community || communityId,
+            thumbnail: course.thumbnail || null,
+            targetAudience: course.targetAudience || null,
+            contentType: course.contentType || null,
+            subType: course.subType || null,
+            createdAt: course.createdAt || new Date().toISOString(),
+            updatedAt: course.updatedAt || new Date().toISOString()
+          };
+        });
 
         // Always update with the latest data from API
         console.log('✅ Updating courses with fresh data from API');
@@ -215,7 +250,10 @@ const Courses = () => {
         status: course.status || 'draft',
         instructor: course.instructor || 'Unknown',
         community: course.community || communityId,
-        thumbnail: course.thumbnail || null, // Add thumbnail field
+        thumbnail: course.thumbnail || null,
+        targetAudience: course.targetAudience || null,
+        contentType: course.contentType || null,
+        subType: course.subType || null,
         createdAt: course.createdAt || new Date().toISOString(),
         updatedAt: course.updatedAt || new Date().toISOString()
       }));
@@ -271,12 +309,21 @@ const Courses = () => {
   };
 
   const handleViewCourse = (course) => {
-    // Navigate to course viewer instead of opening dialog
-    navigate(`/course-viewer/${course._id || course.id}`);
+    // Navigate to course viewer using community-specific URL
+    if (communityUrls) {
+      navigate(communityUrls.courseViewer(course._id || course.id));
+    } else {
+      navigate(`/course-viewer/${course._id || course.id}`);
+    }
   };
 
   const handleEditCourse = (course) => {
-    navigate(`/edit-course/${course._id || course.id}`);
+    // Navigate to edit course using community-specific URL
+    if (communityUrls) {
+      navigate(communityUrls.editCourse(course._id || course.id));
+    } else {
+      navigate(`/edit-course/${course._id || course.id}`);
+    }
   };
 
   const handleDeleteCourse = (course) => {
@@ -716,24 +763,7 @@ const Courses = () => {
                     </CardContent>
                   </Card>
 
-                  {/* Debug Info */}
-                  <Box sx={{ mb: 2, p: 0, bgcolor: '#f5f5f5', borderRadius: 1 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Debug: {courses.length} total courses, {filteredCourses.length} filtered, Loading: {loading.toString()}, Refreshing: {refreshing.toString()}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Community ID: {localStorage.getItem('communityId') || '68b03c92fac3b1af515ccc69'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Course IDs: {courses.map(c => c._id).join(', ')}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Thumbnails: {courses.map(c => c.thumbnail ? '✅' : '❌').join(', ')}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Sample Thumbnail URLs: {courses.slice(0, 3).map(c => c.thumbnail || 'none').join(', ')}
-                    </Typography>
-                  </Box>
+
 
                   {filteredCourses.length === 0 ? (
                     <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -780,37 +810,56 @@ const Courses = () => {
                             {/* Course Thumbnail */}
                             <Box sx={{
                               height: 200,
+                              width: '100%',
                               background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
                               position: 'relative',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              overflow: 'hidden'
+                              overflow: 'hidden',
+                              flexShrink: 0 // Prevent thumbnail from shrinking
                             }}>
                               {course.thumbnail && course.thumbnail.trim() !== '' ? (
                                 <img
-                                  src={course.thumbnail}
+                                  src={course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
+                                    ? course.thumbnail 
+                                    : `http://localhost:5001${course.thumbnail}`
+                                  }
                                   alt={course.title}
                                   style={{
                                     width: '100%',
                                     height: '100%',
-                                    objectFit: 'cover'
+                                    objectFit: 'cover',
+                                    objectPosition: 'center',
+                                    display: 'block'
                                   }}
                                   onError={(e) => {
-                                    console.log('Thumbnail failed to load:', course.thumbnail);
+                                    console.log('❌ Thumbnail failed to load for course:', course.title);
+                                    console.log('❌ Thumbnail URL:', course.thumbnail);
+                                    console.log('❌ Constructed URL:', course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
+                                      ? course.thumbnail 
+                                      : `http://localhost:5001${course.thumbnail}`);
                                     e.target.style.display = 'none';
                                     // Show fallback when image fails
                                     const fallback = e.target.parentElement.querySelector('.thumbnail-fallback');
                                     if (fallback) fallback.style.display = 'flex';
                                   }}
+                                  onLoad={(e) => {
+                                    console.log('✅ Thumbnail loaded successfully for course:', course.title);
+                                    // Hide fallback when image loads successfully
+                                    const fallback = e.target.parentElement.querySelector('.thumbnail-fallback');
+                                    if (fallback) fallback.style.display = 'none';
+                                  }}
                                 />
-                              ) : null}
+                              ) : (
+                                console.log('⚠️ No thumbnail for course:', course.title, 'thumbnail:', course.thumbnail)
+                              )}
 
                               {/* Fallback Thumbnail (shown when no thumbnail or image fails) */}
                               <Box
                                 className="thumbnail-fallback"
                                 sx={{
-                                  display: course.thumbnail && course.thumbnail.trim() !== '' ? 'none' : 'flex',
+                                  display: (course.thumbnail && course.thumbnail.trim() !== '') ? 'none' : 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
                                   width: '100%',
@@ -818,13 +867,20 @@ const Courses = () => {
                                   background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
                                 }}
                               >
-                                <Typography variant="h2" sx={{
-                                  color: 'white',
-                                  fontWeight: 'bold',
-                                  textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
-                                }}>
-                                  {course.title.charAt(0).toUpperCase()}
-                                </Typography>
+                                <img
+                                  src="http://localhost:5001/uploads/default-course-thumbnail.jpg"
+                                  alt="Default course thumbnail"
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                  }}
+                                  onError={(e) => {
+                                    // If default thumbnail also fails, show the letter fallback
+                                    e.target.style.display = 'none';
+                                    e.target.parentElement.innerHTML = `<div style="color: white; font-weight: bold; font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${course.title.charAt(0).toUpperCase()}</div>`;
+                                  }}
+                                />
                               </Box>
 
                               {/* Status Badge */}
@@ -847,36 +903,108 @@ const Courses = () => {
                             </Box>
 
                             <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                              {/* Course Header */}
-                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Box sx={{
-                                  width: 32,
-                                  height: 32,
-                                  borderRadius: '50%',
-                                  bgcolor: getCategoryColor(course.category),
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  mr: 2
-                                }}>
-                                  <Typography variant="caption" sx={{ color: 'white', fontWeight: 'bold' }}>
-                                    {course.category.charAt(0)}
-                                  </Typography>
-                                </Box>
-                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                  {course.category}
-                                </Typography>
-                              </Box>
 
                               {/* Course Title */}
                               <Typography variant="h6" sx={{
                                 fontWeight: 600,
                                 mb: 1,
                                 color: darkMode ? '#ffffff' : '#000000',
-                                lineHeight: 1.3
+                                lineHeight: 1.3,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                minHeight: '2.6em', // Ensure consistent height for 2 lines
+                                maxHeight: '2.6em'  // Prevent expansion beyond 2 lines
                               }}>
                                 {course.title}
                               </Typography>
+
+                              {/* Course Tags */}
+                              <Box sx={{ 
+                                display: 'flex', 
+                                flexWrap: 'wrap', 
+                                gap: 1, 
+                                mb: 2,
+                                minHeight: '32px', // Ensure consistent height for tags
+                                alignItems: 'flex-start'
+                              }}>
+                                {/* Target Audience Tag */}
+                                {course.targetAudience && (
+                                  <Chip
+                                    label={course.targetAudience}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{
+                                      fontSize: '0.75rem',
+                                      height: 24,
+                                      borderColor: '#e0e0e0',
+                                      color: '#666',
+                                      '& .MuiChip-label': {
+                                        px: 1
+                                      }
+                                    }}
+                                  />
+                                )}
+                                
+                                {/* Category Tag */}
+                                {course.category && (
+                                  <Chip
+                                    label={course.category}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{
+                                      fontSize: '0.75rem',
+                                      height: 24,
+                                      borderColor: getCategoryColor(course.category),
+                                      color: getCategoryColor(course.category),
+                                      backgroundColor: `${getCategoryColor(course.category)}15`,
+                                      '& .MuiChip-label': {
+                                        px: 1
+                                      }
+                                    }}
+                                  />
+                                )}
+                                
+                                {/* Course Type Tag */}
+                                {course.contentType && (
+                                  <Chip
+                                    label={course.contentType === 'video' ? 'Video' : 'Text'}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{
+                                      fontSize: '0.75rem',
+                                      height: 24,
+                                      borderColor: course.contentType === 'video' ? '#4285f4' : '#34a853',
+                                      color: course.contentType === 'video' ? '#4285f4' : '#34a853',
+                                      backgroundColor: course.contentType === 'video' ? '#4285f415' : '#34a85315',
+                                      '& .MuiChip-label': {
+                                        px: 1
+                                      }
+                                    }}
+                                  />
+                                )}
+                                
+                                {/* Sub Type Tag */}
+                                {course.subType && (
+                                  <Chip
+                                    label={course.subType}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{
+                                      fontSize: '0.75rem',
+                                      height: 24,
+                                      borderColor: '#9c27b0',
+                                      color: '#9c27b0',
+                                      backgroundColor: '#9c27b015',
+                                      '& .MuiChip-label': {
+                                        px: 1
+                                      }
+                                    }}
+                                  />
+                                )}
+                              </Box>
 
                               {/* Course Description */}
                               <Typography variant="body2" sx={{
@@ -884,17 +1012,29 @@ const Courses = () => {
                                 mb: 2,
                                 flexGrow: 1,
                                 display: '-webkit-box',
-                                WebkitLineClamp: 3,
+                                WebkitLineClamp: 2,
                                 WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden'
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                lineHeight: 1.4,
+                                minHeight: '2.8em', // Ensure consistent height for 2 lines
+                                maxHeight: '2.8em'  // Prevent expansion beyond 2 lines
                               }}>
-                                {course.description}
+                                {course.description || 'No description available'}
                               </Typography>
 
                               {/* Course Meta */}
                               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                  By {course.instructor}
+                                  By {(() => {
+                                    // If instructor is a long ID (MongoDB ObjectId), show community name
+                                    if (course.instructor && course.instructor.length > 20) {
+                                      const community = communityAuthApi.getCurrentCommunity();
+                                      return community ? community.name : 'Community Admin';
+                                    }
+                                    // Otherwise show the instructor name
+                                    return course.instructor || 'Unknown';
+                                  })()}
                                 </Typography>
                                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                                   {new Date(course.createdAt).toLocaleDateString()}

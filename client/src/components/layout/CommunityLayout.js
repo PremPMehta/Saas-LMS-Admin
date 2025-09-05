@@ -13,24 +13,29 @@ import {
   AccountCircle as ProfileIcon,
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import communityAuthApi from '../../utils/communityAuthApi';
+import { getCommunityUrls } from '../../utils/communityUrlUtils';
 
 const CommunityLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { communityName } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [darkMode, setDarkMode] = useState(false);
   const [activeNav, setActiveNav] = useState('home');
 
-  // Navigation items - only the 5 specified
-  const navItems = [
-    { id: 'home', icon: <HomeIcon />, label: 'Home', path: '/community-dashboard' },
-    { id: 'courses', icon: <VideoLibraryIcon />, label: 'Courses', path: '/courses' },
-    { id: 'admins', icon: <PeopleIcon />, label: 'Admins', path: '/community-admins' },
+  // Get community-specific URLs
+  const communityUrls = communityName ? getCommunityUrls(communityName) : null;
+
+  // Navigation items - using community-specific URLs
+  const navItems = communityUrls ? [
+    { id: 'home', icon: <HomeIcon />, label: 'Home', path: communityUrls.dashboard },
+    { id: 'courses', icon: <VideoLibraryIcon />, label: 'Courses', path: communityUrls.courses },
+    { id: 'admins', icon: <PeopleIcon />, label: 'Admins', path: communityUrls.admins },
     { id: 'profile', icon: <ProfileIcon />, label: 'Profile', path: '/community-profile' },
-  ];
+  ] : [];
 
   // Determine active nav based on current path
   const getActiveNav = () => {

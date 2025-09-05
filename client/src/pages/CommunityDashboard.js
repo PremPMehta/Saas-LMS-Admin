@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import courseApi from '../utils/courseApi';
 import communityAuthApi from '../utils/communityAuthApi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
 import {
   Box,
   Typography,
@@ -62,6 +63,10 @@ import {
 
 const CommunityDashboard = () => {
   const navigate = useNavigate();
+  const { communityName } = useParams();
+  
+  // Get community-specific URLs
+  const communityUrls = communityName ? getCommunityUrls(communityName) : null;
   const [darkMode, setDarkMode] = useState(false);
   const [activeNav, setActiveNav] = useState('home');
   const [courses, setCourses] = useState([]);
@@ -201,7 +206,11 @@ const CommunityDashboard = () => {
   };
 
   const handleEditCourse = (courseId) => {
-    navigate(`/edit-course/${courseId}`);
+    if (communityUrls) {
+      navigate(communityUrls.editCourse(courseId));
+    } else {
+      navigate(`/edit-course/${courseId}`);
+    }
   };
 
   const handleDeleteCourse = async (courseId) => {
@@ -271,10 +280,10 @@ const CommunityDashboard = () => {
           <Box key={item.id} sx={{ mb: 2, position: 'relative' }}>
             <IconButton
               onClick={() => {
-                if (item.id === 'courses') {
-                  navigate('/courses');
-                } else if (item.id === 'admins') {
-                  navigate('/community-admins');
+                if (item.id === 'courses' && communityUrls) {
+                  navigate(communityUrls.courses);
+                } else if (item.id === 'admins' && communityUrls) {
+                  navigate(communityUrls.admins);
                 } else {
                   setActiveNav(item.id);
                 }
@@ -555,14 +564,26 @@ const CommunityDashboard = () => {
                   <Button
                     variant="contained"
                     startIcon={<AddIcon />}
-                    onClick={() => navigate('/create-course')}
+                    onClick={() => {
+                      if (communityUrls) {
+                        navigate(communityUrls.createCourse);
+                      } else {
+                        navigate('/create-course');
+                      }
+                    }}
                     sx={{ mb: 2 }}
                   >
                     Create New Course
                   </Button>
                   <Button
                     variant="outlined"
-                    onClick={() => navigate('/courses')}
+                    onClick={() => {
+                      if (communityUrls) {
+                        navigate(communityUrls.courses);
+                      } else {
+                        navigate('/courses');
+                      }
+                    }}
                     sx={{ mb: 2 }}
                   >
                     View All Courses

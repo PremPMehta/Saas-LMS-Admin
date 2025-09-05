@@ -82,7 +82,7 @@ const courseSchema = new mongoose.Schema({
   },
   contentType: {
     type: String,
-    enum: ['video', 'text'],
+    enum: ['video', 'text', 'pdf'],
     required: true
   },
   status: {

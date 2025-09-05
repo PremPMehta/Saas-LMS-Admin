@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {
   Box,
   Card,
@@ -48,18 +45,22 @@ import {
   DarkMode as DarkIcon,
   VideoLibrary as VideoLibraryIcon,
   Description as DescriptionIcon,
-  Refresh as RefreshIcon
+  Refresh as RefreshIcon,
+  Fullscreen as FullscreenIcon
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
 
 const CourseViewer = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
-  const { courseId } = useParams();
+  const { courseId, communityName } = useParams();
+
+  // Get community-specific URLs
+  const communityUrls = communityName ? getCommunityUrls(communityName) : null;
 
   // State management
   const [courses, setCourses] = useState([]);
@@ -73,9 +74,6 @@ const CourseViewer = () => {
   const [activeNav, setActiveNav] = useState('courses');
   
   // PDF state
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1.0);
   const [pdfLoading, setPdfLoading] = useState(false);
 
   // Mock data for testing with 3-4 videos per lecture
@@ -653,9 +651,7 @@ const CourseViewer = () => {
     setActiveLectureId(lecture._id);
     
     // Reset PDF state when switching lectures
-    setPageNumber(1);
-    setScale(1.0);
-    setNumPages(null);
+    setPdfLoading(false);
     
     // Set video loading state for video lectures
     if (lecture.type === 'VIDEO' || lecture.videoType) {
@@ -792,8 +788,27 @@ const CourseViewer = () => {
       return embedUrl;
     }
 
+    if (url.includes("loom.com/")) {
+      const videoId = url.split("loom.com/")[1].split("?")[0];
+      const embedUrl = `https://www.loom.com/embed/${videoId}`;
+      console.log('Loom embed URL:', embedUrl);
+      return embedUrl;
+    }
+
     console.log('Returning original URL:', url);
     return url;
+  };
+
+  // Check if URL is an uploaded video file
+  const isUploadedVideo = (url) => {
+    if (!url) return false;
+    return url.includes('/uploads/') && (
+      url.includes('.mp4') || 
+      url.includes('.mov') || 
+      url.includes('.avi') || 
+      url.includes('.webm') || 
+      url.includes('.mkv')
+    );
   };
 
   // Get status color
@@ -858,10 +873,10 @@ const CourseViewer = () => {
           }}>
             <IconButton
               onClick={() => {
-                if (item.id === 'home') {
-                  navigate('/community-dashboard');
-                } else if (item.id === 'courses') {
-                  navigate('/courses');
+                if (item.id === 'home' && communityUrls) {
+                  navigate(communityUrls.dashboard);
+                } else if (item.id === 'courses' && communityUrls) {
+                  navigate(communityUrls.courses);
                 } else {
                   setActiveNav(item.id);
                 }
@@ -941,7 +956,11 @@ const CourseViewer = () => {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/courses');
+                  if (communityUrls) {
+                    navigate(communityUrls.courses);
+                  } else {
+                    navigate('/courses');
+                  }
                 }}
                 sx={{ display: 'flex', alignItems: 'center' }}
               >
@@ -989,7 +1008,13 @@ const CourseViewer = () => {
             <Button
               variant="outlined"
               size="small"
-              onClick={() => navigate('/courses')}
+              onClick={() => {
+                if (communityUrls) {
+                  navigate(communityUrls.courses);
+                } else {
+                  navigate('/courses');
+                }
+              }}
             >
               Back to Courses
             </Button>
@@ -1122,7 +1147,7 @@ const CourseViewer = () => {
                       {/* Debug Info */}
                       <Box sx={{ p: 2, backgroundColor: '#f5f5f5', borderBottom: 1, borderColor: 'divider' }}>
                         <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '12px' }}>
-                          Debug: Video Type: {selectedLecture.type || 'undefined'}, VideoType: {selectedLecture.videoType || 'undefined'}, URL: {selectedLecture.videoUrl || selectedLecture.content || 'none'}
+                          Debug: Video Type: {selectedLecture.type || 'undefined'}, VideoType: {selectedLecture.videoType || 'undefined'}, URL: {selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl || 'none'}
                         </Typography>
                       </Box>
                       
@@ -1166,122 +1191,82 @@ const CourseViewer = () => {
                               
                               {/* PDF Controls */}
                               <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-                                {/* Page Navigation */}
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Button
-                                    variant="outlined"
-                                    size="small"
-                                    disabled={pageNumber <= 1}
-                                    onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
-                                  >
-                                    ← Prev
-                                  </Button>
-                                  <Typography variant="body2" sx={{ minWidth: '60px', textAlign: 'center' }}>
-                                    {pageNumber} / {numPages || '?'}
-                                  </Typography>
-                                  <Button
-                                    variant="outlined"
-                                    size="small"
-                                    disabled={pageNumber >= (numPages || 1)}
-                                    onClick={() => setPageNumber(Math.min(numPages || 1, pageNumber + 1))}
-                                  >
-                                    Next →
-                                  </Button>
-                                </Box>
+                                {/* Simple PDF Controls */}
+                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                  PDF Document Viewer
+                                </Typography>
                                 
-                                {/* Zoom Controls */}
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: '120px' }}>
-                                  <Typography variant="caption">Zoom:</Typography>
-                                  <Slider
-                                    value={scale}
-                                    onChange={(e, newValue) => setScale(newValue)}
-                                    min={0.5}
-                                    max={2.0}
-                                    step={0.1}
-                                    size="small"
-                                    sx={{ width: '80px' }}
-                                  />
-                                  <Typography variant="caption" sx={{ minWidth: '30px' }}>
-                                    {Math.round(scale * 100)}%
-                                  </Typography>
-                                </Box>
-                                
-                                {/* Action Buttons */}
+                                {/* Fullscreen Button */}
                                 <Button
-                                  variant="outlined"
+                                  variant="contained"
                                   size="small"
-                                  onClick={() => window.open(selectedLecture.content, '_blank')}
+                                  onClick={() => {
+                                    const iframe = document.getElementById('pdf-iframe');
+                                    if (iframe) {
+                                      if (iframe.requestFullscreen) {
+                                        iframe.requestFullscreen();
+                                      } else if (iframe.webkitRequestFullscreen) {
+                                        iframe.webkitRequestFullscreen();
+                                      } else if (iframe.msRequestFullscreen) {
+                                        iframe.msRequestFullscreen();
+                                      }
+                                    }
+                                  }}
+                                  startIcon={<FullscreenIcon />}
+                                  sx={{
+                                    background: '#4285f4',
+                                    '&:hover': { background: '#3367d6' }
+                                  }}
                                 >
-                                  Download
-                                </Button>
-                                <Button
-                                  variant="outlined"
-                                  size="small"
-                                  onClick={() => window.open(selectedLecture.content, '_blank')}
-                                >
-                                  New Tab
+                                  Fullscreen
                                 </Button>
                               </Box>
                             </Box>
                             
-                            {/* PDF Viewer with react-pdf */}
+                            {/* PDF Viewer - Simple iframe approach for demo */}
                             <Box sx={{ 
                               flex: 1, 
                               p: 2, 
-                              overflow: 'auto',
-                              backgroundColor: '#f5f5f5',
-                              display: 'flex',
-                              justifyContent: 'center'
+                              overflow: 'hidden',
+                              backgroundColor: '#f5f5f5'
                             }}>
-                              {pdfLoading && (
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  flexDirection: 'column',
-                                  alignItems: 'center', 
-                                  justifyContent: 'center',
-                                  height: '100%'
-                                }}>
-                                  <CircularProgress size={60} />
-                                  <Typography variant="h6" sx={{ mt: 2 }}>
-                                    Loading PDF...
-                                  </Typography>
-                                </Box>
-                              )}
+                              <iframe
+                                id="pdf-iframe"
+                                src={`http://localhost:5001${selectedLecture.content}#toolbar=1&navpanes=1&scrollbar=1`}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  border: 'none',
+                                  borderRadius: '8px',
+                                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                }}
+                                title="PDF Viewer"
+                                onLoad={() => {
+                                  console.log('PDF iframe loaded successfully');
+                                  console.log('PDF source:', selectedLecture.content);
+                                  setPdfLoading(false);
+                                }}
+                                onError={(error) => {
+                                  console.error('PDF iframe error:', error);
+                                  console.error('PDF source:', selectedLecture.content);
+                                  setPdfLoading(false);
+                                }}
+                              />
                               
-                              <Document
-                                file={selectedLecture.content}
-                                onLoadSuccess={({ numPages }) => {
-                                  setNumPages(numPages);
-                                  setPdfLoading(false);
-                                }}
-                                onLoadError={(error) => {
-                                  console.error('PDF load error:', error);
-                                  setPdfLoading(false);
-                                }}
-                                onLoadProgress={() => setPdfLoading(true)}
-                                loading={
-                                  <Box sx={{ 
-                                    display: 'flex', 
-                                    flexDirection: 'column',
-                                    alignItems: 'center', 
-                                    justifyContent: 'center',
-                                    height: '200px'
-                                  }}>
-                                    <CircularProgress size={40} />
-                                    <Typography variant="body2" sx={{ mt: 1 }}>
-                                      Loading PDF...
-                                    </Typography>
-                                  </Box>
-                                }
-                              >
-                                <Page
-                                  pageNumber={pageNumber}
-                                  scale={scale}
-                                  renderTextLayer={true}
-                                  renderAnnotationLayer={true}
-                                  onLoadSuccess={() => setPdfLoading(false)}
-                                />
-                              </Document>
+                              {/* Debug info */}
+                              <Box sx={{ 
+                                position: 'absolute', 
+                                top: 10, 
+                                right: 10, 
+                                backgroundColor: 'rgba(0,0,0,0.7)', 
+                                color: 'white', 
+                                p: 1, 
+                                borderRadius: 1,
+                                fontSize: '12px',
+                                fontFamily: 'monospace'
+                              }}>
+                                PDF: http://localhost:5001{selectedLecture.content}
+                              </Box>
                             </Box>
                           </Box>
                         ) : (selectedLecture.type === 'VIDEO' || selectedLecture.videoType) ? (
@@ -1317,7 +1302,7 @@ const CourseViewer = () => {
                               role="button"
                               aria-label="Video player container"
                             >
-                              {selectedLecture.videoUrl || selectedLecture.content ? (
+                              {(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl) || selectedLecture.content ? (
                                 <>
                                   {/* Loading State */}
                                   {videoLoading && (
@@ -1351,27 +1336,55 @@ const CourseViewer = () => {
                                     </Box>
                                   )}
                                   
-                                  <iframe
-                                    key={selectedLecture._id}
-                                    src={getEmbedUrl(selectedLecture.videoUrl || selectedLecture.content)}
-                                    title={selectedLecture.title}
-                                    style={{
-                                      width: '100%',
-                                      height: '100%',
-                                      border: 'none',
-                                      borderRadius: '8px'
-                                    }}
-                                    allowFullScreen
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    onLoadStart={() => setVideoLoading(true)}
-                                    onLoad={() => setVideoLoading(false)}
-                                    onError={() => {
-                                      setVideoLoading(false);
-                                      console.error('Video failed to load');
-                                    }}
-                                    loading="lazy"
-                                    referrerPolicy="no-referrer"
-                                  />
+                                  {/* Check if it's an uploaded video file */}
+                                  {isUploadedVideo(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl) ? (
+                                    <video
+                                      key={selectedLecture._id}
+                                      controls
+                                      style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'contain'
+                                      }}
+                                      onLoadStart={() => setVideoLoading(true)}
+                                      onLoadedData={() => {
+                                        console.log('Uploaded video loaded successfully');
+                                        setVideoLoading(false);
+                                      }}
+                                      onError={(error) => {
+                                        console.error('Uploaded video error:', error);
+                                        setVideoLoading(false);
+                                      }}
+                                    >
+                                      <source src={selectedLecture.videoUrl} type="video/mp4" />
+                                      <source src={selectedLecture.videoUrl} type="video/mov" />
+                                      <source src={selectedLecture.videoUrl} type="video/avi" />
+                                      <source src={selectedLecture.videoUrl} type="video/webm" />
+                                      Your browser does not support the video tag.
+                                    </video>
+                                  ) : (
+                                    <iframe
+                                      key={selectedLecture._id}
+                                      src={getEmbedUrl(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl)}
+                                      title={selectedLecture.title}
+                                      style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        border: 'none',
+                                        borderRadius: '8px'
+                                      }}
+                                      allowFullScreen
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                      onLoadStart={() => setVideoLoading(true)}
+                                      onLoad={() => setVideoLoading(false)}
+                                      onError={() => {
+                                        setVideoLoading(false);
+                                        console.error('Video failed to load');
+                                      }}
+                                      loading="lazy"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  )}
                                 </>
                               ) : (
                                 <Box sx={{
@@ -1556,14 +1569,6 @@ const CourseViewer = () => {
                                        selectedLecture.type === 'PDF' ? 'secondary' : 'warning'}
                                         sx={{ fontSize: '12px', px: 1, py: 0.5 }}
                               />
-                              {selectedLecture.duration && (
-                                <Chip
-                                  label={selectedLecture.duration}
-                                  size="small"
-                                  variant="outlined"
-                                  color="info"
-                                />
-                              )}
                               {selectedLecture.type === 'VIDEO' && (
                                 <Chip
                                   icon={<PlayIcon />}

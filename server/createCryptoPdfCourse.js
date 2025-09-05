@@ -40,7 +40,7 @@ async function createCryptoPdfCourse() {
               title: 'Introduction to Cryptocurrency',
               description: 'What is cryptocurrency and how does it work?',
               type: 'PDF',
-              content: 'https://example.com/crypto-intro.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             },
@@ -48,7 +48,7 @@ async function createCryptoPdfCourse() {
               title: 'Blockchain Technology Explained',
               description: 'Understanding the technology behind cryptocurrencies',
               type: 'PDF',
-              content: 'https://example.com/blockchain-guide.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             },
@@ -56,7 +56,7 @@ async function createCryptoPdfCourse() {
               title: 'Bitcoin Basics',
               description: 'The first and most popular cryptocurrency',
               type: 'PDF',
-              content: 'https://example.com/bitcoin-basics.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             }
@@ -70,7 +70,7 @@ async function createCryptoPdfCourse() {
               title: 'Crypto Trading Fundamentals',
               description: 'Basic trading concepts and strategies',
               type: 'PDF',
-              content: 'https://example.com/trading-fundamentals.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             },
@@ -78,7 +78,7 @@ async function createCryptoPdfCourse() {
               title: 'Risk Management in Crypto',
               description: 'How to manage risks when investing in cryptocurrencies',
               type: 'PDF',
-              content: 'https://example.com/risk-management.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             },
@@ -86,7 +86,7 @@ async function createCryptoPdfCourse() {
               title: 'Portfolio Diversification',
               description: 'Building a diversified cryptocurrency portfolio',
               type: 'PDF',
-              content: 'https://example.com/portfolio-diversification.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             }
@@ -100,7 +100,7 @@ async function createCryptoPdfCourse() {
               title: 'DeFi and Smart Contracts',
               description: 'Decentralized Finance and smart contract technology',
               type: 'PDF',
-              content: 'https://example.com/defi-smart-contracts.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             },
@@ -108,7 +108,7 @@ async function createCryptoPdfCourse() {
               title: 'NFTs and Digital Assets',
               description: 'Non-Fungible Tokens and digital asset ownership',
               type: 'PDF',
-              content: 'https://example.com/nfts-digital-assets.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             },
@@ -116,7 +116,7 @@ async function createCryptoPdfCourse() {
               title: 'Future of Cryptocurrency',
               description: 'Emerging trends and future developments',
               type: 'PDF',
-              content: 'https://example.com/future-crypto.pdf', // Replace with actual PDF URL
+              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
               duration: 'PDF Document',
               completed: false
             }

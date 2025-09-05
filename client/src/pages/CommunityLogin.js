@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import communityAuthApi from '../utils/communityAuthApi';
+import { getCommunityUrl } from '../utils/communityUrlUtils';
 
 const CommunityLogin = () => {
   const navigate = useNavigate();
@@ -59,10 +60,22 @@ const CommunityLogin = () => {
       
       setSuccess('Login successful! Redirecting to your community dashboard...');
       
-      // Redirect to community dashboard after a short delay
-      setTimeout(() => {
-        navigate('/community-dashboard');
-      }, 1500);
+      // Get community name and redirect to community-specific URL
+      const community = communityAuthApi.getCurrentCommunity();
+      if (community && community.name) {
+        const communityUrl = getCommunityUrl(community.name, 'dashboard');
+        console.log('Redirecting to community URL:', communityUrl);
+        
+        // Redirect to community-specific dashboard after a short delay
+        setTimeout(() => {
+          navigate(communityUrl);
+        }, 1500);
+      } else {
+        // Fallback to generic dashboard if community info is not available
+        setTimeout(() => {
+          navigate('/community-dashboard');
+        }, 1500);
+      }
 
     } catch (error) {
       setError(error.message || 'Login failed. Please check your credentials.');

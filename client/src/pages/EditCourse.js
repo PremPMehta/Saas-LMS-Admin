@@ -204,6 +204,51 @@ const EditCourse = () => {
     }
   };
 
+  const handleCourseThumbnailUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid image format. Only JPEG, PNG, and GIF are allowed.');
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        alert('Image file too large. Maximum size is 5MB.');
+        return;
+      }
+
+      try {
+        // Upload thumbnail to server
+        const formData = new FormData();
+        formData.append('thumbnail', file);
+
+        const response = await fetch('http://localhost:5001/api/upload/thumbnail', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload thumbnail');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          // Store the server URL instead of base64
+          setCourseData(prev => ({ ...prev, thumbnail: `http://localhost:5001${result.url}` }));
+        } else {
+          throw new Error(result.message || 'Failed to upload thumbnail');
+        }
+      } catch (error) {
+        console.error('Thumbnail upload error:', error);
+        alert('Failed to upload thumbnail: ' + error.message);
+      }
+    }
+  };
+
   const handleSaveChapter = () => {
     console.log('📚 handleSaveChapter called with selectedChapter:', selectedChapter);
     
@@ -247,7 +292,7 @@ const EditCourse = () => {
     }
   };
 
-  const handleSaveVideo = (formData) => {
+  const handleSaveVideo = async (formData) => {
     console.log('🎬 handleSaveVideo called with formData:', formData);
     
     if (!formData?.title?.trim()) {
@@ -255,12 +300,46 @@ const EditCourse = () => {
       return;
     }
 
+    let processedFormData = { ...formData };
+
+    // If it's an uploaded video file, upload it to the server first
+    if (formData.videoType === 'upload' && formData.videoFile) {
+      try {
+        console.log('Uploading video file to server...');
+        const uploadFormData = new FormData();
+        uploadFormData.append('video', formData.videoFile);
+        
+        const response = await fetch('http://localhost:5001/api/upload/video', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to upload video');
+        }
+        
+        const result = await response.json();
+        console.log('Video uploaded successfully:', result);
+        
+        // Update form data with the server URL
+        processedFormData = {
+          ...formData,
+          videoUrl: `http://localhost:5001${result.url}`,
+          videoFile: null // Clear the file object since we now have a URL
+        };
+      } catch (error) {
+        console.error('Error uploading video:', error);
+        alert('Failed to upload video. Please try again.');
+        return;
+      }
+    }
+
     const videoData = {
-      title: formData.title,
-      description: formData.description,
-      videoUrl: formData.videoUrl,
-      videoType: formData.videoType || 'youtube',
-      duration: formData.duration || '0:00'
+      title: processedFormData.title,
+      description: processedFormData.description,
+      videoUrl: processedFormData.videoUrl,
+      videoType: processedFormData.videoType || 'youtube',
+      duration: processedFormData.duration || '0:00'
     };
 
     console.log('📝 Processing video data:', videoData);
@@ -331,7 +410,7 @@ const EditCourse = () => {
         category: courseData.category,
         targetAudience: courseData.targetAudience,
         contentType: courseData.contentType,
-        thumbnail: courseData.thumbnail || 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course',
+        thumbnail: courseData.thumbnail || 'http://localhost:5001/uploads/default-course-thumbnail.jpg',
         chapters: chapters.map((chapter, index) => ({
           title: chapter.title,
           description: chapter.description,
@@ -443,6 +522,78 @@ const EditCourse = () => {
               rows={4}
               sx={{ mb: 3 }}
             />
+          </Grid>
+
+          {/* Course Thumbnail Upload */}
+          <Grid item size={12}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+              Course Thumbnail
+            </Typography>
+            <Box sx={{ mb: 3 }}>
+              {/* Current Thumbnail Display */}
+              {courseData.thumbnail && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                    Current Thumbnail:
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: 200,
+                      height: 120,
+                      border: '2px dashed #e0e0e0',
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      position: 'relative'
+                    }}
+                  >
+                    <img
+                      src={courseData.thumbnail}
+                      alt="Course thumbnail"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">No thumbnail</div>';
+                      }}
+                    />
+                  </Box>
+                </Box>
+              )}
+
+              {/* Thumbnail Upload */}
+              <Box>
+                <input
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  id="course-thumbnail-upload"
+                  type="file"
+                  onChange={handleCourseThumbnailUpload}
+                />
+                <label htmlFor="course-thumbnail-upload">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<UploadIcon />}
+                    sx={{
+                      borderColor: '#4285f4',
+                      color: '#4285f4',
+                      '&:hover': {
+                        borderColor: '#3367d6',
+                        backgroundColor: 'rgba(66, 133, 244, 0.04)'
+                      }
+                    }}
+                  >
+                    {courseData.thumbnail ? 'Change Thumbnail' : 'Upload Thumbnail'}
+                  </Button>
+                </label>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                  Upload a thumbnail image (JPEG, PNG, GIF - Max 5MB)
+                </Typography>
+              </Box>
+            </Box>
           </Grid>
 
           {/* Show read-only information for restricted fields */}

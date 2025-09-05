@@ -111,14 +111,48 @@ const CreateCourse = () => {
     }
   };
 
-  const handleCourseThumbnailUpload = (event) => {
+  const handleCourseThumbnailUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setCourseData(prev => ({ ...prev, thumbnail: e.target.result }));
-      };
-      reader.readAsDataURL(file);
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid image format. Only JPEG, PNG, and GIF are allowed.');
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        alert('Image file too large. Maximum size is 5MB.');
+        return;
+      }
+
+      try {
+        // Upload thumbnail to server
+        const formData = new FormData();
+        formData.append('thumbnail', file);
+
+        const response = await fetch('http://localhost:5001/api/upload/thumbnail', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload thumbnail');
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          // Store the server URL instead of base64
+          setCourseData(prev => ({ ...prev, thumbnail: `http://localhost:5001${result.url}` }));
+        } else {
+          throw new Error(result.message || 'Failed to upload thumbnail');
+        }
+      } catch (error) {
+        console.error('Thumbnail upload error:', error);
+        alert('Failed to upload thumbnail: ' + error.message);
+      }
     }
   };
 
@@ -211,10 +245,44 @@ const CreateCourse = () => {
     setOpenChapterDialog(false);
   };
 
-  const handleSaveVideo = (videoData) => {
+  const handleSaveVideo = async (videoData) => {
     console.log('handleSaveVideo called with:', videoData);
     console.log('selectedChapter:', selectedChapter);
     console.log('editingVideo:', editingVideo);
+
+    let processedVideoData = { ...videoData };
+
+    // If it's an uploaded video file, upload it to the server first
+    if (videoData.videoType === 'upload' && videoData.videoFile) {
+      try {
+        console.log('Uploading video file to server...');
+        const formData = new FormData();
+        formData.append('video', videoData.videoFile);
+        
+        const response = await fetch('http://localhost:5001/api/upload/video', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to upload video');
+        }
+        
+        const result = await response.json();
+        console.log('Video uploaded successfully:', result);
+        
+        // Update video data with the server URL
+        processedVideoData = {
+          ...videoData,
+          videoUrl: `http://localhost:5001${result.url}`,
+          videoFile: null // Clear the file object since we now have a URL
+        };
+      } catch (error) {
+        console.error('Error uploading video:', error);
+        alert('Failed to upload video. Please try again.');
+        return;
+      }
+    }
 
     if (editingVideo) {
       setChapters(prev => prev.map(chapter => {
@@ -222,7 +290,7 @@ const CreateCourse = () => {
           return {
             ...chapter,
             videos: chapter.videos.map(video =>
-              video.id === editingVideo.id ? { ...video, ...videoData } : video
+              video.id === editingVideo.id ? { ...video, ...processedVideoData } : video
             )
           };
         }
@@ -231,7 +299,7 @@ const CreateCourse = () => {
     } else {
       const newVideo = {
         id: Date.now().toString(),
-        ...videoData
+        ...processedVideoData
       };
       console.log('Creating new video:', newVideo);
       setChapters(prev => {
@@ -273,7 +341,7 @@ const CreateCourse = () => {
         category: courseData.category,
         targetAudience: courseData.targetAudience,
         contentType: courseData.contentType,
-        thumbnail: courseData.thumbnail || 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course',
+        thumbnail: courseData.thumbnail || 'http://localhost:5001/uploads/default-course-thumbnail.jpg',
         status: 'published', // Set status to published directly
         publishedAt: new Date().toISOString(), // Set publish date
         chapters: chapters.map((chapter, index) => ({
@@ -286,8 +354,9 @@ const CreateCourse = () => {
             content: video.content || video.videoUrl || '', // Send content for text/PDF
             videoUrl: video.videoUrl || video.content || '', // Send videoUrl for videos
             videoType: video.videoType || 'youtube',
+            contentType: video.contentType || 'video', // Include the contentType field
             type: video.contentType === 'pdf' ? 'PDF' : 
-                  video.contentType === 'text' ? 'TEXT' : 'VIDEO', // Properly map content type
+                  video.contentType === 'write' ? 'TEXT' : 'VIDEO', // Properly map content type
             duration: video.duration || '0:00',
             order: videoIndex
           }))
@@ -350,8 +419,9 @@ const CreateCourse = () => {
             content: video.content || video.videoUrl || '', // Send content for text/PDF
             videoUrl: video.videoUrl || video.content || '', // Send videoUrl for videos
             videoType: video.videoType || 'youtube',
+            contentType: video.contentType || 'video', // Include the contentType field
             type: video.contentType === 'pdf' ? 'PDF' : 
-                  video.contentType === 'text' ? 'TEXT' : 'VIDEO', // Properly map content type
+                  video.contentType === 'write' ? 'TEXT' : 'VIDEO', // Properly map content type
             duration: video.duration || '0:00',
             order: videoIndex
           }))
@@ -1084,14 +1154,12 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
         return;
       }
     } else if (contentType === 'text') {
-      // Text validation - content is optional for text lectures
-      if (!formData.content.trim()) {
+      // Text validation - check if it's write content or PDF
+      if (formData.contentType === 'write' && !formData.content.trim()) {
         alert('Please enter some content for the text lecture');
         return;
       }
-    } else if (contentType === 'pdf') {
-      // PDF validation
-      if (!formData.pdfFile) {
+      if (formData.contentType === 'pdf' && !formData.pdfFile) {
         alert('Please upload a PDF file');
         return;
       }
@@ -1131,7 +1199,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
           // Upload PDF to server
           console.log('Uploading PDF file:', file.name, file.size, file.type);
           
-          const response = await fetch('/api/upload/pdf', {
+          const response = await fetch('http://localhost:5001/api/upload/pdf', {
             method: 'POST',
             body: formData,
           });

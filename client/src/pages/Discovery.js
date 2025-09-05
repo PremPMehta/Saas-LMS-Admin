@@ -153,12 +153,29 @@ const Discovery = () => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await courseApi.getCourses({ status: 'published' });
-        console.log('Fetched courses:', response);
+        // Fetch all published courses for discovery
+        const response = await courseApi.getCourses({ discovery: 'true' });
+        console.log('Fetched courses for discovery:', response);
         
         if (response.success && response.courses) {
-          setCourses(response.courses);
-          setFilteredCommunities(response.courses);
+          // Normalize course data for display
+          const normalizedCourses = response.courses.map(course => ({
+            id: course._id || course.id,
+            title: course.title || 'Untitled Course',
+            description: course.description || 'No description available',
+            category: course.category || 'Uncategorized',
+            status: course.status || 'published',
+            thumbnail: course.thumbnail || null,
+            targetAudience: course.targetAudience || null,
+            contentType: course.contentType || 'video',
+            subType: course.subType || null,
+            chapters: course.chapters || [],
+            createdAt: course.createdAt || new Date().toISOString(),
+            updatedAt: course.updatedAt || new Date().toISOString()
+          }));
+          
+          setCourses(normalizedCourses);
+          setFilteredCommunities(normalizedCourses);
         } else {
           setError('Failed to fetch courses');
         }
@@ -222,7 +239,7 @@ const Discovery = () => {
                 }
               }}
             >
-              skool
+              Bell & Desk
             </Typography>
             <Box sx={{ position: 'relative' }} data-login-dropdown>
               <Button 
@@ -466,8 +483,17 @@ const Discovery = () => {
                 <CardMedia
                   component="img"
                   height="160"
-                  image={community.thumbnail || `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`}
+                  image={community.thumbnail && community.thumbnail.trim() !== '' 
+                    ? (community.thumbnail.startsWith('data:') || community.thumbnail.startsWith('http') 
+                        ? community.thumbnail 
+                        : `http://localhost:5001${community.thumbnail}`)
+                    : `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`
+                  }
                   alt={community.title}
+                  sx={{
+                    objectFit: 'cover',
+                    objectPosition: 'center'
+                  }}
                 />
                 
                 <CardContent sx={{ flexGrow: 1, p: 3 }}>
@@ -496,22 +522,83 @@ const Discovery = () => {
                     {community.description}
                   </Typography>
                   
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {/* Course Tags */}
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                    {/* Target Audience Tag */}
+                    {community.targetAudience && (
                       <Chip
-                        icon={community.contentType === 'video' ? <PlayIcon /> : <TextIcon />}
-                        label={community.contentType === 'video' ? 'Video Course' : 'Text Course'}
+                        label={community.targetAudience}
                         size="small"
                         variant="outlined"
-                        color={community.contentType === 'video' ? 'primary' : 'warning'}
+                        sx={{
+                          fontSize: '0.75rem',
+                          height: 24,
+                          borderColor: '#e0e0e0',
+                          color: '#666',
+                          '& .MuiChip-label': {
+                            px: 1
+                          }
+                        }}
                       />
+                    )}
+                    
+                    {/* Category Tag */}
+                    {community.category && (
                       <Chip
                         label={community.category}
                         size="small"
                         variant="outlined"
-                        color="default"
+                        sx={{
+                          fontSize: '0.75rem',
+                          height: 24,
+                          borderColor: '#4285f4',
+                          color: '#4285f4',
+                          backgroundColor: '#4285f415',
+                          '& .MuiChip-label': {
+                            px: 1
+                          }
+                        }}
                       />
-                    </Box>
+                    )}
+                    
+                    {/* Course Type Tag */}
+                    {community.contentType && (
+                      <Chip
+                        icon={community.contentType === 'video' ? <PlayIcon /> : <TextIcon />}
+                        label={community.contentType === 'video' ? 'Video' : 'Text'}
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                          fontSize: '0.75rem',
+                          height: 24,
+                          borderColor: community.contentType === 'video' ? '#4285f4' : '#34a853',
+                          color: community.contentType === 'video' ? '#4285f4' : '#34a853',
+                          backgroundColor: community.contentType === 'video' ? '#4285f415' : '#34a85315',
+                          '& .MuiChip-label': {
+                            px: 1
+                          }
+                        }}
+                      />
+                    )}
+                    
+                    {/* Sub Type Tag */}
+                    {community.subType && (
+                      <Chip
+                        label={community.subType}
+                        size="small"
+                        variant="outlined"
+                        sx={{
+                          fontSize: '0.75rem',
+                          height: 24,
+                          borderColor: '#9c27b0',
+                          color: '#9c27b0',
+                          backgroundColor: '#9c27b015',
+                          '& .MuiChip-label': {
+                            px: 1
+                          }
+                        }}
+                      />
+                    )}
                   </Box>
                   
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
