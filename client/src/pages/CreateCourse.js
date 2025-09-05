@@ -166,6 +166,10 @@ const CreateCourse = () => {
   };
 
   const validateStep = (step) => {
+    console.log('🔍 Validating step:', step);
+    console.log('📋 Course data:', courseData);
+    console.log('📚 Chapters:', chapters);
+    
     const newErrors = {};
 
     if (step === 0) {
@@ -183,6 +187,9 @@ const CreateCourse = () => {
     // For final step (step 2), we don't need additional validation
     // The course can be published even without chapters
 
+    console.log('❌ Validation errors:', newErrors);
+    console.log('✅ Validation passed:', Object.keys(newErrors).length === 0);
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -331,16 +338,19 @@ const CreateCourse = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('handleSubmit called');
-    console.log('courseData:', courseData);
-    console.log('chapters:', chapters);
+    console.log('🚀 handleSubmit called');
+    console.log('📋 courseData:', courseData);
+    console.log('📚 chapters:', chapters);
+    console.log('📍 activeStep:', activeStep);
 
     // Validate final step
     if (!validateStep(activeStep)) {
-      console.log('Validation failed');
+      console.log('❌ Validation failed - stopping course creation');
       setIsSubmitting(false);
       return;
     }
+    
+    console.log('✅ Validation passed - proceeding with course creation');
 
     setIsSubmitting(true);
     try {
