@@ -39,15 +39,21 @@ const apiCall = async (endpoint, options = {}) => {
 export const communityAuthApi = {
   // Community login
   login: async (email, password) => {
-    const response = await apiCall('/api/community-auth/login', {
+    const response = await apiCall('/api/auth/community-login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
 
     // Store token and community data
-    if (response.token) {
+    if (response.data && response.data.token) {
+      localStorage.setItem('communityToken', response.data.token);
+      localStorage.setItem('communityData', JSON.stringify(response.data.user));
+      console.log('✅ Community token stored:', response.data.token);
+      console.log('✅ Community data stored:', response.data.user);
+    } else if (response.token) {
+      // Fallback for different response structure
       localStorage.setItem('communityToken', response.token);
-      localStorage.setItem('communityData', JSON.stringify(response.community));
+      localStorage.setItem('communityData', JSON.stringify(response.community || response.user));
     }
 
     return response;
