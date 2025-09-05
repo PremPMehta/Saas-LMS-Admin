@@ -51,6 +51,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import courseApi from '../utils/courseApi';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import { apiUrl } from '../config/api';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -141,7 +142,7 @@ const CreateCourse = () => {
         const formData = new FormData();
         formData.append('thumbnail', file);
 
-        const response = await fetch('http://localhost:5001/api/upload/thumbnail', {
+        const response = await fetch(apiUrl('/api/upload/thumbnail'), {
           method: 'POST',
           body: formData,
         });
@@ -153,7 +154,7 @@ const CreateCourse = () => {
         const result = await response.json();
         if (result.success) {
           // Store the server URL instead of base64
-          setCourseData(prev => ({ ...prev, thumbnail: `http://localhost:5001${result.url}` }));
+          setCourseData(prev => ({ ...prev, thumbnail: `${apiUrl('')}${result.url}` }));
         } else {
           throw new Error(result.message || 'Failed to upload thumbnail');
         }
@@ -267,7 +268,7 @@ const CreateCourse = () => {
         const formData = new FormData();
         formData.append('video', videoData.videoFile);
         
-        const response = await fetch('http://localhost:5001/api/upload/video', {
+        const response = await fetch(apiUrl('/api/upload/video'), {
           method: 'POST',
           body: formData,
         });
@@ -282,7 +283,7 @@ const CreateCourse = () => {
         // Update video data with the server URL
         processedVideoData = {
           ...videoData,
-          videoUrl: `http://localhost:5001${result.url}`,
+          videoUrl: `${apiUrl('')}${result.url}`,
           videoFile: null // Clear the file object since we now have a URL
         };
       } catch (error) {
@@ -353,7 +354,7 @@ const CreateCourse = () => {
         category: courseData.category,
         targetAudience: courseData.targetAudience,
         contentType: courseData.contentType,
-        thumbnail: courseData.thumbnail || 'http://localhost:5001/uploads/default-course-thumbnail.jpg',
+        thumbnail: courseData.thumbnail || `${apiUrl('')}/uploads/default-course-thumbnail.jpg`,
         status: 'published', // Set status to published directly
         publishedAt: new Date().toISOString(), // Set publish date
         community: communityId, // Associate course with community
@@ -1260,7 +1261,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
           // Upload PDF to server
           console.log('Uploading PDF file:', file.name, file.size, file.type);
           
-          const response = await fetch('http://localhost:5001/api/upload/pdf', {
+          const response = await fetch(apiUrl('/api/upload/pdf'), {
             method: 'POST',
             body: formData,
           });
