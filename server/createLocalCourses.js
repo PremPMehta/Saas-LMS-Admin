@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const Course = require('./models/Course.model');
 const Community = require('./models/Community.model');
 
-// Use local MongoDB
-const LOCAL_MONGO_URI = 'mongodb://localhost:27017/saasLmsAdmin';
+// Use MongoDB Atlas
+const LOCAL_MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://premarch567:Z6qcWJ8m6iv4ZqRW@cluster0.lyzxobt.mongodb.net/saas-lms-admin?retryWrites=true&w=majority&appName=Cluster0';
 
 const createLocalCourses = async () => {
   try {
