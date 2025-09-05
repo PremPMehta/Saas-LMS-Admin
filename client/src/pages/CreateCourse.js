@@ -288,7 +288,8 @@ const CreateCourse = () => {
         };
       } catch (error) {
         console.error('Error uploading video:', error);
-        alert('Failed to upload video. Please try again.');
+        console.error('Error details:', error.message);
+        alert(`Failed to upload video: ${error.message || 'Unknown error'}. Please try again.`);
         return;
       }
     }
@@ -1289,7 +1290,8 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
           alert(`PDF uploaded successfully: ${file.name}`);
         } catch (error) {
           console.error('Error uploading PDF:', error);
-          alert('Failed to upload PDF. Please try again.');
+          console.error('Error details:', error.message);
+          alert(`Failed to upload PDF: ${error.message || 'Unknown error'}. Please try again.`);
         }
       } else {
         alert('Please upload a PDF file');

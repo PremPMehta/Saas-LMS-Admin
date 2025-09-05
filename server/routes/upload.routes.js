@@ -83,22 +83,27 @@ const pdfUpload = multer({
 // Upload video file
 router.post('/video', videoUpload.single('video'), async (req, res) => {
   try {
+    console.log('🎬 Video upload request received');
+    console.log('📁 Request file:', req.file);
+    console.log('📋 Request body:', req.body);
+    
     if (!req.file) {
+      console.log('❌ No video file uploaded');
       return res.status(400).json({
         success: false,
         message: 'No video file uploaded'
       });
     }
 
-    // Validate file type
-    const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv'];
+    // Validate file type (should match the file filter)
+    const allowedTypes = ['video/mp4', 'video/mov', 'video/avi', 'video/webm', 'video/mkv'];
     if (!allowedTypes.includes(req.file.mimetype)) {
       // Delete uploaded file
       fs.unlinkSync(req.file.path);
       
       return res.status(400).json({
         success: false,
-        message: 'Invalid video format. Only MP4, AVI, MOV, and WMV are allowed.'
+        message: 'Invalid video format. Only MP4, MOV, AVI, WebM, and MKV are allowed.'
       });
     }
 
@@ -213,7 +218,12 @@ router.post('/thumbnail', imageUpload.single('thumbnail'), async (req, res) => {
 // Upload PDF file
 router.post('/pdf', pdfUpload.single('pdf'), async (req, res) => {
   try {
+    console.log('📄 PDF upload request received');
+    console.log('📁 Request file:', req.file);
+    console.log('📋 Request body:', req.body);
+    
     if (!req.file) {
+      console.log('❌ No PDF file uploaded');
       return res.status(400).json({
         success: false,
         message: 'No PDF file uploaded'
