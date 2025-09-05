@@ -265,18 +265,40 @@ const CommunitySetup = () => {
 
         const setupData = {
           ...communityData,
-          subdomain: formData.subdomain.toLowerCase().trim(),
-          fullDomain: `${formData.subdomain.toLowerCase().trim()}.bbrtek-lms.com`,
           ownerEmail: formData.ownerEmail.trim(),
           ownerPassword: formData.ownerPassword,
           logo: logoData,
         };
 
-        // TODO: Send to backend API
+        // Send to backend API
         console.log('Community setup data:', setupData);
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/auth/community-signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: setupData.ownerEmail,
+            password: setupData.ownerPassword,
+            communityName: setupData.name,
+            description: setupData.description,
+            category: setupData.category,
+            phoneNumber: formData.ownerPhoneNumber || '',
+            logo: setupData.logo,
+            plan: setupData.plan,
+            price: setupData.price,
+            period: setupData.period
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to create community');
+        }
+
+        console.log('Community created successfully:', result);
 
         // Clear stored data
         localStorage.removeItem('communitySetupData');
