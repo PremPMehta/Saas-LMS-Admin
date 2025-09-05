@@ -74,12 +74,21 @@ exports.createCourse = async (req, res) => {
       requirements,
       learningOutcomes,
       price,
-      isFree
+      isFree,
+      community,
+      status,
+      publishedAt
     } = req.body;
 
     // Get instructor and community from authenticated user (or use defaults for testing)
     let instructor = req.user?.id;
     let communityId = req.user?.communityId;
+    
+    // PRIORITY: Use community from request body if provided
+    if (community) {
+      communityId = community;
+      console.log('🎯 Using community from request body:', communityId);
+    }
     
     // For testing purposes, use default values if no user is authenticated
     if (!instructor) {
@@ -156,6 +165,15 @@ exports.createCourse = async (req, res) => {
     const processedChapters = await processTextContent(cleanChapters, title);
     console.log('✅ Text content processing completed');
 
+    // Debug logging
+    console.log('📝 Creating course with data:', {
+      title,
+      community: communityId,
+      status,
+      publishedAt,
+      instructor
+    });
+
     // Create the course
     const course = new Course({
       title,
@@ -164,8 +182,8 @@ exports.createCourse = async (req, res) => {
       targetAudience,
       contentType,
       thumbnail,
-      status: req.body.status || 'draft', // Set status from request body or default to draft
-      publishedAt: req.body.status === 'published' ? new Date() : null, // Set publishedAt if status is published
+      status: status || 'draft', // Set status from request body or default to draft
+      publishedAt: status === 'published' ? (publishedAt ? new Date(publishedAt) : new Date()) : null, // Set publishedAt if status is published
       chapters: processedChapters,
       instructor,
       community: communityId,
