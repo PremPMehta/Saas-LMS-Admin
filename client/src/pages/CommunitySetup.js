@@ -32,6 +32,7 @@ import {
   ArrowForward as ArrowForwardIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getCommunityUrl } from '../utils/communityUrlUtils';
 
 const CommunitySetup = () => {
   console.log('CommunitySetup: Component is loading');
