@@ -566,7 +566,7 @@ const CourseViewer = () => {
         } else {
           // Fetch all courses from API
           console.log('🔄 CourseViewer: Loading all courses');
-          const response = await fetch('${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/courses', {
+          const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/courses`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('communityToken') || localStorage.getItem('token')}`
