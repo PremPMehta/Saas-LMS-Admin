@@ -2126,7 +2126,9 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                         label: 'Write Own Content',
                                         icon: TextIcon,
                                         description: 'Use rich text editor to write your lesson',
-                                        color: '#4285f4'
+                                        color: '#4285f4',
+                                        disabled: true,
+                                        comingSoon: true
                                       },
                                       {
                                         value: 'pdf',
@@ -2138,37 +2140,62 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                     ].map((type) => (
                                       <Grid item size={{ xs: 12, sm: 6 }} key={type.value}>
                                         <Card
-                                          onClick={() => handleContentTypeChange(type.value)}
+                                          onClick={() => {
+                                            if (type.disabled) {
+                                              // Show "still under development" message
+                                              alert('This feature is still under development. Please use "Upload PDF" option for now.');
+                                              return;
+                                            }
+                                            handleContentTypeChange(type.value);
+                                          }}
                                           sx={{
-                                            cursor: 'pointer',
+                                            cursor: type.disabled ? 'not-allowed' : 'pointer',
                                             border: formData.contentType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
-                                            background: formData.contentType === type.value ? '#f8f9ff' : '#ffffff',
+                                            background: type.disabled ? '#f5f5f5' : (formData.contentType === type.value ? '#f8f9ff' : '#ffffff'),
+                                            opacity: type.disabled ? 0.6 : 1,
                                             transition: 'all 0.3s ease',
-                                            '&:hover': {
+                                            position: 'relative',
+                                            '&:hover': type.disabled ? {} : {
                                               borderColor: type.color,
                                               background: '#f8f9ff',
                                               transform: 'translateY(-2px)',
                                               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                                             }
                                           }}
-
                                         >
+                                          {type.comingSoon && (
+                                            <Box sx={{
+                                              position: 'absolute',
+                                              top: 8,
+                                              right: 8,
+                                              background: '#ff9800',
+                                              color: 'white',
+                                              px: 1,
+                                              py: 0.5,
+                                              borderRadius: 1,
+                                              fontSize: '0.7rem',
+                                              fontWeight: 'bold',
+                                              zIndex: 1
+                                            }}>
+                                              Coming Soon
+                                            </Box>
+                                          )}
                                           <CardContent sx={{ p: 3, textAlign: 'center' }}>
                                             <Box sx={{
                                               mb: 2,
-                                              color: formData.contentType === type.value ? type.color : '#666666'
+                                              color: type.disabled ? '#999999' : (formData.contentType === type.value ? type.color : '#666666')
                                             }}>
                                               <type.icon sx={{ fontSize: 32 }} />
                                             </Box>
                                             <Typography variant="body1" sx={{
                                               fontWeight: 600,
-                                              color: formData.contentType === type.value ? type.color : '#000000',
+                                              color: type.disabled ? '#999999' : (formData.contentType === type.value ? type.color : '#000000'),
                                               mb: 1
                                             }}>
                                               {type.label}
                                             </Typography>
-                                            <Typography variant="caption" color="text.secondary">
-                                              {type.description}
+                                            <Typography variant="caption" color={type.disabled ? 'text.disabled' : 'text.secondary'}>
+                                              {type.disabled ? 'Still under development' : type.description}
                                             </Typography>
                                           </CardContent>
                                         </Card>
