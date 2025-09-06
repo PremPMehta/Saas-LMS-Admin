@@ -1235,10 +1235,17 @@ const Courses = () => {
                             }}>
                               {course.thumbnail && course.thumbnail.trim() !== '' ? (
                                 <img
-                                  src={course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
-                                    ? course.thumbnail 
-                                    : `http://localhost:5001${course.thumbnail}`
-                                  }
+                                  src={(() => {
+                                    const thumbnailUrl = course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
+                                      ? course.thumbnail 
+                                      : `http://localhost:5001${course.thumbnail}`;
+                                    console.log('🖼️ Thumbnail Debug for', course.title, ':', {
+                                      original: course.thumbnail,
+                                      constructed: thumbnailUrl,
+                                      isFullUrl: course.thumbnail.startsWith('http')
+                                    });
+                                    return thumbnailUrl;
+                                  })()}
                                   alt={course.title}
                                   style={{
                                     width: '100%',
