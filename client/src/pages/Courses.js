@@ -154,6 +154,10 @@ const Courses = () => {
           console.log('🔧 Using fallback community ID for course listing:', communityId);
         }
         
+        // FORCE: Always use the correct Crypto Manji community ID for now
+        communityId = '68b684467fd9b766dc7cc337';
+        console.log('🔧 FORCED: Using Crypto Manji community ID:', communityId);
+        
         // FORCE: Set the correct community ID in localStorage to fix the issue
         localStorage.setItem('communityId', '68b684467fd9b766dc7cc337');
         console.log('🔧 FORCED: Set communityId in localStorage to:', '68b684467fd9b766dc7cc337');
@@ -202,6 +206,8 @@ const Courses = () => {
 
         let coursesData = response.courses || [];
         console.log('📊 Courses loaded:', coursesData.length, 'courses');
+        console.log('📊 Course titles:', coursesData.map(c => c.title));
+        console.log('📊 Full response:', response);
 
         // If we got courses but they don't match the community, log it
         if (coursesData.length > 0) {
