@@ -1127,7 +1127,20 @@ const CourseViewer = () => {
                               role="button"
                               aria-label="Video player container"
                             >
-                              {(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl) || selectedLecture.content ? (
+                              {(() => {
+                                const videoUrl = selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl;
+                                const hasContent = videoUrl || selectedLecture.content;
+                                console.log('🎥 Video Debug:', {
+                                  type: selectedLecture.type,
+                                  videoType: selectedLecture.videoType,
+                                  videoUrl: videoUrl,
+                                  content: selectedLecture.content,
+                                  hasContent: hasContent,
+                                  isUploaded: isUploadedVideo(videoUrl),
+                                  embedUrl: getEmbedUrl(videoUrl)
+                                });
+                                return hasContent;
+                              })() ? (
                                 <>
                                   {/* Loading State */}
                                   {videoLoading && (
@@ -1229,6 +1242,9 @@ const CourseViewer = () => {
                                   </Typography>
                                   <Typography variant="body2" sx={{ opacity: 0.8, maxWidth: '300px' }}>
                                     This lecture doesn't have a video attached. Please select a different lecture or contact support.
+                                  </Typography>
+                                  <Typography variant="caption" sx={{ opacity: 0.6, maxWidth: '300px', mt: 1, fontFamily: 'monospace' }}>
+                                    Debug: Type: {selectedLecture.type}, VideoType: {selectedLecture.videoType}, URL: {selectedLecture.videoUrl || 'none'}
                                   </Typography>
                                 </Box>
                               )}
