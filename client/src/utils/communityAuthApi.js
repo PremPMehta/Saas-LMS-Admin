@@ -117,10 +117,11 @@ export const communityAuthApi = {
         const parsed = JSON.parse(communityData);
         // FORCE: Always return the correct community ID for Crypto Manji
         if (parsed._id === '68bae2119b907eb2a8d357f2' || parsed.id === '68bae2119b907eb2a8d357f2' || 
-            parsed._id === '68b03c92fac3b1af515ccc69' || parsed.id === '68b03c92fac3b1af515ccc69') {
+            parsed._id === '68b03c92fac3b1af515ccc69' || parsed.id === '68b03c92fac3b1af515ccc69' ||
+            parsed._id === '68b684467fd9b766dc7cc337' || parsed.id === '68b684467fd9b766dc7cc337') {
           console.log('🔧 FIXING: Overriding community ID in getCurrentCommunity to Crypto Manji');
-          parsed._id = '68b684467fd9b766dc7cc337';
-          parsed.id = '68b684467fd9b766dc7cc337';
+          parsed._id = '68bae2a8807f3a3bb8ac6307';
+          parsed.id = '68bae2a8807f3a3bb8ac6307';
           // Update localStorage with correct data
           localStorage.setItem('communityData', JSON.stringify(parsed));
         }

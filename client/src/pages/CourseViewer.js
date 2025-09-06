@@ -1457,27 +1457,6 @@ const CourseViewer = () => {
                           </Box>
 
                           <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
-                            <Button
-                              variant="contained"
-                              startIcon={selectedLecture.completed ? <CheckIcon /> : <PlayIcon />}
-                              onClick={() => {
-                                const newCompletedStatus = !selectedLecture.completed;
-                                setSelectedLecture({
-                                  ...selectedLecture,
-                                  completed: newCompletedStatus
-                                });
-                                updateVideoCompletion(selectedLecture._id, newCompletedStatus);
-                              }}
-                              sx={{
-                                minWidth: 140,
-                                backgroundColor: selectedLecture.completed ? 'success.main' : 'primary.main',
-                                '&:hover': {
-                                  backgroundColor: selectedLecture.completed ? 'success.dark' : 'primary.dark'
-                                }
-                              }}
-                            >
-                              {selectedLecture.completed ? 'Completed' : 'Mark Complete'}
-                            </Button>
                             
                             {selectedLecture.type === 'VIDEO' && (
                               <Button

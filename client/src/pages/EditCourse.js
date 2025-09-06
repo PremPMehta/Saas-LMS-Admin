@@ -230,7 +230,7 @@ const EditCourse = () => {
         const formData = new FormData();
         formData.append('thumbnail', file);
 
-        const response = await fetch('http://localhost:5001/api/upload/thumbnail', {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/upload/thumbnail`, {
           method: 'POST',
           body: formData,
         });
@@ -242,7 +242,7 @@ const EditCourse = () => {
         const result = await response.json();
         if (result.success) {
           // Store the server URL instead of base64
-          setCourseData(prev => ({ ...prev, thumbnail: `http://localhost:5001${result.url}` }));
+          setCourseData(prev => ({ ...prev, thumbnail: `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${result.url}` }));
         } else {
           throw new Error(result.message || 'Failed to upload thumbnail');
         }
@@ -313,7 +313,7 @@ const EditCourse = () => {
         const uploadFormData = new FormData();
         uploadFormData.append('video', formData.videoFile);
         
-        const response = await fetch('http://localhost:5001/api/upload/video', {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/upload/video`, {
           method: 'POST',
           body: uploadFormData,
         });
@@ -328,7 +328,7 @@ const EditCourse = () => {
         // Update form data with the server URL
         processedFormData = {
           ...formData,
-          videoUrl: `http://localhost:5001${result.url}`,
+          videoUrl: `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${result.url}`,
           videoFile: null // Clear the file object since we now have a URL
         };
       } catch (error) {
@@ -414,7 +414,7 @@ const EditCourse = () => {
         category: courseData.category,
         targetAudience: courseData.targetAudience,
         contentType: courseData.contentType,
-        thumbnail: courseData.thumbnail || 'http://localhost:5001/uploads/default-course-thumbnail.jpg',
+        thumbnail: courseData.thumbnail || `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`,
         chapters: chapters.map((chapter, index) => ({
           title: chapter.title,
           description: chapter.description,

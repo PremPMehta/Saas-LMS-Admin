@@ -376,14 +376,14 @@ const CreateCourse = () => {
         console.log('🔍 No valid communityId in localStorage, checking communityName...');
         // For now, use the Crypto Manji community ID
         if (communityName === 'crypto-manji-academy') {
-          communityId = '68b684467fd9b766dc7cc337';
+          communityId = '68bae2a8807f3a3bb8ac6307';
           console.log('🔍 Set communityId from communityName:', communityId);
         }
       }
       
       // Final fallback
       if (!communityId || communityId === 'null' || communityId === 'undefined') {
-        communityId = '68b684467fd9b766dc7cc337';
+        communityId = '68bae2a8807f3a3bb8ac6307';
         console.log('🔍 Using final fallback communityId:', communityId);
       }
       
@@ -2338,7 +2338,8 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                               </>
                             )}
 
-          {contentType === 'pdf' && (
+          {/* PDF Upload Section for Video Dialog */}
+          {(contentType === 'pdf' || formData.contentType === 'pdf') && (
             <Grid item xs={12}>
               <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                 Upload PDF Document

@@ -150,17 +150,17 @@ const Courses = () => {
         
         // If no communityId found, use the Crypto Manji community ID
         if (!communityId || communityId === 'null' || communityId === 'undefined') {
-          communityId = '68b684467fd9b766dc7cc337';
+          communityId = '68bae2a8807f3a3bb8ac6307';
           console.log('🔧 Using fallback community ID for course listing:', communityId);
         }
         
         // FORCE: Always use the correct Crypto Manji community ID for now
-        communityId = '68b684467fd9b766dc7cc337';
+        communityId = '68bae2a8807f3a3bb8ac6307';
         console.log('🔧 FORCED: Using Crypto Manji community ID:', communityId);
         
         // FORCE: Set the correct community ID in localStorage to fix the issue
-        localStorage.setItem('communityId', '68b684467fd9b766dc7cc337');
-        console.log('🔧 FORCED: Set communityId in localStorage to:', '68b684467fd9b766dc7cc337');
+        localStorage.setItem('communityId', '68bae2a8807f3a3bb8ac6307');
+        console.log('🔧 FORCED: Set communityId in localStorage to:', '68bae2a8807f3a3bb8ac6307');
         
         // FORCE: Also fix the communityData in localStorage if it has wrong community ID
         const communityData = localStorage.getItem('communityData');
@@ -168,9 +168,10 @@ const Courses = () => {
           try {
             const parsedData = JSON.parse(communityData);
             if (parsedData._id === '68bae2119b907eb2a8d357f2' || parsedData.id === '68bae2119b907eb2a8d357f2' ||
-                parsedData._id === '68b03c92fac3b1af515ccc69' || parsedData.id === '68b03c92fac3b1af515ccc69') {
-              parsedData._id = '68b684467fd9b766dc7cc337';
-              parsedData.id = '68b684467fd9b766dc7cc337';
+                parsedData._id === '68b03c92fac3b1af515ccc69' || parsedData.id === '68b03c92fac3b1af515ccc69' ||
+                parsedData._id === '68b684467fd9b766dc7cc337' || parsedData.id === '68b684467fd9b766dc7cc337') {
+              parsedData._id = '68bae2a8807f3a3bb8ac6307';
+              parsedData.id = '68bae2a8807f3a3bb8ac6307';
               localStorage.setItem('communityData', JSON.stringify(parsedData));
               console.log('🔧 FORCED: Fixed communityData in localStorage with Crypto Manji community ID');
             }
@@ -277,13 +278,13 @@ const Courses = () => {
       
       // If no communityId found, use the same fallback as main course loading
       if (!communityId || communityId === 'null' || communityId === 'undefined') {
-        communityId = '68b684467fd9b766dc7cc337';
+        communityId = '68bae2a8807f3a3bb8ac6307';
         console.log('🔧 Manual refresh: Using fallback community ID:', communityId);
       }
       
       // FORCE: Set the correct community ID in localStorage to fix the issue
-      localStorage.setItem('communityId', '68b684467fd9b766dc7cc337');
-      console.log('🔧 FORCED: Set communityId in localStorage to:', '68b684467fd9b766dc7cc337');
+      localStorage.setItem('communityId', '68bae2a8807f3a3bb8ac6307');
+      console.log('🔧 FORCED: Set communityId in localStorage to:', '68bae2a8807f3a3bb8ac6307');
       
       console.log('🔄 Manual refresh: Loading courses for community:', communityId);
       console.log('🆕 UPDATED Manual refresh - Community ID fix applied!');

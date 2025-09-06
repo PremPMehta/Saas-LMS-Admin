@@ -1,7 +1,7 @@
 // API Utility Functions
 const API_BASE_URL = process.env.REACT_APP_API_URL || 
   (process.env.NODE_ENV === 'production' 
-    ? 'http://localhost:5001' 
+    ? 'https://saas-lms-admin-1.onrender.com' 
     : 'http://localhost:5001');
 
 // Helper function to get auth headers

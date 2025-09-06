@@ -220,12 +220,14 @@ const CommunityLogin = () => {
               <Link
                 component="button"
                 variant="body2"
-                onClick={handleForgotPassword}
+                disabled
                 sx={{
                   color: '#667eea',
                   textDecoration: 'none',
+                  opacity: 0.6,
+                  cursor: 'not-allowed',
                   '&:hover': {
-                    textDecoration: 'underline',
+                    textDecoration: 'none',
                   },
                 }}
               >
@@ -237,13 +239,15 @@ const CommunityLogin = () => {
               <Typography variant="body2" color="text.secondary">
                 Don't have a community yet?{' '}
                 <Link
-                  href="/create-community"
+                  component="span"
                   sx={{
                     color: '#667eea',
                     textDecoration: 'none',
                     fontWeight: 600,
+                    opacity: 0.6,
+                    cursor: 'not-allowed',
                     '&:hover': {
-                      textDecoration: 'underline',
+                      textDecoration: 'none',
                     },
                   }}
                 >

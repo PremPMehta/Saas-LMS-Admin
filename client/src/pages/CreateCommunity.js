@@ -111,7 +111,10 @@ const CreateCommunity = () => {
     const fetchPlans = async () => {
       try {
         setLoading(true);
-        const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 
+          (process.env.NODE_ENV === 'production' 
+            ? 'https://saas-lms-admin-1.onrender.com' 
+            : 'http://localhost:5001');
                     const response = await fetch(`${API_BASE_URL}/api/plans/public`);
         
         if (!response.ok) {

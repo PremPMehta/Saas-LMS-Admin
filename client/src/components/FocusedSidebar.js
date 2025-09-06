@@ -72,7 +72,7 @@ const FocusedSidebar = ({ darkMode }) => {
               sx={{
                 color: isActive
                   ? (darkMode ? '#ffffff' : '#000000')
-                  : (darkMode ? '#404040' : '#f0f0f0'),
+                  : (darkMode ? '#b0b0b0' : '#666666'),
                 backgroundColor: isActive 
                   ? (darkMode ? '#404040' : '#e3f2fd')
                   : 'transparent',
@@ -80,6 +80,9 @@ const FocusedSidebar = ({ darkMode }) => {
                   backgroundColor: isActive 
                     ? (darkMode ? '#505050' : '#bbdefb')
                     : (darkMode ? '#404040' : '#f0f0f0'),
+                  color: isActive
+                    ? (darkMode ? '#ffffff' : '#000000')
+                    : (darkMode ? '#ffffff' : '#000000'),
                 }
               }}
               title={item.label}

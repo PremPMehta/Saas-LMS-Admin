@@ -132,6 +132,7 @@ const Discovery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
+  const [showUserSignIn, setShowUserSignIn] = useState(true);
   const [courses, setCourses] = useState([]);
   
   // Get community URLs for proper navigation
@@ -248,7 +249,10 @@ const Discovery = () => {
             <Box sx={{ position: 'relative' }} data-login-dropdown>
               <Button 
                 variant="outlined" 
-                onClick={() => setLoginDropdownOpen(!loginDropdownOpen)}
+                onClick={() => {
+                  setLoginDropdownOpen(!loginDropdownOpen);
+                  setShowUserSignIn(false);
+                }}
                 endIcon={<KeyboardArrowDownIcon />}
                 sx={{ 
                   textTransform: 'none',
@@ -295,26 +299,28 @@ const Discovery = () => {
                     <BusinessIcon sx={{ mr: 2, fontSize: 20 }} />
                     Sign in as Community
                   </Button>
-                  <Button
-                    fullWidth
-                    onClick={() => {
-                      navigate('/login');
-                      setLoginDropdownOpen(false);
-                    }}
-                    sx={{
-                      textTransform: 'none',
-                      justifyContent: 'flex-start',
-                      px: 3,
-                      py: 2,
-                      borderRadius: 0,
-                      '&:hover': {
-                        bgcolor: '#f5f5f5'
-                      }
-                    }}
-                  >
-                    <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
-                    Sign in as User
-                  </Button>
+                  {showUserSignIn && (
+                    <Button
+                      fullWidth
+                      onClick={() => {
+                        navigate('/login');
+                        setLoginDropdownOpen(false);
+                      }}
+                      sx={{
+                        textTransform: 'none',
+                        justifyContent: 'flex-start',
+                        px: 3,
+                        py: 2,
+                        borderRadius: 0,
+                        '&:hover': {
+                          bgcolor: '#f5f5f5'
+                        }
+                      }}
+                    >
+                      <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
+                      Sign in as User
+                    </Button>
+                  )}
                 </Box>
               )}
             </Box>
@@ -339,13 +345,7 @@ const Discovery = () => {
             or{' '}
             <Button
               variant="text"
-              onClick={() => {
-                if (communityUrls) {
-                  navigate(communityUrls.createCourse);
-                } else {
-                  navigate('/create-course');
-                }
-              }}
+              disabled
               sx={{ 
                 color: '#4285f4',
                 textTransform: 'none',
@@ -353,14 +353,16 @@ const Discovery = () => {
                 fontWeight: 400,
                 p: 0,
                 minWidth: 'auto',
+                opacity: 0.6,
+                cursor: 'not-allowed',
                 '&:hover': {
                   backgroundColor: 'transparent',
-                  color: '#1976d2',
-                  textDecoration: 'underline'
+                  color: '#4285f4',
+                  textDecoration: 'none'
                 }
               }}
             >
-              create your own course
+              Create Your Own Community
             </Button>
           </Typography>
 
@@ -496,7 +498,7 @@ const Discovery = () => {
                   image={community.thumbnail && community.thumbnail.trim() !== '' 
                     ? (community.thumbnail.startsWith('data:') || community.thumbnail.startsWith('http') 
                         ? community.thumbnail 
-                        : `http://localhost:5001${community.thumbnail}`)
+                        : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`)
                     : `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`
                   }
                   alt={community.title}

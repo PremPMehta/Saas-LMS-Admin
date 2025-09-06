@@ -126,9 +126,13 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
           throw new Error('Authentication token not found. Please login again.');
         }
 
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 
+          (process.env.NODE_ENV === 'production' 
+            ? 'https://saas-lms-admin-1.onrender.com' 
+            : 'http://localhost:5001');
         const url = editingUser 
-          ? `http://localhost:5001/api/users/${editingUser._id}`
-          : 'http://localhost:5001/api/users';
+          ? `${API_BASE_URL}/api/users/${editingUser._id}`
+          : `${API_BASE_URL}/api/users`;
         
         const method = editingUser ? 'PUT' : 'POST';
 
