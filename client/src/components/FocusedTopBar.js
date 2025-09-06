@@ -1,0 +1,229 @@
+import React, { useState } from 'react';
+import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import {
+  WbSunny as SunIcon,
+  DarkMode as DarkIcon,
+  Person as PersonIcon,
+  Logout as LogoutIcon,
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { communityAuthApi } from '../utils/communityAuthApi';
+
+const FocusedTopBar = ({ darkMode, setDarkMode }) => {
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  
+  // Get community data
+  const communityData = communityAuthApi.getCurrentCommunity();
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfile = () => {
+    handleMenuClose();
+    // Navigate to profile page or show profile modal
+    console.log('Profile clicked');
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    communityAuthApi.logout();
+    navigate('/community-login');
+  };
+
+  return (
+    <Box sx={{
+      height: 70, // Increased height for better proportions
+      background: darkMode ? '#2d2d2d' : '#ffffff',
+      borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      px: 3,
+      position: 'fixed',
+      top: 0,
+      left: 80, // Start right after sidebar (80px width)
+      right: 0, // Extend to right edge
+      zIndex: 1000,
+    }}>
+      {/* Left side - Dark/Light Mode Toggle */}
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Tooltip title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+          <IconButton
+            onClick={toggleDarkMode}
+            sx={{
+              color: darkMode ? '#ffffff' : '#000000',
+              backgroundColor: darkMode ? '#404040' : '#f0f0f0',
+              '&:hover': {
+                backgroundColor: darkMode ? '#505050' : '#e0e0e0',
+                transform: 'scale(1.05)',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            {darkMode ? <SunIcon /> : <DarkIcon />}
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      {/* Right side - Community Profile */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ textAlign: 'right' }}>
+          <Box sx={{ 
+            fontSize: '0.875rem', 
+            fontWeight: 600, 
+            color: darkMode ? '#ffffff' : '#000000',
+            lineHeight: 1.2
+          }}>
+            {communityData?.name || 'Community'}
+          </Box>
+          <Box sx={{ 
+            fontSize: '0.75rem', 
+            color: darkMode ? '#b0b0b0' : '#666666',
+            lineHeight: 1.2
+          }}>
+            {communityData?.ownerEmail || 'Admin'}
+          </Box>
+        </Box>
+        
+        <Tooltip title={`${communityData?.name || 'Community'} Profile`}>
+          <IconButton
+            onClick={handleAvatarClick}
+            sx={{
+              p: 0,
+              '&:hover': {
+                transform: 'scale(1.05)',
+              },
+              transition: 'all 0.2s ease',
+            }}
+          >
+            <Avatar
+              sx={{
+                bgcolor: '#4285f4',
+                width: 50, // Match sidebar circle size
+                height: 50, // Match sidebar circle size
+                fontSize: '1.2rem', // Match sidebar font size
+                fontWeight: 'bold',
+                color: '#ffffff',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  boxShadow: '0 4px 12px rgba(66, 133, 244, 0.3)',
+                }
+              }}
+            >
+              {communityData?.name?.charAt(0) || 'C'}
+            </Avatar>
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      {/* Profile Dropdown Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        onClick={handleMenuClose}
+        PaperProps={{
+          elevation: 8,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 4px 20px rgba(0,0,0,0.15))',
+            mt: 2,
+            minWidth: 200,
+            borderRadius: 3,
+            border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+            background: darkMode ? '#2d2d2d' : '#ffffff',
+            '& .MuiMenuItem-root': {
+              px: 3,
+              py: 2,
+              borderRadius: 2,
+              mx: 1,
+              my: 0.5,
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                backgroundColor: darkMode ? '#404040' : '#f5f5f5',
+                transform: 'translateX(4px)',
+              },
+              '&:first-of-type': {
+                mt: 1,
+              },
+              '&:last-of-type': {
+                mb: 1,
+              }
+            },
+            '& .MuiListItemIcon-root': {
+              minWidth: 40,
+              color: darkMode ? '#ffffff' : '#666666',
+            },
+            '& .MuiListItemText-root': {
+              '& .MuiTypography-root': {
+                fontSize: '0.95rem',
+                fontWeight: 500,
+                color: darkMode ? '#ffffff' : '#333333',
+              }
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: -6,
+              right: 20,
+              width: 12,
+              height: 12,
+              bgcolor: darkMode ? '#2d2d2d' : '#ffffff',
+              border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+              borderBottom: 'none',
+              borderRight: 'none',
+              transform: 'rotate(45deg)',
+              zIndex: 1,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        slotProps={{
+          backdrop: {
+            sx: {
+              backgroundColor: 'rgba(0, 0, 0, 0.1)',
+              backdropFilter: 'blur(4px)',
+            }
+          }
+        }}
+      >
+        <MenuItem onClick={handleProfile} sx={{ 
+          '&:hover .MuiListItemIcon-root': { 
+            color: '#4285f4' 
+          } 
+        }}>
+          <ListItemIcon>
+            <PersonIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Profile Settings</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={handleLogout} sx={{ 
+          '&:hover .MuiListItemIcon-root': { 
+            color: '#ea4335' 
+          } 
+        }}>
+          <ListItemIcon>
+            <LogoutIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Sign Out</ListItemText>
+        </MenuItem>
+      </Menu>
+    </Box>
+  );
+};
+
+export default FocusedTopBar;

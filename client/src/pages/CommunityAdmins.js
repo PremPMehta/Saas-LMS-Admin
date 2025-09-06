@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import communityAuthApi from '../utils/communityAuthApi';
 import communityAdminApi from '../utils/communityAdminApi';
 import { useNavigate } from 'react-router-dom';
+import FocusedSidebar from '../components/FocusedSidebar';
+import FocusedTopBar from '../components/FocusedTopBar';
 import {
   Box,
   Container,
@@ -572,143 +574,19 @@ const CommunityAdmins = () => {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', background: darkMode ? '#1a1a1a' : '#f5f5f5' }}>
-      {/* Sidebar */}
-      <Box sx={{
-        width: 80,
-        background: darkMode ? '#2d2d2d' : '#ffffff',
-        borderRight: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        py: 2,
-        position: 'fixed',
-        height: '100vh',
-        zIndex: 1000
-      }}>
-        {/* Logo */}
-        <Box sx={{ mb: 4 }}>
-          <Avatar sx={{ 
-            bgcolor: '#4285f4', 
-            width: 50, 
-            height: 50,
-            fontSize: '1.5rem',
-            fontWeight: 'bold'
-          }}>
-            {communityData?.name?.charAt(0) || 'C'}
-          </Avatar>
-        </Box>
-
-        {/* Navigation Items */}
-        {[
-          { icon: <HomeIcon />, label: 'Home', path: '/community-dashboard' },
-          { icon: <VideoIcon />, label: 'Courses', path: '/courses' },
-          { icon: <PeopleIcon />, label: 'Admins', path: '/community-admins' },
-          // { icon: <DashboardIcon />, label: 'Dashboard', path: '/dashboard' },
-          // { icon: <FlashIcon />, label: 'Analytics', path: '/analytics' },
-          // { icon: <DescriptionIcon />, label: 'Reports', path: '/reports' }
-        ].map((item, index) => (
-          <Box key={index} sx={{ mb: 2, position: 'relative' }}>
-            <IconButton
-              onClick={() => navigate(item.path)}
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '50%',
-                backgroundColor: window.location.pathname === item.path 
-                  ? (darkMode ? '#404040' : '#000000')
-                  : 'transparent',
-                color: window.location.pathname === item.path 
-                  ? '#ffffff' 
-                  : (darkMode ? '#ffffff' : '#000000'),
-                '&:hover': {
-                  backgroundColor: window.location.pathname === item.path 
-                    ? (darkMode ? '#404040' : '#000000')
-                    : (darkMode ? '#404040' : '#f0f0f0'),
-                }
-              }}
-            >
-              {item.icon}
-            </IconButton>
-          </Box>
-        ))}
-
-        {/* Logout Button */}
-        <Box sx={{ mt: 'auto', mb: 2 }}>
-          <IconButton 
-            onClick={() => {
-              communityAuthApi.logout();
-              navigate('/community-login');
-            }}
-            sx={{ color: darkMode ? '#ffffff' : '#000000' }}
-            title="Logout"
-          >
-            <ArrowBackIcon />
-          </IconButton>
-        </Box>
-      </Box>
+      {/* Common Focused Sidebar */}
+      <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{ 
         flex: 1, 
         ml: 10, // Account for fixed sidebar
+        mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
       }}>
-        {/* Top Header */}
-        <Box sx={{
-          height: 80,
-          background: darkMode ? '#2d2d2d' : '#ffffff',
-          borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          px: 4,
-          position: 'sticky',
-          top: 0,
-          zIndex: 999,
-        }}>
-          {/* Logo */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar sx={{ 
-              bgcolor: '#4285f4', 
-              mr: 2,
-              width: 40,
-              height: 40
-            }}>
-              <AdminIcon />
-            </Avatar>
-            <Typography variant="h6" sx={{ 
-              fontWeight: 700,
-              color: darkMode ? '#ffffff' : '#000000'
-            }}>
-              {communityData?.name || 'Community'} Admins
-            </Typography>
-          </Box>
-
-          {/* Right - Theme Toggle */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton
-              onClick={handleRefresh}
-              disabled={refreshing}
-              sx={{ color: darkMode ? '#ffffff' : '#000000' }}
-              title="Refresh admins"
-            >
-              <RefreshIcon sx={{ 
-                animation: refreshing ? 'spin 1s linear infinite' : 'none',
-                '@keyframes spin': {
-                  '0%': { transform: 'rotate(0deg)' },
-                  '100%': { transform: 'rotate(360deg)' }
-                }
-              }} />
-            </IconButton>
-            <IconButton
-              onClick={() => setDarkMode(!darkMode)}
-              sx={{ color: darkMode ? '#ffffff' : '#000000' }}
-            >
-              {darkMode ? <SunIcon /> : <DarkIcon />}
-            </IconButton>
-          </Box>
-        </Box>
+        {/* Common Focused Top Bar */}
+        <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
 
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4 }}>

@@ -129,22 +129,8 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    // CRITICAL: Ensure we NEVER use the old hardcoded community ID
-    const wrongCommunityId = '68b03c92fac3b1af515ccc69';
-    if (communityId.toString() === wrongCommunityId) {
-      console.log('🚨 CRITICAL: Attempted to use wrong community ID, fixing...');
-      const correctCommunity = await Community.findOne({});
-      if (correctCommunity) {
-        communityId = correctCommunity._id;
-        instructor = correctCommunity._id;
-        console.log('✅ Fixed: Using correct community ID:', communityId);
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: 'No valid community found. Please contact administrator.'
-        });
-      }
-    }
+    // Use the provided community ID (removed the "wrong community ID" check)
+    console.log('✅ Using community ID:', communityId);
 
     // Clean and validate chapters data
     const cleanChapters = (chapters || []).map(chapter => ({
@@ -266,7 +252,8 @@ exports.getCourses = async (req, res) => {
     console.log('🔍 Backend: Fetching courses with filter:', filter);
 
     const courses = await Course.find(filter)
-      .sort({ createdAt: -1 }); // Sort by newest first, remove limit to get all courses
+      .sort({ createdAt: -1 })
+      .limit(50); // Add limit to prevent memory issues
 
     console.log('📊 Backend: Found', courses.length, 'courses');
     console.log('📋 Backend: Course IDs:', courses.map(c => c._id));

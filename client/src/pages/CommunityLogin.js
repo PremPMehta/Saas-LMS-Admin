@@ -58,22 +58,22 @@ const CommunityLogin = () => {
     try {
       const response = await communityAuthApi.login(formData.email, formData.password);
       
-      setSuccess('Login successful! Redirecting to your community dashboard...');
+      setSuccess('Login successful! Redirecting to your courses...');
       
-      // Get community name and redirect to community-specific URL
+      // Get community name and redirect directly to courses
       const community = communityAuthApi.getCurrentCommunity();
       if (community && community.name) {
-        const communityUrl = getCommunityUrl(community.name, 'dashboard');
-        console.log('Redirecting to community URL:', communityUrl);
+        const communityUrl = getCommunityUrl(community.name, 'courses');
+        console.log('Redirecting to courses URL:', communityUrl);
         
-        // Redirect to community-specific dashboard after a short delay
+        // Redirect directly to courses after a short delay
         setTimeout(() => {
           navigate(communityUrl);
         }, 1500);
       } else {
-        // Fallback to discovery page if community info is not available
+        // Fallback to courses page if community info is not available
         setTimeout(() => {
-          navigate('/discovery');
+          navigate('/courses');
         }, 1500);
       }
 
