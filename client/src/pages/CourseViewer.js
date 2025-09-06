@@ -1175,7 +1175,17 @@ const CourseViewer = () => {
                                   )}
                                   
                                   {/* Check if it's an uploaded video file */}
-                                  {isUploadedVideo(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl) ? (
+                                  {(() => {
+                                    const checkUrl = selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl;
+                                    const isUploaded = isUploadedVideo(checkUrl);
+                                    console.log('🎬 Video Type Check:', {
+                                      url: checkUrl,
+                                      isUploaded: isUploaded,
+                                      willShowUploaded: isUploaded,
+                                      willShowEmbed: !isUploaded
+                                    });
+                                    return isUploaded;
+                                  })() ? (
                                     <video
                                       key={selectedLecture._id}
                                       controls
@@ -1203,7 +1213,11 @@ const CourseViewer = () => {
                                   ) : (
                                     <iframe
                                       key={selectedLecture._id}
-                                      src={getEmbedUrl(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl)}
+                                      src={(() => {
+                                        const embedUrl = getEmbedUrl(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl);
+                                        console.log('🎥 Iframe Embed URL:', embedUrl);
+                                        return embedUrl;
+                                      })()}
                                       title={selectedLecture.title}
                                       style={{
                                         width: '100%',
