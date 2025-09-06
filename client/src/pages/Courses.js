@@ -1238,7 +1238,7 @@ const Courses = () => {
                                   src={(() => {
                                     const thumbnailUrl = course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
                                       ? course.thumbnail 
-                                      : `http://localhost:5001${course.thumbnail}`;
+                                      : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`;
                                     console.log('🖼️ Thumbnail Debug for', course.title, ':', {
                                       original: course.thumbnail,
                                       constructed: thumbnailUrl,
@@ -1259,7 +1259,7 @@ const Courses = () => {
                                     console.log('❌ Thumbnail URL:', course.thumbnail);
                                     console.log('❌ Constructed URL:', course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
                                       ? course.thumbnail 
-                                      : `http://localhost:5001${course.thumbnail}`);
+                                      : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`);
                                     // DON'T hide the image - let it retry or show broken image
                                     // e.target.style.display = 'none';
                                     // Show fallback when image fails
@@ -1290,7 +1290,7 @@ const Courses = () => {
                                 }}
                               >
                                 <img
-                                  src="http://localhost:5001/uploads/default-course-thumbnail.jpg"
+                                  src={`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`}
                                   alt="Default course thumbnail"
                                   style={{
                                     width: '100%',

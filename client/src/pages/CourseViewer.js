@@ -532,7 +532,7 @@ const CourseViewer = () => {
         if (courseId) {
           // Fetch specific course from API
           console.log('🔄 CourseViewer: Loading specific course:', courseId);
-          const response = await fetch(`http://localhost:5001/api/courses/${courseId}`, {
+          const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/courses/${courseId}`, {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('communityToken') || localStorage.getItem('token')}`
@@ -566,7 +566,7 @@ const CourseViewer = () => {
         } else {
           // Fetch all courses from API
           console.log('🔄 CourseViewer: Loading all courses');
-          const response = await fetch('http://localhost:5001/api/courses', {
+          const response = await fetch('${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/courses', {
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('communityToken') || localStorage.getItem('token')}`
@@ -729,7 +729,7 @@ const CourseViewer = () => {
         try {
           if (courseId) {
             console.log('🔄 CourseViewer: Refreshing specific course:', courseId);
-            const response = await fetch(`http://localhost:5001/api/courses/${courseId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/courses/${courseId}`, {
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('communityToken') || localStorage.getItem('token')}`
@@ -1057,7 +1057,7 @@ const CourseViewer = () => {
                             }}>
                               <iframe
                                 id="pdf-iframe"
-                                src={`http://localhost:5001${selectedLecture.content}#toolbar=1&navpanes=1&scrollbar=1`}
+                                src={`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${selectedLecture.content}#toolbar=1&navpanes=1&scrollbar=1`}
                                 style={{
                                   width: '100%',
                                   height: '100%',
@@ -1090,7 +1090,7 @@ const CourseViewer = () => {
                                 fontSize: '12px',
                                 fontFamily: 'monospace'
                               }}>
-                                PDF: http://localhost:5001{selectedLecture.content}
+                                PDF: ${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}{selectedLecture.content}
                               </Box>
                             </Box>
                           </Box>
