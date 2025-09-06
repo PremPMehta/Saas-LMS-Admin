@@ -500,8 +500,19 @@ const Discovery = () => {
                       return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
                     }
                     
-                    // If it's already a full URL (data: or http), use it directly
-                    if (community.thumbnail.startsWith('data:') || community.thumbnail.startsWith('http')) {
+                    // If it's a data URL, use it directly
+                    if (community.thumbnail.startsWith('data:')) {
+                      return community.thumbnail;
+                    }
+                    
+                    // If it's a localhost URL, replace with production URL
+                    if (community.thumbnail.includes('localhost')) {
+                      const filename = community.thumbnail.split('/').pop();
+                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
+                    }
+                    
+                    // If it's already a full production URL, use it directly
+                    if (community.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
                       return community.thumbnail;
                     }
                     

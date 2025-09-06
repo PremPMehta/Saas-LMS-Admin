@@ -1237,8 +1237,19 @@ const Courses = () => {
                               {course.thumbnail && course.thumbnail.trim() !== '' ? (
                                 <img
                                   src={(() => {
-                                    // If it's already a full URL (data: or http), use it directly
-                                    if (course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http')) {
+                                    // If it's a data URL, use it directly
+                                    if (course.thumbnail.startsWith('data:')) {
+                                      return course.thumbnail;
+                                    }
+                                    
+                                    // If it's a localhost URL, replace with production URL
+                                    if (course.thumbnail.includes('localhost')) {
+                                      const filename = course.thumbnail.split('/').pop();
+                                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
+                                    }
+                                    
+                                    // If it's already a full production URL, use it directly
+                                    if (course.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
                                       return course.thumbnail;
                                     }
                                     
