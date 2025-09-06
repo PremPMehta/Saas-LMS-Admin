@@ -1139,7 +1139,8 @@ const CourseViewer = () => {
                                   isUploaded: isUploadedVideo(videoUrl),
                                   embedUrl: getEmbedUrl(videoUrl)
                                 });
-                                return hasContent;
+                                // FORCE: Always show content if we have any URL
+                                return hasContent || selectedLecture.videoUrl || selectedLecture.content;
                               })() ? (
                                 <>
                                   {/* Loading State */}
@@ -1216,7 +1217,8 @@ const CourseViewer = () => {
                                       src={(() => {
                                         const embedUrl = getEmbedUrl(selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl);
                                         console.log('🎥 Iframe Embed URL:', embedUrl);
-                                        return embedUrl;
+                                        // FORCE: If embed URL is empty, try the original URL
+                                        return embedUrl || selectedLecture.videoUrl || selectedLecture.content;
                                       })()}
                                       title={selectedLecture.title}
                                       style={{

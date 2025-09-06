@@ -1260,7 +1260,8 @@ const Courses = () => {
                                     console.log('❌ Constructed URL:', course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
                                       ? course.thumbnail 
                                       : `http://localhost:5001${course.thumbnail}`);
-                                    e.target.style.display = 'none';
+                                    // DON'T hide the image - let it retry or show broken image
+                                    // e.target.style.display = 'none';
                                     // Show fallback when image fails
                                     const fallback = e.target.parentElement.querySelector('.thumbnail-fallback');
                                     if (fallback) fallback.style.display = 'flex';
