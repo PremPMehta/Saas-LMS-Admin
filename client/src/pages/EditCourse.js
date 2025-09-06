@@ -571,7 +571,24 @@ const EditCourse = () => {
                     }}
                   >
                     <img
-                      src={courseData.thumbnail}
+                      src={(() => {
+                        if (!courseData.thumbnail || courseData.thumbnail.trim() === '') {
+                          return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`;
+                        }
+                        
+                        // If it's already a full URL (data: or http), use it directly
+                        if (courseData.thumbnail.startsWith('data:') || courseData.thumbnail.startsWith('http')) {
+                          return courseData.thumbnail;
+                        }
+                        
+                        // If it starts with /uploads, construct the full URL
+                        if (courseData.thumbnail.startsWith('/uploads/')) {
+                          return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${courseData.thumbnail}`;
+                        }
+                        
+                        // If it's just a filename, add /uploads/ prefix
+                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${courseData.thumbnail}`;
+                      })()}
                       alt="Course thumbnail"
                       style={{
                         width: '100%',
@@ -579,6 +596,7 @@ const EditCourse = () => {
                         objectFit: 'cover'
                       }}
                       onError={(e) => {
+                        console.error('🖼️ EditCourse: Thumbnail failed to load:', e.target.src);
                         e.target.style.display = 'none';
                         e.target.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">No thumbnail</div>';
                       }}

@@ -1237,9 +1237,19 @@ const Courses = () => {
                               {course.thumbnail && course.thumbnail.trim() !== '' ? (
                                 <img
                                   src={(() => {
-                                    const thumbnailUrl = course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
-                                      ? course.thumbnail 
-                                      : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`;
+                                    // If it's already a full URL (data: or http), use it directly
+                                    if (course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http')) {
+                                      return course.thumbnail;
+                                    }
+                                    
+                                    // If it starts with /uploads, construct the full URL
+                                    if (course.thumbnail.startsWith('/uploads/')) {
+                                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`;
+                                    }
+                                    
+                                    // If it's just a filename, add /uploads/ prefix
+                                    const thumbnailUrl = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${course.thumbnail}`;
+                                    
                                     console.log('🖼️ Thumbnail Debug for', course.title, ':', {
                                       original: course.thumbnail,
                                       constructed: thumbnailUrl,
@@ -1256,16 +1266,22 @@ const Courses = () => {
                                     display: 'block'
                                   }}
                                   onError={(e) => {
-                                    console.log('❌ Thumbnail failed to load for course:', course.title);
-                                    console.log('❌ Thumbnail URL:', course.thumbnail);
-                                    console.log('❌ Constructed URL:', course.thumbnail.startsWith('data:') || course.thumbnail.startsWith('http') 
-                                      ? course.thumbnail 
-                                      : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`);
-                                    // DON'T hide the image - let it retry or show broken image
-                                    // e.target.style.display = 'none';
-                                    // Show fallback when image fails
-                                    const fallback = e.target.parentElement.querySelector('.thumbnail-fallback');
-                                    if (fallback) fallback.style.display = 'flex';
+                                    console.error('🖼️ Courses: Thumbnail failed to load for', course.title, ':', e.target.src);
+                                    e.target.style.display = 'none';
+                                    // Show fallback text
+                                    const fallbackDiv = document.createElement('div');
+                                    fallbackDiv.style.cssText = `
+                                      display: flex;
+                                      align-items: center;
+                                      justify-content: center;
+                                      height: 100%;
+                                      color: white;
+                                      font-weight: bold;
+                                      font-size: 18px;
+                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                                    `;
+                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
+                                    e.target.parentNode.appendChild(fallbackDiv);
                                   }}
                                   onLoad={(e) => {
                                     console.log('✅ Thumbnail loaded successfully for course:', course.title);
@@ -1292,16 +1308,29 @@ const Courses = () => {
                               >
                                 <img
                                   src={`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`}
+                                  onError={(e) => {
+                                    console.error('🖼️ Courses: Default thumbnail failed to load');
+                                    e.target.style.display = 'none';
+                                    // Show fallback text
+                                    const fallbackDiv = document.createElement('div');
+                                    fallbackDiv.style.cssText = `
+                                      display: flex;
+                                      align-items: center;
+                                      justify-content: center;
+                                      height: 100%;
+                                      color: white;
+                                      font-weight: bold;
+                                      font-size: 18px;
+                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                                    `;
+                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
+                                    e.target.parentNode.appendChild(fallbackDiv);
+                                  }}
                                   alt="Default course thumbnail"
                                   style={{
                                     width: '100%',
                                     height: '100%',
                                     objectFit: 'cover'
-                                  }}
-                                  onError={(e) => {
-                                    // If default thumbnail also fails, show the letter fallback
-                                    e.target.style.display = 'none';
-                                    e.target.parentElement.innerHTML = `<div style="color: white; font-weight: bold; font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${course.title.charAt(0).toUpperCase()}</div>`;
                                   }}
                                 />
                               </Box>

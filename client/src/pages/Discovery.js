@@ -495,16 +495,32 @@ const Discovery = () => {
                 <CardMedia
                   component="img"
                   height="160"
-                  image={community.thumbnail && community.thumbnail.trim() !== '' 
-                    ? (community.thumbnail.startsWith('data:') || community.thumbnail.startsWith('http') 
-                        ? community.thumbnail 
-                        : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`)
-                    : `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`
-                  }
+                  image={(() => {
+                    if (!community.thumbnail || community.thumbnail.trim() === '') {
+                      return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                    }
+                    
+                    // If it's already a full URL (data: or http), use it directly
+                    if (community.thumbnail.startsWith('data:') || community.thumbnail.startsWith('http')) {
+                      return community.thumbnail;
+                    }
+                    
+                    // If it starts with /uploads, construct the full URL
+                    if (community.thumbnail.startsWith('/uploads/')) {
+                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
+                    }
+                    
+                    // If it's just a filename, add /uploads/ prefix
+                    return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
+                  })()}
                   alt={community.title}
                   sx={{
                     objectFit: 'cover',
                     objectPosition: 'center'
+                  }}
+                  onError={(e) => {
+                    console.error('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
+                    e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
                   }}
                 />
                 
