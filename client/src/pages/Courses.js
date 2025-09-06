@@ -1212,7 +1212,7 @@ const Courses = () => {
                             borderRadius: 3,
                             transition: 'all 0.3s ease',
                             overflow: 'hidden',
-                            height: 500, // Increased height to accommodate buttons
+                            height: 520, // Fixed height for consistent alignment
                             width: '100%',
                             display: 'flex',
                             flexDirection: 'column',
@@ -1393,110 +1393,135 @@ const Courses = () => {
                                 {course.title}
                               </Typography>
 
-                              {/* Course Tags */}
+                              {/* Course Tags - Fixed Layout */}
                               <Box sx={{ 
-                                display: 'flex', 
-                                flexWrap: 'wrap', 
-                                gap: 1, 
                                 mb: 2,
-                                minHeight: '32px', // Ensure consistent height for tags
-                                alignItems: 'flex-start'
+                                minHeight: '64px', // Fixed height for 2 rows of tags
+                                maxHeight: '64px',
+                                overflow: 'hidden'
                               }}>
-                                {/* Target Audience Tag */}
-                                {course.targetAudience && (
-                                  <Chip
-                                    label={course.targetAudience}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      fontSize: '0.75rem',
-                                        height: 28,
+                                {/* First Row - Primary Tags */}
+                                <Box sx={{ 
+                                  display: 'flex', 
+                                  gap: 0.5, 
+                                  mb: 0.5,
+                                  overflow: 'hidden'
+                                }}>
+                                  {/* Target Audience Tag */}
+                                  {course.targetAudience && (
+                                    <Chip
+                                      label={course.targetAudience}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: '0.7rem',
+                                        height: 24,
                                         fontWeight: 500,
                                         borderColor: '#6366f1',
                                         color: '#6366f1',
                                         backgroundColor: '#6366f115',
                                         borderRadius: 2,
-                                      '& .MuiChip-label': {
-                                          px: 1.5
+                                        maxWidth: '120px',
+                                        '& .MuiChip-label': {
+                                          px: 1,
+                                          overflow: 'hidden',
+                                          textOverflow: 'ellipsis',
+                                          whiteSpace: 'nowrap'
                                         },
                                         '&:hover': {
                                           backgroundColor: '#6366f125'
-                                      }
-                                    }}
-                                  />
-                                )}
-                                
-                                {/* Category Tag */}
-                                {course.category && (
-                                  <Chip
-                                    label={course.category}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      fontSize: '0.75rem',
-                                        height: 28,
-                                        fontWeight: 500,
-                                      borderColor: getCategoryColor(course.category),
-                                      color: getCategoryColor(course.category),
-                                      backgroundColor: `${getCategoryColor(course.category)}15`,
-                                        borderRadius: 2,
-                                      '& .MuiChip-label': {
-                                          px: 1.5
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: `${getCategoryColor(course.category)}25`
-                                      }
-                                    }}
-                                  />
-                                )}
-                                
-                                {/* Course Type Tag */}
-                                {course.contentType && (
-                                  <Chip
-                                    label={course.contentType === 'video' ? 'Video' : 'Text'}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      fontSize: '0.75rem',
-                                        height: 28,
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                  
+                                  {/* Course Type Tag */}
+                                  {course.contentType && (
+                                    <Chip
+                                      label={course.contentType === 'video' ? 'Video' : 'Text'}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: '0.7rem',
+                                        height: 24,
                                         fontWeight: 500,
                                         borderColor: course.contentType === 'video' ? '#f59e0b' : '#10b981',
                                         color: course.contentType === 'video' ? '#f59e0b' : '#10b981',
                                         backgroundColor: course.contentType === 'video' ? '#f59e0b15' : '#10b98115',
                                         borderRadius: 2,
-                                      '& .MuiChip-label': {
-                                          px: 1.5
+                                        '& .MuiChip-label': {
+                                          px: 1
                                         },
                                         '&:hover': {
                                           backgroundColor: course.contentType === 'video' ? '#f59e0b25' : '#10b98125'
-                                      }
-                                    }}
-                                  />
-                                )}
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                </Box>
                                 
-                                {/* Sub Type Tag */}
-                                {course.subType && (
-                                  <Chip
-                                    label={course.subType}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      fontSize: '0.75rem',
-                                        height: 28,
+                                {/* Second Row - Category Tag */}
+                                <Box sx={{ 
+                                  display: 'flex', 
+                                  gap: 0.5,
+                                  overflow: 'hidden'
+                                }}>
+                                  {/* Category Tag */}
+                                  {course.category && (
+                                    <Chip
+                                      label={course.category}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: '0.7rem',
+                                        height: 24,
+                                        fontWeight: 500,
+                                        borderColor: getCategoryColor(course.category),
+                                        color: getCategoryColor(course.category),
+                                        backgroundColor: `${getCategoryColor(course.category)}15`,
+                                        borderRadius: 2,
+                                        maxWidth: '200px',
+                                        '& .MuiChip-label': {
+                                          px: 1,
+                                          overflow: 'hidden',
+                                          textOverflow: 'ellipsis',
+                                          whiteSpace: 'nowrap'
+                                        },
+                                        '&:hover': {
+                                          backgroundColor: `${getCategoryColor(course.category)}25`
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                  
+                                  {/* Sub Type Tag */}
+                                  {course.subType && (
+                                    <Chip
+                                      label={course.subType}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: '0.7rem',
+                                        height: 24,
                                         fontWeight: 500,
                                         borderColor: '#8b5cf6',
                                         color: '#8b5cf6',
                                         backgroundColor: '#8b5cf615',
                                         borderRadius: 2,
-                                      '& .MuiChip-label': {
-                                          px: 1.5
+                                        maxWidth: '120px',
+                                        '& .MuiChip-label': {
+                                          px: 1,
+                                          overflow: 'hidden',
+                                          textOverflow: 'ellipsis',
+                                          whiteSpace: 'nowrap'
                                         },
                                         '&:hover': {
                                           backgroundColor: '#8b5cf625'
-                                      }
-                                    }}
-                                  />
-                                )}
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                </Box>
                               </Box>
 
                               {/* Course Description */}
