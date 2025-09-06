@@ -273,9 +273,6 @@ const CreateCourse = () => {
   };
 
   const handleSaveVideo = async (videoData) => {
-    console.log('handleSaveVideo called with:', videoData);
-    console.log('selectedChapter:', selectedChapter);
-    console.log('editingVideo:', editingVideo);
 
     let processedVideoData = { ...videoData };
 
@@ -296,7 +293,6 @@ const CreateCourse = () => {
         }
         
         const result = await response.json();
-        console.log('Video uploaded successfully:', result);
         
         // Update video data with the server URL
         processedVideoData = {
@@ -329,11 +325,9 @@ const CreateCourse = () => {
         id: Date.now().toString(),
         ...processedVideoData
       };
-      console.log('Creating new video:', newVideo);
       setChapters(prev => {
         const updatedChapters = prev.map(chapter => {
           if (chapter.id === selectedChapter.id) {
-            console.log('Adding video to chapter:', chapter.title);
             return {
               ...chapter,
               videos: [...chapter.videos, newVideo]
@@ -1470,7 +1464,6 @@ const ChapterDialog = ({ open, onClose, onSave, chapter }) => {
 
 // Video Dialog Component
 const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => {
-  console.log('VideoDialog props:', { open, video, contentType, chapter });
   const [formData, setFormData] = useState({
     title: '',
     description: '',

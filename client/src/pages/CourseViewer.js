@@ -969,12 +969,6 @@ const CourseViewer = () => {
                 <CardContent sx={{ flexGrow: 1, p: 0, display: 'flex', flexDirection: 'column' }}>
                   {selectedLecture ? (
                     <>
-                      {/* Debug Info */}
-                      <Box sx={{ p: 2, backgroundColor: '#f5f5f5', borderBottom: 1, borderColor: 'divider' }}>
-                        <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '12px' }}>
-                          Debug: Video Type: {selectedLecture.type || 'undefined'}, VideoType: {selectedLecture.videoType || 'undefined'}, URL: {selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl || 'none'}
-                        </Typography>
-                      </Box>
                       
                       {/* Video/Content Player */}
                       <Box sx={{
@@ -1130,15 +1124,6 @@ const CourseViewer = () => {
                               {(() => {
                                 const videoUrl = selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl;
                                 const hasContent = videoUrl || selectedLecture.content;
-                                console.log('🎥 Video Debug:', {
-                                  type: selectedLecture.type,
-                                  videoType: selectedLecture.videoType,
-                                  videoUrl: videoUrl,
-                                  content: selectedLecture.content,
-                                  hasContent: hasContent,
-                                  isUploaded: isUploadedVideo(videoUrl),
-                                  embedUrl: getEmbedUrl(videoUrl)
-                                });
                                 // FORCE: Always show content if we have any URL
                                 return hasContent || selectedLecture.videoUrl || selectedLecture.content;
                               })() ? (
@@ -1179,12 +1164,6 @@ const CourseViewer = () => {
                                   {(() => {
                                     const checkUrl = selectedLecture.type === 'PDF' ? selectedLecture.content : selectedLecture.videoUrl;
                                     const isUploaded = isUploadedVideo(checkUrl);
-                                    console.log('🎬 Video Type Check:', {
-                                      url: checkUrl,
-                                      isUploaded: isUploaded,
-                                      willShowUploaded: isUploaded,
-                                      willShowEmbed: !isUploaded
-                                    });
                                     return isUploaded;
                                   })() ? (
                                     <video
@@ -1258,9 +1237,6 @@ const CourseViewer = () => {
                                   </Typography>
                                   <Typography variant="body2" sx={{ opacity: 0.8, maxWidth: '300px' }}>
                                     This lecture doesn't have a video attached. Please select a different lecture or contact support.
-                                  </Typography>
-                                  <Typography variant="caption" sx={{ opacity: 0.6, maxWidth: '300px', mt: 1, fontFamily: 'monospace' }}>
-                                    Debug: Type: {selectedLecture.type}, VideoType: {selectedLecture.videoType}, URL: {selectedLecture.videoUrl || 'none'}
                                   </Typography>
                                 </Box>
                               )}

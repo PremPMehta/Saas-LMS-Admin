@@ -56,8 +56,8 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
       right: 0, // Extend to right edge
       zIndex: 1000,
     }}>
-      {/* Left side - Dark/Light Mode Toggle */}
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      {/* Left side - Dark/Light Mode Toggle - HIDDEN */}
+      {/* <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
           <IconButton
             onClick={toggleDarkMode}
@@ -74,7 +74,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             {darkMode ? <SunIcon /> : <DarkIcon />}
           </IconButton>
         </Tooltip>
-      </Box>
+      </Box> */}
 
       {/* Right side - Community Profile */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
