@@ -482,218 +482,323 @@ const EditCourse = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <IconButton onClick={() => {
-          let backUrl;
-          if (communityUrls) {
-            backUrl = communityUrls.courses;
-          } else if (communityName) {
-            backUrl = `/${communityName}/courses`;
-          } else {
-            backUrl = '/courses';
-          }
-          console.log('EditCourse back button URL:', backUrl);
-          navigate(backUrl);
-        }} sx={{ mr: 2 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        mb: 4,
+        p: 3,
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: 3,
+        color: 'white'
+      }}>
+        <IconButton 
+          onClick={() => {
+            let backUrl;
+            if (communityUrls) {
+              backUrl = communityUrls.courses;
+            } else if (communityName) {
+              backUrl = `/${communityName}/courses`;
+            } else {
+              backUrl = '/courses';
+            }
+            console.log('EditCourse back button URL:', backUrl);
+            navigate(backUrl);
+          }} 
+          sx={{ 
+            mr: 2,
+            color: 'white',
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            }
+          }}
+        >
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          Edit Course
-        </Typography>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+            Edit Course
+          </Typography>
+          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+            Update your course content and structure
+          </Typography>
+        </Box>
       </Box>
 
       {/* Stepper */}
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
+      <Card sx={{ mb: 4, p: 3 }}>
+        <Stepper activeStep={activeStep} sx={{ mb: 2 }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel 
+                sx={{
+                  '& .MuiStepLabel-label': {
+                    fontWeight: 600,
+                    fontSize: '0.95rem'
+                  }
+                }}
+              >
+                {label}
+              </StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+          Step {activeStep + 1} of {steps.length}: {steps[activeStep]}
+        </Typography>
+      </Card>
 
       {/* Step Content */}
       {activeStep === 0 && (
-        <Grid container spacing={3}>
-          <Grid item size={12}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              Edit Course Information
+        <Card sx={{ p: 4 }}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#2c3e50' }}>
+              📝 Edit Course Information
             </Typography>
-          </Grid>
+            <Typography variant="body2" color="text.secondary">
+              Update your course details and thumbnail
+            </Typography>
+          </Box>
           
-          <Grid item size={12}>
-            <TextField
-              fullWidth
-              label="Course Title"
-              placeholder="Enter course title"
-              value={courseData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              error={!!errors.title}
-              helperText={errors.title}
-              sx={{ mb: 3 }}
-            />
-          </Grid>
-
-          <Grid item size={12}>
-            <TextField
-              fullWidth
-              label="Course Description"
-              placeholder="Describe what students will learn in this course"
-              value={courseData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              error={!!errors.description}
-              helperText={errors.description}
-              multiline
-              rows={4}
-              sx={{ mb: 3 }}
-            />
-          </Grid>
-
-          {/* Course Thumbnail Upload */}
-          <Grid item size={12}>
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-              Course Thumbnail
-            </Typography>
-            <Box sx={{ mb: 3 }}>
-              {/* Current Thumbnail Display */}
-              {courseData.thumbnail && (
-                <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                    Current Thumbnail:
-                  </Typography>
-                  <Box
-                    sx={{
-                      width: 200,
-                      height: 120,
-                      border: '2px dashed #e0e0e0',
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      position: 'relative'
-                    }}
-                  >
-                    <img
-                      src={(() => {
-                        if (!courseData.thumbnail || courseData.thumbnail.trim() === '') {
-                          return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`;
-                        }
-                        
-                        // If it's already a full URL (data: or http), use it directly
-                        if (courseData.thumbnail.startsWith('data:') || courseData.thumbnail.startsWith('http')) {
-                          return courseData.thumbnail;
-                        }
-                        
-                        // If it starts with /uploads, construct the full URL
-                        if (courseData.thumbnail.startsWith('/uploads/')) {
-                          return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${courseData.thumbnail}`;
-                        }
-                        
-                        // If it's just a filename, add /uploads/ prefix
-                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${courseData.thumbnail}`;
-                      })()}
-                      alt="Course thumbnail"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
-                      onError={(e) => {
-                        console.error('🖼️ EditCourse: Thumbnail failed to load:', e.target.src);
-                        e.target.style.display = 'none';
-                        e.target.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">No thumbnail</div>';
-                      }}
-                    />
-                  </Box>
-                </Box>
-              )}
-
-              {/* Thumbnail Upload */}
-              <Box>
-                <input
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  id="course-thumbnail-upload"
-                  type="file"
-                  onChange={handleCourseThumbnailUpload}
-                />
-                <label htmlFor="course-thumbnail-upload">
-                  <Button
-                    variant="outlined"
-                    component="span"
-                    startIcon={<UploadIcon />}
-                    sx={{
+          <Grid container spacing={3}>
+            <Grid item size={12}>
+              <TextField
+                fullWidth
+                label="Course Title"
+                placeholder="Enter course title"
+                value={courseData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                error={!!errors.title}
+                helperText={errors.title}
+                sx={{ 
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    '&:hover fieldset': {
                       borderColor: '#4285f4',
-                      color: '#4285f4',
-                      '&:hover': {
-                        borderColor: '#3367d6',
-                        backgroundColor: 'rgba(66, 133, 244, 0.04)'
-                      }
-                    }}
-                  >
-                    {courseData.thumbnail ? 'Change Thumbnail' : 'Upload Thumbnail'}
-                  </Button>
-                </label>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-                  Upload a thumbnail image (JPEG, PNG, GIF - Max 5MB)
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#4285f4',
+                    },
+                  },
+                }}
+              />
+            </Grid>
 
-          {/* Show read-only information for restricted fields */}
-          <Grid item size={12}>
-            <Typography variant="h6" sx={{ mb: 2, color: 'text.secondary' }}>
-              Course Settings (Read Only)
-            </Typography>
-            <Grid container spacing={2}>
-              <Grid item size={{xs:12 , md:4}}>
-                <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f8f9fa' }}>
-                  <Typography variant="subtitle2" color="text.secondary">Category</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>{courseData.category}</Typography>
-                </Box>
-              </Grid>
-              <Grid item size={{xs:12 , md:4}}>
-                <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f8f9fa' }}>
-                  <Typography variant="subtitle2" color="text.secondary">Target Audience</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>{courseData.targetAudience}</Typography>
-                </Box>
-              </Grid>
-              <Grid item size={{xs:12 , md:4}}>
-                <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f8f9fa' }}>
-                  <Typography variant="subtitle2" color="text.secondary">Content Type</Typography>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    {contentTypes.find(type => type.value === courseData.contentType)?.label || courseData.contentType}
+            <Grid item size={12}>
+              <TextField
+                fullWidth
+                label="Course Description"
+                placeholder="Describe what students will learn in this course"
+                value={courseData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                error={!!errors.description}
+                helperText={errors.description}
+                multiline
+                rows={4}
+                sx={{ 
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    '&:hover fieldset': {
+                      borderColor: '#4285f4',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#4285f4',
+                    },
+                  },
+                }}
+              />
+            </Grid>
+
+            {/* Course Thumbnail Upload */}
+            <Grid item size={12}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
+                🖼️ Course Thumbnail
+              </Typography>
+              <Card sx={{ p: 3, border: '2px dashed #e0e0e0', backgroundColor: '#fafafa' }}>
+                {/* Current Thumbnail Display */}
+                {courseData.thumbnail && (
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
+                      Current Thumbnail:
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: 250,
+                        height: 150,
+                        border: '2px solid #e0e0e0',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        position: 'relative',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      <img
+                        src={(() => {
+                          if (!courseData.thumbnail || courseData.thumbnail.trim() === '') {
+                            return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`;
+                          }
+                          
+                          // If it's already a full URL (data: or http), use it directly
+                          if (courseData.thumbnail.startsWith('data:') || courseData.thumbnail.startsWith('http')) {
+                            return courseData.thumbnail;
+                          }
+                          
+                          // If it starts with /uploads, construct the full URL
+                          if (courseData.thumbnail.startsWith('/uploads/')) {
+                            return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${courseData.thumbnail}`;
+                          }
+                          
+                          // If it's just a filename, add /uploads/ prefix
+                          return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${courseData.thumbnail}`;
+                        })()}
+                        alt="Course thumbnail"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                        onError={(e) => {
+                          console.error('🖼️ EditCourse: Thumbnail failed to load:', e.target.src);
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; background: #f5f5f5;">No thumbnail</div>';
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                )}
+
+                {/* Thumbnail Upload */}
+                <Box sx={{ textAlign: 'center' }}>
+                  <input
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="course-thumbnail-upload"
+                    type="file"
+                    onChange={handleCourseThumbnailUpload}
+                  />
+                  <label htmlFor="course-thumbnail-upload">
+                    <Button
+                      variant="contained"
+                      component="span"
+                      startIcon={<UploadIcon />}
+                      sx={{
+                        background: '#4285f4',
+                        '&:hover': {
+                          background: '#3367d6',
+                        },
+                        px: 4,
+                        py: 1.5,
+                        fontSize: '1rem',
+                        fontWeight: 600
+                      }}
+                    >
+                      {courseData.thumbnail ? 'Change Thumbnail' : 'Upload Thumbnail'}
+                    </Button>
+                  </label>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
+                    📎 Upload a thumbnail image (JPEG, PNG, GIF - Max 5MB)
                   </Typography>
                 </Box>
-              </Grid>
+              </Card>
             </Grid>
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-              These settings cannot be changed after course creation
-            </Typography>
+
+            {/* Show read-only information for restricted fields */}
+            <Grid item size={12}>
+              <Typography variant="h6" sx={{ mb: 3, color: '#2c3e50', fontWeight: 600 }}>
+                🔒 Course Settings (Read Only)
+              </Typography>
+              <Grid container spacing={3}>
+                <Grid item size={{xs:12 , md:4}}>
+                  <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <DescriptionIcon sx={{ color: '#4285f4', mr: 1 }} />
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                        Category
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      label={courseData.category} 
+                      color="primary" 
+                      variant="outlined"
+                      sx={{ fontWeight: 500 }}
+                    />
+                  </Card>
+                </Grid>
+                <Grid item size={{xs:12 , md:4}}>
+                  <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <VideoIcon sx={{ color: '#4285f4', mr: 1 }} />
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                        Target Audience
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      label={courseData.targetAudience} 
+                      color="secondary" 
+                      variant="outlined"
+                      sx={{ fontWeight: 500 }}
+                    />
+                  </Card>
+                </Grid>
+                <Grid item size={{xs:12 , md:4}}>
+                  <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      {courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
+                      <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, ml: 1 }}>
+                        Content Type
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
+                      label={contentTypes.find(type => type.value === courseData.contentType)?.label || courseData.contentType}
+                      color="success"
+                      variant="outlined"
+                      sx={{ fontWeight: 500 }}
+                    />
+                  </Card>
+                </Grid>
+              </Grid>
+              <Alert severity="info" sx={{ mt: 3 }}>
+                <Typography variant="body2">
+                  ℹ️ These settings cannot be changed after course creation to maintain consistency.
+                </Typography>
+              </Alert>
+            </Grid>
           </Grid>
-        </Grid>
+        </Card>
       )}
 
       {activeStep === 1 && (
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              Course Structure
+        <Card sx={{ p: 4 }}>
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Typography variant="h5" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                📚 Course Structure
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => {
+                  console.log('🆕 Adding new chapter - resetting state');
+                  setEditingChapter(null);
+                  setSelectedChapter({ title: '', description: '' });
+                  setOpenChapterDialog(true);
+                }}
+                sx={{
+                  background: '#4285f4',
+                  '&:hover': { background: '#3367d6' },
+                  px: 3,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600
+                }}
+              >
+                Add Chapter
+              </Button>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              Organize your course content into chapters and lessons
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => {
-                console.log('🆕 Adding new chapter - resetting state');
-                setEditingChapter(null);
-                setSelectedChapter({ title: '', description: '' });
-                setOpenChapterDialog(true);
-              }}
-              sx={{
-                background: '#4285f4',
-                '&:hover': { background: '#3367d6' }
-              }}
-            >
-              Add Chapter
-            </Button>
           </Box>
 
           {errors.chapters && (
@@ -703,15 +808,24 @@ const EditCourse = () => {
           )}
 
           {chapters.length === 0 ? (
-            <Card sx={{ p: 4, textAlign: 'center', background: '#f8f9fa' }}>
-              <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-                No chapters added yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Start by adding your first chapter to organize your course content
-              </Typography>
+            <Card sx={{ 
+              p: 6, 
+              textAlign: 'center', 
+              background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+              border: '2px dashed #dee2e6',
+              borderRadius: 3
+            }}>
+              <Box sx={{ mb: 3 }}>
+                <VideoIcon sx={{ fontSize: 64, color: '#6c757d', mb: 2 }} />
+                <Typography variant="h5" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
+                  No chapters added yet
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 400, mx: 'auto' }}>
+                  Start by adding your first chapter to organize your course content and create a structured learning experience
+                </Typography>
+              </Box>
               <Button
-                variant="outlined"
+                variant="contained"
                 startIcon={<AddIcon />}
                 onClick={() => {
                   console.log('🆕 Adding first chapter - resetting state');
@@ -719,164 +833,286 @@ const EditCourse = () => {
                   setSelectedChapter({ title: '', description: '' });
                   setOpenChapterDialog(true);
                 }}
+                sx={{
+                  background: '#4285f4',
+                  '&:hover': { background: '#3367d6' },
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600
+                }}
               >
                 Add First Chapter
               </Button>
             </Card>
           ) : (
-            <List sx={{ p: 0 }}>
-              <Grid container spacing={2}>
-                {chapters.map((chapter, index) => (
-                  <Grid item size={{ xs: 12, md: 6 }}>
-                    <Card key={chapter._id} sx={{ mb: 2 }}>
-                      <CardContent sx={{ p: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <DragIcon sx={{ color: 'text.secondary', cursor: 'grab' }} />
-                            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                              Chapter {index + 1}: {chapter.title}
+            <Grid container spacing={3}>
+              {chapters.map((chapter, index) => (
+                <Grid item size={{ xs: 12, md: 6 }} key={chapter._id}>
+                  <Card sx={{ 
+                    mb: 3, 
+                    border: '1px solid #e0e0e0',
+                    borderRadius: 3,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                      transform: 'translateY(-2px)'
+                    }
+                  }}>
+                    <CardContent sx={{ p: 4 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Box sx={{ 
+                            width: 40, 
+                            height: 40, 
+                            borderRadius: '50%', 
+                            background: 'linear-gradient(135deg, #4285f4 0%, #3367d6 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontWeight: 600,
+                            fontSize: '1.1rem'
+                          }}>
+                            {index + 1}
+                          </Box>
+                          <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50', mb: 0.5 }}>
+                              {chapter.title}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Chapter {index + 1}
                             </Typography>
                           </Box>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
-                            <IconButton onClick={() => handleEditChapter(chapter)}>
-                              <EditIcon />
-                            </IconButton>
-                            <IconButton onClick={() => handleDeleteChapter(chapter._id)}>
-                              <DeleteIcon />
-                            </IconButton>
-                          </Box>
                         </Box>
-                        
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                          {chapter.description}
-                        </Typography>
-                        
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Chip
-                            icon={<VideoIcon />}
-                            label={`${chapter.videos?.length || 0} ${courseData.contentType === 'video' ? 'videos' : 'lessons'}`}
-                            size="small"
-                            variant="outlined"
-                          />
-                          <Button
-                            size="small"
-                            startIcon={<AddIcon />}
-                            onClick={() => {
-                              console.log('🆕 Adding new video to chapter:', chapter._id);
-                              setEditingVideo(null);
-                              setSelectedChapter({ title: '', description: '', videoUrl: '', chapterId: chapter._id });
-                              setOpenVideoDialog(true);
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <IconButton 
+                            onClick={() => handleEditChapter(chapter)}
+                            sx={{ 
+                              color: '#4285f4',
+                              '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                             }}
-                            disabled={!courseData.contentType}
                           >
-                            Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
-                          </Button>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton 
+                            onClick={() => handleDeleteChapter(chapter._id)}
+                            sx={{ 
+                              color: '#dc3545',
+                              '&:hover': { backgroundColor: 'rgba(220, 53, 69, 0.1)' }
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
                         </Box>
+                      </Box>
+                      
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+                        {chapter.description}
+                      </Typography>
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                        <Chip
+                          icon={<VideoIcon />}
+                          label={`${chapter.videos?.length || 0} ${courseData.contentType === 'video' ? 'videos' : 'lessons'}`}
+                          size="small"
+                          variant="outlined"
+                          sx={{ 
+                            borderColor: '#4285f4',
+                            color: '#4285f4',
+                            '& .MuiChip-icon': { color: '#4285f4' }
+                          }}
+                        />
+                        <Button
+                          size="small"
+                          startIcon={<AddIcon />}
+                          onClick={() => {
+                            console.log('🆕 Adding new video to chapter:', chapter._id);
+                            setEditingVideo(null);
+                            setSelectedChapter({ title: '', description: '', videoUrl: '', chapterId: chapter._id });
+                            setOpenVideoDialog(true);
+                          }}
+                          disabled={!courseData.contentType}
+                          sx={{
+                            background: '#4285f4',
+                            color: 'white',
+                            '&:hover': { background: '#3367d6' },
+                            '&:disabled': { 
+                              background: '#e0e0e0',
+                              color: '#9e9e9e'
+                            }
+                          }}
+                        >
+                          Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
+                        </Button>
+                      </Box>
 
-                        {chapter.videos && chapter.videos.length > 0 && (
-                          <List dense sx={{ mt: 2 }}>
+                      {chapter.videos && chapter.videos.length > 0 && (
+                        <Box sx={{ mt: 3 }}>
+                          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
+                            📹 Lessons ({chapter.videos.length})
+                          </Typography>
+                          <List dense sx={{ p: 0 }}>
                             {chapter.videos.map((video, videoIndex) => (
-                              <ListItem key={video._id} sx={{ pl: 2, pr: 0 }}>
+                              <ListItem 
+                                key={video._id} 
+                                sx={{ 
+                                  pl: 0, 
+                                  pr: 0, 
+                                  mb: 1,
+                                  p: 2,
+                                  border: '1px solid #f0f0f0',
+                                  borderRadius: 2,
+                                  backgroundColor: '#fafafa',
+                                  '&:hover': {
+                                    backgroundColor: '#f5f5f5'
+                                  }
+                                }}
+                              >
                                 <ListItemText
                                   primary={
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                      {video.videoType === 'youtube' ? <VideoIcon /> : <TextIcon />}
-                                      <Typography variant="body2">
-                                        {videoIndex + 1}. {video.title}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                      <Box sx={{ 
+                                        width: 24, 
+                                        height: 24, 
+                                        borderRadius: '50%', 
+                                        backgroundColor: '#4285f4',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'white',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600
+                                      }}>
+                                        {videoIndex + 1}
+                                      </Box>
+                                      {video.videoType === 'youtube' ? <VideoIcon sx={{ color: '#ff0000', fontSize: 20 }} /> : <TextIcon sx={{ color: '#4285f4', fontSize: 20 }} />}
+                                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                        {video.title}
                                       </Typography>
                                     </Box>
                                   }
-                                  secondary={video.description}
+                                  secondary={
+                                    <Typography variant="caption" color="text.secondary" sx={{ ml: 3 }}>
+                                      {video.description}
+                                    </Typography>
+                                  }
                                 />
                                 <ListItemSecondaryAction>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleEditVideo(video, chapter._id)}
-                                  >
-                                    <EditIcon />
-                                  </IconButton>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() => handleDeleteVideo(video._id, chapter._id)}
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
+                                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() => handleEditVideo(video, chapter._id)}
+                                      sx={{ 
+                                        color: '#4285f4',
+                                        '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
+                                      }}
+                                    >
+                                      <EditIcon fontSize="small" />
+                                    </IconButton>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() => handleDeleteVideo(video._id, chapter._id)}
+                                      sx={{ 
+                                        color: '#dc3545',
+                                        '&:hover': { backgroundColor: 'rgba(220, 53, 69, 0.1)' }
+                                      }}
+                                    >
+                                      <DeleteIcon fontSize="small" />
+                                    </IconButton>
+                                  </Box>
                                 </ListItemSecondaryAction>
                               </ListItem>
                             ))}
                           </List>
-                        )}
-                      </CardContent>
-                    </Card>
+                        </Box>
+                      )}
+                    </CardContent>
+                  </Card>
                 </Grid>
-                ))}
-              </Grid>
-            </List>
+              ))}
+            </Grid>
           )}
-        </Box>
+        </Card>
       )}
 
       {activeStep === 2 && (
-        <Box>
-          <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-            Review & Update Course
-          </Typography>
+        <Card sx={{ p: 4 }}>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, color: '#2c3e50' }}>
+              🔍 Review & Update Course
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Review your course details before updating
+            </Typography>
+          </Box>
           
           <Grid container spacing={4}>
             <Grid item size={{ xs: 12, md: 6 }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-                    Course Information
+              <Card sx={{ 
+                border: '1px solid #e0e0e0',
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
+              }}>
+                <CardContent sx={{ p: 4 }}>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
+                    📋 Course Information
                   </Typography>
                   
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  <Box sx={{ mb: 4 }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Course Title
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 500 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: '#2c3e50' }}>
                       {courseData.title}
                     </Typography>
                   </Box>
                   
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  <Box sx={{ mb: 4 }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Description
                     </Typography>
-                    <Typography variant="body1">
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                       {courseData.description}
                     </Typography>
                   </Box>
                   
-                  <Grid container spacing={4}>
+                  <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                           Category
                         </Typography>
-                        <Chip label={courseData.category} color="primary" />
+                        <Chip 
+                          label={courseData.category} 
+                          color="primary" 
+                          sx={{ fontWeight: 500 }}
+                        />
                       </Box>
                     </Grid>
 
                     <Grid item xs={12} md={4}>
                       <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                           Target Audience
                         </Typography>
-                        <Typography variant="body1">
-                          {courseData.targetAudience}
-                        </Typography>
+                        <Chip 
+                          label={courseData.targetAudience} 
+                          color="secondary" 
+                          sx={{ fontWeight: 500 }}
+                        />
                       </Box>
                     </Grid>
                     <Grid item xs={12} md={4}>
                       <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                           Content Type
                         </Typography>
                         <Chip 
                           icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
                           label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'} 
-                          color="secondary"
+                          color="success"
+                          sx={{ fontWeight: 500 }}
                         />
                       </Box>
                     </Grid>
@@ -887,78 +1123,149 @@ const EditCourse = () => {
             </Grid>
             
             <Grid item size={{ xs: 12, md: 6 }}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-                    Content Summary
+              <Card sx={{ 
+                border: '1px solid #e0e0e0',
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
+              }}>
+                <CardContent sx={{ p: 4 }}>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
+                    📊 Content Summary
                   </Typography>
                   
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  <Box sx={{ mb: 4 }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Total Chapters
                     </Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 600, color: '#4285f4' }}>
-                      {chapters.length}
-                    </Typography>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      p: 2,
+                      backgroundColor: 'rgba(66, 133, 244, 0.1)',
+                      borderRadius: 2,
+                      border: '1px solid rgba(66, 133, 244, 0.2)'
+                    }}>
+                      <Typography variant="h3" sx={{ fontWeight: 700, color: '#4285f4' }}>
+                        {chapters.length}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        chapters
+                      </Typography>
+                    </Box>
                   </Box>
                   
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                  <Box sx={{ mb: 4 }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Total {courseData.contentType === 'video' ? 'Videos' : 'Lessons'}
                     </Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 600, color: '#34a853' }}>
-                      {chapters.reduce((total, chapter) => total + (chapter.videos?.length || 0), 0)}
-                    </Typography>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      p: 2,
+                      backgroundColor: 'rgba(52, 168, 83, 0.1)',
+                      borderRadius: 2,
+                      border: '1px solid rgba(52, 168, 83, 0.2)'
+                    }}>
+                      <Typography variant="h3" sx={{ fontWeight: 700, color: '#34a853' }}>
+                        {chapters.reduce((total, chapter) => total + (chapter.videos?.length || 0), 0)}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {courseData.contentType === 'video' ? 'videos' : 'lessons'}
+                      </Typography>
+                    </Box>
                   </Box>
                   
                   <Box>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Course Type
                     </Typography>
                     <Chip 
+                      icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
                       label={courseData.contentType === 'video' ? 'Video Course' : 'Text Course'}
                       color="success"
                       variant="outlined"
+                      sx={{ fontWeight: 500 }}
                     />
                   </Box>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
-        </Box>
+        </Card>
       )}
 
       {/* Navigation Buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-        <Button
-          disabled={activeStep === 0}
-          onClick={handleBack}
-          startIcon={<ArrowBackIcon />}
-        >
-          Back
-        </Button>
-        
-        <Box>
-          {activeStep === steps.length - 1 ? (
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
-            >
-              {isSubmitting ? 'Updating...' : 'Update Course'}
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              onClick={handleNext}
-              endIcon={<ArrowForwardIcon />}
-            >
-              Next
-            </Button>
-          )}
+      <Card sx={{ mt: 4, p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Button
+            disabled={activeStep === 0}
+            onClick={handleBack}
+            startIcon={<ArrowBackIcon />}
+            sx={{
+              px: 3,
+              py: 1.5,
+              fontSize: '1rem',
+              fontWeight: 600,
+              borderColor: '#4285f4',
+              color: '#4285f4',
+              '&:hover': {
+                borderColor: '#3367d6',
+                backgroundColor: 'rgba(66, 133, 244, 0.04)'
+              },
+              '&:disabled': {
+                borderColor: '#e0e0e0',
+                color: '#9e9e9e'
+              }
+            }}
+            variant="outlined"
+          >
+            Back
+          </Button>
+          
+          <Box>
+            {activeStep === steps.length - 1 ? (
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
+                sx={{
+                  background: '#4285f4',
+                  '&:hover': { background: '#3367d6' },
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  '&:disabled': {
+                    background: '#e0e0e0',
+                    color: '#9e9e9e'
+                  }
+                }}
+              >
+                {isSubmitting ? 'Updating...' : 'Update Course'}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={handleNext}
+                endIcon={<ArrowForwardIcon />}
+                sx={{
+                  background: '#4285f4',
+                  '&:hover': { background: '#3367d6' },
+                  px: 4,
+                  py: 1.5,
+                  fontSize: '1rem',
+                  fontWeight: 600
+                }}
+              >
+                Next
+              </Button>
+            )}
+          </Box>
         </Box>
-      </Box>
+      </Card>
 
       {/* Chapter Dialog */}
       <Dialog 
