@@ -24,6 +24,7 @@ import {
   Logout as LogoutIcon,
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
+  People as PeopleIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -117,6 +118,11 @@ const Navbar = () => {
 
   const handleSettingsClick = () => {
     navigate('/settings');
+    handleMenuClose();
+  };
+
+  const handleCommunityAdminsClick = () => {
+    navigate('/community-admins');
     handleMenuClose();
   };
 
@@ -281,6 +287,11 @@ const Navbar = () => {
           <MenuItem onClick={handleSettingsClick} sx={{ py: 1.5, px: 2 }}>
             <SettingsIcon sx={{ mr: 2, fontSize: 20, color: 'text.secondary' }} />
             <Typography variant="body2">Settings</Typography>
+          </MenuItem>
+
+          <MenuItem onClick={handleCommunityAdminsClick} sx={{ py: 1.5, px: 2 }}>
+            <PeopleIcon sx={{ mr: 2, fontSize: 20, color: 'text.secondary' }} />
+            <Typography variant="body2">Community Admins</Typography>
           </MenuItem>
 
           <Divider sx={{ my: 1 }} />

@@ -7,6 +7,18 @@ const User = require('./models/User.model');
 // Load environment variables
 dotenv.config();
 
+// Set MongoDB URI if not provided
+if (!process.env.MONGO_URI) {
+  process.env.MONGO_URI = 'mongodb+srv://premarch567:Z6qcWJ8m6iv4ZqRW@cluster0.lyzxobt.mongodb.net/saasLmsAdmin?retryWrites=true&w=majority&appName=Cluster0';
+  console.log('🔗 Using MongoDB Atlas connection');
+}
+
+// Set default JWT_SECRET if not provided
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
+  console.log('⚠️  Using default JWT_SECRET - change this in production');
+}
+
 // Connect to database
 let dbConnection = null;
 connectDB().then(conn => {
@@ -31,6 +43,14 @@ app.use('/api/academies', require('./routes/academy.routes'));
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/plans', require('./routes/plan.routes'));
 app.use('/api/settings', require('./routes/settings.routes'));
+app.use('/api/data', require('./routes/data.routes'));
+app.use('/api/courses', require('./routes/course.routes'));
+app.use('/api/community-auth', require('./routes/communityAuth.routes'));
+app.use('/api/community-admins', require('./routes/communityAdmin.routes'));
+app.use('/api/upload', require('./routes/upload.routes'));
+
+// Serve uploaded files statically
+app.use('/uploads', express.static('uploads'));
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -116,7 +136,7 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Start server
 app.listen(PORT, async () => {

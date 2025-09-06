@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './utils/apiConfig'; // Global API configuration
+// import './utils/apiConfig'; // Global API configuration - temporarily disabled for local development
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

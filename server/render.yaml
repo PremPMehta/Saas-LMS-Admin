@@ -3,6 +3,7 @@ services:
     name: lms-admin-backend
     env: node
     plan: free
+    rootDir: server
     buildCommand: npm install
     startCommand: npm start
     envVars:
@@ -14,7 +15,7 @@ services:
           name: lms-admin-backend
           property: port
       - key: MONGO_URI
-        sync: false
+        value: mongodb+srv://premarch567:Z6qcWJ8m6iv4ZqRW@cluster0.lyzxobt.mongodb.net/saas-lms-admin?retryWrites=true&w=majority&appName=Cluster0
       - key: JWT_SECRET
         sync: false
       - key: JWT_EXPIRE

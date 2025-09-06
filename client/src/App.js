@@ -1,21 +1,20 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
-import FirstTimeLoginWrapper from './components/FirstTimeLoginWrapper';
-import AppRoutes from './routes/AppRoutes';
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <AuthProvider>
-          <FirstTimeLoginWrapper>
+    <Router>
+      <AuthProvider>
+        <ThemeProvider>
+          <div className="App">
             <AppRoutes />
-          </FirstTimeLoginWrapper>
-        </AuthProvider>
-      </Router>
-    </ThemeProvider>
+          </div>
+        </ThemeProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

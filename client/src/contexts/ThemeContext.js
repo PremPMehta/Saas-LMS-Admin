@@ -210,6 +210,15 @@ export const ThemeProvider = ({ children }) => {
           },
         },
       },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            borderRadius: 8,
+            fontWeight: 600,
+          },
+        },
+      },
       MuiTableHead: {
         styleOverrides: {
           root: {

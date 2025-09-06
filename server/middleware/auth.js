@@ -24,8 +24,30 @@ const protect = async (req, res, next) => {
           role: 'admin',
           isActive: true
         };
+      } else if (decoded.type === 'community') {
+        // Handle community authentication
+        try {
+          const Community = require('../models/Community.model');
+          const community = await Community.findById(decoded.id).select('-ownerPassword');
+          if (community) {
+            req.user = {
+              _id: community._id,
+              id: community._id,
+              email: community.ownerEmail,
+              name: community.ownerName,
+              type: 'community',
+              communityId: community._id,
+              isActive: community.status === 'active' || community.status === 'pending'
+            };
+          } else {
+            req.user = null;
+          }
+        } catch (dbError) {
+          console.warn('Database error in community auth middleware:', dbError.message);
+          req.user = null;
+        }
       } else {
-        // Try database for non-demo users
+        // Try database for regular users
         try {
           req.user = await User.findById(decoded.id).select('-password');
         } catch (dbError) {

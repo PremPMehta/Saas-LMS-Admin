@@ -17,6 +17,7 @@ import {
   School as SchoolIcon,
   Assignment as AssignmentIcon,
   People as PeopleIcon,
+  AdminPanelSettings as AdminPanelIcon,
   Analytics as AnalyticsIcon,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
@@ -41,8 +42,9 @@ const Sidebar = () => {
       { text: 'Academies', icon: <SchoolIcon />, path: '/academies', roles: ['admin', 'user'] },
       { text: 'Plans', icon: <AssignmentIcon />, path: '/plans', roles: ['admin', 'user'] },
       { text: 'Users', icon: <PeopleIcon />, path: '/users', roles: ['admin'] },
-      { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', roles: ['admin'] },
-      { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'] },
+      { text: 'Community Admins', icon: <AdminPanelIcon />, path: '/community-admins', roles: ['admin'] },
+      // { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics', roles: ['admin'] },
+      // { text: 'Settings', icon: <SettingsIcon />, path: '/settings', roles: ['admin'] },
     ];
 
     // Filter menu items based on user role

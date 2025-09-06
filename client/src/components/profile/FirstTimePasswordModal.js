@@ -117,7 +117,11 @@ const FirstTimePasswordModal = ({ open, onPasswordChanged, userEmail }) => {
           throw new Error('Authentication token not found. Please login again.');
         }
 
-        const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin.onrender.com'}/api/auth/change-first-password`, {
+        const API_BASE_URL = process.env.REACT_APP_API_URL || 
+          (process.env.NODE_ENV === 'production' 
+            ? 'https://saas-lms-admin-1.onrender.com' 
+            : 'http://localhost:5001');
+        const response = await fetch(`${API_BASE_URL}/api/auth/change-first-password`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

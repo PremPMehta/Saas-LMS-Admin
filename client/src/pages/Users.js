@@ -41,7 +41,7 @@ const Users = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5001/api/users', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
