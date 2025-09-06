@@ -187,8 +187,15 @@ const Courses = () => {
           response = await Promise.race([courseApi.getCourses({ community: communityId }), timeoutPromise]);
         } catch (communityError) {
           console.log('⚠️ Community-specific fetch failed:', communityError.message);
-          // If community-specific fetch fails, return empty array instead of all courses
-          response = { courses: [] };
+          // If community-specific fetch fails, try discovery endpoint as fallback
+          try {
+            console.log('🔄 Trying discovery endpoint as fallback...');
+            response = await courseApi.getCourses({ discovery: 'true' });
+            console.log('✅ Discovery fallback successful, got', response.courses?.length || 0, 'courses');
+          } catch (discoveryError) {
+            console.log('❌ Discovery fallback also failed:', discoveryError.message);
+            response = { courses: [] };
+          }
         }
 
         if (!isMounted) return;
@@ -262,15 +269,15 @@ const Courses = () => {
     try {
       let communityId = localStorage.getItem('communityId');
       
-      // If no communityId found, use the same fallback as CreateCourse.js
+      // If no communityId found, use the same fallback as main course loading
       if (!communityId || communityId === 'null' || communityId === 'undefined') {
-        communityId = '68b03c92fac3b1af515ccc69';
+        communityId = '68b684467fd9b766dc7cc337';
         console.log('🔧 Manual refresh: Using fallback community ID:', communityId);
       }
       
       // FORCE: Set the correct community ID in localStorage to fix the issue
-      localStorage.setItem('communityId', '68b03c92fac3b1af515ccc69');
-      console.log('🔧 FORCED: Set communityId in localStorage to:', '68b03c92fac3b1af515ccc69');
+      localStorage.setItem('communityId', '68b684467fd9b766dc7cc337');
+      console.log('🔧 FORCED: Set communityId in localStorage to:', '68b684467fd9b766dc7cc337');
       
       console.log('🔄 Manual refresh: Loading courses for community:', communityId);
       console.log('🆕 UPDATED Manual refresh - Community ID fix applied!');
