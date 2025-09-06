@@ -1,7 +1,7 @@
 // API Configuration
 const API_BASE_URL = process.env.REACT_APP_API_URL || 
   (process.env.NODE_ENV === 'production' 
-    ? 'https://lms-community-admin-backend.onrender.com'  // Update this with your actual Render URL
+    ? 'https://saas-lms-admin-1.onrender.com'  // Your live backend URL
     : 'http://localhost:5001');
 
 // Helper function for API calls

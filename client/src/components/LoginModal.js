@@ -276,6 +276,15 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
 
       if (response.ok) {
         const data = await response.json();
+        
+        // Store token and community data properly
+        if (data.data && data.data.token) {
+          localStorage.setItem('communityToken', data.data.token);
+          localStorage.setItem('communityData', JSON.stringify(data.data.user));
+          console.log('✅ Community token stored:', data.data.token);
+          console.log('✅ Community data stored:', data.data.user);
+        }
+        
         // Redirect to community dashboard
         window.location.href = '/community-dashboard';
         onLoginSuccess(data);

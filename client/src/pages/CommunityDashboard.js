@@ -3,6 +3,8 @@ import courseApi from '../utils/courseApi';
 import communityAuthApi from '../utils/communityAuthApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import FocusedSidebar from '../components/FocusedSidebar';
+import FocusedTopBar from '../components/FocusedTopBar';
 import {
   Box,
   Typography,
@@ -257,144 +259,19 @@ const CommunityDashboard = () => {
       background: darkMode ? '#1a1a1a' : '#f8f9fa',
       display: 'flex'
     }}>
-      {/* Left Navigation Bar */}
-      <Box sx={{
-        width: 80,
-        background: darkMode ? '#2d2d2d' : '#ffffff',
-        borderRight: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        py: 2,
-        position: 'fixed',
-        height: '100vh',
-        zIndex: 1000,
-      }}>
-        {/* Hamburger Menu */}
-        <IconButton sx={{ mb: 4, color: darkMode ? '#ffffff' : '#000000' }}>
-          <MenuIcon />
-        </IconButton>
-
-        {/* Navigation Items */}
-        {navItems.map((item) => (
-          <Box key={item.id} sx={{ mb: 2, position: 'relative' }}>
-            <IconButton
-              onClick={() => {
-                if (item.id === 'courses' && communityUrls) {
-                  navigate(communityUrls.courses);
-                } else if (item.id === 'admins' && communityUrls) {
-                  navigate(communityUrls.admins);
-                } else {
-                  setActiveNav(item.id);
-                }
-              }}
-              sx={{
-                width: 48,
-                height: 48,
-                borderRadius: '50%',
-                backgroundColor: activeNav === item.id
-                  ? (darkMode ? '#404040' : '#000000')
-                  : 'transparent',
-                color: activeNav === item.id
-                  ? '#ffffff'
-                  : (darkMode ? '#ffffff' : '#000000'),
-                '&:hover': {
-                  backgroundColor: activeNav === item.id
-                    ? (darkMode ? '#404040' : '#000000')
-                    : (darkMode ? '#404040' : '#f0f0f0'),
-                }
-              }}
-            >
-              {item.icon}
-            </IconButton>
-          </Box>
-        ))}
-
-        {/* Logout Button */}
-        <Box sx={{ mt: 'auto', mb: 2 }}>
-          <IconButton
-            onClick={handleLogout}
-            sx={{ color: darkMode ? '#ffffff' : '#000000' }}
-            title="Logout"
-          >
-            <ArrowBackIcon />
-          </IconButton>
-        </Box>
-      </Box>
+      {/* Common Focused Sidebar */}
+      <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
         ml: 10, // Account for fixed sidebar
+        mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
       }}>
-        {/* Top Header */}
-        <Box sx={{
-          height: 80,
-          background: darkMode ? '#2d2d2d' : '#ffffff',
-          borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          px: 4,
-          position: 'sticky',
-          top: 0,
-          zIndex: 999,
-        }}>
-          {/* Logo */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar sx={{
-              bgcolor: '#4285f4',
-              mr: 2,
-              width: 40,
-              height: 40
-            }}>
-              <DashboardIcon />
-            </Avatar>
-            <Typography variant="h6" sx={{
-              fontWeight: 700,
-              color: darkMode ? '#ffffff' : '#000000'
-            }}>
-              Community Hub
-            </Typography>
-          </Box>
-
-          {/* Center - Theme Toggle */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <SunIcon sx={{ fontSize: 20, color: darkMode ? '#666666' : '#ffd700' }} />
-            <Switch
-              checked={darkMode}
-              onChange={(e) => setDarkMode(e.target.checked)}
-              sx={{
-                '& .MuiSwitch-switchBase.Mui-checked': {
-                  color: '#4285f4',
-                },
-                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                  backgroundColor: '#4285f4',
-                },
-              }}
-            />
-            <DarkIcon sx={{ fontSize: 20, color: darkMode ? '#4285f4' : '#666666' }} />
-          </Box>
-
-          {/* Right - Search and Profile */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton sx={{ color: darkMode ? '#ffffff' : '#000000' }}>
-              <SearchIcon />
-            </IconButton>
-            <IconButton sx={{ color: darkMode ? '#ffffff' : '#000000' }}>
-              <NotificationsIcon />
-            </IconButton>
-            <Avatar sx={{
-              width: 40,
-              height: 40,
-              bgcolor: '#34a853'
-            }}>
-              <PeopleIcon />
-            </Avatar>
-          </Box>
-        </Box>
+        {/* Common Focused Top Bar */}
+        <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
 
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4 }}>

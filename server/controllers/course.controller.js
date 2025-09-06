@@ -74,12 +74,21 @@ exports.createCourse = async (req, res) => {
       requirements,
       learningOutcomes,
       price,
-      isFree
+      isFree,
+      community,
+      status,
+      publishedAt
     } = req.body;
 
     // Get instructor and community from authenticated user (or use defaults for testing)
     let instructor = req.user?.id;
     let communityId = req.user?.communityId;
+    
+    // PRIORITY: Use community from request body if provided
+    if (community) {
+      communityId = community;
+      console.log('🎯 Using community from request body:', communityId);
+    }
     
     // For testing purposes, use default values if no user is authenticated
     if (!instructor) {
@@ -120,22 +129,8 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    // CRITICAL: Ensure we NEVER use the old hardcoded community ID
-    const wrongCommunityId = '68b03c92fac3b1af515ccc69';
-    if (communityId.toString() === wrongCommunityId) {
-      console.log('🚨 CRITICAL: Attempted to use wrong community ID, fixing...');
-      const correctCommunity = await Community.findOne({});
-      if (correctCommunity) {
-        communityId = correctCommunity._id;
-        instructor = correctCommunity._id;
-        console.log('✅ Fixed: Using correct community ID:', communityId);
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: 'No valid community found. Please contact administrator.'
-        });
-      }
-    }
+    // Use the provided community ID (removed the "wrong community ID" check)
+    console.log('✅ Using community ID:', communityId);
 
     // Clean and validate chapters data
     const cleanChapters = (chapters || []).map(chapter => ({
@@ -156,6 +151,15 @@ exports.createCourse = async (req, res) => {
     const processedChapters = await processTextContent(cleanChapters, title);
     console.log('✅ Text content processing completed');
 
+    // Debug logging
+    console.log('📝 Creating course with data:', {
+      title,
+      community: communityId,
+      status,
+      publishedAt,
+      instructor
+    });
+
     // Create the course
     const course = new Course({
       title,
@@ -164,8 +168,8 @@ exports.createCourse = async (req, res) => {
       targetAudience,
       contentType,
       thumbnail,
-      status: req.body.status || 'draft', // Set status from request body or default to draft
-      publishedAt: req.body.status === 'published' ? new Date() : null, // Set publishedAt if status is published
+      status: status || 'draft', // Set status from request body or default to draft
+      publishedAt: status === 'published' ? (publishedAt ? new Date(publishedAt) : new Date()) : null, // Set publishedAt if status is published
       chapters: processedChapters,
       instructor,
       community: communityId,
@@ -248,7 +252,8 @@ exports.getCourses = async (req, res) => {
     console.log('🔍 Backend: Fetching courses with filter:', filter);
 
     const courses = await Course.find(filter)
-      .sort({ createdAt: -1 }); // Sort by newest first, remove limit to get all courses
+      .sort({ createdAt: -1 })
+      .limit(50); // Add limit to prevent memory issues
 
     console.log('📊 Backend: Found', courses.length, 'courses');
     console.log('📋 Backend: Course IDs:', courses.map(c => c._id));

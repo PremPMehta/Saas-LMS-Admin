@@ -50,6 +50,8 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import FocusedSidebar from '../components/FocusedSidebar';
+import FocusedTopBar from '../components/FocusedTopBar';
 
 
 
@@ -838,196 +840,19 @@ const CourseViewer = () => {
       background: darkMode ? '#1a1a1a' : '#f8f9fa',
       display: 'flex'
     }}>
-      {/* Left Navigation Bar */}
-      <Box sx={{
-        width: { xs: '100%', md: 80 },
-        background: darkMode ? '#2d2d2d' : '#ffffff',
-        borderRight: { xs: 'none', md: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}` },
-        borderBottom: { xs: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`, md: 'none' },
-        display: 'flex',
-        flexDirection: { xs: 'row', md: 'column' },
-        alignItems: 'center',
-        justifyContent: { xs: 'space-around', md: 'flex-start' },
-        py: { xs: 1, md: 2 },
-        position: { xs: 'fixed', md: 'fixed' },
-        height: { xs: 60, md: '100vh' },
-        top: { xs: 0, md: 0 },
-        left: { xs: 0, md: 0 },
-        zIndex: 1000,
-      }}>
-        {/* Hamburger Menu */}
-        <IconButton sx={{ 
-          mb: { xs: 0, md: 4 }, 
-          color: darkMode ? '#ffffff' : '#000000',
-          display: { xs: 'none', md: 'flex' }
-        }}>
-          <MenuIcon />
-        </IconButton>
-
-        {/* Navigation Items */}
-        {navItems.map((item) => (
-          <Box key={item.id} sx={{ 
-            mb: { xs: 0, md: 2 }, 
-            position: 'relative',
-            display: { xs: 'flex', md: 'block' }
-          }}>
-            <IconButton
-              onClick={() => {
-                if (item.id === 'home' && communityUrls) {
-                  navigate(communityUrls.dashboard);
-                } else if (item.id === 'courses' && communityUrls) {
-                  navigate(communityUrls.courses);
-                } else {
-                  setActiveNav(item.id);
-                }
-              }}
-              sx={{
-                width: { xs: 40, md: 48 },
-                height: { xs: 40, md: 48 },
-                borderRadius: '50%',
-                backgroundColor: activeNav === item.id
-                  ? (darkMode ? '#404040' : '#000000')
-                  : 'transparent',
-                color: activeNav === item.id
-                  ? '#ffffff'
-                  : (darkMode ? '#ffffff' : '#000000'),
-                '&:hover': {
-                  backgroundColor: activeNav === item.id
-                    ? (darkMode ? '#404040' : '#000000')
-                    : (darkMode ? '#404040' : '#f0f0f0'),
-                }
-              }}
-            >
-              {item.icon}
-            </IconButton>
-          </Box>
-        ))}
-
-        {/* Logout Button */}
-        <Box sx={{ 
-          mt: { xs: 0, md: 'auto' }, 
-          mb: { xs: 0, md: 2 },
-          display: { xs: 'flex', md: 'block' }
-        }}>
-          <IconButton
-            onClick={handleLogout}
-            sx={{ 
-              color: darkMode ? '#ffffff' : '#000000',
-              width: { xs: 40, md: 48 },
-              height: { xs: 40, md: 48 }
-            }}
-            title="Logout"
-          >
-            <ArrowBackIcon />
-          </IconButton>
-        </Box>
-      </Box>
+      {/* Common Focused Sidebar */}
+      <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
         ml: { xs: 0, md: 10 }, // Account for fixed sidebar
-        mt: { xs: 8, md: 0 }, // Account for mobile top navigation
+        mt: { xs: 8, md: 9 }, // Account for mobile top navigation and fixed top bar (70px) + padding
         display: 'flex',
         flexDirection: 'column'
       }}>
-        {/* Top Header */}
-        <Box sx={{
-          height: { xs: 60, md: 80 },
-          background: darkMode ? '#2d2d2d' : '#ffffff',
-          borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          px: { xs: 2, md: 4 },
-          position: 'sticky',
-          top: 0,
-          zIndex: 999,
-        }}>
-          {/* Breadcrumbs */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Breadcrumbs
-              separator={<NavigateNextIcon fontSize="small" />}
-              aria-label="breadcrumb"
-            >
-              <Link
-                underline="hover"
-                color="inherit"
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (communityUrls) {
-                    navigate(communityUrls.courses);
-                  } else {
-                    navigate('/courses');
-                  }
-                }}
-                sx={{ display: 'flex', alignItems: 'center' }}
-              >
-                <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-                Courses
-              </Link>
-              <Typography color="text.primary">
-                {selectedCourse?.title || 'Course Viewer'}
-              </Typography>
-            </Breadcrumbs>
-          </Box>
-
-          {/* Right side buttons */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {/* Refresh Button */}
-            <IconButton
-              onClick={handleRefresh}
-              title="Refresh course data"
-              sx={{
-                color: darkMode ? '#ffffff' : '#000000',
-                '&:hover': {
-                  backgroundColor: darkMode ? '#404040' : '#f0f0f0',
-                }
-              }}
-            >
-              <RefreshIcon />
-            </IconButton>
-
-            {/* Theme Toggle */}
-            <IconButton
-              onClick={() => setDarkMode(!darkMode)}
-              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              sx={{
-                color: darkMode ? '#ffffff' : '#000000',
-                '&:hover': {
-                  backgroundColor: darkMode ? '#404040' : '#f0f0f0',
-                }
-              }}
-            >
-              {darkMode ? <SunIcon /> : <DarkIcon />}
-            </IconButton>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => {
-                if (communityUrls) {
-                  navigate(communityUrls.courses);
-                } else {
-                  navigate('/courses');
-                }
-              }}
-            >
-              Back to Courses
-            </Button>
-
-            {/* Theme Toggle */}
-            <IconButton
-              onClick={() => setDarkMode(!darkMode)}
-              sx={{ color: darkMode ? '#ffffff' : '#000000' }}
-            >
-              {darkMode ? <SunIcon /> : <DarkIcon />}
-            </IconButton>
-          </Box>
-        </Box>
+        {/* Common Focused Top Bar */}
+        <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
 
         {/* Course Content */}
         <Box sx={{ p: { xs: 1, md: 3 }, flex: 1, overflow: 'hidden' }}>

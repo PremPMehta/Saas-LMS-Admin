@@ -49,10 +49,14 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import courseApi from '../utils/courseApi';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
 
 const EditCourse = () => {
   const navigate = useNavigate();
-  const { courseId } = useParams();
+  const { courseId, communityName } = useParams();
+  
+  // Get community-specific URLs
+  const communityUrls = communityName ? getCommunityUrls(communityName) : null;
   const [activeStep, setActiveStep] = useState(0);
   const [courseData, setCourseData] = useState({
     title: '',
@@ -436,7 +440,16 @@ const EditCourse = () => {
       console.log('Course updated in database:', response.course);
       
       // Redirect to courses list with success message
-      navigate('/courses', { 
+      let redirectUrl;
+      if (communityUrls) {
+        redirectUrl = communityUrls.courses;
+      } else if (communityName) {
+        redirectUrl = `/${communityName}/courses`;
+      } else {
+        redirectUrl = '/courses';
+      }
+      console.log('EditCourse redirect URL:', redirectUrl);
+      navigate(redirectUrl, { 
         state: { 
           message: 'Course updated successfully!'
         }
@@ -470,7 +483,18 @@ const EditCourse = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <IconButton onClick={() => navigate('/courses')} sx={{ mr: 2 }}>
+        <IconButton onClick={() => {
+          let backUrl;
+          if (communityUrls) {
+            backUrl = communityUrls.courses;
+          } else if (communityName) {
+            backUrl = `/${communityName}/courses`;
+          } else {
+            backUrl = '/courses';
+          }
+          console.log('EditCourse back button URL:', backUrl);
+          navigate(backUrl);
+        }} sx={{ mr: 2 }}>
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
@@ -1587,7 +1611,7 @@ const EditCourse = () => {
                           }
                         }}>
                           <Editor
-                            apiKey="jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"
+                            apiKey={process.env.REACT_APP_TINYMCE_API_KEY || "jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"}
                             value={formData.content}
                             onEditorChange={handleEditorChange}
                             init={{

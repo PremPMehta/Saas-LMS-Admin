@@ -200,7 +200,11 @@ const communitySignup = async (req, res) => {
       communityName, 
       description, 
       category, 
-      phoneNumber 
+      phoneNumber,
+      logo,
+      plan,
+      price,
+      period
     } = req.body;
 
     // Validation
@@ -229,7 +233,18 @@ const communitySignup = async (req, res) => {
       name: communityName,
       description,
       category,
-      status: 'pending' // Will be reviewed by admin
+      logo: logo || '',
+      pricing: {
+        type: plan || 'free',
+        price: price || 0,
+        currency: 'USD',
+        billingPeriod: period || 'monthly'
+      },
+      status: 'active', // Set to active for immediate use
+      isPublic: true,
+      isVerified: false,
+      memberCount: 0,
+      courseCount: 0
     });
 
     // Generate token

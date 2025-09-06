@@ -21,12 +21,16 @@ import {
   Person,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { useAuth } from '../contexts/AuthContext';
 
 const UserLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  
+  // Get community URLs for proper navigation
+  const communityUrls = getCommunityUrls();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -74,7 +78,11 @@ const UserLogin = () => {
             navigate(`/course-viewer/${courseId}`);
           } else {
             // Otherwise redirect to user dashboard or courses page
-            navigate('/courses');
+            if (communityUrls) {
+              navigate(communityUrls.courses);
+            } else {
+              navigate('/courses');
+            }
           }
         }, 1500);
 

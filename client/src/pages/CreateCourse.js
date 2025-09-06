@@ -48,11 +48,20 @@ import {
   CheckCircle as CheckCircleIcon,
   Publish as PublishIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import courseApi from '../utils/courseApi';
+import { getCommunityUrls } from '../utils/communityUrlUtils';
+import { apiUrl } from '../config/api';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
+  const { communityName } = useParams();
+  
+  // Get community-specific URLs
+  const communityUrls = communityName ? getCommunityUrls(communityName) : null;
+  
+  // Debug logging
+  console.log('CreateCourse component loaded:', { communityName, communityUrls });
   const [activeStep, setActiveStep] = useState(0);
   const [courseData, setCourseData] = useState({
     title: '',
@@ -74,29 +83,40 @@ const CreateCourse = () => {
   const steps = ['Basic Information', 'Content Structure', 'Review & Publish'];
 
   const categories = [
-    'Technology',
-    'Business',
-    'Design',
-    'Marketing',
-    'Development',
-    'Data Science',
-    'Product Management',
-    'Finance',
-    'Healthcare',
-    'Education',
+    'Bitcoin, Ethereum, Altcoins',
+    'DeFi, NFTs, Web3',
+    'On-chain analysis & portfolio building',
+    'Currency pairs (major, minor, exotic)',
+    'Technical & fundamental analysis',
+    'Risk management strategies',
+    'Equity fundamentals & valuation',
+    'Technical charting & price action',
+    'Dividend & growth investing',
+    'Options basics (calls, puts, spreads)',
+    'Futures & hedging strategies',
+    'Advanced Greeks & risk modeling',
+    'Gold, silver, oil, agricultural products',
+    'Supply-demand cycles & geopolitical factors',
+    'Futures contracts',
+    'S&P 500, NASDAQ, Dow Jones',
+    'Global index tracking',
+    'Leveraged & inverse ETFs',
+    'Chart patterns, candlesticks, indicators',
+    'Trend following vs. contrarian setups',
+    'Algorithmic & automated trading',
+    'Economic indicators & central banks',
+    'Earnings, balance sheets, valuation models',
+    'Global macro & intermarket analysis',
+    'Position sizing & stop-loss rules',
+    'Emotional discipline in trading',
+    'Building sustainable trading systems',
   ];
 
   const targetAudiences = [
-    'Beginners',
-    'Intermediate',
-    'Advanced',
-    'Professionals',
-    'Students',
-    'Entrepreneurs',
-    'Developers',
-    'Designers',
-    'Managers',
-    'Executives',
+    'Complete Beginners',
+    'Aspiring Traders',
+    'Long-term Investors',
+    'Advanced Traders/Professionals',
   ];
 
   const contentTypes = [
@@ -133,7 +153,7 @@ const CreateCourse = () => {
         const formData = new FormData();
         formData.append('thumbnail', file);
 
-        const response = await fetch('http://localhost:5001/api/upload/thumbnail', {
+        const response = await fetch(apiUrl('/api/upload/thumbnail'), {
           method: 'POST',
           body: formData,
         });
@@ -145,7 +165,7 @@ const CreateCourse = () => {
         const result = await response.json();
         if (result.success) {
           // Store the server URL instead of base64
-          setCourseData(prev => ({ ...prev, thumbnail: `http://localhost:5001${result.url}` }));
+          setCourseData(prev => ({ ...prev, thumbnail: `${apiUrl('')}${result.url}` }));
         } else {
           throw new Error(result.message || 'Failed to upload thumbnail');
         }
@@ -157,6 +177,10 @@ const CreateCourse = () => {
   };
 
   const validateStep = (step) => {
+    console.log('🔍 Validating step:', step);
+    console.log('📋 Course data:', courseData);
+    console.log('📚 Chapters:', chapters);
+    
     const newErrors = {};
 
     if (step === 0) {
@@ -174,6 +198,9 @@ const CreateCourse = () => {
     // For final step (step 2), we don't need additional validation
     // The course can be published even without chapters
 
+    console.log('❌ Validation errors:', newErrors);
+    console.log('✅ Validation passed:', Object.keys(newErrors).length === 0);
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -259,7 +286,7 @@ const CreateCourse = () => {
         const formData = new FormData();
         formData.append('video', videoData.videoFile);
         
-        const response = await fetch('http://localhost:5001/api/upload/video', {
+        const response = await fetch(apiUrl('/api/upload/video'), {
           method: 'POST',
           body: formData,
         });
@@ -274,12 +301,13 @@ const CreateCourse = () => {
         // Update video data with the server URL
         processedVideoData = {
           ...videoData,
-          videoUrl: `http://localhost:5001${result.url}`,
+          videoUrl: `${apiUrl('')}${result.url}`,
           videoFile: null // Clear the file object since we now have a URL
         };
       } catch (error) {
         console.error('Error uploading video:', error);
-        alert('Failed to upload video. Please try again.');
+        console.error('Error details:', error.message);
+        alert(`Failed to upload video: ${error.message || 'Unknown error'}. Please try again.`);
         return;
       }
     }
@@ -321,19 +349,46 @@ const CreateCourse = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('handleSubmit called');
-    console.log('courseData:', courseData);
-    console.log('chapters:', chapters);
+    console.log('🚀 handleSubmit called');
+    console.log('📋 courseData:', courseData);
+    console.log('📚 chapters:', chapters);
+    console.log('📍 activeStep:', activeStep);
 
     // Validate final step
     if (!validateStep(activeStep)) {
-      console.log('Validation failed');
+      console.log('❌ Validation failed - stopping course creation');
       setIsSubmitting(false);
       return;
     }
+    
+    console.log('✅ Validation passed - proceeding with course creation');
 
     setIsSubmitting(true);
     try {
+      // Get community ID for course association
+      // Try to get from localStorage first, then from URL params, then fallback
+      let communityId = localStorage.getItem('communityId');
+      console.log('🔍 localStorage communityId:', communityId);
+      console.log('🔍 communityName from URL:', communityName);
+      
+      // If no communityId in localStorage (null or undefined), try to get it from the community name
+      if ((!communityId || communityId === 'null' || communityId === 'undefined') && communityName) {
+        console.log('🔍 No valid communityId in localStorage, checking communityName...');
+        // For now, use the Crypto Manji community ID
+        if (communityName === 'crypto-manji-academy') {
+          communityId = '68b684467fd9b766dc7cc337';
+          console.log('🔍 Set communityId from communityName:', communityId);
+        }
+      }
+      
+      // Final fallback
+      if (!communityId || communityId === 'null' || communityId === 'undefined') {
+        communityId = '68b684467fd9b766dc7cc337';
+        console.log('🔍 Using final fallback communityId:', communityId);
+      }
+      
+      console.log('✅ Final communityId for course creation:', communityId);
+
       // Create the course object for database
       const courseDataForApi = {
         title: courseData.title,
@@ -341,9 +396,10 @@ const CreateCourse = () => {
         category: courseData.category,
         targetAudience: courseData.targetAudience,
         contentType: courseData.contentType,
-        thumbnail: courseData.thumbnail || 'http://localhost:5001/uploads/default-course-thumbnail.jpg',
+        thumbnail: courseData.thumbnail || `${apiUrl('')}/uploads/default-course-thumbnail.jpg`,
         status: 'published', // Set status to published directly
         publishedAt: new Date().toISOString(), // Set publish date
+        community: communityId, // Associate course with community
         chapters: chapters.map((chapter, index) => ({
           title: chapter.title,
           description: chapter.description,
@@ -368,12 +424,27 @@ const CreateCourse = () => {
         isFree: true
       };
 
+      // Debug: Log the final course data being sent to API
+      console.log('🚀 Final courseDataForApi being sent to API:', JSON.stringify(courseDataForApi, null, 2));
+
       // Save to database via API
       const response = await courseApi.createCourse(courseDataForApi);
       console.log('Course saved to database:', response.course);
 
-      // Redirect to dashboard with success message
-      navigate('/community-dashboard', {
+      // Redirect to courses page with success message
+      console.log('Redirecting after course creation:', { communityName, communityUrls });
+      let redirectUrl;
+      if (communityUrls) {
+        redirectUrl = communityUrls.courses;
+      } else if (communityName) {
+        // Fallback: construct URL manually if communityUrls is not available
+        redirectUrl = `/${communityName}/courses`;
+      } else {
+        // Last resort: redirect to courses page
+        redirectUrl = '/courses';
+      }
+      console.log('Redirect URL:', redirectUrl);
+      navigate(redirectUrl, {
         state: {
           message: 'Course published successfully!',
           newCourse: response.course
@@ -400,6 +471,30 @@ const CreateCourse = () => {
 
     setIsSubmitting(true);
     try {
+      // Get community ID for course association
+      // Try to get from localStorage first, then from URL params, then fallback
+      let communityId = localStorage.getItem('communityId');
+      console.log('🔍 localStorage communityId (draft):', communityId);
+      console.log('🔍 communityName from URL (draft):', communityName);
+      
+      // If no communityId in localStorage (null or undefined), try to get it from the community name
+      if ((!communityId || communityId === 'null' || communityId === 'undefined') && communityName) {
+        console.log('🔍 No valid communityId in localStorage, checking communityName (draft)...');
+        // For now, use a known community ID for crypto-manji-academy
+        if (communityName === 'crypto-manji-academy') {
+          communityId = '68b03c92fac3b1af515ccc69';
+          console.log('🔍 Set communityId from communityName (draft):', communityId);
+        }
+      }
+      
+      // Final fallback
+      if (!communityId || communityId === 'null' || communityId === 'undefined') {
+        communityId = '68b03c92fac3b1af515ccc69';
+        console.log('🔍 Using final fallback communityId (draft):', communityId);
+      }
+      
+      console.log('✅ Final communityId for draft course creation:', communityId);
+
       // Create the course object for database (as draft)
       const courseDataForApi = {
         title: courseData.title,
@@ -409,6 +504,7 @@ const CreateCourse = () => {
         contentType: courseData.contentType,
         thumbnail: courseData.thumbnail || 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course',
         status: 'draft', // Set status to draft
+        community: communityId, // Associate course with community
         chapters: chapters.map((chapter, index) => ({
           title: chapter.title,
           description: chapter.description,
@@ -437,8 +533,20 @@ const CreateCourse = () => {
       const response = await courseApi.createCourse(courseDataForApi);
       console.log('Course saved as draft:', response.course);
 
-      // Redirect to dashboard with success message
-      navigate('/community-dashboard', {
+      // Redirect to courses page with success message
+      console.log('Redirecting after draft save:', { communityName, communityUrls });
+      let redirectUrl;
+      if (communityUrls) {
+        redirectUrl = communityUrls.courses;
+      } else if (communityName) {
+        // Fallback: construct URL manually if communityUrls is not available
+        redirectUrl = `/${communityName}/courses`;
+      } else {
+        // Last resort: redirect to courses page
+        redirectUrl = '/courses';
+      }
+      console.log('Redirect URL:', redirectUrl);
+      navigate(redirectUrl, {
         state: {
           message: 'Course saved as draft successfully!',
           newCourse: response.course
@@ -457,7 +565,15 @@ const CreateCourse = () => {
         return (
           <Grid spacing={3}>
             <Grid lg={12} xs={12}>
-              <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+              <Typography variant="h5" sx={{ 
+                mb: 4, 
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textAlign: 'center'
+              }}>
                 Course Basic Information
               </Typography>
             </Grid>
@@ -471,7 +587,24 @@ const CreateCourse = () => {
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 error={!!errors.title}
                 helperText={errors.title}
-                sx={{ mb: 3 }}
+                sx={{ 
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 20px rgba(102, 126, 234, 0.1)',
+                    },
+                    '&.Mui-focused': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 20px rgba(102, 126, 234, 0.2)',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontWeight: 500,
+                  }
+                }}
               />
             </Grid>
 
@@ -486,13 +619,51 @@ const CreateCourse = () => {
                 helperText={errors.description}
                 multiline
                 rows={4}
-                sx={{ mb: 3 }}
+                sx={{ 
+                  mb: 3,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 20px rgba(102, 126, 234, 0.1)',
+                    },
+                    '&.Mui-focused': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 20px rgba(102, 126, 234, 0.2)',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontWeight: 500,
+                  }
+                }}
               />
             </Grid>
 
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
               <Grid item size={{ xs: 12, md: 6 }}>
-                <FormControl fullWidth error={!!errors.targetAudience} sx={{ mb: 3 }}>
+                <FormControl 
+                  fullWidth 
+                  error={!!errors.targetAudience} 
+                  sx={{ 
+                    mb: 3,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 20px rgba(102, 126, 234, 0.1)',
+                      },
+                      '&.Mui-focused': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 20px rgba(102, 126, 234, 0.2)',
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontWeight: 500,
+                    }
+                  }}
+                >
                   <InputLabel>Target Audience</InputLabel>
                   <Select
                     value={courseData.targetAudience}
@@ -514,7 +685,28 @@ const CreateCourse = () => {
               </Grid>
 
               <Grid item size={{ xs: 12, md: 6 }}>
-                <FormControl fullWidth error={!!errors.category} sx={{ mb: 3 }}>
+                <FormControl 
+                  fullWidth 
+                  error={!!errors.category} 
+                  sx={{ 
+                    mb: 3,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 20px rgba(102, 126, 234, 0.1)',
+                      },
+                      '&.Mui-focused': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 20px rgba(102, 126, 234, 0.2)',
+                      }
+                    },
+                    '& .MuiInputLabel-root': {
+                      fontWeight: 500,
+                    }
+                  }}
+                >
                   <InputLabel>Category</InputLabel>
                   <Select
                     value={courseData.category}
@@ -537,47 +729,49 @@ const CreateCourse = () => {
             </Grid>
 
 
-            {/* Course Thumbnail */}
-            <Grid item xs={12}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Course Thumbnail
-              </Typography>
-              <Box>
-                {courseData.thumbnail && (
-                  <Box
-                    component="img"
-                    src={courseData.thumbnail}
-                    alt="Course thumbnail"
-                    sx={{
-                      width: 200,
-                      height: 120,
-                      objectFit: 'cover',
-                      borderRadius: 2,
-                      border: '2px solid #e0e0e0'
-                    }}
-                  />
-                )}
-                <Box>
-                  <Button
-                    variant="outlined"
-                    component="label"
-                    startIcon={<UploadIcon />}
-                    sx={{ mb: 1 }}
-                  >
-                    Upload Course Thumbnail
-                    <input
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      onChange={handleCourseThumbnailUpload}
-                    />
-                  </Button>
-                </Box>
-                <Typography variant="caption" color="text.secondary" sx={{ marginLeft: "5px" }}>
-                  Recommended size: 1200x675 pixels (16:9 ratio)
+            {/* Course Thumbnail - Only show if no lessons are added */}
+            {!chapters.some(chapter => chapter.videos.length > 0) && (
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Course Thumbnail
                 </Typography>
-              </Box>
-            </Grid>
+                <Box>
+                  {courseData.thumbnail && (
+                    <Box
+                      component="img"
+                      src={courseData.thumbnail}
+                      alt="Course thumbnail"
+                      sx={{
+                        width: 200,
+                        height: 120,
+                        objectFit: 'cover',
+                        borderRadius: 2,
+                        border: '2px solid #e0e0e0'
+                      }}
+                    />
+                  )}
+                  <Box>
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      startIcon={<UploadIcon />}
+                      sx={{ mb: 1 }}
+                    >
+                      Upload Course Thumbnail
+                      <input
+                        type="file"
+                        hidden
+                        accept="image/*"
+                        onChange={handleCourseThumbnailUpload}
+                      />
+                    </Button>
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ marginLeft: "5px" }}>
+                    Recommended size: 1200x675 pixels (16:9 ratio)
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
 
             <Grid item xs={12}>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -771,7 +965,7 @@ const CreateCourse = () => {
               <Grid item size={{ xs: 12, md: 6 }}>
                 <Card sx={{ mb: 3 }}>
                   <CardContent>
-                  {courseData.thumbnail && (
+                  {courseData.thumbnail && !chapters.some(chapter => chapter.videos.length > 0) && (
                       <Box>
                         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
                           Course Thumbnail
@@ -901,7 +1095,20 @@ const CreateCourse = () => {
       <Container maxWidth="lg">
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-          <IconButton onClick={() => navigate('/community-dashboard')} sx={{ mr: 2 }}>
+          <IconButton onClick={() => {
+            let backUrl;
+            if (communityUrls) {
+              backUrl = communityUrls.courses;
+            } else if (communityName) {
+              // Fallback: construct URL manually if communityUrls is not available
+              backUrl = `/${communityName}/courses`;
+            } else {
+              // Last resort: redirect to courses page
+              backUrl = '/courses';
+            }
+            console.log('Back button navigation:', { communityName, communityUrls, backUrl });
+            navigate(backUrl);
+          }} sx={{ mr: 2 }}>
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
@@ -909,36 +1116,160 @@ const CreateCourse = () => {
           </Typography>
         </Box>
 
-        {/* Stepper */}
-        <Card sx={{ mb: 4 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-              {steps.map((label) => (
+        {/* Enhanced Stepper */}
+        <Card sx={{ 
+          mb: 4, 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: 4,
+          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+          border: 'none'
+        }}>
+          <CardContent sx={{ p: 4 }}>
+            <Stepper 
+              activeStep={activeStep} 
+              sx={{ 
+                mb: 4,
+                '& .MuiStepLabel-root': {
+                  '& .MuiStepLabel-label': {
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    fontSize: '1rem',
+                    '&.Mui-active': {
+                      color: '#ffffff',
+                      fontWeight: 700,
+                    },
+                    '&.Mui-completed': {
+                      color: '#ffffff',
+                    }
+                  },
+                  '& .MuiStepLabel-iconContainer': {
+                    '& .MuiSvgIcon-root': {
+                      color: 'rgba(255, 255, 255, 0.5)',
+                      fontSize: '2rem',
+                      '&.Mui-active': {
+                        color: '#ffffff',
+                        filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))',
+                      },
+                      '&.Mui-completed': {
+                        color: '#ffffff',
+                      }
+                    }
+                  }
+                },
+                '& .MuiStepConnector-root': {
+                  '& .MuiStepConnector-line': {
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderWidth: 2,
+                  }
+                }
+              }}
+            >
+              {steps.map((label, index) => (
                 <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
+                  <StepLabel 
+                    StepIconComponent={({ active, completed }) => (
+                      <Box
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: active 
+                            ? 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)'
+                            : completed 
+                            ? 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)'
+                            : 'rgba(255, 255, 255, 0.2)',
+                          color: active ? '#667eea' : completed ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
+                          fontWeight: 'bold',
+                          fontSize: '1.2rem',
+                          boxShadow: active 
+                            ? '0 4px 20px rgba(255, 255, 255, 0.3)'
+                            : completed 
+                            ? '0 4px 20px rgba(76, 175, 80, 0.3)'
+                            : 'none',
+                          transition: 'all 0.3s ease',
+                          transform: active ? 'scale(1.1)' : 'scale(1)',
+                        }}
+                      >
+                        {completed ? <CheckCircleIcon /> : index + 1}
+                      </Box>
+                    )}
+                  >
+                    {label}
+                  </StepLabel>
                 </Step>
               ))}
             </Stepper>
 
-            {/* Step Content */}
-            <Box sx={{ mb: 4 }}>
-              {getStepContent(activeStep)}
-            </Box>
+            {/* Enhanced Step Content */}
+            <Card sx={{ 
+              mb: 4,
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              overflow: 'hidden',
+              position: 'relative',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 4,
+                background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+              }
+            }}>
+              <CardContent sx={{ p: 4 }}>
+                {getStepContent(activeStep)}
+              </CardContent>
+            </Card>
 
-            {/* Navigation Buttons */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* Enhanced Navigation Buttons */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              pt: 2,
+              borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+            }}>
               <Button
                 disabled={activeStep === 0}
                 onClick={handleBack}
                 startIcon={<ArrowBackIcon />}
-                sx={{ px: 3 }}
+                sx={{ 
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 3,
+                  background: activeStep === 0 
+                    ? 'rgba(255, 255, 255, 0.1)' 
+                    : 'rgba(255, 255, 255, 0.2)',
+                  color: activeStep === 0 
+                    ? 'rgba(255, 255, 255, 0.5)' 
+                    : '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  '&:hover': {
+                    background: 'rgba(255, 255, 255, 0.3)',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)',
+                  },
+                  transition: 'all 0.3s ease',
+                  '&:disabled': {
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: 'rgba(255, 255, 255, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                  }
+                }}
               >
                 Back
               </Button>
 
               <Box>
                 {activeStep === steps.length - 1 ? (
-                  <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Box sx={{ display: 'flex', gap: 3 }}>
                     <Button
                       variant="outlined"
                       onClick={() => {
@@ -948,13 +1279,25 @@ const CreateCourse = () => {
                       disabled={isSubmitting}
                       startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
                       sx={{
-                        borderColor: '#666666',
-                        color: '#666666',
+                        px: 4,
+                        py: 1.5,
+                        borderRadius: 3,
+                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        color: '#ffffff',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)',
                         '&:hover': {
-                          borderColor: '#333333',
-                          backgroundColor: '#f5f5f5'
+                          borderColor: '#ffffff',
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)',
                         },
-                        px: 4
+                        '&:disabled': {
+                          borderColor: 'rgba(255, 255, 255, 0.2)',
+                          color: 'rgba(255, 255, 255, 0.5)',
+                          background: 'rgba(255, 255, 255, 0.05)',
+                        },
+                        transition: 'all 0.3s ease',
                       }}
                     >
                       {isSubmitting ? 'Saving...' : 'Save as Draft'}
@@ -970,9 +1313,21 @@ const CreateCourse = () => {
                       disabled={isSubmitting}
                       startIcon={isSubmitting ? <CircularProgress size={20} /> : <PublishIcon />}
                       sx={{
-                        background: '#34a853',
-                        '&:hover': { background: '#2d8f47' },
-                        px: 4
+                        px: 4,
+                        py: 1.5,
+                        borderRadius: 3,
+                        background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                        boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)',
+                        '&:hover': { 
+                          background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)',
+                        },
+                        '&:disabled': {
+                          background: 'rgba(76, 175, 80, 0.3)',
+                          boxShadow: 'none',
+                        },
+                        transition: 'all 0.3s ease',
                       }}
                     >
                       {isSubmitting ? 'Publishing...' : 'Publish Course'}
@@ -984,9 +1339,19 @@ const CreateCourse = () => {
                     onClick={handleNext}
                     endIcon={<ArrowForwardIcon />}
                     sx={{
-                      background: '#4285f4',
-                      '&:hover': { background: '#3367d6' },
-                      px: 4
+                      px: 4,
+                      py: 1.5,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)',
+                      color: '#667eea',
+                      fontWeight: 600,
+                      boxShadow: '0 4px 20px rgba(255, 255, 255, 0.3)',
+                      '&:hover': { 
+                        background: 'linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 6px 25px rgba(255, 255, 255, 0.4)',
+                      },
+                      transition: 'all 0.3s ease',
                     }}
                   >
                     Next
@@ -1029,18 +1394,20 @@ const ChapterDialog = ({ open, onClose, onSave, chapter }) => {
   });
 
   useEffect(() => {
-    if (chapter) {
-      setFormData({
-        title: chapter.title,
-        description: chapter.description,
-      });
-    } else {
-      setFormData({
-        title: '',
-        description: '',
-      });
+    if (open) {
+      if (chapter) {
+        setFormData({
+          title: chapter.title,
+          description: chapter.description,
+        });
+      } else {
+        setFormData({
+          title: '',
+          description: '',
+        });
+      }
     }
-  }, [chapter]);
+  }, [open, chapter]);
 
   const handleSubmit = () => {
     if (formData.title.trim() && formData.description.trim()) {
@@ -1094,42 +1461,48 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
     pdfFile: null, // For PDF uploads
     contentType: 'video', // 'video', 'text', 'pdf'
   });
+  const [editorError, setEditorError] = useState(false);
   
   // TinyMCE editor configuration
   const handleEditorChange = (content) => {
     setFormData(prev => ({ ...prev, content }));
   };
 
-  useEffect(() => {
-    if (video) {
-      setFormData({
-        title: video.title,
-        description: video.description,
-        content: video.content || '',
-        thumbnail: video.thumbnail || '',
-        videoType: video.videoType || 'upload',
-        videoUrl: video.videoUrl || '',
-        videoFile: video.videoFile || null,
-        pdfFile: video.pdfFile || null,
-        contentType: video.contentType || 'video',
-      });
-      
+  // Fallback textarea handler
+  const handleTextareaChange = (event) => {
+    setFormData(prev => ({ ...prev, content: event.target.value }));
+  };
 
-    } else {
-      setFormData({
-        title: '',
-        description: '',
-        content: '',
-        thumbnail: '',
-        videoType: 'upload',
-        videoUrl: '',
-        videoFile: null,
+  useEffect(() => {
+    if (open) {
+      if (video) {
+        setFormData({
+          title: video.title,
+          description: video.description,
+          content: video.content || '',
+          thumbnail: video.thumbnail || '',
+          videoType: video.videoType || 'upload',
+          videoUrl: video.videoUrl || '',
+          videoFile: video.videoFile || null,
+          pdfFile: video.pdfFile || null,
+          contentType: video.contentType || 'video',
+        });
+      } else {
+        setFormData({
+          title: '',
+          description: '',
+          content: '',
+          thumbnail: '',
+          videoType: 'upload',
+          videoUrl: '',
+          videoFile: null,
         pdfFile: null,
         contentType: contentType === 'video' ? 'video' : contentType,
       });
 
+      }
     }
-  }, [video, contentType]);
+  }, [open, video, contentType]);
 
   const handleSubmit = () => {
     // Validate required fields
@@ -1199,7 +1572,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
           // Upload PDF to server
           console.log('Uploading PDF file:', file.name, file.size, file.type);
           
-          const response = await fetch('http://localhost:5001/api/upload/pdf', {
+          const response = await fetch(apiUrl('/api/upload/pdf'), {
             method: 'POST',
             body: formData,
           });
@@ -1227,7 +1600,8 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
           alert(`PDF uploaded successfully: ${file.name}`);
         } catch (error) {
           console.error('Error uploading PDF:', error);
-          alert('Failed to upload PDF. Please try again.');
+          console.error('Error details:', error.message);
+          alert(`Failed to upload PDF: ${error.message || 'Unknown error'}. Please try again.`);
         }
       } else {
         alert('Please upload a PDF file');
@@ -1377,41 +1751,6 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
             />
           </Grid>
 
-          {/* Course Thumbnail */}
-          <Grid item size={12}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
-              Course Thumbnail
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {formData.thumbnail && (
-                <Box
-                  component="img"
-                  src={formData.thumbnail}
-                  alt="Thumbnail preview"
-                  sx={{
-                    width: 100,
-                    height: 60,
-                    objectFit: 'cover',
-                    borderRadius: 1,
-                    border: '1px solid #e0e0e0'
-                  }}
-                />
-              )}
-              <Button
-                variant="outlined"
-                component="label"
-                startIcon={<UploadIcon />}
-              >
-                Upload Thumbnail
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={handleThumbnailUpload}
-                />
-              </Button>
-            </Box>
-          </Grid>
 
           {/* Content Type Specific Sections */}
           {contentType === 'video' && (
@@ -1824,44 +2163,93 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                       Write Your Lesson Content
                                     </Typography>
                                     <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
-                                      <Box sx={{ 
-                                        '& .tox-tinymce': {
-                                          border: '1px solid #e0e0e0',
-                                          borderRadius: '4px',
-                                          fontSize: '14px',
-                                          fontFamily: 'inherit'
-                                        },
-                                        '& .tox-toolbar': {
-                                          backgroundColor: '#f8f9fa',
-                                          borderBottom: '1px solid #e0e0e0'
-                                        },
-                                        '& .tox-edit-area': {
-                                          minHeight: '200px'
-                                        }
-                                      }}>
-                                        <Editor
-                                          apiKey="jss4rschit692k4livjyiwyrw43p0w47pc5x0z5os95ylrr5"
-                                          value={formData.content}
-                                          onEditorChange={handleEditorChange}
-                                          init={{
-                                            height: 300,
-                                            menubar: false,
-                                            plugins: [
-                                              'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                                              'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                                              'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-                                            ],
-                                            toolbar: 'undo redo | blocks | ' +
-                                              'bold italic forecolor | alignleft aligncenter ' +
-                                              'alignright alignjustify | bullist numlist outdent indent | ' +
-                                              'removeformat | help',
-                                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                                            placeholder: 'Enter your lesson content here...'
-                                          }}
-                                        />
-                                      </Box>
+                                      {!editorError ? (
+                                        <Box sx={{ 
+                                          '& .tox-tinymce': {
+                                            border: '1px solid #e0e0e0',
+                                            borderRadius: '4px',
+                                            fontSize: '14px',
+                                            fontFamily: 'inherit'
+                                          },
+                                          '& .tox-toolbar': {
+                                            backgroundColor: '#f8f9fa',
+                                            borderBottom: '1px solid #e0e0e0'
+                                          },
+                                          '& .tox-edit-area': {
+                                            minHeight: '200px'
+                                          }
+                                        }}>
+                                          <Editor
+                                            value={formData.content}
+                                            onEditorChange={handleEditorChange}
+                                            onInit={(evt, editor) => {
+                                              console.log('TinyMCE editor initialized successfully');
+                                            }}
+                                            onLoadContent={(editor) => {
+                                              console.log('TinyMCE content loaded');
+                                            }}
+                                            init={{
+                                              height: 300,
+                                              menubar: false,
+                                              plugins: [
+                                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                                              ],
+                                              toolbar: 'undo redo | blocks | ' +
+                                                'bold italic forecolor | alignleft aligncenter ' +
+                                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                                'removeformat | help',
+                                              content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                                              placeholder: 'Enter your lesson content here...',
+                                              // Use CDN without API key validation
+                                              base_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0',
+                                              suffix: '.min',
+                                              // Disable API key validation
+                                              license_key: 'gpl',
+                                              // Add error handling
+                                              setup: (editor) => {
+                                                editor.on('LoadError', (e) => {
+                                                  console.error('TinyMCE load error:', e);
+                                                  setEditorError(true);
+                                                });
+                                              }
+                                            }}
+                                          />
+                                        </Box>
+                                      ) : (
+                                        <Box>
+                                          <Typography variant="body2" color="warning.main" sx={{ mb: 2 }}>
+                                            ⚠️ Rich text editor failed to load. Using fallback text editor.
+                                          </Typography>
+                                          <TextField
+                                            fullWidth
+                                            multiline
+                                            rows={12}
+                                            value={formData.content}
+                                            onChange={handleTextareaChange}
+                                            placeholder="Enter your lesson content here... You can use HTML tags for formatting: &lt;h1&gt;Title&lt;/h1&gt;, &lt;p&gt;Paragraph&lt;/p&gt;, &lt;strong&gt;Bold&lt;/strong&gt;, &lt;em&gt;Italic&lt;/em&gt;, &lt;ul&gt;&lt;li&gt;List item&lt;/li&gt;&lt;/ul&gt;"
+                                            sx={{
+                                              '& .MuiOutlinedInput-root': {
+                                                fontFamily: 'monospace',
+                                                fontSize: '14px'
+                                              }
+                                            }}
+                                          />
+                                          <Button
+                                            size="small"
+                                            onClick={() => setEditorError(false)}
+                                            sx={{ mt: 1 }}
+                                          >
+                                            Try Rich Text Editor Again
+                                          </Button>
+                                        </Box>
+                                      )}
                                       <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
                                         💡 Tip: Use the professional toolbar above to format your content with headers, bold, italic, lists, alignment, links, emojis, and more!
+                                      </Typography>
+                                      <Typography variant="caption" color="warning.main" sx={{ mt: 1, display: 'block' }}>
+                                        ⚠️ If the editor doesn't load, you can use HTML tags directly: &lt;h1&gt;Title&lt;/h1&gt;, &lt;p&gt;Paragraph&lt;/p&gt;, &lt;strong&gt;Bold&lt;/strong&gt;, &lt;em&gt;Italic&lt;/em&gt;, &lt;ul&gt;&lt;li&gt;List item&lt;/li&gt;&lt;/ul&gt;
                                       </Typography>
                                     </Card>
                                   </Grid>
