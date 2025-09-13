@@ -246,22 +246,23 @@ const Discovery = () => {
             >
               Bell & Desk
             </Typography>
-            <Box sx={{ position: 'relative' }} data-login-dropdown>
-              <Button 
-                variant="outlined" 
-                onClick={() => {
-                  setLoginDropdownOpen(!loginDropdownOpen);
-                  setShowUserSignIn(false);
-                }}
-                endIcon={<KeyboardArrowDownIcon />}
-                sx={{ 
-                  textTransform: 'none',
-                  borderRadius: '20px',
-                  px: 3
-                }}
-              >
-                LOG IN
-              </Button>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box sx={{ position: 'relative' }} data-login-dropdown>
+                <Button 
+                  variant="outlined" 
+                  onClick={() => {
+                    setLoginDropdownOpen(!loginDropdownOpen);
+                    setShowUserSignIn(false);
+                  }}
+                  endIcon={<KeyboardArrowDownIcon />}
+                  sx={{ 
+                    textTransform: 'none',
+                    borderRadius: '20px',
+                    px: 3
+                  }}
+                >
+                  LOG IN
+                </Button>
               
               {loginDropdownOpen && (
                 <Box
@@ -299,6 +300,72 @@ const Discovery = () => {
                     <BusinessIcon sx={{ mr: 2, fontSize: 20 }} />
                     Sign in as Community
                   </Button>
+                  
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      navigate('/community-user-signup');
+                      setLoginDropdownOpen(false);
+                    }}
+                    sx={{
+                      textTransform: 'none',
+                      justifyContent: 'flex-start',
+                      px: 3,
+                      py: 2,
+                      borderRadius: 0,
+                      borderBottom: '1px solid #f0f0f0',
+                      '&:hover': {
+                        bgcolor: '#f5f5f5'
+                      }
+                    }}
+                  >
+                    <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
+                    Join as Community User
+                  </Button>
+                  
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      navigate('/community-user-login');
+                      setLoginDropdownOpen(false);
+                    }}
+                    sx={{
+                      textTransform: 'none',
+                      justifyContent: 'flex-start',
+                      px: 3,
+                      py: 2,
+                      borderRadius: 0,
+                      borderBottom: '1px solid #f0f0f0',
+                      '&:hover': {
+                        bgcolor: '#f5f5f5'
+                      }
+                    }}
+                  >
+                    <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
+                    Community User Login
+                  </Button>
+                  
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      navigate('/create-community');
+                      setLoginDropdownOpen(false);
+                    }}
+                    sx={{
+                      textTransform: 'none',
+                      justifyContent: 'flex-start',
+                      px: 3,
+                      py: 2,
+                      borderRadius: 0,
+                      borderBottom: '1px solid #f0f0f0',
+                      '&:hover': {
+                        bgcolor: '#f5f5f5'
+                      }
+                    }}
+                  >
+                    <BusinessIcon sx={{ mr: 2, fontSize: 20 }} />
+                    Create Community
+                  </Button>
                   {showUserSignIn && (
                     <Button
                       fullWidth
@@ -323,6 +390,23 @@ const Discovery = () => {
                   )}
                 </Box>
               )}
+              </Box>
+              
+              <Button 
+                variant="contained" 
+                onClick={() => navigate('/community-user-signup')}
+                sx={{ 
+                  textTransform: 'none',
+                  borderRadius: '20px',
+                  px: 3,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                  }
+                }}
+              >
+                SIGN UP
+              </Button>
             </Box>
           </Box>
         </Container>
@@ -388,7 +472,6 @@ const Discovery = () => {
                     <SearchIcon color="action" />
                   </InputAdornment>
                 ),
-                disableUnderline: true,
                 sx: { 
                   '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                   py: 1.5,
@@ -456,6 +539,7 @@ const Discovery = () => {
             {filteredCommunities.map((community, index) => (
               <Card 
                 key={community.id || index}
+                onClick={() => navigate(`/discover-courseViewer/${community.id}`)}
                 sx={{ 
                   height: '100%',
                   display: 'flex',
@@ -463,6 +547,7 @@ const Discovery = () => {
                   borderRadius: 3,
                   overflow: 'hidden',
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  cursor: 'pointer',
                   '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
@@ -492,48 +577,75 @@ const Discovery = () => {
                   #{index + 1}
                 </Box>
 
-                <CardMedia
-                  component="img"
-                  height="160"
-                  image={(() => {
-                    if (!community.thumbnail || community.thumbnail.trim() === '') {
-                      return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
-                    }
-                    
-                    // If it's a data URL, use it directly
-                    if (community.thumbnail.startsWith('data:')) {
-                      return community.thumbnail;
-                    }
-                    
-                    // If it's a localhost URL, replace with production URL
-                    if (community.thumbnail.includes('localhost')) {
-                      const filename = community.thumbnail.split('/').pop();
-                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
-                    }
-                    
-                    // If it's already a full production URL, use it directly
-                    if (community.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
-                      return community.thumbnail;
-                    }
-                    
-                    // If it starts with /uploads, construct the full URL
-                    if (community.thumbnail.startsWith('/uploads/')) {
-                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
-                    }
-                    
-                    // If it's just a filename, add /uploads/ prefix
-                    return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
-                  })()}
-                  alt={community.title}
-                  sx={{
-                    objectFit: 'cover',
-                    objectPosition: 'center'
-                  }}
-                  onError={(e) => {
-                    console.error('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
-                    e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
-                  }}
-                />
+                <Box sx={{ position: 'relative' }}>
+                  <CardMedia
+                    component="img"
+                    height="160"
+                    image={(() => {
+                      if (!community.thumbnail || community.thumbnail.trim() === '') {
+                        return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                      }
+                      
+                      // If it's a data URL, use it directly
+                      if (community.thumbnail.startsWith('data:')) {
+                        return community.thumbnail;
+                      }
+                      
+                      // If it's a localhost URL, replace with production URL
+                      if (community.thumbnail.includes('localhost')) {
+                        const filename = community.thumbnail.split('/').pop();
+                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
+                      }
+                      
+                      // If it's already a full production URL, use it directly
+                      if (community.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
+                        return community.thumbnail;
+                      }
+                      
+                      // If it starts with /uploads, construct the full URL
+                      if (community.thumbnail.startsWith('/uploads/')) {
+                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
+                      }
+                      
+                      // If it's just a filename, add /uploads/ prefix
+                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
+                    })()}
+                    alt={community.title}
+                    sx={{
+                      objectFit: 'cover',
+                      objectPosition: 'center'
+                    }}
+                    onError={(e) => {
+                      console.error('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
+                      e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                    }}
+                  />
+                  
+                  {/* Play Button Overlay */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: 50,
+                      height: 50,
+                      borderRadius: '50%',
+                      background: 'rgba(0,0,0,0.7)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s ease',
+                      opacity: 0,
+                      '&:hover': {
+                        opacity: 1,
+                        transform: 'translate(-50%, -50%) scale(1.1)'
+                      }
+                    }}
+                  >
+                    <PlayIcon sx={{ color: 'white', fontSize: 24, ml: 0.5 }} />
+                  </Box>
+                </Box>
                 
                 <CardContent sx={{ flexGrow: 1, p: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -640,7 +752,7 @@ const Discovery = () => {
                     )}
                   </Box>
                   
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PeopleIcon sx={{ fontSize: '1rem', mr: 0.5, color: 'text.secondary' }} />
                       <Typography variant="body2" color="text.secondary">
@@ -657,6 +769,25 @@ const Discovery = () => {
                       Free
                     </Typography>
                   </Box>
+                  
+                  {/* Click to Preview Button */}
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    startIcon={<PlayIcon />}
+                    sx={{
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      borderColor: '#4285f4',
+                      color: '#4285f4',
+                      '&:hover': {
+                        borderColor: '#3367d6',
+                        backgroundColor: '#4285f415'
+                      }
+                    }}
+                  >
+                    View Preview
+                  </Button>
                 </CardContent>
               </Card>
             ))}

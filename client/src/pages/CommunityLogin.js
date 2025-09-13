@@ -57,24 +57,28 @@ const CommunityLogin = () => {
 
     try {
       const response = await communityAuthApi.login(formData.email, formData.password);
+      console.log('Login response:', response);
       
-      setSuccess('Login successful! Redirecting to your courses...');
+      setSuccess('Login successful! Redirecting to your dashboard...');
       
-      // Get community name and redirect directly to courses
+      // Get community name and redirect to admin dashboard
       const community = communityAuthApi.getCurrentCommunity();
+      console.log('Current community data:', community);
+      
       if (community && community.name) {
-        const communityUrl = getCommunityUrl(community.name, 'courses');
-        console.log('Redirecting to courses URL:', communityUrl);
+        const communityUrlName = community.name.toLowerCase().replace(/\s+/g, '-');
+        const adminDashboardUrl = `/${communityUrlName}/admin/dashboard`;
+        console.log('Redirecting to admin dashboard URL:', adminDashboardUrl);
         
-        // Redirect directly to courses after a short delay
+        // Redirect to admin dashboard after a short delay
         setTimeout(() => {
-          navigate(communityUrl);
+          navigate(adminDashboardUrl);
         }, 1500);
       } else {
-        // Fallback to courses page if community info is not available
-        setTimeout(() => {
-          navigate('/courses');
-        }, 1500);
+        // Fallback - this shouldn't happen but just in case
+        console.error('No community data found after login');
+        console.log('Available localStorage keys:', Object.keys(localStorage));
+        setError('Login successful but unable to redirect. Please try again.');
       }
 
     } catch (error) {

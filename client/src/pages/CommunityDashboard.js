@@ -249,6 +249,7 @@ const CommunityDashboard = () => {
     { id: 'dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
     { id: 'courses', icon: <DescriptionIcon />, label: 'Courses' },
     { id: 'admins', icon: <PeopleIcon />, label: 'Admins' },
+    { id: 'community-users', icon: <PeopleIcon />, label: 'Community Users' },
     // { id: 'analytics', icon: <FlashIcon />, label: 'Analytics' },
     // { id: 'content', icon: <DescriptionIcon />, label: 'Content' },
   ];
@@ -272,6 +273,7 @@ const CommunityDashboard = () => {
       }}>
         {/* Common Focused Top Bar */}
         <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
+
 
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4 }}>

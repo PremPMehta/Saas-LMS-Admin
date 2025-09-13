@@ -3,6 +3,7 @@ import { Box, Avatar, IconButton } from '@mui/material';
 import {
   VideoLibrary as VideoIcon,
   ArrowBack as ArrowBackIcon,
+  People as PeopleIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
@@ -51,54 +52,114 @@ const FocusedSidebar = ({ darkMode }) => {
         </Avatar>
       </Box>
 
-      {/* Navigation Items - COURSES ONLY */}
-      {[
-        { icon: <VideoIcon />, label: 'Courses', path: communityUrls?.courses || '/courses' }
-      ].map((item, index) => {
-        // Check if we're currently on the courses page
-        const isActive = window.location.pathname.includes('/courses');
+      {/* Navigation Items */}
+      {(() => {
+        // Check if we're in community user context
+        const communityUserData = localStorage.getItem('communityUserData');
+        const communityData = localStorage.getItem('communityData');
+        const communityToken = localStorage.getItem('communityToken');
+        const communityUserToken = localStorage.getItem('communityUserToken');
         
-        return (
-          <Box key={index} sx={{ mb: 2 }}>
-            <IconButton
-              onClick={() => {
-                // If already on courses page, just refresh
-                if (isActive) {
-                  window.location.reload();
-                } else {
-                  navigate(item.path);
-                }
-              }}
-              sx={{
-                color: isActive
-                  ? (darkMode ? '#ffffff' : '#000000')
-                  : (darkMode ? '#b0b0b0' : '#666666'),
-                backgroundColor: isActive 
-                  ? (darkMode ? '#404040' : '#e3f2fd')
-                  : 'transparent',
-                '&:hover': {
-                  backgroundColor: isActive 
-                    ? (darkMode ? '#505050' : '#bbdefb')
-                    : (darkMode ? '#404040' : '#f0f0f0'),
+        // Determine user type based on current path and available tokens
+        // If we're on an admin path, we're an admin regardless of localStorage
+        const isOnAdminPath = window.location.pathname.includes('/admin/');
+        const isOnStudentPath = window.location.pathname.includes('/student/');
+        
+        // Priority: 1) Current path, 2) Available tokens
+        const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !!communityUserToken && !communityToken);
+        
+        console.log('🔍 FocusedSidebar Debug:', {
+          communityUserData: communityUserData ? 'EXISTS' : 'NULL',
+          communityData: communityData ? 'EXISTS' : 'NULL',
+          communityToken: communityToken ? 'EXISTS' : 'NULL',
+          communityUserToken: communityUserToken ? 'EXISTS' : 'NULL',
+          isOnAdminPath: isOnAdminPath,
+          isOnStudentPath: isOnStudentPath,
+          isCommunityUser: isCommunityUser,
+          currentPath: window.location.pathname
+        });
+        
+        const navItems = isCommunityUser ? [
+          // Navigation for community users
+          { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/student/courses` },
+          { icon: <PeopleIcon />, label: 'Profile', path: `/${communityName}/student/profile` }
+        ] : [
+          // Navigation for community admins
+          { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/admin/courses` },
+          { icon: <PeopleIcon />, label: 'Community Users', path: `/${communityName}/admin/community-users` }
+        ];
+        
+        return navItems.map((item, index) => {
+          // Check if we're currently on this page
+          const isActive = window.location.pathname.includes(item.path.split('/').pop()) || 
+            (isCommunityUser && item.label === 'Courses' && window.location.pathname.includes('/student/'));
+        
+          return (
+            <Box key={index} sx={{ mb: 2 }}>
+              <IconButton
+                onClick={() => {
+                  console.log('Navigation clicked:', {
+                    label: item.label,
+                    path: item.path,
+                    isActive: isActive,
+                    currentPath: window.location.pathname
+                  });
+                  
+                  // If already on this page, do nothing
+                  if (isActive) {
+                    console.log('Already on this page, no action needed');
+                  } else {
+                    console.log('Navigating to:', item.path);
+                    navigate(item.path);
+                  }
+                }}
+                sx={{
                   color: isActive
                     ? (darkMode ? '#ffffff' : '#000000')
-                    : (darkMode ? '#ffffff' : '#000000'),
-                }
-              }}
-              title={item.label}
-            >
-              {item.icon}
-            </IconButton>
-          </Box>
-        );
-      })}
+                    : (darkMode ? '#b0b0b0' : '#666666'),
+                  backgroundColor: isActive 
+                    ? (darkMode ? '#404040' : '#e3f2fd')
+                    : 'transparent',
+                  '&:hover': {
+                    backgroundColor: isActive 
+                      ? (darkMode ? '#505050' : '#bbdefb')
+                      : (darkMode ? '#404040' : '#f0f0f0'),
+                    color: isActive
+                      ? (darkMode ? '#ffffff' : '#000000')
+                      : (darkMode ? '#ffffff' : '#000000'),
+                  }
+                }}
+                title={item.label}
+              >
+                {item.icon}
+              </IconButton>
+            </Box>
+          );
+        });
+      })()}
 
       {/* Logout Button */}
       <Box sx={{ mt: 'auto', mb: 2 }}>
         <IconButton
           onClick={() => {
-            communityAuthApi.logout();
-            navigate('/community-login');
+            // Check if we're in community user context using same logic
+            const communityUserToken = localStorage.getItem('communityUserToken');
+            const communityToken = localStorage.getItem('communityToken');
+            const isOnAdminPath = window.location.pathname.includes('/admin/');
+            const isOnStudentPath = window.location.pathname.includes('/student/');
+            
+            const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !!communityUserToken && !communityToken);
+            
+            if (isCommunityUser) {
+              // Logout community user
+              localStorage.removeItem('communityUserToken');
+              localStorage.removeItem('communityUserData');
+              navigate('/community-user-signup');
+            } else {
+              // Logout community admin
+              communityAuthApi.logout();
+              navigate('/community-login');
+            }
           }}
           sx={{ color: darkMode ? '#ffffff' : '#000000' }}
           title="Logout"

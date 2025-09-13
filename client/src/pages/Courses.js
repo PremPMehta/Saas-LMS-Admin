@@ -61,6 +61,10 @@ const Courses = () => {
   
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
+  
+  // Check if user is a community user (student) or admin
+  const communityUserData = localStorage.getItem('communityUserData');
+  const isCommunityUser = !!communityUserData;
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -518,10 +522,13 @@ const Courses = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
                   <Box>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
-                      My Courses
+                      {isCommunityUser ? 'Available Courses' : 'My Courses'}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      Manage and track all your created courses ({courses.length} courses)
+                      {isCommunityUser 
+                        ? `Browse and enroll in courses (${courses.length} courses available)`
+                        : `Manage and track all your created courses (${courses.length} courses)`
+                      }
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 2 }}>
@@ -542,23 +549,26 @@ const Courses = () => {
                         }
                       }} />
                     </IconButton>
-                    <Button
-                      variant="contained"
-                      startIcon={<AddIcon />}
-                      onClick={() => {
-                        if (communityUrls) {
-                          navigate(communityUrls.createCourse);
-                        } else {
-                          navigate('/create-course');
-                        }
-                      }}
-                      sx={{
-                        background: '#4285f4',
-                        '&:hover': { background: '#3367d6' }
-                      }}
-                    >
-                      Create New Course
-                    </Button>
+                    {/* Only show Create New Course button for admins */}
+                    {!isCommunityUser && (
+                      <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => {
+                          if (communityUrls) {
+                            navigate(communityUrls.createCourse);
+                          } else {
+                            navigate('/create-course');
+                          }
+                        }}
+                        sx={{
+                          background: '#4285f4',
+                          '&:hover': { background: '#3367d6' }
+                        }}
+                      >
+                        Create New Course
+                      </Button>
+                    )}
                   </Box>
                 </Box>
 
@@ -1599,32 +1609,37 @@ const Courses = () => {
                                   }}
                                   sx={{ flex: 1 }}
                                 >
-                                  View
+                                  {isCommunityUser ? 'Enroll' : 'View'}
                                 </Button>
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  color="primary"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditCourse(course);
-                                  }}
-                                  sx={{ flex: 1 }}
-                                >
-                                  Edit
-                                </Button>
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  color="error"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteCourse(course);
-                                  }}
-                                  sx={{ flex: 1 }}
-                                >
-                                  Delete
-                                </Button>
+                                {/* Only show Edit and Delete buttons for admins */}
+                                {!isCommunityUser && (
+                                  <>
+                                    <Button
+                                      size="small"
+                                      variant="outlined"
+                                      color="primary"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditCourse(course);
+                                      }}
+                                      sx={{ flex: 1 }}
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      size="small"
+                                      variant="outlined"
+                                      color="error"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteCourse(course);
+                                      }}
+                                      sx={{ flex: 1 }}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </>
+                                )}
                                 </Box>
                               </Box>
                             </CardContent>
@@ -1746,16 +1761,19 @@ const Courses = () => {
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={() => setOpenCourseDialog(false)}>Close</Button>
-                    <Button
-                      variant="contained"
-                      onClick={() => handleEditCourse(selectedCourse)}
-                      sx={{
-                        background: '#4285f4',
-                        '&:hover': { background: '#3367d6' }
-                      }}
-                    >
-                      Edit Course
-                    </Button>
+                    {/* Only show Edit Course button for admins */}
+                    {!isCommunityUser && (
+                      <Button
+                        variant="contained"
+                        onClick={() => handleEditCourse(selectedCourse)}
+                        sx={{
+                          background: '#4285f4',
+                          '&:hover': { background: '#3367d6' }
+                        }}
+                      >
+                        Edit Course
+                      </Button>
+                    )}
                   </DialogActions>
                 </>
               )}

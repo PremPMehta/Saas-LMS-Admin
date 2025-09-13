@@ -14,8 +14,13 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   
-  // Get community data
+  // Check if user is a community user (student) or admin
+  const communityUserData = localStorage.getItem('communityUserData');
+  const isCommunityUser = !!communityUserData;
+  
+  // Get appropriate data based on user type
   const communityData = communityAuthApi.getCurrentCommunity();
+  const studentData = isCommunityUser ? JSON.parse(communityUserData) : null;
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -37,8 +42,16 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
 
   const handleLogout = () => {
     handleMenuClose();
-    communityAuthApi.logout();
-    navigate('/community-login');
+    if (isCommunityUser) {
+      // Clear student data and redirect to discovery page
+      localStorage.removeItem('communityUserToken');
+      localStorage.removeItem('communityUserData');
+      navigate('/discovery');
+    } else {
+      // Clear admin data and redirect to admin login
+      communityAuthApi.logout();
+      navigate('/community-login');
+    }
   };
 
   return (
@@ -76,7 +89,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
         </Tooltip>
       </Box>
 
-      {/* Right side - Community Profile */}
+      {/* Right side - User Profile */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Box sx={{ textAlign: 'right' }}>
           <Box sx={{ 
@@ -85,18 +98,30 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             color: darkMode ? '#ffffff' : '#000000',
             lineHeight: 1.2
           }}>
-            {communityData?.name || 'Community'}
+            {isCommunityUser ? 
+              (studentData?.firstName && studentData?.lastName ? 
+                `${studentData.firstName} ${studentData.lastName}` : 
+                (studentData?.firstName || studentData?.email || 'Student')
+              ) : 
+              (communityData?.name || 'Community')
+            }
           </Box>
           <Box sx={{ 
             fontSize: '0.75rem', 
             color: darkMode ? '#b0b0b0' : '#666666',
             lineHeight: 1.2
           }}>
-            {communityData?.ownerEmail || 'Admin'}
+            {isCommunityUser ? 'Student' : (communityData?.ownerEmail || 'Admin')}
           </Box>
         </Box>
         
-        <Tooltip title={`${communityData?.name || 'Community'} Profile`}>
+        <Tooltip title={`${isCommunityUser ? 
+          (studentData?.firstName && studentData?.lastName ? 
+            `${studentData.firstName} ${studentData.lastName}` : 
+            (studentData?.firstName || studentData?.email || 'Student')
+          ) : 
+          (communityData?.name || 'Community')
+        } Profile`}>
           <IconButton
             onClick={handleAvatarClick}
             sx={{
@@ -109,7 +134,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
           >
             <Avatar
               sx={{
-                bgcolor: '#4285f4',
+                bgcolor: isCommunityUser ? '#34a853' : '#4285f4', // Green for students, blue for admins
                 width: 50, // Match sidebar circle size
                 height: 50, // Match sidebar circle size
                 fontSize: '1.2rem', // Match sidebar font size
@@ -118,11 +143,14 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 '&:hover': {
-                  boxShadow: '0 4px 12px rgba(66, 133, 244, 0.3)',
+                  boxShadow: isCommunityUser ? '0 4px 12px rgba(52, 168, 83, 0.3)' : '0 4px 12px rgba(66, 133, 244, 0.3)',
                 }
               }}
             >
-              {communityData?.name?.charAt(0) || 'C'}
+              {isCommunityUser ? 
+                (studentData?.firstName?.charAt(0) || studentData?.email?.charAt(0) || 'S') : 
+                (communityData?.name?.charAt(0) || 'C')
+              }
             </Avatar>
           </IconButton>
         </Tooltip>
