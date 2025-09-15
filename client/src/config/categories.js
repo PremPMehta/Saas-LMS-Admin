@@ -30,6 +30,13 @@ export const DETAILED_CATEGORIES = [
   'Position sizing & stop-loss rules',
   'Emotional discipline in trading',
   'Building sustainable trading systems',
+  // NEW CATEGORIES - Added based on comprehensive crypto education needs
+  'Automation, prompts, agents, and AI-powered businesses',
+  'Tokenization of real estate, art, and real-world finance',
+  'On-chain governance, voting, participation',
+  'Smart contracts, Solidity, dApps, blockchain infrastructure',
+  'Taxes, fiscal reporting, crypto compliance',
+  'Legal smart contracts, Web3 regulation',
 ];
 
 // DERIVED: General categories (used in EditCourse.js)
@@ -107,6 +114,14 @@ export const DETAILED_TO_GENERAL_MAPPING = {
   'Position sizing & stop-loss rules': 'Finance',
   'Emotional discipline in trading': 'Finance',
   'Building sustainable trading systems': 'Finance',
+  
+  // NEW CATEGORIES MAPPING
+  'Automation, prompts, agents, and AI-powered businesses': 'Technology',
+  'Tokenization of real estate, art, and real-world finance': 'Finance',
+  'On-chain governance, voting, participation': 'Technology',
+  'Smart contracts, Solidity, dApps, blockchain infrastructure': 'Technology',
+  'Taxes, fiscal reporting, crypto compliance': 'Finance',
+  'Legal smart contracts, Web3 regulation': 'Business',
 };
 
 // MAPPING: Map detailed categories to crypto categories
@@ -138,6 +153,14 @@ export const DETAILED_TO_CRYPTO_MAPPING = {
   'Position sizing & stop-loss rules': 'trading',
   'Emotional discipline in trading': 'trading',
   'Building sustainable trading systems': 'trading',
+  
+  // NEW CATEGORIES CRYPTO MAPPING
+  'Automation, prompts, agents, and AI-powered businesses': 'technology',
+  'Tokenization of real estate, art, and real-world finance': 'defi',
+  'On-chain governance, voting, participation': 'blockchain',
+  'Smart contracts, Solidity, dApps, blockchain infrastructure': 'blockchain',
+  'Taxes, fiscal reporting, crypto compliance': 'finance',
+  'Legal smart contracts, Web3 regulation': 'blockchain',
 };
 
 // UTILITY FUNCTIONS
