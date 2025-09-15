@@ -647,29 +647,9 @@ const Discovery = () => {
                       });
                       
                       if (!community.thumbnail || community.thumbnail.trim() === '') {
-                        console.log('🖼️ Discovery: No thumbnail, using course-specific fallback for', community.title);
-                        // Create a proper course-related fallback instead of random images
-                        return `data:image/svg+xml;base64,${btoa(`
-                          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
-                              </linearGradient>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#grad)"/>
-                            <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
-                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
-                                  text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
-                              ${community.title.length > 20 ? community.title.substring(0, 20) + '...' : community.title}
-                            </text>
-                            <text x="50%" y="70%" font-family="Arial, sans-serif" font-size="14" 
-                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
-                                  opacity="0.8">
-                              ${community.category || 'Course'}
-                            </text>
-                          </svg>
-                        `)}`;
+                        console.log('🖼️ Discovery: No thumbnail, will show text fallback for', community.title);
+                        // Return a simple placeholder that will trigger the fallback
+                        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InRyYW5zcGFyZW50Ii8+PC9zdmc+';
                       }
                       
                       // If it's a data URL, use it directly
@@ -712,100 +692,31 @@ const Discovery = () => {
                     onError={(e) => {
                       console.log('❌ Discovery: Thumbnail failed to load for', community.title, ':', {
                         failedSrc: e.target.src,
-                        originalThumbnail: community.thumbnail,
-                        fallbackAttempts: e.target.dataset.fallbackAttempts || '0'
+                        originalThumbnail: community.thumbnail
                       });
                       
-                      // Try multiple fallback strategies
-                      const originalSrc = e.target.src;
-                      const fallbackAttempts = e.target.dataset.fallbackAttempts || '0';
-                      const attempts = parseInt(fallbackAttempts);
-                      
-                      if (attempts === 0) {
-                        // First attempt: Try with different URL construction
-                        e.target.dataset.fallbackAttempts = '1';
-                        if (community.thumbnail && !community.thumbnail.startsWith('data:') && !community.thumbnail.startsWith('http')) {
-                          // Try direct filename approach
-                          const newUrl = `https://saas-lms-admin-1.onrender.com/uploads/${community.thumbnail}`;
-                          console.log('🔄 Discovery: Trying alternative URL for', community.title, ':', newUrl);
-                          e.target.src = newUrl;
-                        } else {
-                          // Try course-specific fallback
-                          const fallbackUrl = `data:image/svg+xml;base64,${btoa(`
-                            <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
-                              <defs>
-                                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
-                                  <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
-                                </linearGradient>
-                              </defs>
-                              <rect width="100%" height="100%" fill="url(#grad)"/>
-                              <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
-                                    text-anchor="middle" dominant-baseline="middle" fill="white" 
-                                    text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
-                                ${community.title.length > 20 ? community.title.substring(0, 20) + '...' : community.title}
-                              </text>
-                              <text x="50%" y="70%" font-family="Arial, sans-serif" font-size="14" 
-                                    text-anchor="middle" dominant-baseline="middle" fill="white" 
-                                    opacity="0.8">
-                                ${community.category || 'Course'}
-                              </text>
-                            </svg>
-                          `)}`;
-                          console.log('🔄 Discovery: Trying course-specific fallback for', community.title);
-                          e.target.src = fallbackUrl;
-                        }
-                      } else if (attempts === 1) {
-                        // Second attempt: Try course-specific fallback
-                        e.target.dataset.fallbackAttempts = '2';
-                        const fallbackUrl = `data:image/svg+xml;base64,${btoa(`
-                          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
-                              </linearGradient>
-                            </defs>
-                            <rect width="100%" height="100%" fill="url(#grad)"/>
-                            <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
-                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
-                                  text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
-                              ${community.title.length > 20 ? community.title.substring(0, 20) + '...' : community.title}
-                            </text>
-                            <text x="50%" y="70%" font-family="Arial, sans-serif" font-size="14" 
-                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
-                                  opacity="0.8">
-                              ${community.category || 'Course'}
-                            </text>
-                          </svg>
-                        `)}`;
-                        console.log('🔄 Discovery: Trying course-specific fallback again for', community.title);
-                        e.target.src = fallbackUrl;
-                      } else {
-                        // Final fallback: Show text fallback
-                        console.log('💀 Discovery: All attempts failed, showing text fallback for', community.title);
-                        e.target.style.display = 'none';
-                        const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
-                        if (!fallbackDiv) {
-                          const newFallback = document.createElement('div');
-                          newFallback.className = 'thumbnail-fallback';
-                          newFallback.style.cssText = `
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            height: 160px;
-                            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
-                            color: white;
-                            font-weight: bold;
-                            font-size: 14px;
-                            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-                            text-align: center;
-                            padding: 10px;
-                            word-break: break-word;
-                          `;
-                          newFallback.textContent = community.title;
-                          e.target.parentElement.appendChild(newFallback);
-                        }
+                      // Immediately show text fallback - no more complex attempts
+                      e.target.style.display = 'none';
+                      const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
+                      if (!fallbackDiv) {
+                        const newFallback = document.createElement('div');
+                        newFallback.className = 'thumbnail-fallback';
+                        newFallback.style.cssText = `
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          height: 160px;
+                          background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+                          color: white;
+                          font-weight: bold;
+                          font-size: 14px;
+                          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                          text-align: center;
+                          padding: 10px;
+                          word-break: break-word;
+                        `;
+                        newFallback.textContent = community.title;
+                        e.target.parentElement.appendChild(newFallback);
                       }
                     }}
                   />
