@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
+import '../App.css';
 import {
   Box,
   Typography,
@@ -249,31 +250,25 @@ const CommunityDashboard = () => {
     { id: 'dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
     { id: 'courses', icon: <DescriptionIcon />, label: 'Courses' },
     { id: 'admins', icon: <PeopleIcon />, label: 'Admins' },
-    { id: 'community-users', icon: <PeopleIcon />, label: 'Community Users' },
     // { id: 'analytics', icon: <FlashIcon />, label: 'Analytics' },
     // { id: 'content', icon: <DescriptionIcon />, label: 'Content' },
   ];
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: darkMode ? '#1a1a1a' : '#f8f9fa',
-      display: 'flex'
-    }}>
+    <Box className="bg-black">
       {/* Common Focused Sidebar */}
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
       }}>
         {/* Common Focused Top Bar */}
         <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
-
 
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4 }}>
@@ -308,10 +303,10 @@ const CommunityDashboard = () => {
                           justifyContent: 'center',
                         }}
                       >
-                        <SchoolIcon sx={{ color: '#4285f4' }} />
+                        <SchoolIcon sx={{ color: '#0F3C60' }} />
                       </Box>
                       <Box>
-                        <Typography variant="h4" sx={{ color: '#4285f4', mb: 0 }}>
+                        <Typography variant="h4" sx={{ color: '#0F3C60', mb: 0 }}>
                           {courses.length}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -600,7 +595,7 @@ const CommunityDashboard = () => {
                     variant="contained"
                     onClick={() => handleEditCourse(selectedCourse._id || selectedCourse.id)}
                     sx={{
-                      background: '#4285f4',
+                      background: '#0F3C60',
                       '&:hover': { background: '#3367d6' }
                     }}
                   >

@@ -935,7 +935,7 @@ const CourseViewer = () => {
                                   width: 24,
                                   height: 24,
                                   borderRadius: '50%',
-                                  backgroundColor: (video.type === 'VIDEO' || video.videoType) ? '#4285f4' : 
+                                  backgroundColor: (video.type === 'VIDEO' || video.videoType) ? '#0F3C60' : 
                                                    video.type === 'PDF' ? '#34a853' : '#f59e0b',
                                   color: 'white',
                                   fontSize: '12px'
@@ -1039,7 +1039,7 @@ const CourseViewer = () => {
                                   }}
                                   startIcon={<FullscreenIcon />}
                                   sx={{
-                                    background: '#4285f4',
+                                    background: '#0F3C60',
                                     '&:hover': { background: '#3367d6' }
                                   }}
                                 >
@@ -1384,7 +1384,7 @@ const CourseViewer = () => {
                                     fontWeight: 600
                                   },
                                   '& blockquote': {
-                                    borderLeft: '4px solid #4285f4',
+                                    borderLeft: '4px solid #0F3C60',
                                     paddingLeft: 2,
                                     marginLeft: 0,
                                     fontStyle: 'italic',

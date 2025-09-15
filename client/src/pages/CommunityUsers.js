@@ -43,6 +43,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
+import '../App.css';
 import axios from 'axios';
 
 const CommunityUsers = () => {
@@ -240,18 +241,14 @@ const CommunityUsers = () => {
   }
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: darkMode ? '#1a1a1a' : '#f8f9fa',
-      display: 'flex'
-    }}>
+    <Box className="bg-black">
       {/* Common Focused Sidebar */}
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'

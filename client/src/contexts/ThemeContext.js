@@ -59,7 +59,7 @@ export const ThemeProvider = ({ children }) => {
       },
     },
     typography: {
-      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
         fontWeight: 600,
       },

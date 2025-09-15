@@ -261,7 +261,7 @@ const DiscoverCourseViewer = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh' }}>
+    <Box sx={{  minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e9ecef', py: 2 }}>
         <Container maxWidth="xl">
@@ -452,7 +452,7 @@ const DiscoverCourseViewer = () => {
                         }
                       }}
                     >
-                      <PlayIcon sx={{ fontSize: 40, color: '#4285f4', ml: 0.5 }} />
+                      <PlayIcon sx={{ fontSize: 40, color: '#0F3C60', ml: 0.5 }} />
                     </Box>
                   </Box>
 
@@ -526,7 +526,7 @@ const DiscoverCourseViewer = () => {
                     key={episode.id}
                     sx={{
                       cursor: 'pointer',
-                      border: selectedEpisode?.id === episode.id ? '2px solid #4285f4' : '1px solid #e0e0e0',
+                      border: selectedEpisode?.id === episode.id ? '2px solid #0F3C60' : '1px solid #e0e0e0',
                       borderRadius: 2,
                       overflow: 'hidden',
                       transition: 'all 0.2s ease',
@@ -611,7 +611,7 @@ const DiscoverCourseViewer = () => {
         
         <DialogContent>
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <LockIcon sx={{ fontSize: 60, color: '#4285f4', mb: 2 }} />
+            <LockIcon sx={{ fontSize: 60, color: '#0F3C60', mb: 2 }} />
             <Typography variant="h6" sx={{ mb: 2 }}>
               {selectedEpisode?.title}
             </Typography>

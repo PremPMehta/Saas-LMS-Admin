@@ -80,7 +80,7 @@ class PDFGenerator {
         }
         
         .content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
-          color: #4285f4;
+          color: #0F3C60;
           margin-top: 25px;
           margin-bottom: 15px;
           font-weight: 600;
@@ -108,7 +108,7 @@ class PDFGenerator {
         }
         
         .content blockquote {
-          border-left: 4px solid #4285f4;
+          border-left: 4px solid #0F3C60;
           padding-left: 20px;
           margin: 20px 0;
           font-style: italic;
@@ -132,7 +132,7 @@ class PDFGenerator {
         }
         
         .content table th {
-          background-color: #4285f4;
+          background-color: #0F3C60;
           color: white;
           font-weight: 600;
         }

@@ -84,7 +84,7 @@ const CommunityUserDashboard = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -125,10 +125,10 @@ const CommunityUserDashboard = () => {
                           justifyContent: 'center',
                         }}
                       >
-                        <BookmarkIcon sx={{ color: '#4285f4' }} />
+                        <BookmarkIcon sx={{ color: '#0F3C60' }} />
                       </Box>
                       <Box>
-                        <Typography variant="h4" sx={{ color: '#4285f4', mb: 0 }}>
+                        <Typography variant="h4" sx={{ color: '#0F3C60', mb: 0 }}>
                           0
                         </Typography>
                         <Typography variant="body2" color="text.secondary">

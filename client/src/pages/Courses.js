@@ -3,8 +3,10 @@ import courseApi from '../utils/courseApi';
 import communityAuthApi from '../utils/communityAuthApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import { CRYPTO_CATEGORIES } from '../config/categories';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
+import '../App.css';
 import {
   Box,
   Container,
@@ -493,14 +495,14 @@ const Courses = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: darkMode ? '#1a1a1a' : '#f5f5f5' }}>
+    <Box className="bg-black">
       {/* Common Focused Sidebar */}
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -536,7 +538,7 @@ const Courses = () => {
                       onClick={handleRefresh}
                       disabled={refreshing}
                       sx={{
-                        color: '#4285f4',
+                        color: '#0F3C60',
                         '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                       }}
                       title="Refresh courses"
@@ -562,7 +564,7 @@ const Courses = () => {
                           }
                         }}
                         sx={{
-                          background: '#4285f4',
+                          background: '#0F3C60',
                           '&:hover': { background: '#3367d6' }
                         }}
                       >
@@ -597,10 +599,10 @@ const Courses = () => {
                             justifyContent: 'center',
                           }}
                         >
-                          <VideoIcon sx={{ color: '#4285f4' }} />
+                          <VideoIcon sx={{ color: '#0F3C60' }} />
                         </Box>
                         <Box>
-                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4', mb: 0 }}>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F3C60', mb: 0 }}>
                             {courses.length}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -765,7 +767,7 @@ const Courses = () => {
                                   : '0 4px 20px rgba(0, 0, 0, 0.08)',
                                 height: '56px',
                                 '&.Mui-focused': {
-                                  border: '1px solid #4285f4',
+                                  border: '1px solid #0F3C60',
                                 }
                               },
                               '& .MuiInputBase-input': {
@@ -844,7 +846,7 @@ const Courses = () => {
                                     label={getActiveFiltersCount()} 
                                     size="small" 
                                     sx={{ 
-                                      bgcolor: '#4285f4', 
+                                      bgcolor: '#0F3C60', 
                                       color: '#ffffff',
                                       fontSize: '0.75rem',
                                       height: '20px'
@@ -889,7 +891,7 @@ const Courses = () => {
                               }}>
                                 <CardContent sx={{ p: 1.5 }}>
                                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#4285f4', fontSize: '0.875rem' }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0F3C60', fontSize: '0.875rem' }}>
                                       Filters
                                     </Typography>
                                     <Button 
@@ -925,7 +927,7 @@ const Courses = () => {
                                         }
                                       }}
                                     >
-                                      <VideoIcon sx={{ mr: 1, color: '#4285f4', fontSize: '1rem' }} />
+                                      <VideoIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
                                       <ListItemText 
                                         primary="Type of Course" 
                                         sx={{ 
@@ -972,9 +974,9 @@ const Courses = () => {
                                                 disabled
                                                 size="small"
                                                 sx={{ 
-                                                  color: '#4285f4',
+                                                  color: '#0F3C60',
                                                   p: 0.5,
-                                                  '&.Mui-checked': { color: '#4285f4' },
+                                                  '&.Mui-checked': { color: '#0F3C60' },
                                                   '&.Mui-disabled': { color: '#9e9e9e' }
                                                 }}
                                               />
@@ -1011,7 +1013,7 @@ const Courses = () => {
                                         }
                                       }}
                                     >
-                                      <StarIcon sx={{ mr: 1, color: '#4285f4', fontSize: '1rem' }} />
+                                      <StarIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
                                       <ListItemText 
                                         primary="Category" 
                                         sx={{ 
@@ -1026,16 +1028,7 @@ const Courses = () => {
                                     </ListItemButton>
                                     <Collapse in={expandedSections.categories}>
                                       <List sx={{ pl: 1, py: 0 }}>
-                                        {[
-                                          { value: 'cryptocurrency', label: 'Cryptocurrency' },
-                                          { value: 'blockchain', label: 'Blockchain' },
-                                          { value: 'trading', label: 'Trading' },
-                                          { value: 'defi', label: 'DeFi' },
-                                          { value: 'nft', label: 'NFT' },
-                                          { value: 'web3', label: 'Web3' },
-                                          { value: 'finance', label: 'Finance' },
-                                          { value: 'technology', label: 'Technology' }
-                                        ].map((category) => (
+                                        {CRYPTO_CATEGORIES.map((category) => (
                                           <ListItem key={category.value} sx={{ py: 0, px: 0 }}>
                                             <ListItemButton 
                                               disabled
@@ -1060,9 +1053,9 @@ const Courses = () => {
                                                 disabled
                                                 size="small"
                                                 sx={{ 
-                                                  color: '#4285f4',
+                                                  color: '#0F3C60',
                                                   p: 0.5,
-                                                  '&.Mui-checked': { color: '#4285f4' },
+                                                  '&.Mui-checked': { color: '#0F3C60' },
                                                   '&.Mui-disabled': { color: '#9e9e9e' }
                                                 }}
                                               />
@@ -1099,7 +1092,7 @@ const Courses = () => {
                                         }
                                       }}
                                     >
-                                      <PeopleIcon sx={{ mr: 1, color: '#4285f4', fontSize: '1rem' }} />
+                                      <PeopleIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
                                       <ListItemText 
                                         primary="Target Audience" 
                                         sx={{ 
@@ -1147,9 +1140,9 @@ const Courses = () => {
                                                 disabled
                                                 size="small"
                                                 sx={{ 
-                                                  color: '#4285f4',
+                                                  color: '#0F3C60',
                                                   p: 0.5,
-                                                  '&.Mui-checked': { color: '#4285f4' },
+                                                  '&.Mui-checked': { color: '#0F3C60' },
                                                   '&.Mui-disabled': { color: '#9e9e9e' }
                                                 }}
                                               />
@@ -1719,7 +1712,7 @@ const Courses = () => {
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               {selectedCourse.contentType === 'video' ? (
-                                <VideoIcon sx={{ fontSize: 20, color: '#4285f4' }} />
+                                <VideoIcon sx={{ fontSize: 20, color: '#0F3C60' }} />
                               ) : (
                                 <TextIcon sx={{ fontSize: 20, color: '#34a853' }} />
                               )}
@@ -1767,7 +1760,7 @@ const Courses = () => {
                         variant="contained"
                         onClick={() => handleEditCourse(selectedCourse)}
                         sx={{
-                          background: '#4285f4',
+                          background: '#0F3C60',
                           '&:hover': { background: '#3367d6' }
                         }}
                       >

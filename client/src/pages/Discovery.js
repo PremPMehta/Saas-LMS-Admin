@@ -28,6 +28,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
+import { LIFESTYLE_CATEGORIES } from '../config/categories';
 
 const communities = [
   {
@@ -114,18 +115,8 @@ const communities = [
   }
 ];
 
-const categories = [
-  { label: 'All', value: 'all', color: 'default' },
-  { label: '🎨 Hobbies', value: 'Hobbies', color: 'warning' },
-  { label: '🎵 Music', value: 'Music', color: 'secondary' },
-  { label: '💰 Money', value: 'Money', color: 'success' },
-  { label: '🙏 Spirituality', value: 'Spirituality', color: 'info' },
-  { label: '💻 Tech', value: 'Tech', color: 'primary' },
-  { label: '🏃 Health', value: 'Health', color: 'error' },
-  { label: '⚽ Sports', value: 'Sports', color: 'default' },
-  { label: '📚 Self-improvement', value: 'Self-improvement', color: 'default' },
-  { label: '❤️ Relationships', value: 'Relationships', color: 'secondary' }
-];
+// Use centralized categories from config
+const categories = LIFESTYLE_CATEGORIES;
 
 const Discovery = () => {
   const navigate = useNavigate();
@@ -431,7 +422,7 @@ const Discovery = () => {
               variant="text"
               disabled
               sx={{ 
-                color: '#4285f4',
+                color: '#0F3C60',
                 textTransform: 'none',
                 fontSize: '1.25rem',
                 fontWeight: 400,
@@ -441,7 +432,7 @@ const Discovery = () => {
                 cursor: 'not-allowed',
                 '&:hover': {
                   backgroundColor: 'transparent',
-                  color: '#4285f4',
+                  color: '#0F3C60',
                   textDecoration: 'none'
                 }
               }}
@@ -702,9 +693,9 @@ const Discovery = () => {
                         sx={{
                           fontSize: '0.75rem',
                           height: 24,
-                          borderColor: '#4285f4',
-                          color: '#4285f4',
-                          backgroundColor: '#4285f415',
+                          borderColor: '#0F3C60',
+                          color: '#0F3C60',
+                          backgroundColor: '#0F3C6015',
                           '& .MuiChip-label': {
                             px: 1
                           }
@@ -722,9 +713,9 @@ const Discovery = () => {
                         sx={{
                           fontSize: '0.75rem',
                           height: 24,
-                          borderColor: community.contentType === 'video' ? '#4285f4' : '#34a853',
-                          color: community.contentType === 'video' ? '#4285f4' : '#34a853',
-                          backgroundColor: community.contentType === 'video' ? '#4285f415' : '#34a85315',
+                          borderColor: community.contentType === 'video' ? '#0F3C60' : '#34a853',
+                          color: community.contentType === 'video' ? '#0F3C60' : '#34a853',
+                          backgroundColor: community.contentType === 'video' ? '#0F3C6015' : '#34a85315',
                           '& .MuiChip-label': {
                             px: 1
                           }
@@ -778,11 +769,11 @@ const Discovery = () => {
                     sx={{
                       textTransform: 'none',
                       borderRadius: 2,
-                      borderColor: '#4285f4',
-                      color: '#4285f4',
+                      borderColor: '#0F3C60',
+                      color: '#0F3C60',
                       '&:hover': {
                         borderColor: '#3367d6',
-                        backgroundColor: '#4285f415'
+                        backgroundColor: '#0F3C6015'
                       }
                     }}
                   >

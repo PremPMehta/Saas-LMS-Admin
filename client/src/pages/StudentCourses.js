@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import { courseApi } from '../utils/courseApi';
+import '../App.css';
 import {
   Box,
   Typography,
@@ -241,7 +242,7 @@ const StudentCourses = () => {
 
   const getCategoryColor = (category) => {
     const colors = {
-      'Technology': '#4285f4',
+      'Technology': '#0F3C60',
       'Finance': '#34a853',
       'Design': '#fbbc04',
       'Marketing': '#ea4335',
@@ -277,14 +278,14 @@ const StudentCourses = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: darkMode ? '#1a1a1a' : '#f5f5f5' }}>
+    <Box className="bg-black">
       {/* Common Focused Sidebar */}
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -311,7 +312,7 @@ const StudentCourses = () => {
                     onClick={handleRefresh}
                     disabled={refreshing}
                     sx={{
-                      color: '#4285f4',
+                      color: '#0F3C60',
                       '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                     }}
                     title="Refresh courses"
@@ -352,10 +353,10 @@ const StudentCourses = () => {
                           justifyContent: 'center',
                         }}
                       >
-                        <SchoolIcon sx={{ color: '#4285f4' }} />
+                        <SchoolIcon sx={{ color: '#0F3C60' }} />
                       </Box>
                       <Box>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4', mb: 0 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F3C60', mb: 0 }}>
                           {courses.length}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -925,7 +926,7 @@ const StudentCourses = () => {
                         handleEnrollCourse(selectedCourse);
                       }}
                       sx={{
-                        background: '#4285f4',
+                        background: '#0F3C60',
                         '&:hover': { background: '#3367d6' }
                       }}
                     >

@@ -52,6 +52,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import courseApi from '../utils/courseApi';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { apiUrl } from '../config/api';
+import { DETAILED_CATEGORIES } from '../config/categories';
 
 const CreateCourse = () => {
   const navigate = useNavigate();
@@ -82,35 +83,8 @@ const CreateCourse = () => {
 
   const steps = ['Basic Information', 'Content Structure', 'Review & Publish'];
 
-  const categories = [
-    'Bitcoin, Ethereum, Altcoins',
-    'DeFi, NFTs, Web3',
-    'On-chain analysis & portfolio building',
-    'Currency pairs (major, minor, exotic)',
-    'Technical & fundamental analysis',
-    'Risk management strategies',
-    'Equity fundamentals & valuation',
-    'Technical charting & price action',
-    'Dividend & growth investing',
-    'Options basics (calls, puts, spreads)',
-    'Futures & hedging strategies',
-    'Advanced Greeks & risk modeling',
-    'Gold, silver, oil, agricultural products',
-    'Supply-demand cycles & geopolitical factors',
-    'Futures contracts',
-    'S&P 500, NASDAQ, Dow Jones',
-    'Global index tracking',
-    'Leveraged & inverse ETFs',
-    'Chart patterns, candlesticks, indicators',
-    'Trend following vs. contrarian setups',
-    'Algorithmic & automated trading',
-    'Economic indicators & central banks',
-    'Earnings, balance sheets, valuation models',
-    'Global macro & intermarket analysis',
-    'Position sizing & stop-loss rules',
-    'Emotional discipline in trading',
-    'Building sustainable trading systems',
-  ];
+  // Use centralized categories from config
+  const categories = DETAILED_CATEGORIES;
 
   const targetAudiences = [
     'Complete Beginners',
@@ -804,10 +778,10 @@ const CreateCourse = () => {
                     <Card
                       sx={{
                         cursor: 'pointer',
-                        border: courseData.contentType === type.value ? '2px solid #4285f4' : '1px solid #e0e0e0',
+                        border: courseData.contentType === type.value ? '2px solid #0F3C60' : '1px solid #e0e0e0',
                         background: courseData.contentType === type.value ? '#f8f9ff' : '#ffffff',
                         '&:hover': {
-                          borderColor: '#4285f4',
+                          borderColor: '#0F3C60',
                           background: '#f8f9ff',
                         }
                       }}
@@ -852,7 +826,7 @@ const CreateCourse = () => {
                 startIcon={<AddIcon />}
                 onClick={handleAddChapter}
                 sx={{
-                  background: '#4285f4',
+                  background: '#0F3C60',
                   '&:hover': { background: '#3367d6' }
                 }}
               >
@@ -1071,7 +1045,7 @@ const CreateCourse = () => {
                         <Typography variant="subtitle2" color="text.secondary">
                           Total Chapters
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4' }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F3C60' }}>
                           {chapters.length}
                         </Typography>
                       </Box>
@@ -1789,7 +1763,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                         label: 'Upload Video',
                         icon: UploadIcon,
                         description: 'Upload video file directly',
-                        color: '#4285f4'
+                        color: '#0F3C60'
                       },
                       {
                         value: 'youtube',
@@ -1869,10 +1843,10 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                         p: 3,
                         textAlign: 'center',
                         background: formData.videoFile ? '#f8f9ff' : '#fafafa',
-                        borderColor: formData.videoFile ? '#4285f4' : '#e0e0e0',
+                        borderColor: formData.videoFile ? '#0F3C60' : '#e0e0e0',
                         transition: 'all 0.3s ease',
                         '&:hover': {
-                          borderColor: '#4285f4',
+                          borderColor: '#0F3C60',
                           background: '#f8f9ff',
                         }
                       }}
@@ -1907,7 +1881,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                         </Box>
                       ) : (
                         <Box>
-                          <UploadIcon sx={{ fontSize: 48, color: '#4285f4', mb: 2 }} />
+                          <UploadIcon sx={{ fontSize: 48, color: '#0F3C60', mb: 2 }} />
                           <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                             Upload Video File
                           </Typography>
@@ -1919,7 +1893,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                             component="label"
                             startIcon={<UploadIcon />}
                             sx={{
-                              background: '#4285f4',
+                              background: '#0F3C60',
                               '&:hover': { background: '#3367d6' }
                             }}
                           >
@@ -1954,17 +1928,17 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <PlayIcon sx={{ color: '#4285f4' }} />
+                            <PlayIcon sx={{ color: '#0F3C60' }} />
                           </InputAdornment>
                         ),
                       }}
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           '&:hover fieldset': {
-                            borderColor: '#4285f4',
+                            borderColor: '#0F3C60',
                           },
                           '&.Mui-focused fieldset': {
-                            borderColor: '#4285f4',
+                            borderColor: '#0F3C60',
                           },
                         },
                       }}
@@ -1994,7 +1968,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                     {formData.videoType === 'upload' && formData.videoFile ? (
                       <Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                          <PlayIcon sx={{ color: '#4285f4', fontSize: 24 }} />
+                          <PlayIcon sx={{ color: '#0F3C60', fontSize: 24 }} />
                           <Box sx={{ flex: 1 }}>
                             <Typography variant="body1" sx={{ fontWeight: 600 }}>
                               {formData.title || 'Uploaded Video'}
@@ -2031,7 +2005,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                     ) : formData.videoUrl ? (
                       <Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                          <PlayIcon sx={{ color: '#4285f4', fontSize: 24 }} />
+                          <PlayIcon sx={{ color: '#0F3C60', fontSize: 24 }} />
                           <Box sx={{ flex: 1 }}>
                             <Typography variant="body1" sx={{ fontWeight: 600 }}>
                               {formData.title || `${formData.videoType.charAt(0).toUpperCase() + formData.videoType.slice(1)} Video`}
@@ -2126,7 +2100,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                         label: 'Write Own Content',
                                         icon: TextIcon,
                                         description: 'Use rich text editor to write your lesson',
-                                        color: '#4285f4',
+                                        color: '#0F3C60',
                                         disabled: true,
                                         comingSoon: true
                                       },
@@ -2316,10 +2290,10 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                         p: 3,
                                         textAlign: 'center',
                                         background: formData.pdfFile ? '#f8f9ff' : '#fafafa',
-                                        borderColor: formData.pdfFile ? '#4285f4' : '#e0e0e0',
+                                        borderColor: formData.pdfFile ? '#0F3C60' : '#e0e0e0',
                                         transition: 'all 0.3s ease',
                                         '&:hover': {
-                                          borderColor: '#4285f4',
+                                          borderColor: '#0F3C60',
                                           background: '#f8f9ff',
                                         }
                                       }}
@@ -2354,7 +2328,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                         </Box>
                                       ) : (
                                         <Box>
-                                          <DescriptionIcon sx={{ fontSize: 48, color: '#4285f4', mb: 2 }} />
+                                          <DescriptionIcon sx={{ fontSize: 48, color: '#0F3C60', mb: 2 }} />
                                           <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                                             Upload PDF Document
                                           </Typography>
@@ -2366,7 +2340,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                                             component="label"
                                             startIcon={<UploadIcon />}
                                             sx={{
-                                              background: '#4285f4',
+                                              background: '#0F3C60',
                                               '&:hover': { background: '#3367d6' }
                                             }}
                                           >
@@ -2399,10 +2373,10 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                   p: 3,
                   textAlign: 'center',
                   background: formData.pdfFile ? '#f8f9ff' : '#fafafa',
-                  borderColor: formData.pdfFile ? '#4285f4' : '#e0e0e0',
+                  borderColor: formData.pdfFile ? '#0F3C60' : '#e0e0e0',
                   transition: 'all 0.3s ease',
                   '&:hover': {
-                    borderColor: '#4285f4',
+                    borderColor: '#0F3C60',
                     background: '#f8f9ff',
                   }
                 }}
@@ -2437,7 +2411,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                   </Box>
                 ) : (
                   <Box>
-                    <DescriptionIcon sx={{ fontSize: 48, color: '#4285f4', mb: 2 }} />
+                    <DescriptionIcon sx={{ fontSize: 48, color: '#0F3C60', mb: 2 }} />
                     <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                       Upload PDF Document
                     </Typography>
@@ -2449,7 +2423,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                       component="label"
                       startIcon={<UploadIcon />}
                       sx={{
-                        background: '#4285f4',
+                        background: '#0F3C60',
                         '&:hover': { background: '#3367d6' }
                       }}
                     >

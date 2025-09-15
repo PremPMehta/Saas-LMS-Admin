@@ -4,6 +4,7 @@ import communityAdminApi from '../utils/communityAdminApi';
 import { useNavigate } from 'react-router-dom';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
+import '../App.css';
 import {
   Box,
   Container,
@@ -573,14 +574,14 @@ const CommunityAdmins = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: darkMode ? '#1a1a1a' : '#f5f5f5' }}>
+    <Box className="bg-black">
       {/* Common Focused Sidebar */}
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{ 
         flex: 1, 
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -606,7 +607,7 @@ const CommunityAdmins = () => {
                 startIcon={<AddIcon />}
                 onClick={handleAddAdmin}
                 sx={{
-                  background: '#4285f4',
+                  background: '#0F3C60',
                   '&:hover': { background: '#3367d6' }
                 }}
               >
@@ -621,14 +622,14 @@ const CommunityAdmins = () => {
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Box>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4' }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F3C60' }}>
                           {admins.length}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Total Admins
                         </Typography>
                       </Box>
-                      <AdminIcon sx={{ fontSize: 40, color: '#4285f4' }} />
+                      <AdminIcon sx={{ fontSize: 40, color: '#0F3C60' }} />
                     </Box>
                   </CardContent>
                 </Card>
@@ -825,7 +826,7 @@ const CommunityAdmins = () => {
                                     <IconButton
                                       onClick={() => handleEditAdminClick(admin)}
                                       size="small"
-                                      sx={{ color: '#4285f4' }}
+                                      sx={{ color: '#0F3C60' }}
                                     >
                                       <EditIcon fontSize="small" />
                                     </IconButton>

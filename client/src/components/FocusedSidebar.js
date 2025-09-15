@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Avatar, IconButton } from '@mui/material';
+import { Box, IconButton, Typography, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import {
   VideoLibrary as VideoIcon,
   ArrowBack as ArrowBackIcon,
@@ -21,9 +21,9 @@ const FocusedSidebar = ({ darkMode }) => {
 
   return (
     <Box sx={{
-      width: 80,
-      background: darkMode ? '#2d2d2d' : '#ffffff',
-      borderRight: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+      width: 240,
+      background: '#0F3C60',
+      borderRight: '1px solid rgba(255, 255, 255, 0.2)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -33,23 +33,44 @@ const FocusedSidebar = ({ darkMode }) => {
       zIndex: 1000
     }}>
       {/* Logo */}
-      <Box sx={{ mb: 4 }}>
-        <Avatar sx={{
-          bgcolor: '#4285f4',
-          width: 50,
-          height: 50,
-          fontSize: '1.2rem',
-          fontWeight: 'bold',
-          color: '#ffffff',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          '&:hover': {
-            transform: 'scale(1.05)',
-            boxShadow: '0 4px 12px rgba(66, 133, 244, 0.3)'
-          }
-        }}>
-          {communityData?.name?.charAt(0) || 'C'}
-        </Avatar>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', pl: 2 }}>
+        <img
+          src="/bell-desk-logo.png"
+          alt="Bell & Desk"
+          style={{
+            height: '50px',
+            width: '100px',
+            // maxWidth: '180px',
+            objectFit: 'contain',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            // filter: 'brightness(0) invert(1)' // Logo is already white
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.transform = 'scale(1.05)';
+            e.target.style.filter = 'brightness(1.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.transform = 'scale(1)';
+            e.target.style.filter = 'brightness(1)';
+          }}
+          onError={(e) => {
+            // If image fails, replace with text
+            e.target.style.display = 'none';
+            const textLogo = document.createElement('div');
+            textLogo.textContent = 'Bell & Desk';
+            textLogo.style.cssText = `
+              font-weight: 800;
+              color: #ffffff;
+              font-size: 1.1rem;
+              letter-spacing: -0.5px;
+              text-align: center;
+              cursor: pointer;
+              transition: all 0.2s ease;
+            `;
+            e.target.parentNode.appendChild(textLogo);
+          }}
+        />
       </Box>
 
       {/* Navigation Items */}
@@ -66,7 +87,10 @@ const FocusedSidebar = ({ darkMode }) => {
         const isOnStudentPath = window.location.pathname.includes('/student/');
         
         // Priority: 1) Current path, 2) Available tokens
-        const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !!communityUserToken && !communityToken);
+        // If on student path, definitely a community user
+        // If on admin path, definitely a community admin
+        // If on neither, check tokens (communityUserToken = student, communityToken = admin)
+        const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !isOnStudentPath && !!communityUserToken && !communityToken);
         
         console.log('🔍 FocusedSidebar Debug:', {
           communityUserData: communityUserData ? 'EXISTS' : 'NULL',
@@ -76,7 +100,8 @@ const FocusedSidebar = ({ darkMode }) => {
           isOnAdminPath: isOnAdminPath,
           isOnStudentPath: isOnStudentPath,
           isCommunityUser: isCommunityUser,
-          currentPath: window.location.pathname
+          currentPath: window.location.pathname,
+          userType: isCommunityUser ? 'STUDENT' : 'ADMIN'
         });
         
         const navItems = isCommunityUser ? [
@@ -95,8 +120,8 @@ const FocusedSidebar = ({ darkMode }) => {
             (isCommunityUser && item.label === 'Courses' && window.location.pathname.includes('/student/'));
         
           return (
-            <Box key={index} sx={{ mb: 2 }}>
-              <IconButton
+            <ListItem key={index} disablePadding sx={{ mb: 1 }}>
+              <ListItemButton
                 onClick={() => {
                   console.log('Navigation clicked:', {
                     label: item.label,
@@ -114,58 +139,88 @@ const FocusedSidebar = ({ darkMode }) => {
                   }
                 }}
                 sx={{
-                  color: isActive
-                    ? (darkMode ? '#ffffff' : '#000000')
-                    : (darkMode ? '#b0b0b0' : '#666666'),
-                  backgroundColor: isActive 
-                    ? (darkMode ? '#404040' : '#e3f2fd')
-                    : 'transparent',
+                  borderRadius: 2,
+                  mx: 1,
+                  py: 1.5,
+                  color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
+                  backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                   '&:hover': {
-                    backgroundColor: isActive 
-                      ? (darkMode ? '#505050' : '#bbdefb')
-                      : (darkMode ? '#404040' : '#f0f0f0'),
-                    color: isActive
-                      ? (darkMode ? '#ffffff' : '#000000')
-                      : (darkMode ? '#ffffff' : '#000000'),
+                    backgroundColor: isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
                   }
                 }}
-                title={item.label}
               >
-                {item.icon}
-              </IconButton>
-            </Box>
+                <ListItemIcon sx={{ 
+                  minWidth: 40,
+                  color: 'inherit'
+                }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontSize: '0.9rem',
+                    fontWeight: isActive ? 600 : 400,
+                    color: 'inherit'
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
           );
         });
       })()}
 
       {/* Logout Button */}
-      <Box sx={{ mt: 'auto', mb: 2 }}>
-        <IconButton
-          onClick={() => {
-            // Check if we're in community user context using same logic
-            const communityUserToken = localStorage.getItem('communityUserToken');
-            const communityToken = localStorage.getItem('communityToken');
-            const isOnAdminPath = window.location.pathname.includes('/admin/');
-            const isOnStudentPath = window.location.pathname.includes('/student/');
-            
-            const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !!communityUserToken && !communityToken);
-            
-            if (isCommunityUser) {
-              // Logout community user
-              localStorage.removeItem('communityUserToken');
-              localStorage.removeItem('communityUserData');
-              navigate('/community-user-signup');
-            } else {
-              // Logout community admin
-              communityAuthApi.logout();
-              navigate('/community-login');
-            }
-          }}
-          sx={{ color: darkMode ? '#ffffff' : '#000000' }}
-          title="Logout"
-        >
-          <ArrowBackIcon />
-        </IconButton>
+      <Box sx={{ mt: 'auto', mb: 2, width: '100%' }}>
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              // Check if we're in community user context using same logic
+              const communityUserToken = localStorage.getItem('communityUserToken');
+              const communityToken = localStorage.getItem('communityToken');
+              const isOnAdminPath = window.location.pathname.includes('/admin/');
+              const isOnStudentPath = window.location.pathname.includes('/student/');
+              
+              const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !isOnStudentPath && !!communityUserToken && !communityToken);
+              
+              if (isCommunityUser) {
+                // Logout community user
+                localStorage.removeItem('communityUserToken');
+                localStorage.removeItem('communityUserData');
+                navigate('/discovery');
+              } else {
+                // Logout community admin
+                communityAuthApi.logout();
+                navigate('/discovery');
+              }
+            }}
+            sx={{
+              borderRadius: 2,
+              mx: 1,
+              py: 1.5,
+              color: 'rgba(255, 255, 255, 0.7)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff',
+              }
+            }}
+          >
+            <ListItemIcon sx={{ 
+              minWidth: 40,
+              color: 'inherit'
+            }}>
+              <ArrowBackIcon />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Logout"
+              primaryTypographyProps={{
+                fontSize: '0.9rem',
+                fontWeight: 400,
+                color: 'inherit'
+              }}
+            />
+          </ListItemButton>
+        </ListItem>
       </Box>
     </Box>
   );

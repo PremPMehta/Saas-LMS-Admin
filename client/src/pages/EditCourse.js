@@ -51,6 +51,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import courseApi from '../utils/courseApi';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import { GENERAL_CATEGORIES } from '../config/categories';
 
 const EditCourse = () => {
   const navigate = useNavigate();
@@ -79,18 +80,8 @@ const EditCourse = () => {
 
   const steps = ['Course Information', 'Course Structure', 'Review & Update'];
 
-  const categories = [
-    'Technology',
-    'Business',
-    'Design',
-    'Marketing',
-    'Development',
-    'Data Science',
-    'Product Management',
-    'Finance',
-    'Healthcare',
-    'Education',
-  ];
+  // Use centralized categories from config
+  const categories = GENERAL_CATEGORIES;
 
   const targetAudiences = [
     'Beginners',
@@ -575,10 +566,10 @@ const EditCourse = () => {
                   mb: 3,
                   '& .MuiOutlinedInput-root': {
                     '&:hover fieldset': {
-                      borderColor: '#4285f4',
+                      borderColor: '#0F3C60',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#4285f4',
+                      borderColor: '#0F3C60',
                     },
                   },
                 }}
@@ -600,10 +591,10 @@ const EditCourse = () => {
                   mb: 3,
                   '& .MuiOutlinedInput-root': {
                     '&:hover fieldset': {
-                      borderColor: '#4285f4',
+                      borderColor: '#0F3C60',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#4285f4',
+                      borderColor: '#0F3C60',
                     },
                   },
                 }}
@@ -683,7 +674,7 @@ const EditCourse = () => {
                       component="span"
                       startIcon={<UploadIcon />}
                       sx={{
-                        background: '#4285f4',
+                        background: '#0F3C60',
                         '&:hover': {
                           background: '#3367d6',
                         },
@@ -712,7 +703,7 @@ const EditCourse = () => {
                 <Grid item size={{xs:12 , md:4}}>
                   <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <DescriptionIcon sx={{ color: '#4285f4', mr: 1 }} />
+                      <DescriptionIcon sx={{ color: '#0F3C60', mr: 1 }} />
                       <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
                         Category
                       </Typography>
@@ -728,7 +719,7 @@ const EditCourse = () => {
                 <Grid item size={{xs:12 , md:4}}>
                   <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <VideoIcon sx={{ color: '#4285f4', mr: 1 }} />
+                      <VideoIcon sx={{ color: '#0F3C60', mr: 1 }} />
                       <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
                         Target Audience
                       </Typography>
@@ -786,7 +777,7 @@ const EditCourse = () => {
                   setOpenChapterDialog(true);
                 }}
                 sx={{
-                  background: '#4285f4',
+                  background: '#0F3C60',
                   '&:hover': { background: '#3367d6' },
                   px: 3,
                   py: 1.5,
@@ -835,7 +826,7 @@ const EditCourse = () => {
                   setOpenChapterDialog(true);
                 }}
                 sx={{
-                  background: '#4285f4',
+                  background: '#0F3C60',
                   '&:hover': { background: '#3367d6' },
                   px: 4,
                   py: 1.5,
@@ -867,7 +858,7 @@ const EditCourse = () => {
                             width: 40, 
                             height: 40, 
                             borderRadius: '50%', 
-                            background: 'linear-gradient(135deg, #4285f4 0%, #3367d6 100%)',
+                            background: 'linear-gradient(135deg, #0F3C60 0%, #3367d6 100%)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -890,7 +881,7 @@ const EditCourse = () => {
                           <IconButton 
                             onClick={() => handleEditChapter(chapter)}
                             sx={{ 
-                              color: '#4285f4',
+                              color: '#0F3C60',
                               '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                             }}
                           >
@@ -919,9 +910,9 @@ const EditCourse = () => {
                           size="small"
                           variant="outlined"
                           sx={{ 
-                            borderColor: '#4285f4',
-                            color: '#4285f4',
-                            '& .MuiChip-icon': { color: '#4285f4' }
+                            borderColor: '#0F3C60',
+                            color: '#0F3C60',
+                            '& .MuiChip-icon': { color: '#0F3C60' }
                           }}
                         />
                         <Button
@@ -935,7 +926,7 @@ const EditCourse = () => {
                           }}
                           disabled={!courseData.contentType}
                           sx={{
-                            background: '#4285f4',
+                            background: '#0F3C60',
                             color: 'white',
                             '&:hover': { background: '#3367d6' },
                             '&:disabled': { 
@@ -977,7 +968,7 @@ const EditCourse = () => {
                                         width: 24, 
                                         height: 24, 
                                         borderRadius: '50%', 
-                                        backgroundColor: '#4285f4',
+                                        backgroundColor: '#0F3C60',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -987,7 +978,7 @@ const EditCourse = () => {
                                       }}>
                                         {videoIndex + 1}
                                       </Box>
-                                      {video.videoType === 'youtube' ? <VideoIcon sx={{ color: '#ff0000', fontSize: 20 }} /> : <TextIcon sx={{ color: '#4285f4', fontSize: 20 }} />}
+                                      {video.videoType === 'youtube' ? <VideoIcon sx={{ color: '#ff0000', fontSize: 20 }} /> : <TextIcon sx={{ color: '#0F3C60', fontSize: 20 }} />}
                                       <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                         {video.title}
                                       </Typography>
@@ -1005,7 +996,7 @@ const EditCourse = () => {
                                       size="small"
                                       onClick={() => handleEditVideo(video, chapter._id)}
                                       sx={{ 
-                                        color: '#4285f4',
+                                        color: '#0F3C60',
                                         '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                                       }}
                                     >
@@ -1147,7 +1138,7 @@ const EditCourse = () => {
                       borderRadius: 2,
                       border: '1px solid rgba(66, 133, 244, 0.2)'
                     }}>
-                      <Typography variant="h3" sx={{ fontWeight: 700, color: '#4285f4' }}>
+                      <Typography variant="h3" sx={{ fontWeight: 700, color: '#0F3C60' }}>
                         {chapters.length}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
@@ -1209,8 +1200,8 @@ const EditCourse = () => {
               py: 1.5,
               fontSize: '1rem',
               fontWeight: 600,
-              borderColor: '#4285f4',
-              color: '#4285f4',
+              borderColor: '#0F3C60',
+              color: '#0F3C60',
               '&:hover': {
                 borderColor: '#3367d6',
                 backgroundColor: 'rgba(66, 133, 244, 0.04)'
@@ -1233,7 +1224,7 @@ const EditCourse = () => {
                 disabled={isSubmitting}
                 startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
                 sx={{
-                  background: '#4285f4',
+                  background: '#0F3C60',
                   '&:hover': { background: '#3367d6' },
                   px: 4,
                   py: 1.5,
@@ -1253,7 +1244,7 @@ const EditCourse = () => {
                 onClick={handleNext}
                 endIcon={<ArrowForwardIcon />}
                 sx={{
-                  background: '#4285f4',
+                  background: '#0F3C60',
                   '&:hover': { background: '#3367d6' },
                   px: 4,
                   py: 1.5,
@@ -1598,7 +1589,7 @@ const EditCourse = () => {
                                 label: 'Upload Video', 
                                 icon: UploadIcon,
                                 description: 'Upload video file directly',
-                                color: '#4285f4'
+                                color: '#0F3C60'
                               },
                               { 
                                 value: 'youtube', 
@@ -1678,10 +1669,10 @@ const EditCourse = () => {
                                 p: 3,
                                 textAlign: 'center',
                                 background: formData.videoFile ? '#f8f9ff' : '#fafafa',
-                                borderColor: formData.videoFile ? '#4285f4' : '#e0e0e0',
+                                borderColor: formData.videoFile ? '#0F3C60' : '#e0e0e0',
                                 transition: 'all 0.3s ease',
                                 '&:hover': {
-                                  borderColor: '#4285f4',
+                                  borderColor: '#0F3C60',
                                   background: '#f8f9ff',
                                 }
                               }}
@@ -1716,7 +1707,7 @@ const EditCourse = () => {
                                 </Box>
                               ) : (
                                 <Box>
-                                  <UploadIcon sx={{ fontSize: 48, color: '#4285f4', mb: 2 }} />
+                                  <UploadIcon sx={{ fontSize: 48, color: '#0F3C60', mb: 2 }} />
                                   <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
                                     Upload Video File
                                   </Typography>
@@ -1728,7 +1719,7 @@ const EditCourse = () => {
                                     component="label"
                                     startIcon={<UploadIcon />}
                                     sx={{
-                                      background: '#4285f4',
+                                      background: '#0F3C60',
                                       '&:hover': { background: '#3367d6' }
                                     }}
                                   >
@@ -1763,17 +1754,17 @@ const EditCourse = () => {
                               InputProps={{
                                 startAdornment: (
                                   <InputAdornment position="start">
-                                    <PlayIcon sx={{ color: '#4285f4' }} />
+                                    <PlayIcon sx={{ color: '#0F3C60' }} />
                                   </InputAdornment>
                                 ),
                               }}
                               sx={{
                                 '& .MuiOutlinedInput-root': {
                                   '&:hover fieldset': {
-                                    borderColor: '#4285f4',
+                                    borderColor: '#0F3C60',
                                   },
                                   '&.Mui-focused fieldset': {
-                                    borderColor: '#4285f4',
+                                    borderColor: '#0F3C60',
                                   },
                                 },
                               }}
@@ -1797,7 +1788,7 @@ const EditCourse = () => {
                             {formData.videoType === 'upload' && formData.videoFile ? (
                               <Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                  <PlayIcon sx={{ color: '#4285f4', fontSize: 24 }} />
+                                  <PlayIcon sx={{ color: '#0F3C60', fontSize: 24 }} />
                                   <Box sx={{ flex: 1 }}>
                                     <Typography variant="body1" sx={{ fontWeight: 600 }}>
                                       {formData.title || 'Uploaded Video'}
@@ -1834,7 +1825,7 @@ const EditCourse = () => {
                             ) : formData.videoUrl ? (
                               <Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                  <PlayIcon sx={{ color: '#4285f4', fontSize: 24 }} />
+                                  <PlayIcon sx={{ color: '#0F3C60', fontSize: 24 }} />
                                   <Box sx={{ flex: 1 }}>
                                     <Typography variant="body1" sx={{ fontWeight: 600 }}>
                                       {formData.title || `${formData.videoType.charAt(0).toUpperCase() + formData.videoType.slice(1)} Video`}
