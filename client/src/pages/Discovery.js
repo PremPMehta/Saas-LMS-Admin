@@ -169,20 +169,29 @@ const Discovery = () => {
         
         if (response.success && response.courses) {
           // Normalize course data for display
-          const normalizedCourses = response.courses.map(course => ({
-            id: course._id || course.id,
-            title: course.title || 'Untitled Course',
-            description: course.description || 'No description available',
-            category: course.category || 'Uncategorized',
-            status: course.status || 'published',
-            thumbnail: course.thumbnail || null,
-            targetAudience: course.targetAudience || null,
-            contentType: course.contentType || 'video',
-            subType: course.subType || null,
-            chapters: course.chapters || [],
-            createdAt: course.createdAt || new Date().toISOString(),
-            updatedAt: course.updatedAt || new Date().toISOString()
-          }));
+          const normalizedCourses = response.courses.map(course => {
+            console.log('🔍 Discovery: Course thumbnail data:', {
+              title: course.title,
+              thumbnail: course.thumbnail,
+              thumbnailType: typeof course.thumbnail,
+              thumbnailLength: course.thumbnail ? course.thumbnail.length : 0
+            });
+            
+            return {
+              id: course._id || course.id,
+              title: course.title || 'Untitled Course',
+              description: course.description || 'No description available',
+              category: course.category || 'Uncategorized',
+              status: course.status || 'published',
+              thumbnail: course.thumbnail || null,
+              targetAudience: course.targetAudience || null,
+              contentType: course.contentType || 'video',
+              subType: course.subType || null,
+              chapters: course.chapters || [],
+              createdAt: course.createdAt || new Date().toISOString(),
+              updatedAt: course.updatedAt || new Date().toISOString()
+            };
+          });
           
           setCourses(normalizedCourses);
           setFilteredCommunities(normalizedCourses);
@@ -631,33 +640,48 @@ const Discovery = () => {
                     component="img"
                     height="160"
                     image={(() => {
+                      console.log('🖼️ Discovery: Constructing thumbnail URL for', community.title, ':', {
+                        thumbnail: community.thumbnail,
+                        thumbnailType: typeof community.thumbnail,
+                        thumbnailLength: community.thumbnail ? community.thumbnail.length : 0
+                      });
+                      
                       if (!community.thumbnail || community.thumbnail.trim() === '') {
+                        console.log('🖼️ Discovery: No thumbnail, using placeholder for', community.title);
                         return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
                       }
                       
                       // If it's a data URL, use it directly
                       if (community.thumbnail.startsWith('data:')) {
+                        console.log('🖼️ Discovery: Using data URL for', community.title);
                         return community.thumbnail;
                       }
                       
                       // If it's already a full URL (http/https), use it directly
                       if (community.thumbnail.startsWith('http')) {
+                        console.log('🖼️ Discovery: Using full URL for', community.title, ':', community.thumbnail);
                         return community.thumbnail;
                       }
                       
                       // If it's a localhost URL, replace with production URL
                       if (community.thumbnail.includes('localhost')) {
                         const filename = community.thumbnail.split('/').pop();
-                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
+                        const url = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
+                        console.log('🖼️ Discovery: Converted localhost URL for', community.title, ':', url);
+                        return url;
                       }
                       
                       // If it starts with /uploads, construct the full URL
                       if (community.thumbnail.startsWith('/uploads/')) {
-                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
+                        const url = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
+                        console.log('🖼️ Discovery: Constructed /uploads URL for', community.title, ':', url);
+                        return url;
                       }
                       
                       // If it's just a filename, add /uploads/ prefix
-                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
+                      const url = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
+                      console.log('🖼️ Discovery: Constructed filename URL for', community.title, ':', url);
+                      return url;
                     })()}
                     alt={community.title}
                     sx={{
@@ -665,6 +689,12 @@ const Discovery = () => {
                       objectPosition: 'center'
                     }}
                     onError={(e) => {
+                      console.log('❌ Discovery: Thumbnail failed to load for', community.title, ':', {
+                        failedSrc: e.target.src,
+                        originalThumbnail: community.thumbnail,
+                        fallbackAttempts: e.target.dataset.fallbackAttempts || '0'
+                      });
+                      
                       // Try multiple fallback strategies
                       const originalSrc = e.target.src;
                       const fallbackAttempts = e.target.dataset.fallbackAttempts || '0';
@@ -675,17 +705,24 @@ const Discovery = () => {
                         e.target.dataset.fallbackAttempts = '1';
                         if (community.thumbnail && !community.thumbnail.startsWith('data:') && !community.thumbnail.startsWith('http')) {
                           // Try direct filename approach
-                          e.target.src = `https://saas-lms-admin-1.onrender.com/uploads/${community.thumbnail}`;
+                          const newUrl = `https://saas-lms-admin-1.onrender.com/uploads/${community.thumbnail}`;
+                          console.log('🔄 Discovery: Trying alternative URL for', community.title, ':', newUrl);
+                          e.target.src = newUrl;
                         } else {
                           // Try placeholder
-                          e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                          const placeholderUrl = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                          console.log('🔄 Discovery: Trying placeholder for', community.title, ':', placeholderUrl);
+                          e.target.src = placeholderUrl;
                         }
                       } else if (attempts === 1) {
                         // Second attempt: Try placeholder
                         e.target.dataset.fallbackAttempts = '2';
-                        e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                        const placeholderUrl = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                        console.log('🔄 Discovery: Trying placeholder again for', community.title, ':', placeholderUrl);
+                        e.target.src = placeholderUrl;
                       } else {
                         // Final fallback: Show text fallback
+                        console.log('💀 Discovery: All attempts failed, showing text fallback for', community.title);
                         e.target.style.display = 'none';
                         const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
                         if (!fallbackDiv) {
