@@ -128,6 +128,20 @@ const categories = [
   }))
 ];
 
+// Target audiences for search functionality
+const TARGET_AUDIENCES = [
+  'Student',
+  'Professional', 
+  'Entrepreneur',
+  'Freelancer',
+  'Teacher/Instructor',
+  'Manager',
+  'Developer',
+  'Designer',
+  'Marketing Specialist',
+  'Other'
+];
+
 const Discovery = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,6 +152,7 @@ const Discovery = () => {
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
+  const [expandedDescriptions, setExpandedDescriptions] = useState({});
   
   // Category slider functions
   const scrollCategories = (direction) => {
@@ -154,6 +169,15 @@ const Discovery = () => {
       });
       setCategoryScrollPosition(newPosition);
     }
+  };
+
+  // Handle description expand/collapse
+  const toggleDescription = (courseId, event) => {
+    event.stopPropagation(); // Prevent card click
+    setExpandedDescriptions(prev => ({
+      ...prev,
+      [courseId]: !prev[courseId]
+    }));
   };
   
   // Get community URLs for proper navigation
@@ -237,7 +261,7 @@ const Discovery = () => {
       filtered = filtered.filter(course => course.category === selectedCategory);
     }
 
-    // Enhanced search: Filter by search term (title, description, or category)
+    // Enhanced search: Filter by search term (title, description, category, or target audience)
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       
@@ -247,18 +271,33 @@ const Discovery = () => {
         searchLower.includes(category.toLowerCase())
       );
       
+      // Check if search term matches any target audience
+      const matchingAudience = TARGET_AUDIENCES.find(audience => 
+        audience.toLowerCase().includes(searchLower) || 
+        searchLower.includes(audience.toLowerCase())
+      );
+      
       if (matchingCategory) {
         // If search term matches a category, show all courses from that category
         filtered = filtered.filter(course => 
           course.category.toLowerCase().includes(matchingCategory.toLowerCase()) ||
           matchingCategory.toLowerCase().includes(course.category.toLowerCase())
         );
+      } else if (matchingAudience) {
+        // If search term matches a target audience, show all courses for that audience
+        filtered = filtered.filter(course => 
+          course.targetAudience && (
+            course.targetAudience.toLowerCase().includes(matchingAudience.toLowerCase()) ||
+            matchingAudience.toLowerCase().includes(course.targetAudience.toLowerCase())
+          )
+        );
       } else {
-        // Regular search in title and description
+        // Regular search in title, description, category, and target audience
         filtered = filtered.filter(course =>
           course.title.toLowerCase().includes(searchLower) ||
           course.description.toLowerCase().includes(searchLower) ||
-          course.category.toLowerCase().includes(searchLower)
+          course.category.toLowerCase().includes(searchLower) ||
+          (course.targetAudience && course.targetAudience.toLowerCase().includes(searchLower))
         );
       }
     }
@@ -558,7 +597,7 @@ const Discovery = () => {
           >
             <TextField
               fullWidth
-              placeholder="Search courses, categories, or topics..."
+              placeholder="Search courses, categories, audiences, or topics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
@@ -693,7 +732,7 @@ const Discovery = () => {
                 key={community.id || index}
                 onClick={() => handleCourseClick(community)}
                 sx={{ 
-                  height: '100%',
+                  height: '420px', // Fixed height for consistent layout
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: 3,
@@ -866,13 +905,45 @@ const Discovery = () => {
                     </Typography>
                   </Box>
                   
-                  <Typography 
-                    variant="body2" 
-                    color="text.secondary" 
-                    sx={{ mb: 3, lineHeight: 1.5 }}
-                  >
-                    {community.description}
-                  </Typography>
+                  <Box sx={{ mb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        lineHeight: 1.5,
+                        display: '-webkit-box',
+                        WebkitLineClamp: expandedDescriptions[community.id] ? 'none' : 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        flexGrow: 1
+                      }}
+                    >
+                      {community.description}
+                    </Typography>
+                    
+                    {/* View More/Less Button */}
+                    {community.description && community.description.length > 120 && (
+                      <Button
+                        onClick={(e) => toggleDescription(community.id, e)}
+                        size="small"
+                        sx={{
+                          alignSelf: 'flex-start',
+                          mt: 1,
+                          p: 0,
+                          minWidth: 'auto',
+                          fontSize: '0.75rem',
+                          color: 'primary.main',
+                          textTransform: 'none',
+                          '&:hover': {
+                            backgroundColor: 'transparent',
+                            textDecoration: 'underline'
+                          }
+                        }}
+                      >
+                        {expandedDescriptions[community.id] ? 'View Less' : 'View More'}
+                      </Button>
+                    )}
+                  </Box>
                   
                   {/* Course Tags */}
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
