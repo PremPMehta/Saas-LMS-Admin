@@ -21,7 +21,7 @@ const RoleBasedRoute = ({ children, allowedRoles = ['admin'], fallbackPath = '/a
     let redirectPath = '/academies'; // Default for regular users
     
     if (userRole === 'admin') {
-      redirectPath = '/dashboard'; // Admin users go to dashboard
+      redirectPath = '/discovery'; // Admin users go to courses page
     }
     
     // Use the provided fallbackPath if it's accessible to the user
