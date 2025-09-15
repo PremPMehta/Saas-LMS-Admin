@@ -105,9 +105,8 @@ const FocusedSidebar = ({ darkMode }) => {
         });
         
         const navItems = isCommunityUser ? [
-          // Navigation for community users
-          { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/student/courses` },
-          { icon: <PeopleIcon />, label: 'Profile', path: `/${communityName}/student/profile` }
+          // Navigation for community users (students) - only show Courses
+          { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/student/courses` }
         ] : [
           // Navigation for community admins
           { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/admin/courses` },
