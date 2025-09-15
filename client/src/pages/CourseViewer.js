@@ -846,7 +846,8 @@ const CourseViewer = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: { xs: 0, md: 10 }, // Account for fixed sidebar
+        ml: 30,
+        // ml: { xs: 0, md: 10 }, // Account for fixed sidebar
         mt: { xs: 8, md: 9 }, // Account for mobile top navigation and fixed top bar (70px) + padding
         display: 'flex',
         flexDirection: 'column'

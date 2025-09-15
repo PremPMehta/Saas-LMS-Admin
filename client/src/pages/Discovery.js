@@ -734,8 +734,8 @@ const Discovery = () => {
                 key={community.id || index}
                 onClick={() => handleCourseClick(community)}
                 sx={{ 
-                  minHeight: '420px', // Minimum height for consistent layout
-                  height: expandedDescriptions[community.id] ? 'auto' : '420px', // Dynamic height
+                  // minHeight: '420px',
+                  // height: expandedDescriptions[community.id] ? 'auto' : '420px', // Dynamic height
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: 3,
@@ -898,7 +898,7 @@ const Discovery = () => {
                   minHeight: 0 // Allow content to shrink if needed
                 }}>
                   {/* Title Section */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexShrink: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexShrink: 0, minHeight: '64px' }}>
                     <Avatar
                       sx={{
                         width: 24,
@@ -921,7 +921,7 @@ const Discovery = () => {
                     flexGrow: 1, 
                     display: 'flex', 
                     flexDirection: 'column',
-                    minHeight: 0 // Allow this section to grow/shrink
+                    minHeight: '90px' // Allow this section to grow/shrink
                   }}>
                     <Typography 
                       variant="body2" 
@@ -969,10 +969,11 @@ const Discovery = () => {
                   {/* Bottom Section - Fixed at bottom */}
                   <Box sx={{ 
                     mt: 'auto', // Push to bottom
-                    flexShrink: 0 // Don't shrink this section
+                    flexShrink: 0, // Don't shrink this section
+                 
                   }}>
                     {/* Course Tags */}
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2, minHeight: '56px' }}>
                       {/* Target Audience Tag */}
                       {community.targetAudience && (
                         <Chip
