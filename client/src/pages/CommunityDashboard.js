@@ -403,9 +403,16 @@ const CommunityDashboard = () => {
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => {
+                      console.log('🎯 CommunityDashboard Create Course Button Clicked');
+                      console.log('🎯 communityName:', communityName);
+                      console.log('🎯 communityUrls:', communityUrls);
+                      console.log('🎯 createCourse URL:', communityUrls?.createCourse);
+                      
                       if (communityUrls) {
+                        console.log('🎯 Navigating to:', communityUrls.createCourse);
                         navigate(communityUrls.createCourse);
                       } else {
+                        console.log('🎯 Fallback: Navigating to /create-course');
                         navigate('/create-course');
                       }
                     }}

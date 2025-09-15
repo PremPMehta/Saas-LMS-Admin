@@ -558,10 +558,20 @@ const Courses = () => {
                         variant="contained"
                         startIcon={<AddIcon />}
                         onClick={() => {
-                          if (communityUrls) {
-                            navigate(communityUrls.createCourse);
+                          // Check if user is authenticated as community admin
+                          const isCommunityAdmin = !!(localStorage.getItem('communityToken') && localStorage.getItem('communityData'));
+                          
+                          if (isCommunityAdmin) {
+                            // User is authenticated, navigate to create course
+                            if (communityUrls) {
+                              navigate(communityUrls.createCourse);
+                            } else {
+                              navigate('/create-course');
+                            }
                           } else {
-                            navigate('/create-course');
+                            // User is not authenticated, redirect to login with return URL
+                            const returnUrl = communityUrls?.createCourse || '/create-course';
+                            navigate(`/community-login?returnUrl=${encodeURIComponent(returnUrl)}`);
                           }
                         }}
                         sx={{

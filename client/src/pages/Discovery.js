@@ -29,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
 import { LIFESTYLE_CATEGORIES } from '../config/categories';
+import CourseLoginModal from '../components/CourseLoginModal';
 
 const communities = [
   {
@@ -125,6 +126,8 @@ const Discovery = () => {
   const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const [showUserSignIn, setShowUserSignIn] = useState(true);
   const [courses, setCourses] = useState([]);
+  const [courseModalOpen, setCourseModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   
   // Get community URLs for proper navigation
   const communityUrls = getCommunityUrls();
@@ -142,6 +145,17 @@ const Discovery = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [loginDropdownOpen]);
+
+  // Handle course click
+  const handleCourseClick = (course) => {
+    setSelectedCourse({
+      id: course.id,
+      name: course.name,
+      communityName: course.communityName || 'crypto-manji-academy'
+    });
+    setCourseModalOpen(true);
+  };
+
   const [filteredCommunities, setFilteredCommunities] = useState([]);
 
   // Fetch courses from database
@@ -245,11 +259,32 @@ const Discovery = () => {
                     setLoginDropdownOpen(!loginDropdownOpen);
                     setShowUserSignIn(false);
                   }}
-                  endIcon={<KeyboardArrowDownIcon />}
+                  endIcon={<KeyboardArrowDownIcon sx={{ 
+                    transition: 'transform 0.2s ease',
+                    transform: loginDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                  }} />}
                   sx={{ 
                     textTransform: 'none',
-                    borderRadius: '20px',
-                    px: 3
+                    borderRadius: '25px',
+                    px: 4,
+                    py: 1.5,
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    borderColor: '#667eea',
+                    color: '#667eea',
+                    background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+                    backdropFilter: 'blur(10px)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      borderColor: '#667eea',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+                      '& .MuiSvgIcon-root': {
+                        color: 'white'
+                      }
+                    }
                   }}
                 >
                   LOG IN
@@ -261,13 +296,26 @@ const Discovery = () => {
                     position: 'absolute',
                     top: '100%',
                     right: 0,
-                    mt: 1,
+                    mt: 1.5,
                     bgcolor: 'white',
-                    borderRadius: 2,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                    border: '1px solid #e0e0e0',
+                    borderRadius: 3,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
+                    border: '1px solid rgba(0,0,0,0.08)',
                     zIndex: 1000,
-                    minWidth: 200
+                    minWidth: 240,
+                    overflow: 'hidden',
+                    backdropFilter: 'blur(10px)',
+                    animation: 'fadeInScale 0.2s ease-out',
+                    '@keyframes fadeInScale': {
+                      '0%': {
+                        opacity: 0,
+                        transform: 'translateY(-8px) scale(0.95)'
+                      },
+                      '100%': {
+                        opacity: 1,
+                        transform: 'translateY(0) scale(1)'
+                      }
+                    }
                   }}
                 >
                   <Button
@@ -280,39 +328,36 @@ const Discovery = () => {
                       textTransform: 'none',
                       justifyContent: 'flex-start',
                       px: 3,
-                      py: 2,
+                      py: 2.5,
                       borderRadius: 0,
-                      borderBottom: '1px solid #f0f0f0',
+                      color: '#2c3e50',
+                      fontWeight: 500,
+                      fontSize: '0.95rem',
+                      transition: 'all 0.2s ease',
                       '&:hover': {
-                        bgcolor: '#f5f5f5'
+                        bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        color: 'white',
+                        transform: 'translateX(4px)',
+                        '& .MuiSvgIcon-root': {
+                          color: 'white'
+                        }
                       }
                     }}
                   >
-                    <BusinessIcon sx={{ mr: 2, fontSize: 20 }} />
-                    Sign in as Community
+                    <BusinessIcon sx={{ 
+                      mr: 2.5, 
+                      fontSize: 22,
+                      color: '#667eea',
+                      transition: 'color 0.2s ease'
+                    }} />
+                    Login as Community
                   </Button>
                   
-                  <Button
-                    fullWidth
-                    onClick={() => {
-                      navigate('/community-user-signup');
-                      setLoginDropdownOpen(false);
-                    }}
-                    sx={{
-                      textTransform: 'none',
-                      justifyContent: 'flex-start',
-                      px: 3,
-                      py: 2,
-                      borderRadius: 0,
-                      borderBottom: '1px solid #f0f0f0',
-                      '&:hover': {
-                        bgcolor: '#f5f5f5'
-                      }
-                    }}
-                  >
-                    <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
-                    Join as Community User
-                  </Button>
+                  <Box sx={{ 
+                    height: '1px', 
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+                    mx: 2
+                  }} />
                   
                   <Button
                     fullWidth
@@ -324,60 +369,73 @@ const Discovery = () => {
                       textTransform: 'none',
                       justifyContent: 'flex-start',
                       px: 3,
-                      py: 2,
+                      py: 2.5,
                       borderRadius: 0,
-                      borderBottom: '1px solid #f0f0f0',
+                      color: '#2c3e50',
+                      fontWeight: 500,
+                      fontSize: '0.95rem',
+                      transition: 'all 0.2s ease',
                       '&:hover': {
-                        bgcolor: '#f5f5f5'
+                        bgcolor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                        color: 'white',
+                        transform: 'translateX(4px)',
+                        '& .MuiSvgIcon-root': {
+                          color: 'white'
+                        }
                       }
                     }}
                   >
-                    <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
-                    Community User Login
+                    <PersonIcon sx={{ 
+                      mr: 2.5, 
+                      fontSize: 22,
+                      color: '#f093fb',
+                      transition: 'color 0.2s ease'
+                    }} />
+                    Login as Community User
                   </Button>
                   
-                  <Button
-                    fullWidth
-                    onClick={() => {
-                      navigate('/create-community');
-                      setLoginDropdownOpen(false);
-                    }}
-                    sx={{
-                      textTransform: 'none',
-                      justifyContent: 'flex-start',
-                      px: 3,
-                      py: 2,
-                      borderRadius: 0,
-                      borderBottom: '1px solid #f0f0f0',
-                      '&:hover': {
-                        bgcolor: '#f5f5f5'
-                      }
-                    }}
-                  >
-                    <BusinessIcon sx={{ mr: 2, fontSize: 20 }} />
-                    Create Community
-                  </Button>
                   {showUserSignIn && (
-                    <Button
-                      fullWidth
-                      onClick={() => {
-                        navigate('/login');
-                        setLoginDropdownOpen(false);
-                      }}
-                      sx={{
-                        textTransform: 'none',
-                        justifyContent: 'flex-start',
-                        px: 3,
-                        py: 2,
-                        borderRadius: 0,
-                        '&:hover': {
-                          bgcolor: '#f5f5f5'
-                        }
-                      }}
-                    >
-                      <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
-                      Sign in as User
-                    </Button>
+                    <>
+                      <Box sx={{ 
+                        height: '1px', 
+                        background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+                        mx: 2
+                      }} />
+                      <Button
+                        fullWidth
+                        onClick={() => {
+                          navigate('/login');
+                          setLoginDropdownOpen(false);
+                        }}
+                        sx={{
+                          textTransform: 'none',
+                          justifyContent: 'flex-start',
+                          px: 3,
+                          py: 2.5,
+                          borderRadius: 0,
+                          color: '#2c3e50',
+                          fontWeight: 500,
+                          fontSize: '0.95rem',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            bgcolor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                            color: 'white',
+                            transform: 'translateX(4px)',
+                            '& .MuiSvgIcon-root': {
+                              color: 'white'
+                            }
+                          }
+                        }}
+                      >
+                        <PersonIcon sx={{ 
+                          mr: 2.5, 
+                          fontSize: 22,
+                          color: '#4facfe',
+                          transition: 'color 0.2s ease'
+                        }} />
+                        Sign in as User
+                      </Button>
+                    </>
                   )}
                 </Box>
               )}
@@ -530,7 +588,7 @@ const Discovery = () => {
             {filteredCommunities.map((community, index) => (
               <Card 
                 key={community.id || index}
-                onClick={() => navigate(`/discover-courseViewer/${community.id}`)}
+                onClick={() => handleCourseClick(community)}
                 sx={{ 
                   height: '100%',
                   display: 'flex',
@@ -798,6 +856,12 @@ const Discovery = () => {
         )}
       </Container>
 
+      {/* Course Login Modal */}
+      <CourseLoginModal
+        open={courseModalOpen}
+        onClose={() => setCourseModalOpen(false)}
+        courseData={selectedCourse}
+      />
 
     </Box>
   );
