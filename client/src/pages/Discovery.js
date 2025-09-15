@@ -30,7 +30,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
-import { LIFESTYLE_CATEGORIES } from '../config/categories';
+import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
 
 const communities = [
@@ -118,8 +118,15 @@ const communities = [
   }
 ];
 
-// Use centralized categories from config
-const categories = LIFESTYLE_CATEGORIES;
+// Use centralized categories from config - convert to chip format
+const categories = [
+  { label: 'All', value: 'all', color: 'default' },
+  ...DETAILED_CATEGORIES.map(category => ({
+    label: category,
+    value: category.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+    color: 'primary'
+  }))
+];
 
 const Discovery = () => {
   const navigate = useNavigate();
