@@ -237,12 +237,30 @@ const Discovery = () => {
       filtered = filtered.filter(course => course.category === selectedCategory);
     }
 
-    // Filter by search term
+    // Enhanced search: Filter by search term (title, description, or category)
     if (searchTerm) {
-      filtered = filtered.filter(course =>
-        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchTerm.toLowerCase())
+      const searchLower = searchTerm.toLowerCase();
+      
+      // Check if search term matches any category name
+      const matchingCategory = DETAILED_CATEGORIES.find(category => 
+        category.toLowerCase().includes(searchLower) || 
+        searchLower.includes(category.toLowerCase())
       );
+      
+      if (matchingCategory) {
+        // If search term matches a category, show all courses from that category
+        filtered = filtered.filter(course => 
+          course.category.toLowerCase().includes(matchingCategory.toLowerCase()) ||
+          matchingCategory.toLowerCase().includes(course.category.toLowerCase())
+        );
+      } else {
+        // Regular search in title and description
+        filtered = filtered.filter(course =>
+          course.title.toLowerCase().includes(searchLower) ||
+          course.description.toLowerCase().includes(searchLower) ||
+          course.category.toLowerCase().includes(searchLower)
+        );
+      }
     }
 
     setFilteredCommunities(filtered);
@@ -540,7 +558,7 @@ const Discovery = () => {
           >
             <TextField
               fullWidth
-              placeholder="Search for courses..."
+              placeholder="Search courses, categories, or topics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
