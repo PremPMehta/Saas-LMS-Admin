@@ -102,6 +102,13 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
+      console.log('🔍 CourseLoginModal - Login attempt:', {
+        apiUrl,
+        email: userFormData.email,
+        courseData,
+        environment: process.env.NODE_ENV
+      });
+      
       const response = await axios.post(`${apiUrl}/api/community-user/login`, {
         email: userFormData.email,
         password: userFormData.password
@@ -121,6 +128,13 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         // Store token and user data
         localStorage.setItem('communityUserToken', token);
         localStorage.setItem('communityUser', JSON.stringify(user));
+        
+        console.log('✅ CourseLoginModal - Login successful:', {
+          user,
+          token: token ? 'present' : 'missing',
+          courseData,
+          navigationUrl: `/${courseData?.communityName || 'crypto-manji-academy'}/student/course-viewer/${courseData?.id}`
+        });
         
         // Navigate to course viewer
         navigate(`/${courseData?.communityName || 'crypto-manji-academy'}/student/course-viewer/${courseData?.id}`);
@@ -209,6 +223,13 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
+      console.log('🔍 CourseLoginModal - Signup attempt:', {
+        apiUrl,
+        email: signupData.email,
+        courseData,
+        environment: process.env.NODE_ENV
+      });
+      
       const response = await axios.post(`${apiUrl}/api/community-user/signup`, {
         firstName: signupData.firstName,
         lastName: signupData.lastName,
@@ -219,6 +240,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       });
 
       if (response.data.success) {
+        console.log('✅ CourseLoginModal - Signup successful:', response.data);
         setSignupSuccess('Registration successful! Please wait for admin approval.');
         setSignupData({
           firstName: '',
