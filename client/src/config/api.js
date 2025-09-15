@@ -14,15 +14,6 @@ const FINAL_API_URL = isDevelopment ? API_BASE_URL : 'https://saas-lms-admin-1.o
 // Helper function for API calls
 export const apiUrl = (endpoint) => {
   const fullUrl = `${FINAL_API_URL}${endpoint}`;
-  console.log('🔧 apiUrl function called:', { 
-    API_BASE_URL, 
-    FINAL_API_URL, 
-    isDevelopment, 
-    endpoint, 
-    fullUrl,
-    hostname: window.location.hostname,
-    nodeEnv: process.env.NODE_ENV
-  }); // Debug log
   return fullUrl;
 };
 

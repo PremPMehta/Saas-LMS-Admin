@@ -165,17 +165,9 @@ const Discovery = () => {
         setLoading(true);
         // Fetch all published courses for discovery
         const response = await courseApi.getCourses({ discovery: 'true' });
-        console.log('Fetched courses for discovery:', response);
-        
         if (response.success && response.courses) {
           // Normalize course data for display
           const normalizedCourses = response.courses.map(course => {
-            console.log('🔍 Discovery: Course thumbnail data:', {
-              title: course.title,
-              thumbnail: course.thumbnail,
-              thumbnailType: typeof course.thumbnail,
-              thumbnailLength: course.thumbnail ? course.thumbnail.length : 0
-            });
             
             return {
               id: course._id || course.id,
@@ -640,49 +632,34 @@ const Discovery = () => {
                     component="img"
                     height="160"
                     image={(() => {
-                      console.log('🖼️ Discovery: Constructing thumbnail URL for', community.title, ':', {
-                        thumbnail: community.thumbnail,
-                        thumbnailType: typeof community.thumbnail,
-                        thumbnailLength: community.thumbnail ? community.thumbnail.length : 0
-                      });
-                      
+                      // If no thumbnail, return a broken URL to trigger fallback
                       if (!community.thumbnail || community.thumbnail.trim() === '') {
-                        console.log('🖼️ Discovery: No thumbnail, will show text fallback for', community.title);
-                        // Return a simple placeholder that will trigger the fallback
                         return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InRyYW5zcGFyZW50Ii8+PC9zdmc+';
                       }
                       
                       // If it's a data URL, use it directly
                       if (community.thumbnail.startsWith('data:')) {
-                        console.log('🖼️ Discovery: Using data URL for', community.title);
                         return community.thumbnail;
                       }
                       
                       // If it's already a full URL (http/https), use it directly
                       if (community.thumbnail.startsWith('http')) {
-                        console.log('🖼️ Discovery: Using full URL for', community.title, ':', community.thumbnail);
                         return community.thumbnail;
                       }
                       
                       // If it's a localhost URL, replace with production URL
                       if (community.thumbnail.includes('localhost')) {
                         const filename = community.thumbnail.split('/').pop();
-                        const url = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
-                        console.log('🖼️ Discovery: Converted localhost URL for', community.title, ':', url);
-                        return url;
+                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
                       }
                       
                       // If it starts with /uploads, construct the full URL
                       if (community.thumbnail.startsWith('/uploads/')) {
-                        const url = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
-                        console.log('🖼️ Discovery: Constructed /uploads URL for', community.title, ':', url);
-                        return url;
+                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
                       }
                       
                       // If it's just a filename, add /uploads/ prefix
-                      const url = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
-                      console.log('🖼️ Discovery: Constructed filename URL for', community.title, ':', url);
-                      return url;
+                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
                     })()}
                     alt={community.title}
                     sx={{
@@ -690,12 +667,7 @@ const Discovery = () => {
                       objectPosition: 'center'
                     }}
                     onError={(e) => {
-                      console.log('❌ Discovery: Thumbnail failed to load for', community.title, ':', {
-                        failedSrc: e.target.src,
-                        originalThumbnail: community.thumbnail
-                      });
-                      
-                      // Immediately show text fallback - no more complex attempts
+                      // Hide the broken image and show text fallback
                       e.target.style.display = 'none';
                       const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
                       if (!fallbackDiv) {
