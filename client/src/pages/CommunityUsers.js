@@ -97,7 +97,7 @@ const CommunityUsers = () => {
       }
 
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/community-user/admin/users?${params}`,
+        `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/community-user/admin/users?${params}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -159,21 +159,21 @@ const CommunityUsers = () => {
       switch (actionDialog.type) {
         case 'approve':
           response = await axios.put(
-            `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/community-user/admin/approve/${selectedUser._id}`,
+            `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/community-user/admin/approve/${selectedUser._id}`,
             {},
             { headers: { 'Authorization': `Bearer ${token}` } }
           );
           break;
         case 'reject':
           response = await axios.put(
-            `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/community-user/admin/reject/${selectedUser._id}`,
+            `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/community-user/admin/reject/${selectedUser._id}`,
             { rejectionReason },
             { headers: { 'Authorization': `Bearer ${token}` } }
           );
           break;
         case 'deactivate':
           response = await axios.put(
-            `${process.env.REACT_APP_API_URL || 'http://localhost:5001'}/api/community-user/admin/deactivate/${selectedUser._id}`,
+            `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/community-user/admin/deactivate/${selectedUser._id}`,
             { deactivationReason },
             { headers: { 'Authorization': `Bearer ${token}` } }
           );

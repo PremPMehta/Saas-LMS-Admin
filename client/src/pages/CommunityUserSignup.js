@@ -119,7 +119,7 @@ const CommunityUserSignup = () => {
     setError('');
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
       console.log('API URL:', apiUrl);
       console.log('Full URL:', `${apiUrl}/api/community-user/signup`);
       const response = await axios.post(`${apiUrl}/api/community-user/signup`, formData);
@@ -145,7 +145,7 @@ const CommunityUserSignup = () => {
 
   const handleCheckStatus = async () => {
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
       const response = await axios.get(`${apiUrl}/api/community-user/status/${formData.email}`);
 
       if (response.data.success) {
