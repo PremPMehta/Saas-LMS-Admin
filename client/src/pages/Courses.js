@@ -55,6 +55,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   FilterList as FilterIcon,
+  Archive as ArchiveIcon,
 } from '@mui/icons-material';
 
 const Courses = () => {
@@ -650,44 +651,7 @@ const Courses = () => {
                     </Card>
                   </Grid>
 
-                  {/* Drafts */}
-                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Card
-                      sx={{
-                        p: 3,
-                        display: 'flex',
-                        alignItems: 'center',
-                        background: 'linear-gradient(45deg, #ffffff 30%, #fff9e5 90%)',
-                        borderRadius: 3,
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: '50%',
-                            bgcolor: '#fef7e0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <WarningIcon sx={{ color: '#fbbc04' }} />
-                        </Box>
-                        <Box>
-                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fbbc04', mb: 0 }}>
-                            {courses.filter(c => c.status === 'draft').length}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Drafts
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Card>
-                  </Grid>
-
-                  {/* Total Students */}
+                  {/* Archived */}
                   <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card
                       sx={{
@@ -710,14 +674,51 @@ const Courses = () => {
                             justifyContent: 'center',
                           }}
                         >
-                          <PeopleIcon sx={{ color: '#ea4335' }} />
+                          <ArchiveIcon sx={{ color: '#ea4335' }} />
                         </Box>
                         <Box>
                           <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335', mb: 0 }}>
+                            {courses.filter(c => c.status === 'archived').length}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Archived
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Card>
+                  </Grid>
+
+                  {/* Total Approved Users */}
+                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Card
+                      sx={{
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'linear-gradient(45deg, #ffffff 30%, #e8f5e8 90%)',
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            bgcolor: '#e8f5e8',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <PeopleIcon sx={{ color: '#34a853' }} />
+                        </Box>
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853', mb: 0 }}>
                             {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Total Students
+                            Total Approved Users
                           </Typography>
                         </Box>
                       </Box>

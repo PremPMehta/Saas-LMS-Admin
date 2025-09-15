@@ -138,7 +138,7 @@ exports.createCourse = async (req, res) => {
       videos: (chapter.videos || []).map(video => ({
         ...video,
         content: video.content || video.videoUrl || '', // Handle both content and videoUrl
-        videoUrl: video.videoUrl || video.content || '/sample-lorem-ipsum.pdf',
+        videoUrl: video.videoUrl || video.content || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Use a real YouTube video as default
         videoType: video.videoType || 'youtube',
         type: video.type || 'VIDEO', // Set type field
         duration: video.duration || '0:00',

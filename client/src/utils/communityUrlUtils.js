@@ -31,13 +31,13 @@ export const getCommunityUrl = (communityName, path = 'dashboard') => {
 export const getCommunityUrls = (communityName) => {
   const urlName = getCommunityUrlName(communityName);
   return {
-    dashboard: `/${urlName}/dashboard`,
-    courses: `/${urlName}/courses`,
-    createCourse: `/${urlName}/create-course`,
-    admins: `/${urlName}/admins`,
-    students: `/${urlName}/students`,
-    courseViewer: (courseId) => `/${urlName}/course-viewer/${courseId}`,
-    editCourse: (courseId) => `/${urlName}/edit-course/${courseId}`
+    dashboard: `/${urlName}/admin/dashboard`,
+    courses: `/${urlName}/admin/courses`,
+    createCourse: `/${urlName}/admin/create-course`,
+    admins: `/${urlName}/admin/admins`,
+    students: `/${urlName}/admin/students`,
+    courseViewer: (courseId) => `/${urlName}/admin/course-viewer/${courseId}`,
+    editCourse: (courseId) => `/${urlName}/admin/edit-course/${courseId}`
   };
 };
 

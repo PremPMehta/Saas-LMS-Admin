@@ -354,43 +354,6 @@ const CommunityDashboard = () => {
                   </Card>
                 </Grid>
 
-                {/* Drafts */}
-                <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                  <Card
-                    sx={{
-                      p: 3,
-                      display: 'flex',
-                      alignItems: 'center',
-                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 249, 225) 90%)',
-                      borderRadius: 3,
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-                      <Box
-                        sx={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: '50%',
-                          bgcolor: '#fef7e0',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <EditNoteIcon sx={{ color: '#fbbc04' }} />
-                      </Box>
-                      <Box>
-                        <Typography variant="h4" sx={{ color: '#fbbc04', mb: 0 }}>
-                          {courses.filter(c => c.status === 'draft').length}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Drafts
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Card>
-                </Grid>
-
                 {/* Archived */}
                 <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                   <Card
@@ -398,7 +361,7 @@ const CommunityDashboard = () => {
                       p: 3,
                       display: 'flex',
                       alignItems: 'center',
-                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 235, 232) 90%)',
+                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 236, 236) 90%)',
                       borderRadius: 3,
                     }}
                   >
@@ -427,6 +390,7 @@ const CommunityDashboard = () => {
                     </Box>
                   </Card>
                 </Grid>
+
               </Grid>
 
 
@@ -591,6 +555,28 @@ const CommunityDashboard = () => {
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={() => setOpenCourseDialog(false)}>Close</Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setOpenCourseDialog(false);
+                      if (communityUrls) {
+                        navigate(communityUrls.courseViewer(selectedCourse._id || selectedCourse.id));
+                      } else {
+                        navigate(`/course-viewer/${selectedCourse._id || selectedCourse.id}`);
+                      }
+                    }}
+                    sx={{
+                      borderColor: '#0F3C60',
+                      color: '#0F3C60',
+                      '&:hover': { 
+                        borderColor: '#3367d6',
+                        color: '#3367d6',
+                        backgroundColor: 'rgba(15, 60, 96, 0.04)'
+                      }
+                    }}
+                  >
+                    View Course
+                  </Button>
                   <Button
                     variant="contained"
                     onClick={() => handleEditCourse(selectedCourse._id || selectedCourse.id)}

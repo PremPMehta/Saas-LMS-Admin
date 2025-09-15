@@ -75,7 +75,11 @@ const UserLogin = () => {
         setTimeout(() => {
           if (courseId) {
             // If user clicked on a course, redirect to course viewer
-            navigate(`/course-viewer/${courseId}`);
+            if (communityUrls) {
+              navigate(communityUrls.courseViewer(courseId));
+            } else {
+              navigate(`/course-viewer/${courseId}`);
+            }
           } else {
             // Otherwise redirect to user dashboard or courses page
             if (communityUrls) {

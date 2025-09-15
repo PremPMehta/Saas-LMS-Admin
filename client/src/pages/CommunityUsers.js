@@ -39,6 +39,7 @@ import {
   Refresh as RefreshIcon,
   Search as SearchIcon,
   Visibility as VisibilityIcon,
+  HourglassEmpty as HourglassIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../contexts/ThemeContext';
 import FocusedSidebar from '../components/FocusedSidebar';
@@ -368,57 +369,87 @@ const CommunityUsers = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user._id} hover>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                          {user.firstName} {user.lastName}
-                        </Box>
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.communityId?.name || 'N/A'}</TableCell>
-                      <TableCell>{getStatusChip(user)}</TableCell>
-                      <TableCell>{formatDate(user.createdAt)}</TableCell>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                          {user.approvalStatus === 'pending' && (
+                  {users.length > 0 ? (
+                    users.map((user) => (
+                      <TableRow key={user._id} hover>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                            {user.firstName} {user.lastName}
+                          </Box>
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.communityId?.name || 'N/A'}</TableCell>
+                        <TableCell>{getStatusChip(user)}</TableCell>
+                        <TableCell>{formatDate(user.createdAt)}</TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            {user.approvalStatus === 'pending' && (
+                              <>
+                                <Tooltip title="Approve">
+                                  <IconButton
+                                    color="success"
+                                    onClick={() => handleAction(user, 'approve')}
+                                    size="small"
+                                  >
+                                    <CheckIcon />
+                                  </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Reject">
+                                  <IconButton
+                                    color="error"
+                                    onClick={() => handleAction(user, 'reject')}
+                                    size="small"
+                                  >
+                                    <CancelIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                            {user.approvalStatus === 'approved' && !user.isDeactivated && (
+                              <Tooltip title="Deactivate">
+                                <IconButton
+                                  color="warning"
+                                  onClick={() => handleAction(user, 'deactivate')}
+                                  size="small"
+                                >
+                                  <BlockIcon />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8 }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                          {tabValue === 1 ? (
                             <>
-                              <Tooltip title="Approve">
-                                <IconButton
-                                  color="success"
-                                  onClick={() => handleAction(user, 'approve')}
-                                  size="small"
-                                >
-                                  <CheckIcon />
-                                </IconButton>
-                              </Tooltip>
-                              <Tooltip title="Reject">
-                                <IconButton
-                                  color="error"
-                                  onClick={() => handleAction(user, 'reject')}
-                                  size="small"
-                                >
-                                  <CancelIcon />
-                                </IconButton>
-                              </Tooltip>
+                              <HourglassIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
+                              <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                No Pending Approvals
+                              </Typography>
+                              <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
+                                All user registrations have been reviewed. New approval requests will appear here.
+                              </Typography>
                             </>
-                          )}
-                          {user.approvalStatus === 'approved' && !user.isDeactivated && (
-                            <Tooltip title="Deactivate">
-                              <IconButton
-                                color="warning"
-                                onClick={() => handleAction(user, 'deactivate')}
-                                size="small"
-                              >
-                                <BlockIcon />
-                              </IconButton>
-                            </Tooltip>
+                          ) : (
+                            <>
+                              <PeopleIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
+                              <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                No Users Found
+                              </Typography>
+                              <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
+                                {searchTerm ? 'No users match your search criteria. Try adjusting your search terms.' : 'No users have registered yet.'}
+                              </Typography>
+                            </>
                           )}
                         </Box>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
