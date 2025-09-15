@@ -253,7 +253,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         justifyContent: 'space-between', 
         alignItems: 'center',
         pb: 1,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: '#0F3C60',
         color: 'white'
       }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -383,9 +383,10 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                           mt: 3,
                           mb: 2,
                           py: 1.5,
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          background: '#0F3C60',
                           '&:hover': {
-                            background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                            background: '#0F3C60',
+                            opacity: 0.9
                           }
                         }}
                       >
@@ -401,7 +402,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                           onClick={() => setShowSignupForm(true)}
                           sx={{
                             textTransform: 'none',
-                            color: '#667eea',
+                            color: '#0F3C60',
                             fontWeight: 600,
                             p: 0,
                             minWidth: 'auto',
@@ -427,7 +428,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                         onClick={() => setShowSignupForm(false)}
                         sx={{
                           textTransform: 'none',
-                          color: '#667eea',
+                          color: '#0F3C60',
                           fontWeight: 600,
                           p: 0,
                           minWidth: 'auto',
@@ -556,9 +557,10 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                           mt: 3,
                           mb: 2,
                           py: 1.5,
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          background: '#0F3C60',
                           '&:hover': {
-                            background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                            background: '#0F3C60',
+                            opacity: 0.9
                           }
                         }}
                       >
@@ -637,9 +639,10 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                       mt: 3,
                       mb: 2,
                       py: 1.5,
-                      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                      background: '#0F3C60',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #e085e8 0%, #e54b5b 100%)',
+                        background: '#0F3C60',
+                        opacity: 0.9
                       }
                     }}
                   >
