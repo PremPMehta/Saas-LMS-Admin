@@ -121,7 +121,7 @@ const Login = () => {
         let redirectPath = '/academies'; // Default for regular users
         
         if (userRole === 'admin') {
-          redirectPath = '/dashboard'; // Admin users go to dashboard
+          redirectPath = '/discovery'; // Admin users go to courses page
         }
         
         // Check if there's an intended page from location state

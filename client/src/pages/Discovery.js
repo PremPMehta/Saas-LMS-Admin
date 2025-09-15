@@ -166,25 +166,26 @@ const Discovery = () => {
         setLoading(true);
         // Fetch all published courses for discovery
         const response = await courseApi.getCourses({ discovery: 'true' });
-        console.log('Fetched courses for discovery:', response);
-
         if (response.success && response.courses) {
           // Normalize course data for display
-          const normalizedCourses = response.courses.map(course => ({
-            id: course._id || course.id,
-            title: course.title || 'Untitled Course',
-            description: course.description || 'No description available',
-            category: course.category || 'Uncategorized',
-            status: course.status || 'published',
-            thumbnail: course.thumbnail || null,
-            targetAudience: course.targetAudience || null,
-            contentType: course.contentType || 'video',
-            subType: course.subType || null,
-            chapters: course.chapters || [],
-            createdAt: course.createdAt || new Date().toISOString(),
-            updatedAt: course.updatedAt || new Date().toISOString()
-          }));
-
+          const normalizedCourses = response.courses.map(course => {
+            
+            return {
+              id: course._id || course.id,
+              title: course.title || 'Untitled Course',
+              description: course.description || 'No description available',
+              category: course.category || 'Uncategorized',
+              status: course.status || 'published',
+              thumbnail: course.thumbnail || '', // Keep empty string instead of null
+              targetAudience: course.targetAudience || null,
+              contentType: course.contentType || 'video',
+              subType: course.subType || null,
+              chapters: course.chapters || [],
+              createdAt: course.createdAt || new Date().toISOString(),
+              updatedAt: course.updatedAt || new Date().toISOString()
+            };
+          });
+          
           setCourses(normalizedCourses);
           setFilteredCommunities(normalizedCourses);
         } else {
@@ -632,26 +633,54 @@ const Discovery = () => {
                     component="img"
                     height="160"
                     image={(() => {
+                      // If no thumbnail, create a custom SVG placeholder
                       if (!community.thumbnail || community.thumbnail.trim() === '') {
-                        return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                        const title = community.title || 'Course';
+                        const category = community.category || 'Education';
+                        const truncatedTitle = title.length > 25 ? title.substring(0, 25) + '...' : title;
+                        
+                        const svgContent = `
+                          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
+                              </linearGradient>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grad)"/>
+                            <text x="50%" y="45%" font-family="Arial, sans-serif" font-size="18" font-weight="bold" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
+                              ${truncatedTitle}
+                            </text>
+                            <text x="50%" y="65%" font-family="Arial, sans-serif" font-size="12" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  opacity="0.9">
+                              ${category}
+                            </text>
+                            <circle cx="50%" cy="80%" r="8" fill="white" opacity="0.3"/>
+                            <polygon points="46%,78% 46%,82% 50%,80%" fill="white" opacity="0.7"/>
+                          </svg>
+                        `;
+                        return `data:image/svg+xml;base64,${btoa(svgContent)}`;
                       }
 
                       // If it's a data URL, use it directly
                       if (community.thumbnail.startsWith('data:')) {
                         return community.thumbnail;
                       }
-
+                      
+                      // If it's already a full URL (http/https), use it directly
+                      if (community.thumbnail.startsWith('http')) {
+                        return community.thumbnail;
+                      }
+                      
                       // If it's a localhost URL, replace with production URL
                       if (community.thumbnail.includes('localhost')) {
                         const filename = community.thumbnail.split('/').pop();
                         return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
                       }
-
-                      // If it's already a full production URL, use it directly
-                      if (community.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
-                        return community.thumbnail;
-                      }
-
+                      
                       // If it starts with /uploads, construct the full URL
                       if (community.thumbnail.startsWith('/uploads/')) {
                         return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
@@ -666,8 +695,29 @@ const Discovery = () => {
                       objectPosition: 'center'
                     }}
                     onError={(e) => {
-                      console.error('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
-                      e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                      // If external thumbnail fails, show a simple fallback
+                      e.target.style.display = 'none';
+                      const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
+                      if (!fallbackDiv) {
+                        const newFallback = document.createElement('div');
+                        newFallback.className = 'thumbnail-fallback';
+                        newFallback.style.cssText = `
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          height: 160px;
+                          background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+                          color: white;
+                          font-weight: bold;
+                          font-size: 14px;
+                          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                          text-align: center;
+                          padding: 10px;
+                          word-break: break-word;
+                        `;
+                        newFallback.textContent = community.title;
+                        e.target.parentElement.appendChild(newFallback);
+                      }
                     }}
                   />
 

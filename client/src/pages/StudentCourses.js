@@ -441,7 +441,7 @@ const StudentCourses = () => {
                   </Card>
                 </Grid>
 
-                {/* Learning Hours */}
+                {/* Total Resources */}
                 <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                   <Card
                     sx={{
@@ -469,12 +469,13 @@ const StudentCourses = () => {
                       <Box>
                         <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335', mb: 0 }}>
                           {courses.reduce((total, course) => {
-                            const chapterCount = course.chapters?.length || 0;
-                            return total + (chapterCount * 2); // Estimate 2 hours per chapter
-                          }, 0)}+
+                            return total + (course.chapters?.reduce((chapterTotal, chapter) => {
+                              return chapterTotal + (chapter.videos?.length || 0);
+                            }, 0) || 0);
+                          }, 0)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Learning Hours
+                          Total Resources
                         </Typography>
                       </Box>
                     </Box>
@@ -576,7 +577,11 @@ const StudentCourses = () => {
                                   display: 'block'
                                 }}
                                 onError={(e) => {
-                                  console.error('🖼️ StudentCourses: Thumbnail failed to load for', course.title, ':', e.target.src);
+                                  // Prevent multiple error logs for the same image
+                                  if (!e.target.dataset.errorLogged) {
+                                    console.warn('🖼️ StudentCourses: Thumbnail failed to load for', course.title, ':', e.target.src);
+                                    e.target.dataset.errorLogged = 'true';
+                                  }
                                   e.target.style.display = 'none';
                                 }}
                               />

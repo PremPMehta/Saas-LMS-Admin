@@ -1256,15 +1256,15 @@ const Courses = () => {
                                       return course.thumbnail;
                                     }
                                     
+                                    // If it's already a full URL (http/https), use it directly
+                                    if (course.thumbnail.startsWith('http')) {
+                                      return course.thumbnail;
+                                    }
+                                    
                                     // If it's a localhost URL, replace with production URL
                                     if (course.thumbnail.includes('localhost')) {
                                       const filename = course.thumbnail.split('/').pop();
                                       return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
-                                    }
-                                    
-                                    // If it's already a full production URL, use it directly
-                                    if (course.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
-                                      return course.thumbnail;
                                     }
                                     
                                     // If it starts with /uploads, construct the full URL
@@ -1291,22 +1291,46 @@ const Courses = () => {
                                     display: 'block'
                                   }}
                                   onError={(e) => {
-                                    console.error('🖼️ Courses: Thumbnail failed to load for', course.title, ':', e.target.src);
-                                    e.target.style.display = 'none';
-                                    // Show fallback text
-                                    const fallbackDiv = document.createElement('div');
-                                    fallbackDiv.style.cssText = `
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      height: 100%;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 18px;
-                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                                    `;
-                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
-                                    e.target.parentNode.appendChild(fallbackDiv);
+                                    // Try multiple fallback strategies
+                                    const fallbackAttempts = e.target.dataset.fallbackAttempts || '0';
+                                    const attempts = parseInt(fallbackAttempts);
+                                    
+                                    if (attempts === 0) {
+                                      // First attempt: Try with different URL construction
+                                      e.target.dataset.fallbackAttempts = '1';
+                                      if (course.thumbnail && !course.thumbnail.startsWith('data:') && !course.thumbnail.startsWith('http')) {
+                                        // Try direct filename approach
+                                        e.target.src = `https://saas-lms-admin-1.onrender.com/uploads/${course.thumbnail}`;
+                                      } else {
+                                        // Try placeholder
+                                        e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(course.title)}`;
+                                      }
+                                    } else if (attempts === 1) {
+                                      // Second attempt: Try placeholder
+                                      e.target.dataset.fallbackAttempts = '2';
+                                      e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(course.title)}`;
+                                    } else {
+                                      // Final fallback: Show text fallback
+                                      e.target.style.display = 'none';
+                                      const existingFallback = e.target.parentNode.querySelector('.thumbnail-fallback');
+                                      if (!existingFallback) {
+                                        const fallbackDiv = document.createElement('div');
+                                        fallbackDiv.className = 'thumbnail-fallback';
+                                        fallbackDiv.style.cssText = `
+                                          display: flex;
+                                          align-items: center;
+                                          justify-content: center;
+                                          height: 100%;
+                                          color: white;
+                                          font-weight: bold;
+                                          font-size: 18px;
+                                          text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                                          background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+                                        `;
+                                        fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
+                                        e.target.parentNode.appendChild(fallbackDiv);
+                                      }
+                                    }
                                   }}
                                   onLoad={(e) => {
                                     console.log('✅ Thumbnail loaded successfully for course:', course.title);
@@ -1316,7 +1340,27 @@ const Courses = () => {
                                   }}
                                 />
                               ) : (
-                                console.log('⚠️ No thumbnail for course:', course.title, 'thumbnail:', course.thumbnail)
+                                // Show fallback when no thumbnail
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '100%',
+                                  color: 'white',
+                                  textAlign: 'center',
+                                  padding: 2,
+                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                }}>
+                                  <Typography variant="h6" sx={{
+                                    fontWeight: 600,
+                                    fontSize: '1.1rem',
+                                    lineHeight: 1.3,
+                                    textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                                    wordBreak: 'break-word'
+                                  }}>
+                                    {course.title}
+                                  </Typography>
+                                </Box>
                               )}
 
                               {/* Fallback Thumbnail (shown when no thumbnail or image fails) */}
@@ -1328,36 +1372,21 @@ const Courses = () => {
                                   justifyContent: 'center',
                                   width: '100%',
                                   height: '100%',
-                                  background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
+                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                  color: 'white',
+                                  textAlign: 'center',
+                                  padding: 2
                                 }}
                               >
-                                <img
-                                  src={`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`}
-                                  onError={(e) => {
-                                    console.error('🖼️ Courses: Default thumbnail failed to load');
-                                    e.target.style.display = 'none';
-                                    // Show fallback text
-                                    const fallbackDiv = document.createElement('div');
-                                    fallbackDiv.style.cssText = `
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      height: 100%;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 18px;
-                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                                    `;
-                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
-                                    e.target.parentNode.appendChild(fallbackDiv);
-                                  }}
-                                  alt="Default course thumbnail"
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover'
-                                  }}
-                                />
+                                <Typography variant="h6" sx={{
+                                  fontWeight: 600,
+                                  fontSize: '1.1rem',
+                                  lineHeight: 1.3,
+                                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                                  wordBreak: 'break-word'
+                                }}>
+                                  {course.title}
+                                </Typography>
                               </Box>
 
                               {/* Status Badge */}

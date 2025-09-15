@@ -9,7 +9,7 @@ dotenv.config();
 
 // Set MongoDB URI if not provided
 if (!process.env.MONGO_URI) {
-  process.env.MONGO_URI = 'mongodb+srv://premarch567:Z6qcWJ8m6iv4ZqRW@cluster0.lyzxobt.mongodb.net/saasLmsAdmin?retryWrites=true&w=majority&appName=Cluster0';
+  process.env.MONGO_URI = 'mongodb+srv://premarch567:reGzH94BB9DmqLPJ@cluster0.lyzxobt.mongodb.net/saas-lms-admin?retryWrites=true&w=majority&appName=Cluster0';
   console.log('🔗 Using MongoDB Atlas connection');
 }
 
