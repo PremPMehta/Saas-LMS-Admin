@@ -265,6 +265,26 @@ const DiscoverCourseViewer = () => {
       {/* Header */}
       <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e9ecef', py: 2 }}>
         <Container maxWidth="xl">
+          {/* Back Button */}
+          <Box sx={{ mb: 2 }}>
+            <Button
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate('/')}
+              sx={{
+                textTransform: 'none',
+                color: '#0F3C60',
+                borderColor: '#0F3C60',
+                '&:hover': {
+                  backgroundColor: 'rgba(15,60,96,0.1)',
+                  borderColor: '#0F3C60'
+                }
+              }}
+              variant="outlined"
+            >
+              Back to Discovery
+            </Button>
+          </Box>
+          
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography 
               variant="h4" 

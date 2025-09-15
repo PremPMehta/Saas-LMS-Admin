@@ -854,6 +854,26 @@ const CourseViewer = () => {
         {/* Common Focused Top Bar */}
         <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
 
+        {/* Back Button */}
+        <Box sx={{ px: { xs: 1, md: 3 }, pt: 2 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(`/${communityName}/student/courses`)}
+            sx={{
+              textTransform: 'none',
+              color: darkMode ? '#fff' : '#0F3C60',
+              borderColor: darkMode ? '#fff' : '#0F3C60',
+              '&:hover': {
+                backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(15,60,96,0.1)',
+                borderColor: darkMode ? '#fff' : '#0F3C60'
+              }
+            }}
+            variant="outlined"
+          >
+            Back to Courses
+          </Button>
+        </Box>
+
         {/* Course Content */}
         <Box sx={{ p: { xs: 1, md: 3 }, flex: 1, overflow: 'hidden' }}>
           <Grid container spacing={2}>

@@ -725,7 +725,8 @@ const Discovery = () => {
               },
               gap: 3,
               maxWidth: '1400px',
-              mx: 'auto'
+              mx: 'auto',
+              alignItems: 'start' // Align cards to start so they don't stretch
             }}
           >
             {filteredCommunities.map((community, index) => (
@@ -733,12 +734,13 @@ const Discovery = () => {
                 key={community.id || index}
                 onClick={() => handleCourseClick(community)}
                 sx={{ 
-                  height: '420px', // Fixed height for consistent layout
+                  minHeight: '420px', // Minimum height for consistent layout
+                  height: expandedDescriptions[community.id] ? 'auto' : '420px', // Dynamic height
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: 3,
                   overflow: 'hidden',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  transition: 'transform 0.2s, box-shadow 0.2s, height 0.3s ease-in-out',
                   cursor: 'pointer',
                   '&:hover': {
                     transform: 'translateY(-4px)',
@@ -888,8 +890,15 @@ const Discovery = () => {
                   </Box>
                 </Box>
 
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <CardContent sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  p: 3,
+                  height: '100%',
+                  minHeight: 0 // Allow content to shrink if needed
+                }}>
+                  {/* Title Section */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexShrink: 0 }}>
                     <Avatar
                       sx={{
                         width: 24,
@@ -906,7 +915,14 @@ const Discovery = () => {
                     </Typography>
                   </Box>
                   
-                  <Box sx={{ mb: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                  {/* Description Section - Flexible */}
+                  <Box sx={{ 
+                    mb: 2, 
+                    flexGrow: 1, 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    minHeight: 0 // Allow this section to grow/shrink
+                  }}>
                     <Typography 
                       variant="body2" 
                       color="text.secondary" 
@@ -916,7 +932,8 @@ const Discovery = () => {
                         WebkitLineClamp: expandedDescriptions[community.id] ? 'none' : 3,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
-                        flexGrow: 1
+                        transition: 'all 0.3s ease-in-out',
+                        mb: expandedDescriptions[community.id] ? 1 : 0
                       }}
                     >
                       {community.description}
@@ -935,9 +952,12 @@ const Discovery = () => {
                           fontSize: '0.75rem',
                           color: 'primary.main',
                           textTransform: 'none',
+                          transition: 'all 0.2s ease',
+                          flexShrink: 0, // Don't shrink the button
                           '&:hover': {
                             backgroundColor: 'transparent',
-                            textDecoration: 'underline'
+                            textDecoration: 'underline',
+                            color: 'primary.dark'
                           }
                         }}
                       >
@@ -946,121 +966,127 @@ const Discovery = () => {
                     )}
                   </Box>
                   
-                  {/* Course Tags */}
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                    {/* Target Audience Tag */}
-                    {community.targetAudience && (
-                      <Chip
-                        label={community.targetAudience}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: '#e0e0e0',
-                          color: '#666',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
+                  {/* Bottom Section - Fixed at bottom */}
+                  <Box sx={{ 
+                    mt: 'auto', // Push to bottom
+                    flexShrink: 0 // Don't shrink this section
+                  }}>
+                    {/* Course Tags */}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+                      {/* Target Audience Tag */}
+                      {community.targetAudience && (
+                        <Chip
+                          label={community.targetAudience}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: '#e0e0e0',
+                            color: '#666',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
 
-                    {/* Category Tag */}
-                    {community.category && (
-                      <Chip
-                        label={community.category}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: '#0F3C60',
-                          color: '#0F3C60',
-                          backgroundColor: '#0F3C6015',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
+                      {/* Category Tag */}
+                      {community.category && (
+                        <Chip
+                          label={community.category}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: '#0F3C60',
+                            color: '#0F3C60',
+                            backgroundColor: '#0F3C6015',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
 
-                    {/* Course Type Tag */}
-                    {community.contentType && (
-                      <Chip
-                        icon={community.contentType === 'video' ? <PlayIcon /> : <TextIcon />}
-                        label={community.contentType === 'video' ? 'Video' : 'Text'}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: community.contentType === 'video' ? '#0F3C60' : '#34a853',
-                          color: community.contentType === 'video' ? '#0F3C60' : '#34a853',
-                          backgroundColor: community.contentType === 'video' ? '#0F3C6015' : '#34a85315',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
+                      {/* Course Type Tag */}
+                      {community.contentType && (
+                        <Chip
+                          icon={community.contentType === 'video' ? <PlayIcon /> : <TextIcon />}
+                          label={community.contentType === 'video' ? 'Video' : 'Text'}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: community.contentType === 'video' ? '#0F3C60' : '#34a853',
+                            color: community.contentType === 'video' ? '#0F3C60' : '#34a853',
+                            backgroundColor: community.contentType === 'video' ? '#0F3C6015' : '#34a85315',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
 
-                    {/* Sub Type Tag */}
-                    {community.subType && (
-                      <Chip
-                        label={community.subType}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: '#9c27b0',
-                          color: '#9c27b0',
-                          backgroundColor: '#9c27b015',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
-                  </Box>
+                      {/* Sub Type Tag */}
+                      {community.subType && (
+                        <Chip
+                          label={community.subType}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: '#9c27b0',
+                            color: '#9c27b0',
+                            backgroundColor: '#9c27b015',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
+                    </Box>
 
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <PeopleIcon sx={{ fontSize: '1rem', mr: 0.5, color: 'text.secondary' }} />
-                      <Typography variant="body2" color="text.secondary">
-                        {community.chapters?.length || 0} Chapters
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <PeopleIcon sx={{ fontSize: '1rem', mr: 0.5, color: 'text.secondary' }} />
+                        <Typography variant="body2" color="text.secondary">
+                          {community.chapters?.length || 0} Chapters
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 'bold',
+                          color: 'success.main'
+                        }}
+                      >
+                        Free
                       </Typography>
                     </Box>
-                    <Typography
-                      variant="body2"
+
+                    {/* Click to Preview Button */}
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<PlayIcon />}
                       sx={{
-                        fontWeight: 'bold',
-                        color: 'success.main'
+                        textTransform: 'none',
+                        borderRadius: 2,
+                        borderColor: '#0F3C60',
+                        color: '#0F3C60',
+                        '&:hover': {
+                          borderColor: '#3367d6',
+                          backgroundColor: '#0F3C6015'
+                        }
                       }}
                     >
-                      Free
-                    </Typography>
+                      View Preview
+                    </Button>
                   </Box>
-
-                  {/* Click to Preview Button */}
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={<PlayIcon />}
-                    sx={{
-                      textTransform: 'none',
-                      borderRadius: 2,
-                      borderColor: '#0F3C60',
-                      color: '#0F3C60',
-                      '&:hover': {
-                        borderColor: '#3367d6',
-                        backgroundColor: '#0F3C6015'
-                      }
-                    }}
-                  >
-                    View Preview
-                  </Button>
                 </CardContent>
               </Card>
             ))}
