@@ -1316,7 +1316,27 @@ const Courses = () => {
                                   }}
                                 />
                               ) : (
-                                console.log('⚠️ No thumbnail for course:', course.title, 'thumbnail:', course.thumbnail)
+                                // Show fallback when no thumbnail
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '100%',
+                                  color: 'white',
+                                  textAlign: 'center',
+                                  padding: 2,
+                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                }}>
+                                  <Typography variant="h6" sx={{
+                                    fontWeight: 600,
+                                    fontSize: '1.1rem',
+                                    lineHeight: 1.3,
+                                    textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                                    wordBreak: 'break-word'
+                                  }}>
+                                    {course.title}
+                                  </Typography>
+                                </Box>
                               )}
 
                               {/* Fallback Thumbnail (shown when no thumbnail or image fails) */}
@@ -1328,36 +1348,21 @@ const Courses = () => {
                                   justifyContent: 'center',
                                   width: '100%',
                                   height: '100%',
-                                  background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
+                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                  color: 'white',
+                                  textAlign: 'center',
+                                  padding: 2
                                 }}
                               >
-                                <img
-                                  src={`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`}
-                                  onError={(e) => {
-                                    console.error('🖼️ Courses: Default thumbnail failed to load');
-                                    e.target.style.display = 'none';
-                                    // Show fallback text
-                                    const fallbackDiv = document.createElement('div');
-                                    fallbackDiv.style.cssText = `
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      height: 100%;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 18px;
-                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                                    `;
-                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
-                                    e.target.parentNode.appendChild(fallbackDiv);
-                                  }}
-                                  alt="Default course thumbnail"
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover'
-                                  }}
-                                />
+                                <Typography variant="h6" sx={{
+                                  fontWeight: 600,
+                                  fontSize: '1.1rem',
+                                  lineHeight: 1.3,
+                                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                                  wordBreak: 'break-word'
+                                }}>
+                                  {course.title}
+                                </Typography>
                               </Box>
 
                               {/* Status Badge */}
