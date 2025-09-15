@@ -647,9 +647,29 @@ const Discovery = () => {
                       });
                       
                       if (!community.thumbnail || community.thumbnail.trim() === '') {
-                        console.log('🖼️ Discovery: No thumbnail, using placeholder for', community.title);
-                        // Use a more reliable placeholder service
-                        return `https://picsum.photos/400/200?random=${Math.floor(Math.random() * 1000)}`;
+                        console.log('🖼️ Discovery: No thumbnail, using course-specific fallback for', community.title);
+                        // Create a proper course-related fallback instead of random images
+                        return `data:image/svg+xml;base64,${btoa(`
+                          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
+                              </linearGradient>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grad)"/>
+                            <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
+                              ${community.title.length > 20 ? community.title.substring(0, 20) + '...' : community.title}
+                            </text>
+                            <text x="50%" y="70%" font-family="Arial, sans-serif" font-size="14" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  opacity="0.8">
+                              ${community.category || 'Course'}
+                            </text>
+                          </svg>
+                        `)}`;
                       }
                       
                       // If it's a data URL, use it directly
@@ -710,17 +730,57 @@ const Discovery = () => {
                           console.log('🔄 Discovery: Trying alternative URL for', community.title, ':', newUrl);
                           e.target.src = newUrl;
                         } else {
-                          // Try placeholder
-                          const placeholderUrl = `https://picsum.photos/400/200?random=${Math.floor(Math.random() * 1000)}`;
-                          console.log('🔄 Discovery: Trying placeholder for', community.title, ':', placeholderUrl);
-                          e.target.src = placeholderUrl;
+                          // Try course-specific fallback
+                          const fallbackUrl = `data:image/svg+xml;base64,${btoa(`
+                            <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+                              <defs>
+                                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                  <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                                  <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
+                                </linearGradient>
+                              </defs>
+                              <rect width="100%" height="100%" fill="url(#grad)"/>
+                              <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+                                    text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                    text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
+                                ${community.title.length > 20 ? community.title.substring(0, 20) + '...' : community.title}
+                              </text>
+                              <text x="50%" y="70%" font-family="Arial, sans-serif" font-size="14" 
+                                    text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                    opacity="0.8">
+                                ${community.category || 'Course'}
+                              </text>
+                            </svg>
+                          `)}`;
+                          console.log('🔄 Discovery: Trying course-specific fallback for', community.title);
+                          e.target.src = fallbackUrl;
                         }
                       } else if (attempts === 1) {
-                        // Second attempt: Try placeholder
+                        // Second attempt: Try course-specific fallback
                         e.target.dataset.fallbackAttempts = '2';
-                        const placeholderUrl = `https://picsum.photos/400/200?random=${Math.floor(Math.random() * 1000)}`;
-                        console.log('🔄 Discovery: Trying placeholder again for', community.title, ':', placeholderUrl);
-                        e.target.src = placeholderUrl;
+                        const fallbackUrl = `data:image/svg+xml;base64,${btoa(`
+                          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
+                              </linearGradient>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grad)"/>
+                            <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
+                              ${community.title.length > 20 ? community.title.substring(0, 20) + '...' : community.title}
+                            </text>
+                            <text x="50%" y="70%" font-family="Arial, sans-serif" font-size="14" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  opacity="0.8">
+                              ${community.category || 'Course'}
+                            </text>
+                          </svg>
+                        `)}`;
+                        console.log('🔄 Discovery: Trying course-specific fallback again for', community.title);
+                        e.target.src = fallbackUrl;
                       } else {
                         // Final fallback: Show text fallback
                         console.log('💀 Discovery: All attempts failed, showing text fallback for', community.title);
