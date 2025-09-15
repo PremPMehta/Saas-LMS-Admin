@@ -288,7 +288,7 @@ const CommunityUserSignup = () => {
               >
                 <School sx={{ fontSize: 48, mb: 2 }} />
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                  Community Signup
+                  Community User Signup
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Join a learning community and start your journey
