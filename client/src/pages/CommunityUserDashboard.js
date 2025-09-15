@@ -213,7 +213,7 @@ const CommunityUserDashboard = () => {
                   </Card>
                 </Grid>
 
-                {/* Hours Studied */}
+                {/* Resources Available */}
                 <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                   <Card
                     sx={{
@@ -240,10 +240,10 @@ const CommunityUserDashboard = () => {
                       </Box>
                       <Box>
                         <Typography variant="h4" sx={{ color: '#ea4335', mb: 0 }}>
-                          0
+                          --
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Hours Studied
+                          Resources Available
                         </Typography>
                       </Box>
                     </Box>
