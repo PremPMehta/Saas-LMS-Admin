@@ -59,12 +59,12 @@ const CommunityUserLogin = () => {
       if (response.data.success) {
         // Store user data and token
         localStorage.setItem('communityUserToken', response.data.data.token);
-        localStorage.setItem('communityUserData', JSON.stringify(response.data.data.user));
+        localStorage.setItem('communityUser', JSON.stringify(response.data.data.user));
 
         // Check if user is approved
         if (response.data.data.user.approvalStatus === 'approved') {
           // Redirect directly to courses listing for students
-          const redirectPath = `/${communityName || 'crypto-manji-academy'}/student/courses`;
+          const redirectPath = `/crypto-manji-academy/student/courses`;
           console.log('🎯 Community User Login: Redirecting to:', redirectPath);
           console.log('🎯 Community Name from URL:', communityName);
           console.log('🎯 User data:', response.data.data.user);
