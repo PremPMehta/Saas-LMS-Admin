@@ -1291,22 +1291,31 @@ const Courses = () => {
                                     display: 'block'
                                   }}
                                   onError={(e) => {
-                                    console.error('🖼️ Courses: Thumbnail failed to load for', course.title, ':', e.target.src);
+                                    // Prevent multiple error logs for the same image
+                                    if (!e.target.dataset.errorLogged) {
+                                      console.warn('🖼️ Courses: Thumbnail failed to load for', course.title, ':', e.target.src);
+                                      e.target.dataset.errorLogged = 'true';
+                                    }
                                     e.target.style.display = 'none';
-                                    // Show fallback text
-                                    const fallbackDiv = document.createElement('div');
-                                    fallbackDiv.style.cssText = `
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      height: 100%;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 18px;
-                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                                    `;
-                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
-                                    e.target.parentNode.appendChild(fallbackDiv);
+                                    // Show fallback text only if not already present
+                                    const existingFallback = e.target.parentNode.querySelector('.thumbnail-fallback');
+                                    if (!existingFallback) {
+                                      const fallbackDiv = document.createElement('div');
+                                      fallbackDiv.className = 'thumbnail-fallback';
+                                      fallbackDiv.style.cssText = `
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        height: 100%;
+                                        color: white;
+                                        font-weight: bold;
+                                        font-size: 18px;
+                                        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+                                        background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+                                      `;
+                                      fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
+                                      e.target.parentNode.appendChild(fallbackDiv);
+                                    }
                                   }}
                                   onLoad={(e) => {
                                     console.log('✅ Thumbnail loaded successfully for course:', course.title);

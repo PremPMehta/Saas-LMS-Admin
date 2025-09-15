@@ -576,7 +576,11 @@ const StudentCourses = () => {
                                   display: 'block'
                                 }}
                                 onError={(e) => {
-                                  console.error('🖼️ StudentCourses: Thumbnail failed to load for', course.title, ':', e.target.src);
+                                  // Prevent multiple error logs for the same image
+                                  if (!e.target.dataset.errorLogged) {
+                                    console.warn('🖼️ StudentCourses: Thumbnail failed to load for', course.title, ':', e.target.src);
+                                    e.target.dataset.errorLogged = 'true';
+                                  }
                                   e.target.style.display = 'none';
                                 }}
                               />

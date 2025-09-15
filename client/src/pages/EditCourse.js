@@ -650,9 +650,16 @@ const EditCourse = () => {
                           objectFit: 'cover'
                         }}
                         onError={(e) => {
-                          console.error('🖼️ EditCourse: Thumbnail failed to load:', e.target.src);
+                          // Prevent multiple error logs for the same image
+                          if (!e.target.dataset.errorLogged) {
+                            console.warn('🖼️ EditCourse: Thumbnail failed to load:', e.target.src);
+                            e.target.dataset.errorLogged = 'true';
+                          }
                           e.target.style.display = 'none';
-                          e.target.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; background: #f5f5f5;">No thumbnail</div>';
+                          // Only add fallback if not already present
+                          if (!e.target.parentElement.querySelector('.thumbnail-fallback')) {
+                            e.target.parentElement.innerHTML = '<div class="thumbnail-fallback" style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; background: #f5f5f5;">No thumbnail</div>';
+                          }
                         }}
                       />
                     </Box>

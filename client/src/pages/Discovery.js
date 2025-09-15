@@ -665,8 +665,32 @@ const Discovery = () => {
                       objectPosition: 'center'
                     }}
                     onError={(e) => {
-                      console.error('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
-                      e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                      // Prevent infinite error loops by checking if we're already showing a fallback
+                      if (!e.target.src.includes('via.placeholder.com')) {
+                        console.warn('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
+                        e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                      } else {
+                        // If fallback also fails, hide the image and show a text fallback
+                        e.target.style.display = 'none';
+                        const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
+                        if (!fallbackDiv) {
+                          const newFallback = document.createElement('div');
+                          newFallback.className = 'thumbnail-fallback';
+                          newFallback.style.cssText = `
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 160px;
+                            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+                            color: white;
+                            font-weight: bold;
+                            font-size: 18px;
+                            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                          `;
+                          newFallback.textContent = community.title.charAt(0).toUpperCase();
+                          e.target.parentElement.appendChild(newFallback);
+                        }
+                      }
                     }}
                   />
                   
