@@ -101,7 +101,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
     setShowUserApprovalStatus(false);
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
       const response = await axios.post(`${apiUrl}/api/community-user/login`, {
         email: userFormData.email,
         password: userFormData.password
@@ -159,7 +159,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
     setAdminError('');
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
       const response = await axios.post(`${apiUrl}/api/auth/community-login`, {
         email: adminFormData.email,
         password: adminFormData.password
@@ -208,13 +208,14 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
     setSignupError('');
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
-      const response = await axios.post(`${apiUrl}/api/community-user/register`, {
+      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
+      const response = await axios.post(`${apiUrl}/api/community-user/signup`, {
         firstName: signupData.firstName,
         lastName: signupData.lastName,
         email: signupData.email,
         password: signupData.password,
-        communityName: courseData?.communityName || 'crypto-manji-academy'
+        confirmPassword: signupData.confirmPassword,
+        termsAccepted: true // Auto-accept terms for course access
       });
 
       if (response.data.success) {

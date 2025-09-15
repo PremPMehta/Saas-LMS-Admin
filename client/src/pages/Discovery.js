@@ -202,7 +202,7 @@ const Discovery = () => {
   const handleCourseClick = (course) => {
     setSelectedCourse({
       id: course.id,
-      name: course.name,
+      name: course.title, // Use title instead of name
       communityName: course.communityName || 'crypto-manji-academy'
     });
     setCourseModalOpen(true);
