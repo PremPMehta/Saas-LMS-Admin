@@ -19,9 +19,22 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   const communityUserData = localStorage.getItem('communityUser');
   const isCommunityUser = !!communityUserData;
   
+  // Debug logging
+  console.log('🔍 FocusedTopBar Debug:', {
+    communityUserData: communityUserData ? 'present' : 'null',
+    isCommunityUser,
+    communityUserToken: localStorage.getItem('communityUserToken') ? 'present' : 'null',
+    communityToken: localStorage.getItem('communityToken') ? 'present' : 'null'
+  });
+  
   // Get appropriate data based on user type
   const communityData = communityAuthApi.getCurrentCommunity();
   const studentData = isCommunityUser ? JSON.parse(communityUserData) : null;
+  
+  console.log('🔍 FocusedTopBar User Data:', {
+    studentData: studentData ? { firstName: studentData.firstName, lastName: studentData.lastName, email: studentData.email } : null,
+    communityData: communityData ? { name: communityData.name, ownerEmail: communityData.ownerEmail } : null
+  });
 
   // Function to get page title based on current route
   const getPageTitle = () => {
