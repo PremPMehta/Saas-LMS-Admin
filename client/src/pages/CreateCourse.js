@@ -1128,11 +1128,6 @@ const CreateCourse = () => {
               Create New Course
             </Typography>
           </Box>
-          <Box sx={{ mb: 0, display: 'flex', gap: 1 }}>
-            <Button variant="contained" color="error" >Delete</Button>
-            <Button variant="outlined" color="inherit" >Move to Draft</Button>
-            <Button variant="contained" color="primary" >Add Course</Button>
-          </Box>
         </Box>
         <Box sx={{ flex: 1, px: 0, py: 0, overflow: 'visible' }}>
           <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
