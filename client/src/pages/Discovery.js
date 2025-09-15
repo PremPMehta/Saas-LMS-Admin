@@ -183,7 +183,7 @@ const Discovery = () => {
               description: course.description || 'No description available',
               category: course.category || 'Uncategorized',
               status: course.status || 'published',
-              thumbnail: course.thumbnail || null,
+              thumbnail: course.thumbnail || '', // Keep empty string instead of null
               targetAudience: course.targetAudience || null,
               contentType: course.contentType || 'video',
               subType: course.subType || null,
@@ -648,7 +648,8 @@ const Discovery = () => {
                       
                       if (!community.thumbnail || community.thumbnail.trim() === '') {
                         console.log('🖼️ Discovery: No thumbnail, using placeholder for', community.title);
-                        return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                        // Use a more reliable placeholder service
+                        return `https://picsum.photos/400/200?random=${Math.floor(Math.random() * 1000)}`;
                       }
                       
                       // If it's a data URL, use it directly
@@ -710,14 +711,14 @@ const Discovery = () => {
                           e.target.src = newUrl;
                         } else {
                           // Try placeholder
-                          const placeholderUrl = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                          const placeholderUrl = `https://picsum.photos/400/200?random=${Math.floor(Math.random() * 1000)}`;
                           console.log('🔄 Discovery: Trying placeholder for', community.title, ':', placeholderUrl);
                           e.target.src = placeholderUrl;
                         }
                       } else if (attempts === 1) {
                         // Second attempt: Try placeholder
                         e.target.dataset.fallbackAttempts = '2';
-                        const placeholderUrl = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                        const placeholderUrl = `https://picsum.photos/400/200?random=${Math.floor(Math.random() * 1000)}`;
                         console.log('🔄 Discovery: Trying placeholder again for', community.title, ':', placeholderUrl);
                         e.target.src = placeholderUrl;
                       } else {
@@ -736,10 +737,13 @@ const Discovery = () => {
                             background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
                             color: white;
                             font-weight: bold;
-                            font-size: 18px;
+                            font-size: 14px;
                             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                            text-align: center;
+                            padding: 10px;
+                            word-break: break-word;
                           `;
-                          newFallback.textContent = community.title.charAt(0).toUpperCase();
+                          newFallback.textContent = community.title;
                           e.target.parentElement.appendChild(newFallback);
                         }
                       }
