@@ -23,12 +23,14 @@ import {
   Person as PersonIcon,
   PlayArrow as PlayIcon,
   Description as DescriptionIcon,
-  TextFields as TextIcon
+  TextFields as TextIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
-import { LIFESTYLE_CATEGORIES } from '../config/categories';
+import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
 import logo from '../assets/logo.png';
 
@@ -117,8 +119,15 @@ const communities = [
   }
 ];
 
-// Use centralized categories from config
-const categories = LIFESTYLE_CATEGORIES;
+// Use centralized categories from config - convert to chip format
+const categories = [
+  { label: 'All', value: 'all', color: 'default' },
+  ...DETAILED_CATEGORIES.map(category => ({
+    label: category,
+    value: category.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+    color: 'primary'
+  }))
+];
 
 const Discovery = () => {
   const navigate = useNavigate();
@@ -129,7 +138,25 @@ const Discovery = () => {
   const [courses, setCourses] = useState([]);
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
-
+  const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
+  
+  // Category slider functions
+  const scrollCategories = (direction) => {
+    const container = document.getElementById('category-slider');
+    if (container) {
+      const scrollAmount = 200; // Adjust scroll distance
+      const newPosition = direction === 'left' 
+        ? Math.max(0, categoryScrollPosition - scrollAmount)
+        : categoryScrollPosition + scrollAmount;
+      
+      container.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      setCategoryScrollPosition(newPosition);
+    }
+  };
+  
   // Get community URLs for proper navigation
   const communityUrls = getCommunityUrls();
   const [loading, setLoading] = useState(true);
@@ -211,12 +238,30 @@ const Discovery = () => {
       filtered = filtered.filter(course => course.category === selectedCategory);
     }
 
-    // Filter by search term
+    // Enhanced search: Filter by search term (title, description, or category)
     if (searchTerm) {
-      filtered = filtered.filter(course =>
-        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchTerm.toLowerCase())
+      const searchLower = searchTerm.toLowerCase();
+      
+      // Check if search term matches any category name
+      const matchingCategory = DETAILED_CATEGORIES.find(category => 
+        category.toLowerCase().includes(searchLower) || 
+        searchLower.includes(category.toLowerCase())
       );
+      
+      if (matchingCategory) {
+        // If search term matches a category, show all courses from that category
+        filtered = filtered.filter(course => 
+          course.category.toLowerCase().includes(matchingCategory.toLowerCase()) ||
+          matchingCategory.toLowerCase().includes(course.category.toLowerCase())
+        );
+      } else {
+        // Regular search in title and description
+        filtered = filtered.filter(course =>
+          course.title.toLowerCase().includes(searchLower) ||
+          course.description.toLowerCase().includes(searchLower) ||
+          course.category.toLowerCase().includes(searchLower)
+        );
+      }
     }
 
     setFilteredCommunities(filtered);
@@ -514,7 +559,7 @@ const Discovery = () => {
           >
             <TextField
               fullWidth
-              placeholder="Search for courses..."
+              placeholder="Search courses, categories, or topics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
@@ -533,22 +578,79 @@ const Discovery = () => {
             />
           </Paper>
 
-          {/* Category Filters */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
-            {categories.map((category) => (
-              <Chip
-                key={category.value}
-                label={category.label}
-                onClick={() => setSelectedCategory(category.value)}
-                variant={selectedCategory === category.value ? 'filled' : 'outlined'}
-                color={selectedCategory === category.value ? 'primary' : 'default'}
-                sx={{
-                  borderRadius: '20px',
-                  px: 1,
-                  '&:hover': { bgcolor: selectedCategory === category.value ? undefined : '#f5f5f5' }
-                }}
-              />
-            ))}
+          {/* Category Filters with Slider */}
+          <Box sx={{ position: 'relative', width: '100%', maxWidth: '800px', mx: 'auto' }}>
+            {/* Left Arrow */}
+            <Button
+              onClick={() => scrollCategories('left')}
+              disabled={categoryScrollPosition === 0}
+              sx={{
+                position: 'absolute',
+                left: -50,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                minWidth: 40,
+                height: 40,
+                borderRadius: '50%',
+                bgcolor: 'background.paper',
+                boxShadow: 2,
+                zIndex: 2,
+                '&:hover': { bgcolor: 'action.hover' },
+                '&:disabled': { opacity: 0.3 }
+              }}
+            >
+              <ChevronLeftIcon />
+            </Button>
+
+            {/* Right Arrow */}
+            <Button
+              onClick={() => scrollCategories('right')}
+              sx={{
+                position: 'absolute',
+                right: -50,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                minWidth: 40,
+                height: 40,
+                borderRadius: '50%',
+                bgcolor: 'background.paper',
+                boxShadow: 2,
+                zIndex: 2,
+                '&:hover': { bgcolor: 'action.hover' }
+              }}
+            >
+              <ChevronRightIcon />
+            </Button>
+
+            {/* Scrollable Category Container */}
+            <Box
+              id="category-slider"
+              sx={{
+                display: 'flex',
+                gap: 1,
+                overflowX: 'auto',
+                scrollbarWidth: 'none', // Firefox
+                '&::-webkit-scrollbar': { display: 'none' }, // Chrome/Safari
+                px: 1,
+                py: 1
+              }}
+            >
+              {categories.map((category) => (
+                <Chip
+                  key={category.value}
+                  label={category.label}
+                  onClick={() => setSelectedCategory(category.value)}
+                  variant={selectedCategory === category.value ? 'filled' : 'outlined'}
+                  color={selectedCategory === category.value ? 'primary' : 'default'}
+                  sx={{ 
+                    borderRadius: '20px',
+                    px: 1,
+                    flexShrink: 0, // Prevent chips from shrinking
+                    '&:hover': { bgcolor: selectedCategory === category.value ? undefined : '#f5f5f5' }
+                  }}
+                />
+              ))}
+            </Box>
           </Box>
         </Box>
 
