@@ -59,20 +59,20 @@ const CommunityLogin = () => {
       const response = await communityAuthApi.login(formData.email, formData.password);
       console.log('Login response:', response);
       
-      setSuccess('Login successful! Redirecting to your dashboard...');
+      setSuccess('Login successful! Redirecting to your courses...');
       
-      // Get community name and redirect to admin dashboard
+      // Get community name and redirect to admin courses
       const community = communityAuthApi.getCurrentCommunity();
       console.log('Current community data:', community);
       
       if (community && community.name) {
         const communityUrlName = community.name.toLowerCase().replace(/\s+/g, '-');
-        const adminDashboardUrl = `/${communityUrlName}/admin/dashboard`;
-        console.log('Redirecting to admin dashboard URL:', adminDashboardUrl);
+        const adminCoursesUrl = `/${communityUrlName}/admin/courses`;
+        console.log('Redirecting to admin courses URL:', adminCoursesUrl);
         
-        // Redirect to admin dashboard after a short delay
+        // Redirect to admin courses page after a short delay
         setTimeout(() => {
-          navigate(adminDashboardUrl);
+          navigate(adminCoursesUrl);
         }, 1500);
       } else {
         // Fallback - this shouldn't happen but just in case
