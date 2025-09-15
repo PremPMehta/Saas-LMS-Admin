@@ -640,15 +640,15 @@ const Discovery = () => {
                         return community.thumbnail;
                       }
                       
+                      // If it's already a full URL (http/https), use it directly
+                      if (community.thumbnail.startsWith('http')) {
+                        return community.thumbnail;
+                      }
+                      
                       // If it's a localhost URL, replace with production URL
                       if (community.thumbnail.includes('localhost')) {
                         const filename = community.thumbnail.split('/').pop();
                         return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
-                      }
-                      
-                      // If it's already a full production URL, use it directly
-                      if (community.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
-                        return community.thumbnail;
                       }
                       
                       // If it starts with /uploads, construct the full URL
@@ -665,12 +665,27 @@ const Discovery = () => {
                       objectPosition: 'center'
                     }}
                     onError={(e) => {
-                      // Prevent infinite error loops by checking if we're already showing a fallback
-                      if (!e.target.src.includes('via.placeholder.com')) {
-                        console.warn('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
+                      // Try multiple fallback strategies
+                      const originalSrc = e.target.src;
+                      const fallbackAttempts = e.target.dataset.fallbackAttempts || '0';
+                      const attempts = parseInt(fallbackAttempts);
+                      
+                      if (attempts === 0) {
+                        // First attempt: Try with different URL construction
+                        e.target.dataset.fallbackAttempts = '1';
+                        if (community.thumbnail && !community.thumbnail.startsWith('data:') && !community.thumbnail.startsWith('http')) {
+                          // Try direct filename approach
+                          e.target.src = `https://saas-lms-admin-1.onrender.com/uploads/${community.thumbnail}`;
+                        } else {
+                          // Try placeholder
+                          e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
+                        }
+                      } else if (attempts === 1) {
+                        // Second attempt: Try placeholder
+                        e.target.dataset.fallbackAttempts = '2';
                         e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
                       } else {
-                        // If fallback also fails, hide the image and show a text fallback
+                        // Final fallback: Show text fallback
                         e.target.style.display = 'none';
                         const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
                         if (!fallbackDiv) {
