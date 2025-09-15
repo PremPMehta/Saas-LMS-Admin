@@ -12,6 +12,7 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Grid,
 } from '@mui/material';
 import {
   Visibility,
@@ -22,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import communityAuthApi from '../utils/communityAuthApi';
+import loginImage from '../assets/login-image.jpg'; 
 import { getCommunityUrl } from '../utils/communityUrlUtils';
 
 const CommunityLogin = () => {
@@ -46,7 +48,7 @@ const CommunityLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
       return;
@@ -64,7 +66,7 @@ const CommunityLogin = () => {
       // Get community name and redirect to admin courses
       const community = communityAuthApi.getCurrentCommunity();
       console.log('Current community data:', community);
-      
+
       if (community && community.name) {
         const communityUrlName = community.name.toLowerCase().replace(/\s+/g, '-');
         const adminCoursesUrl = `/${communityUrlName}/admin/courses`;
@@ -94,174 +96,159 @@ const CommunityLogin = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        py: 4,
-      }}
-    >
-      <Container maxWidth="sm">
-        <Card
-          sx={{
-            borderRadius: 3,
-            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Header */}
-          <Box
-            sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              p: 4,
-              textAlign: 'center',
-            }}
-          >
-            <School sx={{ fontSize: 48, mb: 2 }} />
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-              Community Login
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9 }}>
-              Access your community dashboard
-            </Typography>
-          </Box>
+    <Box>
 
-          <CardContent sx={{ p: 4 }}>
-            {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error}
-              </Alert>
-            )}
-
-            {success && (
-              <Alert severity="success" sx={{ mb: 3 }}>
-                {success}
-              </Alert>
-            )}
-
-            <Box component="form" onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Email Address"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                margin="normal"
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Email sx={{ color: 'text.secondary' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 2 }}
-              />
-
-              <TextField
-                fullWidth
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                margin="normal"
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock sx={{ color: 'text.secondary' }} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 3 }}
-              />
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                size="large"
-                disabled={isLoading}
-                sx={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  py: 1.5,
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  borderRadius: 2,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                  },
-                  '&:disabled': {
-                    background: '#ccc',
-                  },
-                }}
-              >
-                {isLoading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  'Sign In to Community'
+      <Box className="login-card" >
+        <Grid container spacing={2} sx={{alignItems: 'center'}}>
+          <Grid size={{  lg:8 }}>
+            <Box className="login_box">
+              <Box sx={{ mb: 4 }}>
+                <School sx={{ fontSize: 48, mb: 2 }} />
+                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                  Community Login
+                </Typography>
+                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                  Access your community dashboard
+                </Typography>
+              </Box>
+              <CardContent  sx={{p:0}}>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 3 }}>
+                    {error}
+                  </Alert>
                 )}
-              </Button>
-            </Box>
 
-            <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Link
-                component="button"
-                variant="body2"
-                disabled
-                sx={{
-                  color: '#667eea',
-                  textDecoration: 'none',
-                  opacity: 0.6,
-                  cursor: 'not-allowed',
-                  '&:hover': {
-                    textDecoration: 'none',
-                  },
-                }}
-              >
-                Forgot your password?
-              </Link>
-            </Box>
+                {success && (
+                  <Alert severity="success" sx={{ mb: 3 }}>
+                    {success}
+                  </Alert>
+                )}
 
-            <Box sx={{ mt: 4, textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
-                Don't have a community yet?{' '}
-                <Link
-                  component="span"
-                  sx={{
-                    color: '#667eea',
-                    textDecoration: 'none',
-                    fontWeight: 600,
-                    opacity: 0.6,
-                    cursor: 'not-allowed',
-                    '&:hover': {
+                <Box component="form" onSubmit={handleSubmit}>
+                  <TextField
+                    fullWidth
+                    label="Email Address"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    margin="normal"
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Email sx={{ color: 'text.secondary' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ mb: 2 }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    margin="normal"
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock sx={{ color: 'text.secondary' }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ mb: 3 }}
+                  />
+
+                  <Button
+                    type="submit"
+                     
+                    variant="contained"
+                    size="large"
+                    disabled={isLoading}
+                    sx={{
+                      background: '#020617',
+                      color: 'white',
+                      py: 1.5,
+                      fontSize: '14px',
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      '&:hover': {
+                          background: '#020512ff',
+                      },
+                      '&:disabled': {
+                        background: '#ccc',
+                      },
+                    }}
+                  >
+                    {isLoading ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      'Sign In to Community'
+                    )}
+                  </Button>
+                </Box>
+
+                <Box sx={{ mt: 3, }}>
+                  <Link
+                    component="button"
+                    variant="body2"
+                    disabled
+                    sx={{
+                      color: '#000',
                       textDecoration: 'none',
-                    },
-                  }}
-                >
-                  Create one now
-                </Link>
-              </Typography>
+                       
+                      cursor: 'not-allowed',
+                      '&:hover': {
+                        textDecoration: 'none',
+                      },
+                    }}
+                  >
+                    Forgot your password?
+                  </Link>
+                </Box>
+
+                <Box sx={{ mt: 1}}>
+                  <Typography variant="body2" color="text.secondary">
+                    Don't have a community yet?{' '}
+                    <Link
+                      component="span"
+                      sx={{
+                        color: '#000',
+                        textDecoration: 'none',
+                        fontWeight: 600,
+                         
+                        cursor: 'not-allowed',
+                        '&:hover': {
+                          textDecoration: 'none',
+                        },
+                      }}
+                    >
+                      Create one now
+                    </Link>
+                  </Typography>
+                </Box>
+              </CardContent>
             </Box>
-          </CardContent>
-        </Card>
-      </Container>
+          </Grid>
+          <Grid size={{ lg: 4 }}>
+            <Box className="login_image_box">
+              <img src={loginImage} alt="login" />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
     </Box>
   );
 };

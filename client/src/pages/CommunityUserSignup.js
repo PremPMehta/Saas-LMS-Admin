@@ -25,12 +25,13 @@ import {
   School,
   CheckCircle,
 } from '@mui/icons-material';
+import loginImage from '../assets/login-image.jpg';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CommunityUserSignup = () => {
   console.log('CommunityUserSignup component rendered!');
-  
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -109,7 +110,7 @@ const CommunityUserSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -122,7 +123,7 @@ const CommunityUserSignup = () => {
       console.log('API URL:', apiUrl);
       console.log('Full URL:', `${apiUrl}/api/community-user/signup`);
       const response = await axios.post(`${apiUrl}/api/community-user/signup`, formData);
-      
+
       if (response.data.success) {
         setSuccess('Registration request sent successfully! Admin will approve your account.');
         setShowSuccessPage(true);
@@ -146,10 +147,10 @@ const CommunityUserSignup = () => {
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001';
       const response = await axios.get(`${apiUrl}/api/community-user/status/${formData.email}`);
-      
+
       if (response.data.success) {
         const { approvalStatus } = response.data.data;
-        
+
         if (approvalStatus === 'approved') {
           setSuccess('Your account has been approved! You can now log in.');
           // Redirect to login page after a short delay
@@ -276,233 +277,222 @@ const CommunityUserSignup = () => {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        py: 4,
-      }}
-    >
-      <Container maxWidth="sm">
-        <Card
-          sx={{
-            borderRadius: 3,
-            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Header */}
-          <Box
-            sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              p: 4,
-              textAlign: 'center',
-            }}
-          >
-            <School sx={{ fontSize: 48, mb: 2 }} />
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-              Community Signup
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9 }}>
-              Join a learning community and start your journey
-            </Typography>
-          </Box>
+    <Box>
 
-          <CardContent sx={{ p: 4 }}>
-            {error && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {error}
-              </Alert>
-            )}
+      <Box className="login-card">
+        <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+          <Grid size={{ lg: 8 }}>
+            <Box className="login_box">
+              <Box
 
-            {success && (
-              <Alert severity="success" sx={{ mb: 3 }}>
-                {success}
-              </Alert>
-            )}
+              >
+                <School sx={{ fontSize: 48, mb: 2 }} />
+                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                  Community Signup
+                </Typography>
+                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                  Join a learning community and start your journey
+                </Typography>
+              </Box>
+              <CardContent sx={{ p: 0 }}>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 3 }}>
+                    {error}
+                  </Alert>
+                )}
 
-            <Box component="form" onSubmit={handleSubmit}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
+                {success && (
+                  <Alert severity="success" sx={{ mb: 3 }}>
+                    {success}
+                  </Alert>
+                )}
+
+                <Box component="form" onSubmit={handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid  size={{ xs: 12, sm: 6, lg: 6 }}>
+                      <TextField
+                        fullWidth
+                        label="First Name"
+                        value={formData.firstName}
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        margin="normal"
+                        required
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Person sx={{ color: 'text.secondary' }} />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{ mb: 2 }}
+                      />
+                    </Grid>
+                    <Grid  size={{ xs: 12, sm: 6, lg: 6 }}>
+                      <TextField
+                        fullWidth
+                        label="Last Name"
+                        value={formData.lastName}
+                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        margin="normal"
+                        required
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Person sx={{ color: 'text.secondary' }} />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{ mb: 2 }}
+                      />
+                    </Grid>
+                  </Grid>
+
                   <TextField
                     fullWidth
-                    label="First Name"
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    label="Email Address"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     margin="normal"
                     required
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <Person sx={{ color: 'text.secondary' }} />
+                          <Email sx={{ color: 'text.secondary' }} />
                         </InputAdornment>
                       ),
                     }}
                     sx={{ mb: 2 }}
                   />
-                </Grid>
-                <Grid item xs={6}>
+
                   <TextField
                     fullWidth
-                    label="Last Name"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
                     margin="normal"
                     required
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <Person sx={{ color: 'text.secondary' }} />
+                          <Lock sx={{ color: 'text.secondary' }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
                         </InputAdornment>
                       ),
                     }}
                     sx={{ mb: 2 }}
                   />
-                </Grid>
-              </Grid>
 
-              <TextField
-                fullWidth
-                label="Email Address"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                margin="normal"
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Email sx={{ color: 'text.secondary' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 2 }}
-              />
-
-              <TextField
-                fullWidth
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                margin="normal"
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock sx={{ color: 'text.secondary' }} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 2 }}
-              />
-
-              <TextField
-                fullWidth
-                label="Confirm Password"
-                type={showConfirmPassword ? 'text' : 'password'}
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                margin="normal"
-                required
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock sx={{ color: 'text.secondary' }} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        edge="end"
-                      >
-                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 3 }}
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.termsAccepted}
-                    onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
-                    color="primary"
+                  <TextField
+                    fullWidth
+                    label="Confirm Password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    margin="normal"
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock sx={{ color: 'text.secondary' }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            edge="end"
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ mb: 3 }}
                   />
-                }
-                label={
-                  <Typography variant="body2">
-                    I have read and agree to the{' '}
-                    <Link href="#" sx={{ textDecoration: 'none' }}>
-                      Terms and Conditions
+
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={formData.termsAccepted}
+                        onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
+                        color="#0F3C60"
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        I have read and agree to the{' '}
+                        <Link href="#" sx={{ textDecoration: 'none', color: '#020617' }}>
+                          Terms and Conditions
+                        </Link>
+                      </Typography>
+                    }
+                    sx={{ mb: 3 }}
+                  />
+
+                  <Button
+                    type="submit"
+                     
+                    variant="contained"
+                    size="large"
+                    disabled={isLoading}
+                    sx={{
+                      background: '#020617',
+                      color: 'white',
+                      py: 1.5,
+                      fontSize: '14px',
+                 
+                      textTransform: 'none',
+                      borderRadius: 2,
+                      '&:hover': {
+                        background: '#020617',
+                      },
+                      '&:disabled': {
+                        background: '#ccc',
+                        color: '#666',
+                      },
+                    }}
+                  >
+                    {isLoading ? (
+                      <CircularProgress size={24} color="#020617" />
+                    ) : (
+                      'Create Account'
+                    )}
+                  </Button>
+
+                  <Typography variant="body2" sx={{ mt: 3, color: '#020617' }}>
+                    Already have an account?{' '}
+                    <Link
+                      component="button"
+                      variant="body2"
+                      onClick={() => navigate('/community-user-login')}
+                      sx={{ textDecoration: 'none', color: '#020617', fontWeight: 600 }}
+                    >
+                      Sign in here
                     </Link>
                   </Typography>
-                }
-                sx={{ mb: 3 }}
-              />
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                size="large"
-                disabled={isLoading}
-                sx={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  py: 1.5,
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  textTransform: 'none',
-                  borderRadius: 2,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                  },
-                  '&:disabled': {
-                    background: '#ccc',
-                    color: '#666',
-                  },
-                }}
-              >
-                {isLoading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  'Create Account'
-                )}
-              </Button>
-
-              <Typography variant="body2" sx={{ mt: 3, textAlign: 'center', color: 'text.secondary' }}>
-                Already have an account?{' '}
-                <Link
-                  component="button"
-                  variant="body2"
-                  onClick={() => navigate('/community-user-login')}
-                  sx={{ textDecoration: 'none' }}
-                >
-                  Sign in here
-                </Link>
-              </Typography>
+                </Box>
+              </CardContent>
             </Box>
-          </CardContent>
-        </Card>
-      </Container>
+          </Grid>
+          <Grid size={{ lg: 4 }}>
+            <Box className="login_image_box">
+              <img src={loginImage} alt="login" />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+
     </Box>
   );
 };

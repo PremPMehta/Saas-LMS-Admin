@@ -15,20 +15,47 @@ code {
 .new_user .css-1mq3koj-MuiFormControl-root-MuiTextField-root .MuiOutlinedInput-root {
   background-color: unset !important;
 }
+
 .loading-text h2 {
   transform: inherit !important;
 }
+
 .loading-text h3 {
   transform: inherit !important;
 }
+
 .loading-text h6 {
   transform: inherit !important;
 }
+
 .loading-text .progress-bar {
   transform: inherit !important;
   margin-bottom: 10px !important;
   margin: 0 auto;
 }
+
 .loading-text p {
   transform: inherit !important;
+}
+
+.login-card {
+  background-image: url("./assets/bg-image.png");
+  height: 100vh;
+  overflow: hidden;
+}
+
+.login_box {
+  max-width: 500px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.login_image_box img {
+  width: 100%;
+}
+.header_box{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px;
 }
