@@ -24,7 +24,7 @@ const CommunityRoute = ({ children }) => {
         
         // Check if user is authenticated (either community admin or community user)
         const isCommunityAdmin = communityAuthApi.isAuthenticated();
-        const isCommunityUser = !!(localStorage.getItem('communityUserToken') && localStorage.getItem('communityUserData'));
+        const isCommunityUser = !!(localStorage.getItem('communityUserToken') && localStorage.getItem('communityUser'));
         
         if (!isCommunityAdmin && !isCommunityUser) {
           console.log('User not authenticated, redirecting to login');
@@ -41,19 +41,28 @@ const CommunityRoute = ({ children }) => {
         
         // If no community from admin auth, try community user auth
         if (!community && isCommunityUser) {
-          const communityUserData = localStorage.getItem('communityUserData');
+          const communityUserData = localStorage.getItem('communityUser');
           if (communityUserData) {
             try {
               const userData = JSON.parse(communityUserData);
-              // For community users, we need to get the community data
-              // For now, we'll use a hardcoded community for Crypto Manji Academy
-              if (communityName === 'crypto-manji-academy') {
+              // Extract community data from user data
+              if (userData.community) {
                 community = {
-                  _id: '68bae2a8807f3a3bb8ac6307',
-                  name: 'Crypto Manji Academy',
-                  id: '68bae2a8807f3a3bb8ac6307'
+                  _id: userData.community.id,
+                  name: userData.community.name,
+                  id: userData.community.id
                 };
-                console.log('Using hardcoded community for community user:', community);
+                console.log('Using community data from user:', community);
+              } else {
+                // Fallback: use hardcoded community for Crypto Manji Academy
+                if (communityName === 'crypto-manji-academy') {
+                  community = {
+                    _id: '68bae2a8807f3a3bb8ac6307',
+                    name: 'Crypto Manji Academy',
+                    id: '68bae2a8807f3a3bb8ac6307'
+                  };
+                  console.log('Using hardcoded community for community user:', community);
+                }
               }
             } catch (e) {
               console.error('Error parsing community user data:', e);
@@ -71,15 +80,21 @@ const CommunityRoute = ({ children }) => {
 
         // Convert community name to URL format for comparison
         const communityUrlName = community.name.toLowerCase().replace(/\s+/g, '-');
+        
+        // Special handling for CryptoManji community
+        const isCryptoManji = communityName === 'crypto-manji-academy' && 
+          (community.name.toLowerCase().includes('crypto') && community.name.toLowerCase().includes('manji'));
+        
         console.log('Community validation:', {
           urlCommunity: communityName,
           authCommunity: communityUrlName,
           originalName: community.name,
-          match: communityUrlName === communityName
+          isCryptoManji,
+          match: communityUrlName === communityName || isCryptoManji
         });
         
         // Validate that the URL community name matches the authenticated user's community
-        if (communityUrlName === communityName) {
+        if (communityUrlName === communityName || isCryptoManji) {
           console.log('Community validation successful');
           setCurrentCommunity(community);
           setIsValidCommunity(true);
