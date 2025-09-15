@@ -72,6 +72,7 @@ const EditCourse = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [openChapterDialog, setOpenChapterDialog] = useState(false);
   const [openVideoDialog, setOpenVideoDialog] = useState(false);
   const [editingChapter, setEditingChapter] = useState(null);
@@ -217,6 +218,15 @@ const EditCourse = () => {
         return;
       }
 
+      // Create immediate preview using FileReader
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Show immediate preview with data URL
+        setCourseData(prev => ({ ...prev, thumbnail: e.target.result }));
+      };
+      reader.readAsDataURL(file);
+
+      setIsUploadingThumbnail(true);
       try {
         // Upload thumbnail to server
         const formData = new FormData();
@@ -233,7 +243,7 @@ const EditCourse = () => {
 
         const result = await response.json();
         if (result.success) {
-          // Store the server URL instead of base64
+          // Replace preview with server URL
           setCourseData(prev => ({ ...prev, thumbnail: `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${result.url}` }));
         } else {
           throw new Error(result.message || 'Failed to upload thumbnail');
@@ -241,6 +251,9 @@ const EditCourse = () => {
       } catch (error) {
         console.error('Thumbnail upload error:', error);
         alert('Failed to upload thumbnail: ' + error.message);
+        // Keep the preview even if upload fails
+      } finally {
+        setIsUploadingThumbnail(false);
       }
     }
   };
@@ -679,7 +692,8 @@ const EditCourse = () => {
                     <Button
                       variant="contained"
                       component="span"
-                      startIcon={<UploadIcon />}
+                      startIcon={isUploadingThumbnail ? <CircularProgress size={20} color="inherit" /> : <UploadIcon />}
+                      disabled={isUploadingThumbnail}
                       sx={{
                         background: '#0F3C60',
                         '&:hover': {
@@ -691,7 +705,7 @@ const EditCourse = () => {
                         fontWeight: 600
                       }}
                     >
-                      {courseData.thumbnail ? 'Change Thumbnail' : 'Upload Thumbnail'}
+                      {isUploadingThumbnail ? 'Uploading...' : (courseData.thumbnail ? 'Change Thumbnail' : 'Upload Thumbnail')}
                     </Button>
                   </label>
                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>

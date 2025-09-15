@@ -632,9 +632,36 @@ const Discovery = () => {
                     component="img"
                     height="160"
                     image={(() => {
-                      // If no thumbnail, return a broken URL to trigger fallback
+                      // If no thumbnail, create a custom SVG placeholder
                       if (!community.thumbnail || community.thumbnail.trim() === '') {
-                        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InRyYW5zcGFyZW50Ii8+PC9zdmc+';
+                        const title = community.title || 'Course';
+                        const category = community.category || 'Education';
+                        const truncatedTitle = title.length > 25 ? title.substring(0, 25) + '...' : title;
+                        
+                        const svgContent = `
+                          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
+                              </linearGradient>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grad)"/>
+                            <text x="50%" y="45%" font-family="Arial, sans-serif" font-size="18" font-weight="bold" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
+                              ${truncatedTitle}
+                            </text>
+                            <text x="50%" y="65%" font-family="Arial, sans-serif" font-size="12" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  opacity="0.9">
+                              ${category}
+                            </text>
+                            <circle cx="50%" cy="80%" r="8" fill="white" opacity="0.3"/>
+                            <polygon points="46%,78% 46%,82% 50%,80%" fill="white" opacity="0.7"/>
+                          </svg>
+                        `;
+                        return `data:image/svg+xml;base64,${btoa(svgContent)}`;
                       }
                       
                       // If it's a data URL, use it directly
@@ -667,7 +694,7 @@ const Discovery = () => {
                       objectPosition: 'center'
                     }}
                     onError={(e) => {
-                      // Hide the broken image and show text fallback
+                      // If external thumbnail fails, show a simple fallback
                       e.target.style.display = 'none';
                       const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
                       if (!fallbackDiv) {
