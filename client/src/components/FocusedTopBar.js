@@ -16,7 +16,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   const open = Boolean(anchorEl);
   
   // Check if user is a community user (student) or admin
-  const communityUserData = localStorage.getItem('communityUserData');
+  const communityUserData = localStorage.getItem('communityUser');
   const isCommunityUser = !!communityUserData;
   
   // Get appropriate data based on user type
@@ -77,7 +77,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
     if (isCommunityUser) {
       // Clear student data and redirect to discovery page
       localStorage.removeItem('communityUserToken');
-      localStorage.removeItem('communityUserData');
+      localStorage.removeItem('communityUser');
       navigate('/discovery');
     } else {
       // Clear admin data and redirect to discovery
