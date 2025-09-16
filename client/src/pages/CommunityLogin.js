@@ -23,7 +23,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import communityAuthApi from '../utils/communityAuthApi';
-import loginImage from '../assets/login-image.jpg'; 
+import loginImage from '../assets/view-building-with.jpg';
 import { getCommunityUrl } from '../utils/communityUrlUtils';
 
 const CommunityLogin = () => {
@@ -60,9 +60,9 @@ const CommunityLogin = () => {
     try {
       const response = await communityAuthApi.login(formData.email, formData.password);
       console.log('Login response:', response);
-      
+
       setSuccess('Login successful! Redirecting to your courses...');
-      
+
       // Get community name and redirect to admin courses
       const community = communityAuthApi.getCurrentCommunity();
       console.log('Current community data:', community);
@@ -71,7 +71,7 @@ const CommunityLogin = () => {
         const communityUrlName = community.name.toLowerCase().replace(/\s+/g, '-');
         const adminCoursesUrl = `/${communityUrlName}/admin/courses`;
         console.log('Redirecting to admin courses URL:', adminCoursesUrl);
-        
+
         // Redirect to admin courses page after a short delay
         setTimeout(() => {
           navigate(adminCoursesUrl);
@@ -97,10 +97,9 @@ const CommunityLogin = () => {
 
   return (
     <Box>
-
       <Box className="login-card" >
-        <Grid container spacing={2} sx={{alignItems: 'center'}}>
-          <Grid size={{  lg:8 }}>
+        <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+          <Grid size={{ xs:12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <Box sx={{ mb: 4 }}>
                 <School sx={{ fontSize: 48, mb: 2 }} />
@@ -111,7 +110,7 @@ const CommunityLogin = () => {
                   Access your community dashboard
                 </Typography>
               </Box>
-              <CardContent  sx={{p:0}}>
+              <CardContent sx={{ p: 0 }}>
                 {error && (
                   <Alert severity="error" sx={{ mb: 3 }}>
                     {error}
@@ -173,7 +172,7 @@ const CommunityLogin = () => {
 
                   <Button
                     type="submit"
-                     
+
                     variant="contained"
                     size="large"
                     disabled={isLoading}
@@ -185,7 +184,7 @@ const CommunityLogin = () => {
                       textTransform: 'none',
                       borderRadius: 2,
                       '&:hover': {
-                          background: '#020512ff',
+                        background: '#020512ff',
                       },
                       '&:disabled': {
                         background: '#ccc',
@@ -208,7 +207,7 @@ const CommunityLogin = () => {
                     sx={{
                       color: '#000',
                       textDecoration: 'none',
-                       
+
                       cursor: 'not-allowed',
                       '&:hover': {
                         textDecoration: 'none',
@@ -219,7 +218,7 @@ const CommunityLogin = () => {
                   </Link>
                 </Box>
 
-                <Box sx={{ mt: 1}}>
+                <Box sx={{ mt: 1 }}>
                   <Typography variant="body2" color="text.secondary">
                     Don't have a community yet?{' '}
                     <Link
@@ -228,7 +227,7 @@ const CommunityLogin = () => {
                         color: '#000',
                         textDecoration: 'none',
                         fontWeight: 600,
-                         
+
                         cursor: 'not-allowed',
                         '&:hover': {
                           textDecoration: 'none',
@@ -241,8 +240,8 @@ const CommunityLogin = () => {
                 </Box>
               </CardContent>
             </Box>
-          </Grid>
-          <Grid size={{ lg: 4 }}>
+          </Grid>          
+          <Grid size={{ xs:12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
             <Box className="login_image_box">
               <img src={loginImage} alt="login" />
             </Box>

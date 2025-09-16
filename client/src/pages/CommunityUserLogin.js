@@ -24,7 +24,7 @@ import {
   Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
-import loginImage from '../assets/login-image.jpg'; 
+import loginImage from '../assets/view-building-with.jpg'; 
 
 const CommunityUserLogin = () => {
   const navigate = useNavigate();
@@ -243,7 +243,7 @@ const CommunityUserLogin = () => {
     <Box>
       <Box className="login-card" >
         <Grid container spacing={2} sx={{ alignItems: 'center' }}>
-          <Grid size={{ lg: 8 }}>
+          <Grid size={{ xs:12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <CardContent sx={{ p: 0 }}>
                 <Box sx={{ textAlign: 'left', mb: 4 }}>
@@ -345,7 +345,7 @@ const CommunityUserLogin = () => {
               </CardContent>
             </Box>
           </Grid>
-          <Grid size={{ lg: 4 }}>
+          <Grid size={{ xs:12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
             <Box className="login_image_box">
               <img src={loginImage} alt="login" />
             </Box>

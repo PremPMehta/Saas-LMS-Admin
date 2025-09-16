@@ -48,10 +48,15 @@ code {
   max-width: 500px;
   margin: 0 auto;
   align-items: center;
+  padding: 40px 20px;
 }
-
+.login_image_box{
+  height: 100vh;
+}
 .login_image_box img {
-  width: 100%;
+ width: 100%;
+    object-fit: cover;
+    height: 100%;
 }
 .header_box{
   display: flex;
