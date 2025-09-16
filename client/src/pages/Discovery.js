@@ -38,6 +38,7 @@ import { courseApi } from '../utils/courseApi';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
 import googleLogo from '../assets/google-logo.png';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const communities = [
   {
@@ -164,6 +165,7 @@ const TARGET_AUDIENCES = [
 ];
 
 const Discovery = () => {
+  useDocumentTitle('Discover  - Bell & Desk');
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -396,7 +398,7 @@ const Discovery = () => {
               width: { xs: '120px', sm: '160px', md: '200px', lg: '240px' },
               height: 'auto'
             }}>
-              <img src="/bell-desk-logo.webp" alt="Bell & Desk Logo" style={{ width: '100%', height: 'auto' }} />
+              <img src="/bnd-dark.png" alt="Bell & Desk Logo" style={{ width: '100%', height: 'auto' }} />
             </Box>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Box sx={{ position: 'relative' }} data-login-dropdown>
@@ -600,12 +602,13 @@ const Discovery = () => {
           {/* Bell & Desk Logo */}
           <Box sx={{ mb: 3 }}>
             <img 
-              src="/bell-desk-logo.webp" 
+              src="/bnd-dark.png" 
               alt="Bell & Desk" 
               style={{ 
                 height: '80px', 
                 width: 'auto',
-                maxWidth: '300px'
+                maxWidth: '300px',
+                objectFit: 'contain'
               }}
             />
           </Box>

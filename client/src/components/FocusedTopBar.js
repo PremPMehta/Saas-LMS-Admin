@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
-import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText, Typography, useMediaQuery, useTheme } from '@mui/material';
 import {
   WbSunny as SunIcon,
   DarkMode as DarkIcon,
   Person as PersonIcon,
   Logout as LogoutIcon,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { communityAuthApi } from '../utils/communityAuthApi';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
+import { useSidebar } from '../contexts/SidebarContext';
 
 const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isMobile, getTopBarLeft } = useResponsiveLayout();
+  const { toggleMobileSidebar } = useSidebar();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   
@@ -48,11 +53,11 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
     if (path.includes('/community-settings')) return 'Bell & Desk - Settings';
     
     // Student routes
-    if (path.includes('/student-dashboard')) return 'Bell & Desk - My Dashboard';
-    if (path.includes('/student-courses')) return 'Bell & Desk - My Courses';
-    if (path.includes('/discovery')) return 'Bell & Desk - Discover Courses';
-    if (path.includes('/course-viewer')) return 'Bell & Desk - Course Viewer';
-    if (path.includes('/discover-course-viewer')) return 'Bell & Desk - Course Viewer';
+    if (path.includes('/student-dashboard')) return 'My Dashboard';
+    if (path.includes('/student-courses')) return 'My Courses';
+    if (path.includes('/discovery')) return 'Discover Courses';
+    if (path.includes('/course-viewer')) return 'Courses & Lectures';
+    if (path.includes('/discover-course-viewer')) return 'Course Viewer';
     
     // General routes
     if (path.includes('/dashboard')) return 'Bell & Desk - Dashboard';
@@ -110,23 +115,37 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
       px: 3,
       position: 'fixed',
       top: 0,
-      left: 240, // Start right after sidebar (240px width)
+      left: getTopBarLeft(), // Responsive positioning from context
       right: 0, // Extend to right edge
       zIndex: 1000,
+      transition: 'left 0.3s ease'
     }}>
-      {/* Left side - Page Title */}
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      {/* Left side - Burger Menu (Mobile) + Page Title */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        {/* Mobile Burger Menu */}
+        {isMobile && (
+          <IconButton
+            onClick={toggleMobileSidebar}
+            sx={{
+              color: '#0F3C60',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(15, 60, 96, 0.1)'
+              }
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+        
         <Typography 
           variant="h5" 
           component="h1"
           sx={{
             fontWeight: 700,
-            color: 'text.primary',
+            color: '#0F3C60',
             fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
             letterSpacing: '-0.5px',
-            // background: darkMode 
-            //   ? 'linear-gradient(45deg, #ffffff, #e0e0e0)' 
-            //   : 'linear-gradient(45deg, #0F3C60, #1976d2)',
             backgroundClip: 'text',            // textShadow: darkMode ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
           }}
         >

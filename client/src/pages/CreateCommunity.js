@@ -39,6 +39,7 @@ import {
   Analytics as AnalyticsIcon
 } from '@mui/icons-material';
 import CommunitySuccessModal from '../components/CommunitySuccessModal';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const steps = ['Basic Information', 'Category Selection', 'Subscription Plan', 'Final Review'];
 
@@ -88,6 +89,7 @@ const categories = [
 ];
 
 const CreateCommunity = () => {
+  useDocumentTitle('Create Community - Bell & Desk');
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     name: '',

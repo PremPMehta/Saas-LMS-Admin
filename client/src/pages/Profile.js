@@ -31,6 +31,7 @@ import {
   Add as AddIcon
 } from '@mui/icons-material';
 import FirstTimeProfileModal from '../components/profile/FirstTimeProfileModal';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 // Country codes data (same as in modal)
 const countryCodes = [
@@ -52,6 +53,7 @@ const countryCodes = [
 ];
 
 const Profile = () => {
+  useDocumentTitle('My Profile - Bell & Desk');
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);

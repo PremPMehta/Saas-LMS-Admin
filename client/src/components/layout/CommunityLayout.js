@@ -25,6 +25,13 @@ const CommunityLayout = ({ children }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [darkMode, setDarkMode] = useState(false);
   const [activeNav, setActiveNav] = useState('home');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(localStorage.getItem('sidebarCollapsed') !== 'false');
+
+  useEffect(() => {
+    const handler = (e) => setSidebarCollapsed(e.detail?.collapsed ?? (localStorage.getItem('sidebarCollapsed') !== 'false'));
+    window.addEventListener('sidebar-toggle', handler);
+    return () => window.removeEventListener('sidebar-toggle', handler);
+  }, []);
 
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
@@ -70,7 +77,7 @@ const CommunityLayout = ({ children }) => {
     }}>
       {/* Left Navigation Bar */}
       <Box sx={{
-        width: 80,
+        width: sidebarCollapsed ? 60 : 240,
         background: darkMode ? '#2d2d2d' : '#ffffff',
         borderRight: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
         display: 'flex',
@@ -80,6 +87,7 @@ const CommunityLayout = ({ children }) => {
         position: 'fixed',
         height: '100vh',
         zIndex: 1000,
+        transition: 'width 0.3s ease'
       }}>
         {/* Hamburger Menu */}
         <IconButton sx={{ mb: 4, color: darkMode ? '#ffffff' : '#000000' }}>
@@ -129,9 +137,10 @@ const CommunityLayout = ({ children }) => {
       {/* Main Content Area */}
       <Box sx={{ 
         flex: 1, 
-        ml: 30, // Account for fixed sidebar (240px)
+        ml: sidebarCollapsed ? 7.5 : 30, // 60px or 240px
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        transition: 'margin-left 0.3s ease'
       }}>
         {/* Top Header */}
         <Box sx={{

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import {
@@ -35,10 +36,13 @@ import {
   People as PeopleIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserDashboard = () => {
+  useDocumentTitle('Community User Dashboard - Bell & Desk');
   const { communityName } = useParams();
   const navigate = useNavigate();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -84,7 +88,7 @@ const CommunityUserDashboard = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 30, // Account for fixed sidebar (240px)
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'

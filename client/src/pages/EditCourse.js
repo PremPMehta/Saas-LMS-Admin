@@ -53,8 +53,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import courseApi from '../utils/courseApi';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { GENERAL_CATEGORIES } from '../config/categories';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const EditCourse = () => {
+  useDocumentTitle('Edit Course - Bell & Desk');
   const navigate = useNavigate();
   const { courseId, communityName } = useParams();
 

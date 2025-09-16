@@ -53,17 +53,24 @@ import courseApi from '../utils/courseApi';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { apiUrl } from '../config/api';
 import { DETAILED_CATEGORIES } from '../config/categories';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
+import FocusedTopBar from '../components/FocusedTopBar';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CreateCourse = () => {
+  useDocumentTitle('Create Course - Bell & Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
 
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
-
+  const communityUserData = localStorage.getItem('communityUserData');
   // Debug logging
   console.log('CreateCourse component loaded:', { communityName, communityUrls });
+
+  const [darkMode, setDarkMode] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [courseData, setCourseData] = useState({
     title: '',
@@ -533,7 +540,7 @@ const CreateCourse = () => {
       case 0:
         return (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 8, lg: 8 }}>
+            <Grid size={{ xs: 12, md: 12, lg: 8 }}>
               <Grid spacing={3}>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="h5" sx={{
@@ -617,7 +624,7 @@ const CreateCourse = () => {
                       fullWidth
                       error={!!errors.targetAudience}
                       sx={{
-                        mb: 3,
+                        mb: { xs: 2, md: 0, lg: 0 },
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 3,
                           transition: 'all 0.3s ease',
@@ -818,7 +825,7 @@ const CreateCourse = () => {
           <Grid container spacing={2}>
             <Grid item size={{ xs: 12, md: 8, lg: 8 }}>
               <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
                   <Typography variant="h5" sx={{ fontWeight: 600 }}>
                     Course Structure
                   </Typography>
@@ -957,134 +964,135 @@ const CreateCourse = () => {
 
       case 2:
         return (
-          <Box>
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" sx={{ mb: 0, fontWeight: 600 }}>
-                Review & Publish
-              </Typography>
-              <Typography >
-                Carefully review your content and publish it when everything looks perfect.
-              </Typography>
-            </Box>
+          <Grid container spacing={2}>
+            <Grid item size={{ xs: 12, md: 12 }}>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" sx={{ mb: 0, fontWeight: 600 }}>
+                  Review & Publish
+                </Typography>
 
-            <Grid container spacing={3}>
-              <Grid item size={{ xs: 12, md: 6 }}>
-                <Card sx={{ mb: 3 }}>
-                  <CardContent>
-                    {courseData.thumbnail && !chapters.some(chapter => chapter.videos.length > 0) && (
-                      <Box>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                          Course Thumbnail
-                        </Typography>
-                        <Box
-                          component="img"
-                          src={courseData.thumbnail}
-                          alt="Course thumbnail"
-                          sx={{
-                            width: '100%',
-                            height: 200,
-                            borderRadius: 2,
-                            objectFit: 'cover',
-                            borderRadius: 1,
-                            border: '1px solid #e0e0e0'
-                          }}
-                        />
-                      </Box>
-                    )}
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                      Course Details
-                    </Typography>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Title
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                        {courseData.title}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Description
-                      </Typography>
-                      <Typography variant="body1">
-                        {courseData.description}
-                      </Typography>
-                    </Box>
-                    <Grid container spacing={3}>
-                      <Grid item xs={12} md={6}>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            Category
+              </Box>
+            </Grid>
+            <Grid item size={{ xs: 12, md: 12 }}>
+              <Grid container spacing={2}>
+                <Grid item size={{ xs: 10, md: 6 }}>
+                  <Card sx={{ mb: 3 }}>
+                    <CardContent sx={{ width: '100%' }}>
+                      {courseData.thumbnail && !chapters.some(chapter => chapter.videos.length > 0) && (
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                            Course Thumbnail
                           </Typography>
-                          <Chip label={courseData.category} size="small" />
+                          <Box
+                            component="img"
+                            src={courseData.thumbnail}
+                            alt="Course thumbnail"
+                            sx={{
+                              width: '100%',
+                              height: 200,
+                              borderRadius: 2,
+                              objectFit: 'cover',
+                              borderRadius: 1,
+                              border: '1px solid #e0e0e0'
+                            }}
+                          />
                         </Box>
+                      )}
+                      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                        Course Details
+                      </Typography>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Title
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                          {courseData.title}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Description
+                        </Typography>
+                        <Typography variant="body1">
+                          {courseData.description}
+                        </Typography>
+                      </Box>
+                      <Grid container spacing={3}>
+                        <Grid item xs={12} md={6}>
+                          <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Category
+                            </Typography>
+                            <Chip label={courseData.category} size="small" />
+                          </Box>
+                        </Grid>
+
+                        <Grid item xs={12} md={6}>
+                          <Box sx={{ mb: 2 }}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                              Target Audience
+                            </Typography>
+                            <Chip label={courseData.targetAudience} size="small" />
+                          </Box>
+                        </Grid>
                       </Grid>
 
-                      <Grid item xs={12} md={6}>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            Target Audience
-                          </Typography>
-                          <Chip label={courseData.targetAudience} size="small" />
-                        </Box>
-                      </Grid>
-                    </Grid>
-
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Content Type
-                      </Typography>
-                      <Chip
-                        label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'}
-                        size="small"
-                        icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
-                      />
-                    </Box>
-
-                  </CardContent>
-                </Card>
-              </Grid>
-
-              <Grid item size={{ xs: 12, md: 6 }}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                      Course Structure
-                    </Typography>
-                    <Box >
-                      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Box sx={{ mb: 2 }}>
                         <Typography variant="subtitle2" color="text.secondary">
-                          Total Chapters
-                        </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F3C60' }}>
-                          {chapters.length}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Total {courseData.contentType === 'video' ? 'Videos' : 'Lessons'}
-                        </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853' }}>
-                          {chapters.reduce((total, chapter) => total + chapter.videos.length, 0)}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          Course Type
+                          Content Type
                         </Typography>
                         <Chip
-                          label={courseData.contentType === 'video' ? 'Video Course' : 'Text Course'}
+                          label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'}
                           size="small"
-                          color="primary"
+                          icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
                         />
                       </Box>
-                    </Box>
 
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid size={{ xs: 10, md: 6 }}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                        Course Structure
+                      </Typography>
+                      <Box >
+                        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Total Chapters
+                          </Typography>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F3C60' }}>
+                            {chapters.length}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Total {courseData.contentType === 'video' ? 'Videos' : 'Lessons'}
+                          </Typography>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853' }}>
+                            {chapters.reduce((total, chapter) => total + chapter.videos.length, 0)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Course Type
+                          </Typography>
+                          <Chip
+                            label={courseData.contentType === 'video' ? 'Video Course' : 'Text Course'}
+                            size="small"
+                            color="primary"
+                          />
+                        </Box>
+                      </Box>
+
+                    </CardContent>
+                  </Card>
+                </Grid>
               </Grid>
             </Grid>
-          </Box>
+          </Grid>
         );
 
       default:
@@ -1094,40 +1102,19 @@ const CreateCourse = () => {
 
   return (
     <Box className="bg-black">
+      {/* Common Focused Sidebar */}
+      <FocusedSidebar darkMode={darkMode} />
 
-      <FocusedSidebar />
-
+      {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 30,
-        mt: 0,
+        ml: getMainContentMargin(), // responsive margin from context
+        mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
       }}>
-        {/* Header */}
-        <Box className="header_box" >
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0 }}>
-            <IconButton onClick={() => {
-              let backUrl;
-              if (communityUrls) {
-                backUrl = communityUrls.courses;
-              } else if (communityName) {
-                // Fallback: construct URL manually if communityUrls is not available
-                backUrl = `/${communityName}/courses`;
-              } else {
-                // Last resort: redirect to courses page
-                backUrl = '/courses';
-              }
-              console.log('Back button navigation:', { communityName, communityUrls, backUrl });
-              navigate(backUrl);
-            }} sx={{ mr: 2 }}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6" sx={{ fontWeight: 700, marginBottom: 0 }}>
-              Create New Course
-            </Typography>
-          </Box>
-        </Box>
+        {/* Common Focused Top Bar */}
+        <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
         <Box sx={{ flex: 1, px: 0, py: 0, overflow: 'visible' }}>
           <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
             <Card sx={{
@@ -1148,11 +1135,16 @@ const CreateCourse = () => {
                         color: '#0f3b609e',
                         fontWeight: 600,
                         fontSize: '1rem',
+                        '@media (max-width: 560px)': {
+                          padding: '8px 7px',
+                          fontSize: '0.75rem',
+                        },
                         '&.Mui-active': {
                           color: '#0F3C60',
                           fontWeight: 700,
-                          padding: '8px 20px',
+
                           borderBottom: '2px solid #0F3C60',
+
                         },
                         '&.Mui-completed': {
                           color: '#16A34A',
@@ -1185,6 +1177,15 @@ const CreateCourse = () => {
                   {steps.map((label, index) => (
                     <Step key={label}>
                       <StepLabel
+                        sx={{
+                          flexWrap: 'wrap',
+                          '& MuiStepLabel-labelContainer': {
+                            fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1rem' },
+                          },
+                          '& .MuiStepper-horizontal': {
+                            flexWrap: 'wrap',
+                          }
+                        }}
                         StepIconComponent={({ active, completed }) => (
                           <Box
                             sx={{
@@ -1192,6 +1193,7 @@ const CreateCourse = () => {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
+                              flexWrap: 'wrap',
                               background: active
                                 ? 'linear-gradient(135deg, #0F3C60 0%, #0F3C60 100%)'
                                 : completed

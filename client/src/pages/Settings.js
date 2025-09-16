@@ -39,8 +39,10 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Settings = () => {
+  useDocumentTitle('Settings - Bell & Desk');
   const { mode } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
