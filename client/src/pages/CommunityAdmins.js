@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import communityAuthApi from '../utils/communityAuthApi';
 import communityAdminApi from '../utils/communityAdminApi';
 import { useNavigate } from 'react-router-dom';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
@@ -71,6 +72,7 @@ import useDocumentTitle from '../contexts/useDocumentTitle';
 const CommunityAdmins = () => {
   useDocumentTitle('Community Admins - Bell & Desk');
   const navigate = useNavigate();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const [darkMode, setDarkMode] = useState(false);
   const [communityData, setCommunityData] = useState(null);
   const [admins, setAdmins] = useState([]);
@@ -583,7 +585,7 @@ const CommunityAdmins = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1, 
-        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'

@@ -4,6 +4,7 @@ import communityAuthApi from '../utils/communityAuthApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { CRYPTO_CATEGORIES } from '../config/categories';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import {
@@ -25,7 +26,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
 import '../App.css';
 import {
   Box,
@@ -86,6 +86,7 @@ import useDocumentTitle from '../contexts/useDocumentTitle';
 const Courses = () => {
   const navigate = useNavigate();
   const { communityName } = useParams();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   useDocumentTitle('Courses - Bell & Desk');
 
   // Get community-specific URLs
@@ -909,14 +910,14 @@ const Courses = () => {
   });
 
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-        <Typography sx={{ mt: 2 }}>Loading courses...</Typography>
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+  //       <CircularProgress />
+  //       <Typography sx={{ mt: 2 }}>Loading courses...</Typography>
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box className="bg-black">
@@ -926,7 +927,7 @@ const Courses = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -939,8 +940,8 @@ const Courses = () => {
           <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                <CircularProgress />
-                <Typography sx={{ ml: 2 }}>Loading courses from database...</Typography>
+                <CircularProgress size={30} />
+                <Typography sx={{ ml: 2 }}>Loading...</Typography>
               </Box>
             ) : (
               <Box>
@@ -1193,7 +1194,7 @@ const Courses = () => {
 
                   <Card sx={{ mb: 1, background: darkMode ? '#2d2d2d' : 'transparent', boxShadow: 'none', border: "none", p: 0, overflow: 'visible' }}>
                     <CardContent sx={{ p: 0, overflow: 'visible' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2}}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
                         <Box sx={{ position: 'relative', overflow: 'visible' }} className="filter-dropdown">
                           <Button
                             fullWidth

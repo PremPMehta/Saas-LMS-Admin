@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, IconButton, Typography, ListItem, ListItemButton,
-  ListItemIcon, ListItemText, AppBar, Toolbar, Avatar
+  ListItemIcon, ListItemText, AppBar, Toolbar, Avatar,
+  useMediaQuery, useTheme, Drawer, Backdrop
 } from '@mui/material';
 import {
   VideoLibrary as VideoIcon,
   ArrowBack as ArrowBackIcon,
   People as PeopleIcon,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
-import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { communityAuthApi } from '../utils/communityAuthApi';
+import { useSidebar } from '../contexts/SidebarContext';
 import '../App.css';
 
 // Ensure a default collapsed state before first render
@@ -25,52 +27,57 @@ if (typeof window !== 'undefined') {
 const FocusedSidebar = ({ darkMode }) => {
   const navigate = useNavigate();
   const { communityName } = useParams();
-  const [collapsed, setCollapsed] = useState(() => (localStorage.getItem('sidebarCollapsed') !== 'false'));
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { collapsed, mobileOpen, toggleSidebar, toggleMobileSidebar, setMobileSidebarOpen } = useSidebar();
 
+  // Close mobile sidebar when switching to desktop
   useEffect(() => {
-    const saved = localStorage.getItem('sidebarCollapsed');
-    if (saved === 'true') {
-      setCollapsed(true);
+    if (!isMobile && mobileOpen) {
+      setMobileSidebarOpen(false);
     }
-  }, []);
+  }, [isMobile, mobileOpen, setMobileSidebarOpen]);
 
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
   const communityData = communityAuthApi.getCurrentCommunity();
 
-  const toggleSidebar = () => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      localStorage.setItem('sidebarCollapsed', String(next));
-      window.dispatchEvent(new CustomEvent('sidebar-toggle', { detail: { collapsed: next } }));
-      return next;
-    });
+  const handleToggleSidebar = () => {
+    if (isMobile) {
+      toggleMobileSidebar();
+    } else {
+      toggleSidebar(); // Use context toggle function
+    }
   };
 
-  return (
+  const handleMobileClose = () => {
+    setMobileSidebarOpen(false);
+  };
+
+  // Sidebar content component that can be reused for both desktop and mobile
+  const SidebarContent = ({ isMobile = false }) => (
     <Box sx={{
-      width: collapsed ? 60 : 240,
+      // width: isMobile ? 240 : (collapsed ? 60 : 240),
+      width: '100%',
       background: '#0F3C60',
-      borderRight: '1px solid rgba(255, 255, 255, 0.2)',
+      borderRight: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
       display: 'flex',
       flexDirection: 'column',
       py: 2,
-      position: 'fixed',
-      height: '100vh',
-      zIndex: 1000,
-      transition: 'width 0.3s ease'
+      height: '100%',
+      transition: 'width 0.3s ease',
     }}>
-
       {/* Logo + Collapse Icon */}
       <Box
         sx={{
           mb: 4,
           mx: 2,
           display: 'flex',
-          justifyContent: collapsed ? 'center' : 'space-between',
-          alignItems: 'center'
+          justifyContent: (isMobile || !collapsed) ? 'space-between' : 'center',
+          alignItems: 'center',
+
         }}
       >
-        {!collapsed && (
+        {(isMobile || !collapsed) && (
           <img
             src="/bell-desk-logo.png"
             alt="Bell & Desk"
@@ -78,24 +85,23 @@ const FocusedSidebar = ({ darkMode }) => {
               width: '130px',
               objectFit: 'contain',
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
             }}
           />
         )}
 
         <IconButton
-          onClick={toggleSidebar}
+          onClick={isMobile ? handleMobileClose : handleToggleSidebar}
           sx={{
             color: '#ffffff',
             backgroundColor: 'transparent',
-            transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+            transform: (isMobile || collapsed) ? 'rotate(180deg)' : 'rotate(0deg)',
             transition: 'transform 0.3s ease',
             '&:hover': {
               backgroundColor: 'rgba(255,255,255,0.1)'
             }
           }}
         >
-          <ArrowBackIcon />
+          {isMobile ? <ArrowBackIcon /> : <ArrowBackIcon />}
         </IconButton>
       </Box>
 
@@ -120,7 +126,14 @@ const FocusedSidebar = ({ darkMode }) => {
           return (
             <ListItem key={index} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
-                onClick={() => !isActive && navigate(item.path)}
+                onClick={() => {
+                  if (!isActive) {
+                    navigate(item.path);
+                    if (isMobile) {
+                      handleMobileClose();
+                    }
+                  }
+                }}
                 sx={{
                   borderRadius: 0,
                   py: 1.5,
@@ -131,59 +144,85 @@ const FocusedSidebar = ({ darkMode }) => {
                     backgroundColor: isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
                     color: '#ffffff'
                   },
-                  justifyContent: collapsed ? 'center' : 'flex-start'
+                  justifyContent: (isMobile || !collapsed) ? 'flex-start' : 'center'
                 }}
               >
-                <ListItemIcon sx={{ 
+                <ListItemIcon sx={{
                   minWidth: 0,
                   color: 'inherit',
-                  mr: collapsed ? 0 : 1.5,
+                  mr: (isMobile || !collapsed) ? 1.5 : 0,
                   display: 'flex',
                   justifyContent: 'center'
                 }}>
                   {item.icon}
                 </ListItemIcon>
-                {!collapsed && (
-                  <ListItemText 
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: '0.9rem',
-                      fontWeight: isActive ? 600 : 400,
-                      color: 'inherit'
-                    }}
-                  />
-                )}
+
+                <ListItemText
+                  sx={{
+                    minWidth: (isMobile || !collapsed) ? "200px" : 0,
+                    mt: 0,  // 4px
+                    mb: 0,  // 4px
+                    opacity: (isMobile || !collapsed) ? 1 : 0,
+                    display: (isMobile || !collapsed) ? 'block' : 'none',
+                  }}
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontSize: '0.9rem',
+                    fontWeight: isActive ? 600 : 400,
+                    color: 'inherit'
+                  }}
+                />
+
               </ListItemButton>
             </ListItem>
           );
         });
       })()}
-
-      {/* Bottom Avatar Section */}
-      {/* <Box sx={{ mt: 'auto', mb: 2, width: '100%' }}>
-        <AppBar position="static" sx={{ backgroundColor: "#0F3C60" , boxShadow: 'none' , border: 'none' }}>
-          <Toolbar className='sidebar_profile' sx={{ display: "flex", justifyContent: "space-between"}}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: collapsed ? 0 : 1.5 }}>
-              <Avatar
-                alt="Profile"
-                src="https://via.placeholder.com/40"
-                sx={{ width: 40, height: 40 }}
-              />
-              {!collapsed && (
-                <Typography variant="subtitle1" sx={{ color: "#fff" }}>
-                  Hi, John
-                </Typography>
-              )}
-            </Box>
-            {!collapsed && (
-              <IconButton edge="end" sx={{ color: "#ffffff" }}>
-                <MenuIcon sx={{ color: "#ffffff" }} />
-              </IconButton>
-            )}
-          </Toolbar>
-        </AppBar>
-      </Box> */}
     </Box>
+  );
+
+  return (
+    <>
+
+      {/* Desktop sidebar */}
+      {!isMobile && (
+        <Box sx={{
+          // width: collapsed ? 60 : 240,
+          width: collapsed ? 60 : 240,
+          background: '#0F3C60',
+          borderRight: '1px solid rgba(255, 255, 255, 0.2)',
+          display: 'flex',
+          flexDirection: 'column',
+          py: 2,
+          position: 'fixed',
+          height: '100vh',
+          zIndex: 1000,
+          transition: 'width 0.3s ease'
+        }}>
+          <SidebarContent />
+        </Box>
+      )}
+
+      {/* Mobile drawer */}
+      {isMobile && (
+        <Drawer
+          anchor="left"
+          open={mobileOpen}
+          onClose={handleMobileClose}
+          sx={{
+            '& .MuiDrawer-paper': {
+              width: 240,
+              boxSizing: 'border-box',
+              background: '#0F3C60',
+              border: 'none',
+              transition: 'width 0.3s ease'
+            }
+          }}
+        >
+          <SidebarContent isMobile={true} />
+        </Drawer>
+      )}
+    </>
   );
 };
 

@@ -52,6 +52,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
@@ -61,7 +62,7 @@ import useDocumentTitle from '../contexts/useDocumentTitle';
 const CourseViewer = () => {
   useDocumentTitle('Course Viewer - Bell & Desk');
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const navigate = useNavigate();
   const { courseId, communityName } = useParams();
 
@@ -827,16 +828,16 @@ const CourseViewer = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-          <CircularProgress />
-          <Typography sx={{ ml: 2 }}>Loading courses...</Typography>
-        </Box>
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box sx={{ p: 3 }}>
+  //       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+  //         <CircularProgress />
+  //         <Typography sx={{ ml: 2 }}>Loading courses...</Typography>
+  //       </Box>
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box className="bg-black">
@@ -846,7 +847,7 @@ const CourseViewer = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -856,21 +857,18 @@ const CourseViewer = () => {
 
 
         {/* Course Content */}
-        <Box sx={{ flex: 1, px: 1, py: 4, overflow: 'visible' }}>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+            <CircularProgress size={30} />
+            <Typography sx={{ ml: 2 }}>Loading...</Typography>
+          </Box>
+        ) : (<Box sx={{ flex: 1, px: 1, py: 4, overflow: 'visible' }}>
           <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
             {/* Back Button */}
             <Box sx={{ pb: 2 }}>
               <Button
                 startIcon={<ArrowBackIcon />}
-                onClick={() => {
-              // Check if we're in admin mode by looking at the current URL
-              const isAdminMode = window.location.pathname.includes('/admin/');
-              const backUrl = isAdminMode 
-                ? `/${communityName}/admin/courses`
-                : `/${communityName}/student/courses`;
-              console.log('CourseViewer back button:', { isAdminMode, backUrl, currentPath: window.location.pathname });
-              navigate(backUrl);
-            }}
+                onClick={() => navigate(`/${communityName}/admin/courses`)}
                 sx={{
                   textTransform: 'none',
                   color: darkMode ? '#fff' : '#0F3C60',
@@ -1523,7 +1521,7 @@ const CourseViewer = () => {
                                 <Button
                                   variant="outlined"
                                   size="large"
-                                  sx={{ backgroundColor: "#0F3C60", color: "#fff" , width: "fit-content" }}
+                                  sx={{ backgroundColor: "#0F3C60", color: "#fff", width: "fit-content" }}
                                   onClick={() => {
                                     const iframe = document.querySelector('iframe');
                                     if (iframe && iframe.requestFullscreen) {
@@ -1561,7 +1559,7 @@ const CourseViewer = () => {
               </Grid>
             </Grid>
           </Container>
-        </Box>
+        </Box>)}
       </Box>
     </Box>
   );

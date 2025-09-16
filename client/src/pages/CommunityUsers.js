@@ -42,6 +42,7 @@ import {
   HourglassEmpty as HourglassIcon,
 } from '@mui/icons-material';
 import { useTheme } from '../contexts/ThemeContext';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
@@ -51,6 +52,7 @@ import useDocumentTitle from '../contexts/useDocumentTitle';
 const CommunityUsers = () => {
   useDocumentTitle('Community Users - Bell & Desk');
   const { mode } = useTheme();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -228,20 +230,20 @@ const CommunityUsers = () => {
     });
   };
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '60vh',
-        }}
-      >
-        <CircularProgress size={60} />
-      </Box>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //         minHeight: '60vh',
+  //       }}
+  //     >
+  //       <CircularProgress size={60} />
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box className="bg-black">
@@ -251,7 +253,7 @@ const CommunityUsers = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -305,7 +307,12 @@ const CommunityUsers = () => {
             )}
 
             {/* Tabs */}
-            <Grow in timeout={1000}>
+            {isLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                <CircularProgress size={30}/>
+                <Typography sx={{ ml: 2 }}>Loading...</Typography>
+              </Box>
+            ) : (<Grow in timeout={1000}>
               <Paper
                 sx={{
                   borderRadius: 3,
@@ -473,7 +480,7 @@ const CommunityUsers = () => {
                     </Box>
                   )}
               </Paper>
-            </Grow>
+            </Grow>)}
 
             {/* Action Confirmation Dialog */}
             <Dialog open={actionDialog.open} onClose={handleCloseDialog} maxWidth="sm" fullWidth>

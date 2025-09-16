@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText, Typography, useMediaQuery, useTheme } from '@mui/material';
 import {
   WbSunny as SunIcon,
   DarkMode as DarkIcon,
   Person as PersonIcon,
   Logout as LogoutIcon,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { communityAuthApi } from '../utils/communityAuthApi';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
+import { useSidebar } from '../contexts/SidebarContext';
 
 const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isMobile, getTopBarLeft } = useResponsiveLayout();
+  const { toggleMobileSidebar } = useSidebar();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(localStorage.getItem('sidebarCollapsed') !== 'false');
-  
-  useEffect(() => {
-    const handler = (e) => setSidebarCollapsed(e.detail?.collapsed ?? (localStorage.getItem('sidebarCollapsed') !== 'false'));
-    window.addEventListener('sidebar-toggle', handler);
-    return () => window.removeEventListener('sidebar-toggle', handler);
-  }, []);
   
   // Check if user is a community user (student) or admin
   const communityUserData = localStorage.getItem('communityUser');
@@ -117,13 +115,29 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
       px: 3,
       position: 'fixed',
       top: 0,
-      left: sidebarCollapsed ? 60 : 240, // Start right after sidebar width
+      left: getTopBarLeft(), // Responsive positioning from context
       right: 0, // Extend to right edge
       zIndex: 1000,
       transition: 'left 0.3s ease'
     }}>
-      {/* Left side - Page Title */}
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      {/* Left side - Burger Menu (Mobile) + Page Title */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        {/* Mobile Burger Menu */}
+        {isMobile && (
+          <IconButton
+            onClick={toggleMobileSidebar}
+            sx={{
+              color: '#0F3C60',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(15, 60, 96, 0.1)'
+              }
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+        
         <Typography 
           variant="h5" 
           component="h1"

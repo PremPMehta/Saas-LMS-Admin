@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import { courseApi } from '../utils/courseApi';
@@ -38,6 +39,7 @@ const StudentCourses = () => {
   useDocumentTitle('Student Courses - Bell & Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -287,7 +289,7 @@ const StudentCourses = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
