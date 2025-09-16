@@ -13,7 +13,12 @@ import {
   Button,
   Paper,
   CircularProgress,
-  Alert
+  Alert,
+  Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -23,11 +28,17 @@ import {
   Person as PersonIcon,
   PlayArrow as PlayIcon,
   Description as DescriptionIcon,
-  TextFields as TextIcon
+  TextFields as TextIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
+import { DETAILED_CATEGORIES } from '../config/categories';
+import CourseLoginModal from '../components/CourseLoginModal';
+import logo from '../assets/logo.webp';
+import googleLogo from '../assets/google-logo.png';
 
 const communities = [
   {
@@ -114,17 +125,43 @@ const communities = [
   }
 ];
 
+// Use only the 8 specific categories for Discovery page
 const categories = [
   { label: 'All', value: 'all', color: 'default' },
-  { label: '🎨 Hobbies', value: 'Hobbies', color: 'warning' },
-  { label: '🎵 Music', value: 'Music', color: 'secondary' },
-  { label: '💰 Money', value: 'Money', color: 'success' },
-  { label: '🙏 Spirituality', value: 'Spirituality', color: 'info' },
-  { label: '💻 Tech', value: 'Tech', color: 'primary' },
-  { label: '🏃 Health', value: 'Health', color: 'error' },
-  { label: '⚽ Sports', value: 'Sports', color: 'default' },
-  { label: '📚 Self-improvement', value: 'Self-improvement', color: 'default' },
-  { label: '❤️ Relationships', value: 'Relationships', color: 'secondary' }
+  { label: 'Education', value: 'education', color: 'primary' },
+  { label: 'Finance', value: 'finance', color: 'success' },
+  { label: 'Self-Improvement', value: 'self-improvement', color: 'default' },
+  { label: 'Health', value: 'health', color: 'error' },
+  { label: 'Sports', value: 'sports', color: 'default' },
+  { label: 'Music', value: 'music', color: 'secondary' },
+  { label: 'Food', value: 'food', color: 'warning' },
+  { label: 'Gaming', value: 'gaming', color: 'secondary' }
+];
+
+// Simple array of category names for search functionality
+const DISCOVERY_CATEGORIES = [
+  'Education',
+  'Finance', 
+  'Self-Improvement',
+  'Health',
+  'Sports',
+  'Music',
+  'Food',
+  'Gaming'
+];
+
+// Target audiences for search functionality
+const TARGET_AUDIENCES = [
+  'Student',
+  'Professional',
+  'Entrepreneur',
+  'Freelancer',
+  'Teacher/Instructor',
+  'Manager',
+  'Developer',
+  'Designer',
+  'Marketing Specialist',
+  'Other'
 ];
 
 const Discovery = () => {
@@ -134,7 +171,45 @@ const Discovery = () => {
   const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const [showUserSignIn, setShowUserSignIn] = useState(true);
   const [courses, setCourses] = useState([]);
+  const [courseModalOpen, setCourseModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
+  const [expandedDescriptions, setExpandedDescriptions] = useState({});
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(9);
+  
+  // Modal state
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [hasScrolledTwoRows, setHasScrolledTwoRows] = useState(false);
+
+  // Category slider functions
+  const scrollCategories = (direction) => {
+    const container = document.getElementById('category-slider');
+    if (container) {
+      const scrollAmount = 200; // Adjust scroll distance
+      const newPosition = direction === 'left'
+        ? Math.max(0, categoryScrollPosition - scrollAmount)
+        : categoryScrollPosition + scrollAmount;
+
+      container.scrollTo({
+        left: newPosition,
+        behavior: 'smooth'
+      });
+      setCategoryScrollPosition(newPosition);
+    }
+  };
+
+  // Handle description expand/collapse
+  const toggleDescription = (courseId, event) => {
+    event.stopPropagation(); // Prevent card click
+    setExpandedDescriptions(prev => ({
+      ...prev,
+      [courseId]: !prev[courseId]
+    }));
+  };
+
   // Get community URLs for proper navigation
   const communityUrls = getCommunityUrls();
   const [loading, setLoading] = useState(true);
@@ -151,6 +226,44 @@ const Discovery = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [loginDropdownOpen]);
+
+  // Scroll detection for modal
+  useEffect(() => {
+    const handleScroll = () => {
+      const coursesContainer = document.getElementById('courses-container');
+      if (coursesContainer) {
+        const containerRect = coursesContainer.getBoundingClientRect();
+        const containerTop = containerRect.top;
+        
+        // Calculate if user has scrolled past 4-5 rows of courses (more content)
+        // Assuming each row has 3 courses and each course card is ~400px tall
+        const fourRowsHeight = 4 * 400; // 4 rows * 400px per row = 1600px
+        const scrollThreshold = containerTop + fourRowsHeight;
+        
+        // Also add a minimum scroll distance from top of page
+        const minScrollFromTop = 1200; // User must scroll at least 1200px from top
+        
+        if (window.scrollY > Math.max(scrollThreshold, minScrollFromTop) && !hasScrolledTwoRows) {
+          setHasScrolledTwoRows(true);
+          setShowLoginModal(true);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasScrolledTwoRows]);
+
+  // Handle course click
+  const handleCourseClick = (course) => {
+    setSelectedCourse({
+      id: course.id,
+      name: course.title, // Use title instead of name
+      communityName: course.communityName || 'crypto-manji-academy'
+    });
+    setCourseModalOpen(true);
+  };
+
   const [filteredCommunities, setFilteredCommunities] = useState([]);
 
   // Fetch courses from database
@@ -160,25 +273,26 @@ const Discovery = () => {
         setLoading(true);
         // Fetch all published courses for discovery
         const response = await courseApi.getCourses({ discovery: 'true' });
-        console.log('Fetched courses for discovery:', response);
-        
         if (response.success && response.courses) {
           // Normalize course data for display
-          const normalizedCourses = response.courses.map(course => ({
-            id: course._id || course.id,
-            title: course.title || 'Untitled Course',
-            description: course.description || 'No description available',
-            category: course.category || 'Uncategorized',
-            status: course.status || 'published',
-            thumbnail: course.thumbnail || null,
-            targetAudience: course.targetAudience || null,
-            contentType: course.contentType || 'video',
-            subType: course.subType || null,
-            chapters: course.chapters || [],
-            createdAt: course.createdAt || new Date().toISOString(),
-            updatedAt: course.updatedAt || new Date().toISOString()
-          }));
-          
+          const normalizedCourses = response.courses.map(course => {
+
+            return {
+              id: course._id || course.id,
+              title: course.title || 'Untitled Course',
+              description: course.description || 'No description available',
+              category: course.category || 'Uncategorized',
+              status: course.status || 'published',
+              thumbnail: course.thumbnail || '', // Keep empty string instead of null
+              targetAudience: course.targetAudience || null,
+              contentType: course.contentType || 'video',
+              subType: course.subType || null,
+              chapters: course.chapters || [],
+              createdAt: course.createdAt || new Date().toISOString(),
+              updatedAt: course.updatedAt || new Date().toISOString()
+            };
+          });
+
           setCourses(normalizedCourses);
           setFilteredCommunities(normalizedCourses);
         } else {
@@ -204,15 +318,50 @@ const Discovery = () => {
       filtered = filtered.filter(course => course.category === selectedCategory);
     }
 
-    // Filter by search term
+    // Enhanced search: Filter by search term (title, description, category, or target audience)
     if (searchTerm) {
-      filtered = filtered.filter(course =>
-        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchTerm.toLowerCase())
+      const searchLower = searchTerm.toLowerCase();
+
+      // Check if search term matches any category name
+      const matchingCategory = DISCOVERY_CATEGORIES.find(category =>
+        category.toLowerCase().includes(searchLower) ||
+        searchLower.includes(category.toLowerCase())
       );
+
+      // Check if search term matches any target audience
+      const matchingAudience = TARGET_AUDIENCES.find(audience =>
+        audience.toLowerCase().includes(searchLower) ||
+        searchLower.includes(audience.toLowerCase())
+      );
+
+      if (matchingCategory) {
+        // If search term matches a category, show all courses from that category
+        filtered = filtered.filter(course =>
+          course.category.toLowerCase().includes(matchingCategory.toLowerCase()) ||
+          matchingCategory.toLowerCase().includes(course.category.toLowerCase())
+        );
+      } else if (matchingAudience) {
+        // If search term matches a target audience, show all courses for that audience
+        filtered = filtered.filter(course =>
+          course.targetAudience && (
+            course.targetAudience.toLowerCase().includes(matchingAudience.toLowerCase()) ||
+            matchingAudience.toLowerCase().includes(course.targetAudience.toLowerCase())
+          )
+        );
+      } else {
+        // Regular search in title, description, category, and target audience
+        filtered = filtered.filter(course =>
+          course.title.toLowerCase().includes(searchLower) ||
+          course.description.toLowerCase().includes(searchLower) ||
+          course.category.toLowerCase().includes(searchLower) ||
+          (course.targetAudience && course.targetAudience.toLowerCase().includes(searchLower))
+        );
+      }
     }
 
     setFilteredCommunities(filtered);
+    // Reset to first page when filters change
+    setCurrentPage(1);
   }, [searchTerm, selectedCategory, courses]);
 
   const formatMemberCount = (count) => {
@@ -222,107 +371,225 @@ const Discovery = () => {
     return count.toString();
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredCommunities.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredCommunities.slice(startIndex, endIndex);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+    // Close the login modal when user clicks next page
+    setShowLoginModal(false);
+    // Reset the scroll detection so modal can appear again on new page
+    setHasScrolledTwoRows(false);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e9ecef', py: 2 }}>
         <Container maxWidth="xl">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                fontWeight: 'bold',
-                background: 'linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4)',
-                backgroundSize: '400% 400%',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                animation: 'gradient 3s ease infinite',
-                '@keyframes gradient': {
-                  '0%': { backgroundPosition: '0% 50%' },
-                  '50%': { backgroundPosition: '100% 50%' },
-                  '100%': { backgroundPosition: '0% 50%' }
-                }
-              }}
-            >
-              Bell & Desk
-            </Typography>
-            <Box sx={{ position: 'relative' }} data-login-dropdown>
-              <Button 
-                variant="outlined" 
-                onClick={() => {
-                  setLoginDropdownOpen(!loginDropdownOpen);
-                  setShowUserSignIn(false);
-                }}
-                endIcon={<KeyboardArrowDownIcon />}
-                sx={{ 
-                  textTransform: 'none',
-                  borderRadius: '20px',
-                  px: 3
-                }}
-              >
-                LOG IN
-              </Button>
-              
-              {loginDropdownOpen && (
-                <Box
+            <Box sx={{
+              width: { xs: '120px', sm: '160px', md: '200px', lg: '240px' },
+              height: 'auto'
+            }}>
+              <img src={logo} alt="Logo" style={{ width: '100%', height: 'auto' }} />
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Box sx={{ position: 'relative' }} data-login-dropdown>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setLoginDropdownOpen(!loginDropdownOpen);
+                    setShowUserSignIn(false);
+                  }}
+                  endIcon={<KeyboardArrowDownIcon sx={{
+                    transition: 'transform 0.2s ease',
+                    transform: loginDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  }} />}
                   sx={{
-                    position: 'absolute',
-                    top: '100%',
-                    right: 0,
-                    mt: 1,
-                    bgcolor: 'white',
-                    borderRadius: 2,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                    border: '1px solid #e0e0e0',
-                    zIndex: 1000,
-                    minWidth: 200
+                    textTransform: 'none',
+                    borderRadius: '25px',
+                    px: { xs: 0.7, sm: 3, md: 4 }, // responsive horizontal padding
+                    py: { xs: 0.6, md: 1.5 },        // responsive vertical padding
+                    fontWeight: 600,
+                    fontSize: { xs: '0.7rem', sm: '0.9rem', md: '0.95rem', lg: '1rem' }, // font scales
+                    borderColor: '#0F3C60',
+                    color: '#FFF',
+                    background: '#0F3C60',
+                    backdropFilter: 'blur(10px)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      borderColor: '#0F3C60',
+                      background: '#0F3C60',
+                      color: 'white',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+                      '& .MuiSvgIcon-root': {
+                        color: 'white'
+                      }
+                    }
                   }}
                 >
-                  <Button
-                    fullWidth
-                    onClick={() => {
-                      navigate('/community-login');
-                      setLoginDropdownOpen(false);
-                    }}
+                  LOG IN
+                </Button>
+
+                {loginDropdownOpen && (
+                  <Box
                     sx={{
-                      textTransform: 'none',
-                      justifyContent: 'flex-start',
-                      px: 3,
-                      py: 2,
-                      borderRadius: 0,
-                      borderBottom: '1px solid #f0f0f0',
-                      '&:hover': {
-                        bgcolor: '#f5f5f5'
+                      position: 'absolute',
+                      top: '100%',
+                      right: 0,
+                      mt: 1.5,
+                      bgcolor: 'white',
+                      borderRadius: 3,
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
+                      border: '1px solid rgba(0,0,0,0.08)',
+                      zIndex: 1000,
+                      minWidth: 240,
+                      overflow: 'hidden',
+                      backdropFilter: 'blur(10px)',
+                      animation: 'fadeInScale 0.2s ease-out',
+                      '@keyframes fadeInScale': {
+                        '0%': {
+                          opacity: 0,
+                          transform: 'translateY(-8px) scale(0.95)'
+                        },
+                        '100%': {
+                          opacity: 1,
+                          transform: 'translateY(0) scale(1)'
+                        }
                       }
                     }}
                   >
-                    <BusinessIcon sx={{ mr: 2, fontSize: 20 }} />
-                    Sign in as Community
-                  </Button>
-                  {showUserSignIn && (
                     <Button
                       fullWidth
                       onClick={() => {
-                        navigate('/login');
+                        navigate('/community-login');
                         setLoginDropdownOpen(false);
                       }}
                       sx={{
                         textTransform: 'none',
                         justifyContent: 'flex-start',
-                        px: 3,
-                        py: 2,
+                        px: 1.5,
+                        py: 1.5,
                         borderRadius: 0,
+                        color: '#0F3C60',
+                        fontWeight: 500,
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease',
                         '&:hover': {
-                          bgcolor: '#f5f5f5'
+                          bgcolor: 'hsla(207, 73%, 22%, 0.20)',
+                          color: '#0F3C60',
+                          transform: 'translateX(4px)',
+                          '& .MuiSvgIcon-root': {
+                            color: '#0F3C60'
+                          }
                         }
                       }}
                     >
-                      <PersonIcon sx={{ mr: 2, fontSize: 20 }} />
-                      Sign in as User
+                      <BusinessIcon sx={{
+                        mr: 1,
+                        fontSize: 22,
+                        color: '#0F3C60',
+                        transition: 'color 0.2s ease'
+                      }} />
+                      Login as Community
                     </Button>
-                  )}
-                </Box>
-              )}
+
+                    <Box sx={{
+                      height: '1px',
+                      background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+                      mx: 2
+                    }} />
+
+                    <Button
+                      fullWidth
+                      onClick={() => {
+                        navigate('/community-user-login');
+                        setLoginDropdownOpen(false);
+                      }}
+                      sx={{
+                        textTransform: 'none',
+                        justifyContent: 'flex-start',
+                        px: 1.5,
+                        py: 1.5,
+                        borderRadius: 0,
+                        color: '#0F3C60',
+                        fontWeight: 500,
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease',
+                        '&:hover': {
+                          bgcolor: 'hsla(207, 73%, 22%, 0.20)',
+                          color: '#0F3C60',
+                          transform: 'translateX(4px)',
+                          '& .MuiSvgIcon-root': {
+                            color: '#0F3C60'
+                          }
+                        }
+                      }}
+                    >
+                      <PersonIcon sx={{
+                        mr: 1,
+                        fontSize: 22,
+                        color: '#0F3C60',
+                        transition: 'color 0.2s ease'
+
+                      }} />
+                      Login as Community User
+                    </Button>
+
+                    {showUserSignIn && (
+                      <>
+                        <Box sx={{
+                          height: '1px',
+                          background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+                          mx: 2
+                        }} />
+                        <Button
+                          fullWidth
+                          onClick={() => {
+                            navigate('/login');
+                            setLoginDropdownOpen(false);
+                          }}
+                          sx={{
+                            textTransform: 'none',
+                            justifyContent: 'flex-start',
+                            px: 3,
+                            py: 2.5,
+                            borderRadius: 0,
+                            color: '#2c3e50',
+                            fontWeight: 500,
+                            fontSize: '0.95rem',
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                              bgcolor: '#0F3C60',
+                              color: 'white',
+                              transform: 'translateX(4px)',
+                              '& .MuiSvgIcon-root': {
+                                color: 'white'
+                              }
+                            }
+                          }}
+                        >
+                          <PersonIcon sx={{
+                            mr: 2.5,
+                            fontSize: 22,
+                            color: '#4facfe',
+                            transition: 'color 0.2s ease'
+                          }} />
+                          Sign in as User
+                        </Button>
+                      </>
+                    )}
+                  </Box>
+                )}
+              </Box>
+
             </Box>
           </Box>
         </Container>
@@ -331,23 +598,36 @@ const Discovery = () => {
       {/* Hero Section */}
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography 
-            variant="h2" 
-            sx={{ 
-              fontWeight: 'bold', 
+          {/* Bell & Desk Logo */}
+          <Box sx={{ mb: 3 }}>
+            <img 
+              src="/bell-desk-logo.webp" 
+              alt="Bell & Desk" 
+              style={{ 
+                height: '80px', 
+                width: 'auto',
+                maxWidth: '300px'
+              }}
+            />
+          </Box>
+          
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 'bold',
               mb: 2,
               fontSize: { xs: '2rem', md: '3rem' }
             }}
           >
-            Discover courses
+            Bell & Desk - Discover courses
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
             or{' '}
             <Button
               variant="text"
               disabled
-              sx={{ 
-                color: '#4285f4',
+              sx={{
+                color: '#0F3C60',
                 textTransform: 'none',
                 fontSize: '1.25rem',
                 fontWeight: 400,
@@ -357,7 +637,7 @@ const Discovery = () => {
                 cursor: 'not-allowed',
                 '&:hover': {
                   backgroundColor: 'transparent',
-                  color: '#4285f4',
+                  color: '#0F3C60',
                   textDecoration: 'none'
                 }
               }}
@@ -367,11 +647,11 @@ const Discovery = () => {
           </Typography>
 
           {/* Search Bar */}
-          <Paper 
+          <Paper
             elevation={1}
-            sx={{ 
-              maxWidth: 600, 
-              mx: 'auto', 
+            sx={{
+              maxWidth: 600,
+              mx: 'auto',
               mb: 4,
               borderRadius: '50px',
               overflow: 'hidden'
@@ -379,7 +659,7 @@ const Discovery = () => {
           >
             <TextField
               fullWidth
-              placeholder="Search for courses..."
+              placeholder="Search courses, categories, audiences, or topics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
@@ -388,8 +668,7 @@ const Discovery = () => {
                     <SearchIcon color="action" />
                   </InputAdornment>
                 ),
-                disableUnderline: true,
-                sx: { 
+                sx: {
                   '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                   py: 1.5,
                   px: 2
@@ -399,22 +678,81 @@ const Discovery = () => {
             />
           </Paper>
 
-          {/* Category Filters */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
-            {categories.map((category) => (
-              <Chip
-                key={category.value}
-                label={category.label}
-                onClick={() => setSelectedCategory(category.value)}
-                variant={selectedCategory === category.value ? 'filled' : 'outlined'}
-                color={selectedCategory === category.value ? 'primary' : 'default'}
-                sx={{ 
-                  borderRadius: '20px',
-                  px: 1,
-                  '&:hover': { bgcolor: selectedCategory === category.value ? undefined : '#f5f5f5' }
-                }}
-              />
-            ))}
+          {/* Category Filters with Slider */}
+          <Box sx={{ position: 'relative', width: '100%', maxWidth: '800px', mx: 'auto' }}>
+            {/* Left Arrow */}
+            <Button
+              onClick={() => scrollCategories('left')}
+              disabled={categoryScrollPosition === 0}
+              sx={{
+                position: 'absolute',
+                left: { xs: 0, sm: -40, md: -50 }, // shifts in for small screens
+                top: '50%',
+                transform: 'translateY(-50%)',
+                minWidth: { xs: 30, sm: 35, md: 40 }, // smaller on mobile
+                height: { xs: 40, sm: 35, md: 40 },
+                borderRadius: '50%',
+                bgcolor: 'background.paper',
+                boxShadow: 2,
+                zIndex: 2,
+                '&:hover': { bgcolor: 'action.hover' },
+                '&:disabled': { opacity: 0.3 }
+              }}
+
+            >
+              <ChevronLeftIcon />
+            </Button>
+
+            {/* Right Arrow */}
+            <Button
+              onClick={() => scrollCategories('right')}
+              sx={{
+                position: 'absolute',
+                right: { xs: 0, sm: -40, md: -50 }, // closer on smaller screens
+                top: '50%',
+                transform: 'translateY(-50%)',
+                minWidth: { xs: 30, sm: 35, md: 40 }, // scale with screen size
+                height: { xs: 40, sm: 35, md: 40 },
+                borderRadius: '50%',
+                bgcolor: 'background.paper',
+                boxShadow: 2,
+                zIndex: 2,
+                '&:hover': { bgcolor: 'action.hover' }
+              }}
+
+            >
+              <ChevronRightIcon />
+            </Button>
+
+            {/* Scrollable Category Container */}
+            <Box
+              id="category-slider"
+              sx={{
+                display: 'flex',
+                gap: 1,
+                overflowX: 'auto',
+                scrollbarWidth: 'none', // Firefox
+                '&::-webkit-scrollbar': { display: 'none' }, // Chrome/Safari
+                px: 1,
+                py: 1
+              }}
+            >
+              {categories.map((category) => (
+                <Chip
+                  key={category.value}
+                  label={category.label}
+                  onClick={() => setSelectedCategory(category.value)}
+                  variant={selectedCategory === category.value ? 'filled' : 'outlined'}
+                  color={selectedCategory === category.value ? 'primary' : 'default'}
+                  sx={{
+                    borderRadius: '20px',
+                    px: 1,
+                    flexShrink: 0, // Prevent chips from shrinking
+                    '&:hover': { bgcolor: selectedCategory === category.value ? undefined : '#f5f5f5' }
+                  }}
+                />
+              ))}
+            </Box>
           </Box>
         </Box>
 
@@ -438,31 +776,35 @@ const Discovery = () => {
 
         {/* Communities Grid - Force 3 cards per row */}
         {!loading && !error && (
-          <Box 
-            sx={{ 
+          <Box
+            id="courses-container"
+            sx={{
               display: 'grid',
               gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(3, 1fr)',
-                lg: 'repeat(3, 1fr)',
-                xl: 'repeat(3, 1fr)'
+                xs: '1fr',              // 1 column on mobile
+                sm: 'repeat(2, 1fr)',   // 2 columns on small screens
+                md: 'repeat(3, 1fr)',   // 3 columns on medium and up
               },
-              gap: 3,
+              gap: { xs: 2, sm: 2.5, md: 3 }, // adjust spacing per screen size
               maxWidth: '1400px',
-              mx: 'auto'
+              mx: 'auto',
+              alignItems: 'start' // cards align at the top
             }}
+
           >
-            {filteredCommunities.map((community, index) => (
-              <Card 
+            {currentItems.map((community, index) => (
+              <Card
                 key={community.id || index}
-                sx={{ 
-                  height: '100%',
+                onClick={() => handleCourseClick(community)}
+                sx={{
+                  // minHeight: '420px',
+                  // height: expandedDescriptions[community.id] ? 'auto' : '420px', // Dynamic height
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: 3,
                   overflow: 'hidden',
-                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  transition: 'transform 0.2s, box-shadow 0.2s, height 0.3s ease-in-out',
+                  cursor: 'pointer',
                   '&:hover': {
                     transform: 'translateY(-4px)',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
@@ -489,58 +831,141 @@ const Discovery = () => {
                     zIndex: 1
                   }}
                 >
-                  #{index + 1}
+                  #{startIndex + index + 1}
                 </Box>
 
-                <CardMedia
-                  component="img"
-                  height="160"
-                  image={(() => {
-                    if (!community.thumbnail || community.thumbnail.trim() === '') {
-                      return `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
-                    }
-                    
-                    // If it's a data URL, use it directly
-                    if (community.thumbnail.startsWith('data:')) {
-                      return community.thumbnail;
-                    }
-                    
-                    // If it's a localhost URL, replace with production URL
-                    if (community.thumbnail.includes('localhost')) {
-                      const filename = community.thumbnail.split('/').pop();
-                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
-                    }
-                    
-                    // If it's already a full production URL, use it directly
-                    if (community.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
-                      return community.thumbnail;
-                    }
-                    
-                    // If it starts with /uploads, construct the full URL
-                    if (community.thumbnail.startsWith('/uploads/')) {
-                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
-                    }
-                    
-                    // If it's just a filename, add /uploads/ prefix
-                    return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
-                  })()}
-                  alt={community.title}
-                  sx={{
-                    objectFit: 'cover',
-                    objectPosition: 'center'
-                  }}
-                  onError={(e) => {
-                    console.error('🖼️ Discovery: Thumbnail failed to load for', community.title, ':', e.target.src);
-                    e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(community.title)}`;
-                  }}
-                />
-                
-                <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar 
-                      sx={{ 
-                        width: 24, 
-                        height: 24, 
+                <Box sx={{ position: 'relative' }}>
+                  <CardMedia
+                    component="img"
+                    height="160"
+                    image={(() => {
+                      // If no thumbnail, create a custom SVG placeholder
+                      if (!community.thumbnail || community.thumbnail.trim() === '') {
+                        const title = community.title || 'Course';
+                        const category = community.category || 'Education';
+                        const truncatedTitle = title.length > 25 ? title.substring(0, 25) + '...' : title;
+
+                        const svgContent = `
+                          <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                              <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#34a853;stop-opacity:1" />
+                              </linearGradient>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#grad)"/>
+                            <text x="50%" y="45%" font-family="Arial, sans-serif" font-size="18" font-weight="bold" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  text-shadow="2px 2px 4px rgba(0,0,0,0.5)">
+                              ${truncatedTitle}
+                            </text>
+                            <text x="50%" y="65%" font-family="Arial, sans-serif" font-size="12" 
+                                  text-anchor="middle" dominant-baseline="middle" fill="white" 
+                                  opacity="0.9">
+                              ${category}
+                            </text>
+                            <circle cx="50%" cy="80%" r="8" fill="white" opacity="0.3"/>
+                            <polygon points="46%,78% 46%,82% 50%,80%" fill="white" opacity="0.7"/>
+                          </svg>
+                        `;
+                        return `data:image/svg+xml;base64,${btoa(svgContent)}`;
+                      }
+
+                      // If it's a data URL, use it directly
+                      if (community.thumbnail.startsWith('data:')) {
+                        return community.thumbnail;
+                      }
+
+                      // If it's already a full URL (http/https), use it directly
+                      if (community.thumbnail.startsWith('http')) {
+                        return community.thumbnail;
+                      }
+
+                      // If it's a localhost URL, replace with production URL
+                      if (community.thumbnail.includes('localhost')) {
+                        const filename = community.thumbnail.split('/').pop();
+                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
+                      }
+
+                      // If it starts with /uploads, construct the full URL
+                      if (community.thumbnail.startsWith('/uploads/')) {
+                        return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
+                      }
+
+                      // If it's just a filename, add /uploads/ prefix
+                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${community.thumbnail}`;
+                    })()}
+                    alt={community.title}
+                    sx={{
+                      objectFit: 'cover',
+                      objectPosition: 'center'
+                    }}
+                    onError={(e) => {
+                      // If external thumbnail fails, show a simple fallback
+                      e.target.style.display = 'none';
+                      const fallbackDiv = e.target.parentElement.querySelector('.thumbnail-fallback');
+                      if (!fallbackDiv) {
+                        const newFallback = document.createElement('div');
+                        newFallback.className = 'thumbnail-fallback';
+                        newFallback.style.cssText = `
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          height: 160px;
+                          background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+                          color: white;
+                          font-weight: bold;
+                          font-size: 14px;
+                          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                          text-align: center;
+                          padding: 10px;
+                          word-break: break-word;
+                        `;
+                        newFallback.textContent = community.title;
+                        e.target.parentElement.appendChild(newFallback);
+                      }
+                    }}
+                  />
+
+                  {/* Play Button Overlay */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: 50,
+                      height: 50,
+                      borderRadius: '50%',
+                      background: 'rgba(0,0,0,0.7)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s ease',
+                      opacity: 0,
+                      '&:hover': {
+                        opacity: 1,
+                        transform: 'translate(-50%, -50%) scale(1.1)'
+                      }
+                    }}
+                  >
+                    <PlayIcon sx={{ color: 'white', fontSize: 24, ml: 0.5 }} />
+                  </Box>
+                </Box>
+
+                <CardContent sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  p: 3,
+                  height: '100%',
+                  minHeight: 0 // Allow content to shrink if needed
+                }}>
+                  {/* Title Section */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, flexShrink: 0, minHeight: '64px' }}>
+                    <Avatar
+                      sx={{
+                        width: 24,
+                        height: 24,
                         mr: 1,
                         bgcolor: 'primary.main',
                         fontSize: '0.75rem'
@@ -552,116 +977,303 @@ const Discovery = () => {
                       {community.title}
                     </Typography>
                   </Box>
-                  
-                  <Typography 
-                    variant="body2" 
-                    color="text.secondary" 
-                    sx={{ mb: 3, lineHeight: 1.5 }}
-                  >
-                    {community.description}
-                  </Typography>
-                  
-                  {/* Course Tags */}
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                    {/* Target Audience Tag */}
-                    {community.targetAudience && (
-                      <Chip
-                        label={community.targetAudience}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: '#e0e0e0',
-                          color: '#666',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
-                    
-                    {/* Category Tag */}
-                    {community.category && (
-                      <Chip
-                        label={community.category}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: '#4285f4',
-                          color: '#4285f4',
-                          backgroundColor: '#4285f415',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
-                    
-                    {/* Course Type Tag */}
-                    {community.contentType && (
-                      <Chip
-                        icon={community.contentType === 'video' ? <PlayIcon /> : <TextIcon />}
-                        label={community.contentType === 'video' ? 'Video' : 'Text'}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: community.contentType === 'video' ? '#4285f4' : '#34a853',
-                          color: community.contentType === 'video' ? '#4285f4' : '#34a853',
-                          backgroundColor: community.contentType === 'video' ? '#4285f415' : '#34a85315',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
-                    
-                    {/* Sub Type Tag */}
-                    {community.subType && (
-                      <Chip
-                        label={community.subType}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          fontSize: '0.75rem',
-                          height: 24,
-                          borderColor: '#9c27b0',
-                          color: '#9c27b0',
-                          backgroundColor: '#9c27b015',
-                          '& .MuiChip-label': {
-                            px: 1
-                          }
-                        }}
-                      />
-                    )}
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <PeopleIcon sx={{ fontSize: '1rem', mr: 0.5, color: 'text.secondary' }} />
-                      <Typography variant="body2" color="text.secondary">
-                        {community.chapters?.length || 0} Chapters
-                      </Typography>
-                    </Box>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontWeight: 'bold',
-                        color: 'success.main'
+
+                  {/* Description Section - Flexible */}
+                  <Box sx={{
+                    mb: 2,
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    minHeight: '90px' // Allow this section to grow/shrink
+                  }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        lineHeight: 1.5,
+                        display: '-webkit-box',
+                        WebkitLineClamp: expandedDescriptions[community.id] ? 'none' : 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        transition: 'all 0.3s ease-in-out',
+                        mb: expandedDescriptions[community.id] ? 1 : 0
                       }}
                     >
-                      Free
+                      {community.description}
                     </Typography>
+
+                    {/* View More/Less Button */}
+                    {community.description && community.description.length > 120 && (
+                      <Button
+                        onClick={(e) => toggleDescription(community.id, e)}
+                        size="small"
+                        sx={{
+                          alignSelf: 'flex-start',
+                          mt: 1,
+                          p: 0,
+                          minWidth: 'auto',
+                          fontSize: '0.75rem',
+                          color: 'primary.main',
+                          textTransform: 'none',
+                          transition: 'all 0.2s ease',
+                          flexShrink: 0, // Don't shrink the button
+                          '&:hover': {
+                            backgroundColor: 'transparent',
+                            textDecoration: 'underline',
+                            color: 'primary.dark'
+                          }
+                        }}
+                      >
+                        {expandedDescriptions[community.id] ? 'View Less' : 'View More'}
+                      </Button>
+                    )}
+                  </Box>
+
+                  {/* Bottom Section - Fixed at bottom */}
+                  <Box sx={{
+                    mt: 'auto', // Push to bottom
+                    flexShrink: 0, // Don't shrink this section
+
+                  }}>
+                    {/* Course Tags */}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2, minHeight: '56px' }}>
+                      {/* Target Audience Tag */}
+                      {community.targetAudience && (
+                        <Chip
+                          label={community.targetAudience}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: '#e0e0e0',
+                            color: '#666',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
+
+                      {/* Category Tag */}
+                      {community.category && (
+                        <Chip
+                          label={community.category}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: '#0F3C60',
+                            color: '#0F3C60',
+                            backgroundColor: '#0F3C6015',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
+
+                      {/* Course Type Tag */}
+                      {community.contentType && (
+                        <Chip
+                          icon={community.contentType === 'video' ? <PlayIcon /> : <TextIcon />}
+                          label={community.contentType === 'video' ? 'Video' : 'Text'}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: community.contentType === 'video' ? '#0F3C60' : '#34a853',
+                            color: community.contentType === 'video' ? '#0F3C60' : '#34a853',
+                            backgroundColor: community.contentType === 'video' ? '#0F3C6015' : '#34a85315',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
+
+                      {/* Sub Type Tag */}
+                      {community.subType && (
+                        <Chip
+                          label={community.subType}
+                          size="small"
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            height: 24,
+                            borderColor: '#9c27b0',
+                            color: '#9c27b0',
+                            backgroundColor: '#9c27b015',
+                            '& .MuiChip-label': {
+                              px: 1
+                            }
+                          }}
+                        />
+                      )}
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <PeopleIcon sx={{ fontSize: '1rem', mr: 0.5, color: 'text.secondary' }} />
+                        <Typography variant="body2" color="text.secondary">
+                          {community.chapters?.length || 0} Chapters
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 'bold',
+                          color: 'success.main'
+                        }}
+                      >
+                        Free
+                      </Typography>
+                    </Box>
+
+                    {/* Click to Preview Button */}
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<PlayIcon />}
+                      sx={{
+                        textTransform: 'none',
+                        borderRadius: 2,
+                        borderColor: '#0F3C60',
+                        color: '#0F3C60',
+                        '&:hover': {
+                          borderColor: '#3367d6',
+                          backgroundColor: '#0F3C6015'
+                        }
+                      }}
+                    >
+                      View Preview
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>
             ))}
           </Box>
         )}
+
+        {/* Footer with Pagination, Results Summary, and Navigation */}
+        {!loading && !error && filteredCommunities.length > 0 && (
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mt: 4,
+            mb: 2,
+            px: 3,
+            py: 2,
+            backgroundColor: '#f8f9fa',
+            borderRadius: 2,
+            border: '1px solid #e9ecef'
+          }}>
+            {/* Left side - Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                size="large"
+                showFirstButton
+                showLastButton
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    fontSize: '1rem',
+                    fontWeight: 500,
+                    '&.Mui-selected': {
+                      backgroundColor: '#0F3C60',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: '#0F3C60',
+                        opacity: 0.9
+                      }
+                    },
+                    '&:hover': {
+                      backgroundColor: '#0F3C6015',
+                      color: '#0F3C60'
+                    }
+                  }
+                }}
+              />
+            )}
+
+            {/* Center - Results Summary */}
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#6c757d',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                flex: 1,
+                textAlign: 'center'
+              }}
+            >
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredCommunities.length)} of {filteredCommunities.length} courses
+            </Typography>
+
+            {/* Right side - Navigation Links */}
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 3,
+              alignItems: 'center'
+            }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Community
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Affiliates
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Support
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Careers
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
 
         {/* No Results */}
         {!loading && !error && filteredCommunities.length === 0 && (
@@ -676,6 +1288,141 @@ const Discovery = () => {
         )}
       </Container>
 
+      {/* Login/Signup Modal */}
+      <Dialog
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '16px',
+            padding: '24px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#0F3C60' }}>
+            Join Our Community! 🚀
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#6c757d', mt: 1 }}>
+            Sign up to access exclusive courses and connect with like-minded learners
+          </Typography>
+        </DialogTitle>
+        
+        <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setShowLoginModal(false);
+                navigate('/community-user-signup');
+              }}
+              sx={{
+                py: 1.5,
+                borderRadius: '12px',
+                background: '#0F3C60',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  background: '#0F3C60',
+                  opacity: 0.9,
+                }
+              }}
+            >
+              Sign Up Now
+            </Button>
+            
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setShowLoginModal(false);
+                navigate('/community-user-login');
+              }}
+              sx={{
+                py: 1.5,
+                borderRadius: '12px',
+                borderColor: '#0F3C60',
+                color: '#0F3C60',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  borderColor: '#0F3C60',
+                  backgroundColor: 'rgba(15, 60, 96, 0.04)',
+                }
+              }}
+            >
+              Already have an account? Log In
+            </Button>
+
+            {/* Divider */}
+            <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
+              <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+              <Typography variant="body2" sx={{ mx: 2, color: '#666' }}>
+                or
+              </Typography>
+              <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+            </Box>
+
+            {/* Google Sign In Button */}
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              sx={{
+                py: 1.5,
+                fontSize: '14px',
+                textTransform: 'none',
+                borderRadius: '12px',
+                borderColor: '#dadce0',
+                color: '#3c4043',
+                backgroundColor: '#fff',
+                '&:hover': {
+                  backgroundColor: '#f8f9fa',
+                  borderColor: '#dadce0',
+                },
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+              startIcon={
+                <Box
+                  component="img"
+                  src={googleLogo}
+                  alt="Google"
+                  sx={{ width: 20, height: 20 }}
+                />
+              }
+            >
+              Sign in with Google
+            </Button>
+          </Box>
+        </DialogContent>
+        
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button
+            onClick={() => setShowLoginModal(false)}
+            sx={{
+              color: '#6c757d',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: 'rgba(108, 117, 125, 0.04)',
+              }
+            }}
+          >
+            Maybe Later
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Course Login Modal */}
+      <CourseLoginModal
+        open={courseModalOpen}
+        onClose={() => setCourseModalOpen(false)}
+        courseData={selectedCourse}
+      />
 
     </Box>
   );

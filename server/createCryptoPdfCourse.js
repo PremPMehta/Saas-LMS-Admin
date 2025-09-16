@@ -20,16 +20,16 @@ async function createCryptoPdfCourse() {
 
     console.log('✅ Found community:', community.name);
 
-    // Create the Crypto PDF course
-    const cryptoPdfCourse = new Course({
-      title: 'Crypto PDF',
-      description: 'Comprehensive cryptocurrency learning materials in PDF format',
-      thumbnail: 'https://via.placeholder.com/300x200/34a853/ffffff?text=Crypto+PDF',
+    // Create the Crypto Video course
+    const cryptoVideoCourse = new Course({
+      title: 'Cryptocurrency Mastery Course',
+      description: 'Comprehensive cryptocurrency learning with video tutorials covering Bitcoin, Ethereum, DeFi, and blockchain technology',
+      thumbnail: 'https://via.placeholder.com/300x200/34a853/ffffff?text=Crypto+Course',
       status: 'published',
       community: community._id,
       category: 'Cryptocurrency',
       targetAudience: 'Beginners to Advanced',
-      contentType: 'text', // Using 'text' since 'pdf' is not in enum
+      contentType: 'video',
       instructor: community._id, // Using community ID as instructor for now
       chapters: [
         {
@@ -39,25 +39,31 @@ async function createCryptoPdfCourse() {
             {
               title: 'Introduction to Cryptocurrency',
               description: 'What is cryptocurrency and how does it work?',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=1YyAzVmP9xQ',
+              videoUrl: 'https://www.youtube.com/watch?v=1YyAzVmP9xQ',
+              videoType: 'youtube',
+              duration: '8:45',
               completed: false
             },
             {
               title: 'Blockchain Technology Explained',
               description: 'Understanding the technology behind cryptocurrencies',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=SSo_EIwHSd4',
+              videoUrl: 'https://www.youtube.com/watch?v=SSo_EIwHSd4',
+              videoType: 'youtube',
+              duration: '6:00',
               completed: false
             },
             {
               title: 'Bitcoin Basics',
               description: 'The first and most popular cryptocurrency',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=Gc2i6L0xqpw',
+              videoUrl: 'https://www.youtube.com/watch?v=Gc2i6L0xqpw',
+              videoType: 'youtube',
+              duration: '9:15',
               completed: false
             }
           ]
@@ -69,25 +75,31 @@ async function createCryptoPdfCourse() {
             {
               title: 'Crypto Trading Fundamentals',
               description: 'Basic trading concepts and strategies',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=1YyAzVmP9xQ',
+              videoUrl: 'https://www.youtube.com/watch?v=1YyAzVmP9xQ',
+              videoType: 'youtube',
+              duration: '12:30',
               completed: false
             },
             {
               title: 'Risk Management in Crypto',
               description: 'How to manage risks when investing in cryptocurrencies',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=SSo_EIwHSd4',
+              videoUrl: 'https://www.youtube.com/watch?v=SSo_EIwHSd4',
+              videoType: 'youtube',
+              duration: '10:45',
               completed: false
             },
             {
               title: 'Portfolio Diversification',
               description: 'Building a diversified cryptocurrency portfolio',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=Gc2i6L0xqpw',
+              videoUrl: 'https://www.youtube.com/watch?v=Gc2i6L0xqpw',
+              videoType: 'youtube',
+              duration: '11:20',
               completed: false
             }
           ]
@@ -99,25 +111,31 @@ async function createCryptoPdfCourse() {
             {
               title: 'DeFi and Smart Contracts',
               description: 'Decentralized Finance and smart contract technology',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=1YyAzVmP9xQ',
+              videoUrl: 'https://www.youtube.com/watch?v=1YyAzVmP9xQ',
+              videoType: 'youtube',
+              duration: '15:30',
               completed: false
             },
             {
               title: 'NFTs and Digital Assets',
               description: 'Non-Fungible Tokens and digital asset ownership',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=SSo_EIwHSd4',
+              videoUrl: 'https://www.youtube.com/watch?v=SSo_EIwHSd4',
+              videoType: 'youtube',
+              duration: '13:45',
               completed: false
             },
             {
               title: 'Future of Cryptocurrency',
               description: 'Emerging trends and future developments',
-              type: 'PDF',
-              content: '/sample-lorem-ipsum.pdf', // Local PDF file for testing
-              duration: 'PDF Document',
+              type: 'VIDEO',
+              content: 'https://www.youtube.com/watch?v=Gc2i6L0xqpw',
+              videoUrl: 'https://www.youtube.com/watch?v=Gc2i6L0xqpw',
+              videoType: 'youtube',
+              duration: '14:20',
               completed: false
             }
           ]
@@ -126,20 +144,20 @@ async function createCryptoPdfCourse() {
     });
 
     // Save the course
-    await cryptoPdfCourse.save();
-    console.log('✅ Crypto PDF course created successfully!');
-    console.log('📊 Course ID:', cryptoPdfCourse._id);
-    console.log('📚 Chapters:', cryptoPdfCourse.chapters.length);
-    console.log('📄 Total PDFs:', cryptoPdfCourse.chapters.reduce((total, chapter) => total + chapter.videos.length, 0));
+    await cryptoVideoCourse.save();
+    console.log('✅ Cryptocurrency Mastery course created successfully!');
+    console.log('📊 Course ID:', cryptoVideoCourse._id);
+    console.log('📚 Chapters:', cryptoVideoCourse.chapters.length);
+    console.log('🎥 Total Videos:', cryptoVideoCourse.chapters.reduce((total, chapter) => total + chapter.videos.length, 0));
 
     // Verify the course was created
-    const savedCourse = await Course.findById(cryptoPdfCourse._id);
+    const savedCourse = await Course.findById(cryptoVideoCourse._id);
     console.log('🔍 Verification - Course title:', savedCourse.title);
     console.log('🔍 Verification - Chapters count:', savedCourse.chaptersCount);
     console.log('🔍 Verification - Videos count:', savedCourse.videosCount);
 
   } catch (error) {
-    console.error('❌ Error creating Crypto PDF course:', error);
+    console.error('❌ Error creating Cryptocurrency Mastery course:', error);
   } finally {
     // Close the connection
     await mongoose.connection.close();

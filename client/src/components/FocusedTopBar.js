@@ -1,21 +1,71 @@
 import React, { useState } from 'react';
-import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import {
   WbSunny as SunIcon,
   DarkMode as DarkIcon,
   Person as PersonIcon,
   Logout as LogoutIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { communityAuthApi } from '../utils/communityAuthApi';
 
 const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   
-  // Get community data
+  // Check if user is a community user (student) or admin
+  const communityUserData = localStorage.getItem('communityUser');
+  const isCommunityUser = !!communityUserData;
+  
+  // Debug logging
+  console.log('🔍 FocusedTopBar Debug:', {
+    communityUserData: communityUserData ? 'present' : 'null',
+    isCommunityUser,
+    communityUserToken: localStorage.getItem('communityUserToken') ? 'present' : 'null',
+    communityToken: localStorage.getItem('communityToken') ? 'present' : 'null'
+  });
+  
+  // Get appropriate data based on user type
   const communityData = communityAuthApi.getCurrentCommunity();
+  const studentData = isCommunityUser ? JSON.parse(communityUserData) : null;
+  
+  console.log('🔍 FocusedTopBar User Data:', {
+    studentData: studentData ? { firstName: studentData.firstName, lastName: studentData.lastName, email: studentData.email } : null,
+    communityData: communityData ? { name: communityData.name, ownerEmail: communityData.ownerEmail } : null
+  });
+
+  // Function to get page title based on current route
+  const getPageTitle = () => {
+    const path = location.pathname;
+    
+    // Community Admin routes
+    if (path.includes('/community-dashboard')) return 'Bell & Desk - Dashboard';
+    if (path.includes('/community-courses')) return 'Bell & Desk - Courses';
+    if (path.includes('/community-users')) return 'Bell & Desk - Community Users';
+    if (path.includes('/community-admins')) return 'Bell & Desk - Community Admins';
+    if (path.includes('/community-settings')) return 'Bell & Desk - Settings';
+    
+    // Student routes
+    if (path.includes('/student-dashboard')) return 'Bell & Desk - My Dashboard';
+    if (path.includes('/student-courses')) return 'Bell & Desk - My Courses';
+    if (path.includes('/discovery')) return 'Bell & Desk - Discover Courses';
+    if (path.includes('/course-viewer')) return 'Bell & Desk - Course Viewer';
+    if (path.includes('/discover-course-viewer')) return 'Bell & Desk - Course Viewer';
+    
+    // General routes
+    if (path.includes('/dashboard')) return 'Bell & Desk - Dashboard';
+    if (path.includes('/courses')) return 'Bell & Desk - Courses';
+    if (path.includes('/users')) return 'Bell & Desk - Users';
+    if (path.includes('/academies')) return 'Bell & Desk - Academies';
+    if (path.includes('/plans')) return 'Bell & Desk - Plans';
+    if (path.includes('/settings')) return 'Bell & Desk - Settings';
+    if (path.includes('/profile')) return 'Bell & Desk - Profile';
+    
+    // Default fallback
+    return isCommunityUser ? 'Bell & Desk - Courses' : 'Bell & Desk - Community';
+  };
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -37,46 +87,54 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
 
   const handleLogout = () => {
     handleMenuClose();
-    communityAuthApi.logout();
-    navigate('/community-login');
+    if (isCommunityUser) {
+      // Clear student data and redirect to discovery page
+      localStorage.removeItem('communityUserToken');
+      localStorage.removeItem('communityUser');
+      navigate('/discovery');
+    } else {
+      // Clear admin data and redirect to discovery
+      communityAuthApi.logout();
+      navigate('/discovery');
+    }
   };
 
   return (
     <Box sx={{
       height: 70, // Increased height for better proportions
       background: darkMode ? '#2d2d2d' : '#ffffff',
-      borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+      // borderBottom: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       px: 3,
       position: 'fixed',
       top: 0,
-      left: 80, // Start right after sidebar (80px width)
+      left: 240, // Start right after sidebar (240px width)
       right: 0, // Extend to right edge
       zIndex: 1000,
     }}>
-      {/* Left side - Dark/Light Mode Toggle - HIDDEN */}
-      {/* <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Tooltip title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
-          <IconButton
-            onClick={toggleDarkMode}
-            sx={{
-              color: darkMode ? '#ffffff' : '#000000',
-              backgroundColor: darkMode ? '#404040' : '#f0f0f0',
-              '&:hover': {
-                backgroundColor: darkMode ? '#505050' : '#e0e0e0',
-                transform: 'scale(1.05)',
-              },
-              transition: 'all 0.2s ease',
-            }}
-          >
-            {darkMode ? <SunIcon /> : <DarkIcon />}
-          </IconButton>
-        </Tooltip>
-      </Box> */}
+      {/* Left side - Page Title */}
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Typography 
+          variant="h5" 
+          component="h1"
+          sx={{
+            fontWeight: 700,
+            color: 'text.primary',
+            fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
+            letterSpacing: '-0.5px',
+            // background: darkMode 
+            //   ? 'linear-gradient(45deg, #ffffff, #e0e0e0)' 
+            //   : 'linear-gradient(45deg, #0F3C60, #1976d2)',
+            backgroundClip: 'text',            // textShadow: darkMode ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          {getPageTitle()}
+        </Typography>
+      </Box>
 
-      {/* Right side - Community Profile */}
+      {/* Right side - User Profile */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Box sx={{ textAlign: 'right' }}>
           <Box sx={{ 
@@ -85,18 +143,30 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             color: darkMode ? '#ffffff' : '#000000',
             lineHeight: 1.2
           }}>
-            {communityData?.name || 'Community'}
+            {isCommunityUser ? 
+              (studentData?.firstName && studentData?.lastName ? 
+                `${studentData.firstName} ${studentData.lastName}` : 
+                (studentData?.firstName || studentData?.email || 'Student')
+              ) : 
+              (communityData?.name || 'Community')
+            }
           </Box>
           <Box sx={{ 
             fontSize: '0.75rem', 
             color: darkMode ? '#b0b0b0' : '#666666',
             lineHeight: 1.2
           }}>
-            {communityData?.ownerEmail || 'Admin'}
+            {isCommunityUser ? 'Student' : (communityData?.ownerEmail || 'Admin')}
           </Box>
         </Box>
         
-        <Tooltip title={`${communityData?.name || 'Community'} Profile`}>
+        <Tooltip title={`${isCommunityUser ? 
+          (studentData?.firstName && studentData?.lastName ? 
+            `${studentData.firstName} ${studentData.lastName}` : 
+            (studentData?.firstName || studentData?.email || 'Student')
+          ) : 
+          (communityData?.name || 'Community')
+        } Profile`}>
           <IconButton
             onClick={handleAvatarClick}
             sx={{
@@ -109,7 +179,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
           >
             <Avatar
               sx={{
-                bgcolor: '#4285f4',
+                bgcolor: isCommunityUser ? '#34a853' : '#0F3C60', // Green for students, blue for admins
                 width: 50, // Match sidebar circle size
                 height: 50, // Match sidebar circle size
                 fontSize: '1.2rem', // Match sidebar font size
@@ -118,11 +188,14 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
                 '&:hover': {
-                  boxShadow: '0 4px 12px rgba(66, 133, 244, 0.3)',
+                  boxShadow: isCommunityUser ? '0 4px 12px rgba(52, 168, 83, 0.3)' : '0 4px 12px rgba(15, 60, 96, 0.3)',
                 }
               }}
             >
-              {communityData?.name?.charAt(0) || 'C'}
+              {isCommunityUser ? 
+                (studentData?.firstName?.charAt(0) || studentData?.email?.charAt(0) || 'S') : 
+                (communityData?.name?.charAt(0) || 'C')
+              }
             </Avatar>
           </IconButton>
         </Tooltip>
@@ -203,7 +276,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
       >
         <MenuItem onClick={handleProfile} sx={{ 
           '&:hover .MuiListItemIcon-root': { 
-            color: '#4285f4' 
+            color: '#0F3C60' 
           } 
         }}>
           <ListItemIcon>

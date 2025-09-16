@@ -64,10 +64,10 @@ const UnifiedSidebar = () => {
   const handleLogout = () => {
     if (isCommunityUser) {
       communityAuthApi.logout();
-      navigate('/community-login');
+      navigate('/discovery');
     } else {
       logout();
-      navigate('/login');
+      navigate('/discovery');
     }
   };
 

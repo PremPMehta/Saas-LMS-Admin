@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
+import '../App.css';
 import {
   Box,
   Typography,
@@ -254,18 +255,14 @@ const CommunityDashboard = () => {
   ];
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: darkMode ? '#1a1a1a' : '#f8f9fa',
-      display: 'flex'
-    }}>
+    <Box className="bg-black">
       {/* Common Focused Sidebar */}
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -279,7 +276,7 @@ const CommunityDashboard = () => {
           {activeNav === 'home' ? (
             <Box>
               <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: darkMode ? '#ffffff' : '#000000', fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
-                Welcome to {communityData?.name || 'Your'} Dashboard
+                Bell & Desk - Welcome to {communityData?.name || 'Your'} Dashboard
               </Typography>
 
               <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -306,10 +303,10 @@ const CommunityDashboard = () => {
                           justifyContent: 'center',
                         }}
                       >
-                        <SchoolIcon sx={{ color: '#4285f4' }} />
+                        <SchoolIcon sx={{ color: '#0F3C60' }} />
                       </Box>
                       <Box>
-                        <Typography variant="h4" sx={{ color: '#4285f4', mb: 0 }}>
+                        <Typography variant="h4" sx={{ color: '#0F3C60', mb: 0 }}>
                           {courses.length}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -357,43 +354,6 @@ const CommunityDashboard = () => {
                   </Card>
                 </Grid>
 
-                {/* Drafts */}
-                <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                  <Card
-                    sx={{
-                      p: 3,
-                      display: 'flex',
-                      alignItems: 'center',
-                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 249, 225) 90%)',
-                      borderRadius: 3,
-                    }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
-                      <Box
-                        sx={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: '50%',
-                          bgcolor: '#fef7e0',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <EditNoteIcon sx={{ color: '#fbbc04' }} />
-                      </Box>
-                      <Box>
-                        <Typography variant="h4" sx={{ color: '#fbbc04', mb: 0 }}>
-                          {courses.filter(c => c.status === 'draft').length}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Drafts
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </Card>
-                </Grid>
-
                 {/* Archived */}
                 <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                   <Card
@@ -401,7 +361,7 @@ const CommunityDashboard = () => {
                       p: 3,
                       display: 'flex',
                       alignItems: 'center',
-                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 235, 232) 90%)',
+                      background: 'linear-gradient(45deg,rgb(255, 255, 255) 30%,rgb(255, 236, 236) 90%)',
                       borderRadius: 3,
                     }}
                   >
@@ -430,6 +390,7 @@ const CommunityDashboard = () => {
                     </Box>
                   </Card>
                 </Grid>
+
               </Grid>
 
 
@@ -442,9 +403,16 @@ const CommunityDashboard = () => {
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => {
+                      console.log('🎯 CommunityDashboard Create Course Button Clicked');
+                      console.log('🎯 communityName:', communityName);
+                      console.log('🎯 communityUrls:', communityUrls);
+                      console.log('🎯 createCourse URL:', communityUrls?.createCourse);
+                      
                       if (communityUrls) {
+                        console.log('🎯 Navigating to:', communityUrls.createCourse);
                         navigate(communityUrls.createCourse);
                       } else {
+                        console.log('🎯 Fallback: Navigating to /create-course');
                         navigate('/create-course');
                       }
                     }}
@@ -595,10 +563,32 @@ const CommunityDashboard = () => {
                 <DialogActions>
                   <Button onClick={() => setOpenCourseDialog(false)}>Close</Button>
                   <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setOpenCourseDialog(false);
+                      if (communityUrls) {
+                        navigate(communityUrls.courseViewer(selectedCourse._id || selectedCourse.id));
+                      } else {
+                        navigate(`/course-viewer/${selectedCourse._id || selectedCourse.id}`);
+                      }
+                    }}
+                    sx={{
+                      borderColor: '#0F3C60',
+                      color: '#0F3C60',
+                      '&:hover': { 
+                        borderColor: '#3367d6',
+                        color: '#3367d6',
+                        backgroundColor: 'rgba(15, 60, 96, 0.04)'
+                      }
+                    }}
+                  >
+                    View Course
+                  </Button>
+                  <Button
                     variant="contained"
                     onClick={() => handleEditCourse(selectedCourse._id || selectedCourse.id)}
                     sx={{
-                      background: '#4285f4',
+                      background: '#0F3C60',
                       '&:hover': { background: '#3367d6' }
                     }}
                   >

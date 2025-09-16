@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import ProtectedRoute from '../components/ProtectedRoute';
 import RoleBasedRoute from '../components/RoleBasedRoute';
 import CommunityRoute from '../components/CommunityRoute';
@@ -22,7 +22,19 @@ import Courses from '../pages/Courses';
 import CourseViewer from '../pages/CourseViewer';
 import CommunityAdmins from '../pages/CommunityAdmins';
 import CommunityLogin from '../pages/CommunityLogin';
+import CommunityUserSignup from '../pages/CommunityUserSignup';
+import CommunityUsers from '../pages/CommunityUsers';
+import CommunityUserDashboard from '../pages/CommunityUserDashboard';
+import CommunityUserLogin from '../pages/CommunityUserLogin';
+import StudentCourses from '../pages/StudentCourses';
+import DiscoverCourseViewer from '../pages/DiscoverCourseViewer';
 import TestPage from '../pages/TestPage';
+
+// Component to handle legacy route redirects with community name
+const LegacyRedirect = ({ to }) => {
+  const { communityName } = useParams();
+  return <Navigate to={`/${communityName}/${to}`} replace />;
+};
 
 const AppRoutes = () => {
   return (
@@ -80,6 +92,18 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/community-users"
+        element={
+          <ProtectedRoute>
+            <RoleBasedRoute allowedRoles={['admin']}>
+              <MainLayout>
+                <CommunityUsers />
+              </MainLayout>
+            </RoleBasedRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/analytics"
         element={
           <ProtectedRoute>
@@ -116,11 +140,14 @@ const AppRoutes = () => {
         }
       />
       
-      {/* Client-side routes - no protection needed */}
+      {/* Client-side routes - no protection needed - MUST come before community-specific routes */}
       <Route path="/discovery" element={<Discovery />} />
+      <Route path="/discover-courseViewer/:courseId?" element={<DiscoverCourseViewer />} />
       <Route path="/create-community" element={<CreateCommunity />} />
       <Route path="/community-setup" element={<CommunitySetup />} />
       <Route path="/community-login" element={<CommunityLogin />} />
+      <Route path="/community-user-signup" element={<CommunityUserSignup />} />
+      <Route path="/community-user-login" element={<CommunityUserLogin />} />
       <Route path="/test" element={<TestPage />} />
       
       {/* Legacy routes - redirect to community-specific URLs */}
@@ -132,45 +159,101 @@ const AppRoutes = () => {
       <Route path="/courses" element={<Navigate to="/community-login" replace />} />
       <Route path="/course-viewer/:courseId?" element={<Navigate to="/community-login" replace />} />
       
-      {/* Community-specific routes */}
-      <Route path="/:communityName/dashboard" element={
+      {/* Community Admin routes - these use :communityName parameter */}
+      <Route path="/:communityName/admin/dashboard" element={
         <CommunityRoute>
           <CommunityDashboard />
         </CommunityRoute>
       } />
-      <Route path="/:communityName/courses" element={
+      <Route path="/:communityName/admin/courses" element={
         <CommunityRoute>
           <Courses />
         </CommunityRoute>
       } />
-      <Route path="/:communityName/course-viewer/:courseId?" element={
+      <Route path="/:communityName/admin/course-viewer/:courseId?" element={
         <CommunityRoute>
           <CourseViewer />
         </CommunityRoute>
       } />
-      <Route path="/:communityName/create-course" element={
+      <Route path="/:communityName/admin/create-course" element={
         <CommunityRoute>
           <CreateCourse />
         </CommunityRoute>
       } />
-      <Route path="/:communityName/edit-course/:courseId" element={
+      <Route path="/:communityName/admin/edit-course/:courseId" element={
         <CommunityRoute>
           <EditCourse />
         </CommunityRoute>
       } />
-      <Route path="/:communityName/admins" element={
+      <Route path="/:communityName/admin/admins" element={
         <CommunityRoute>
           <CommunityAdmins />
         </CommunityRoute>
       } />
-      <Route path="/:communityName/students" element={
+      <Route path="/:communityName/admin/students" element={
         <CommunityRoute>
           <StudentDashboard />
         </CommunityRoute>
       } />
+      <Route path="/:communityName/admin/community-users" element={
+        <CommunityRoute>
+          <CommunityUsers />
+        </CommunityRoute>
+      } />
+      
+      {/* Simple test route without parameters - MOVED UP */}
+      <Route path="/test-simple" element={
+        <div style={{ padding: '20px', background: 'lightgreen' }}>
+          <h1>Simple Test Route Working!</h1>
+          <p>This is a simple route without parameters</p>
+        </div>
+      } />
+      
+      {/* Debug route to see what's happening */}
+      <Route path="/debug-route" element={
+        <div style={{ padding: '20px', background: 'yellow' }}>
+          <h1>Debug Route</h1>
+          <p>Current path: {window.location.pathname}</p>
+          <p>Current URL: {window.location.href}</p>
+          <p>This route should work</p>
+        </div>
+      } />
+      
+      {/* Test route to verify routing is working - BYPASS CommunityRoute */}
+      <Route path="/:communityName/admin/test-users" element={
+        <div style={{ padding: '20px', background: 'lightblue' }}>
+          <h1>Test Route Working!</h1>
+          <p>Community: {window.location.pathname}</p>
+          <p>This bypasses CommunityRoute to test if routing works</p>
+        </div>
+      } />
+
+      {/* Community User routes - separate from admin routes */}
+      <Route path="/:communityName/student/dashboard" element={
+        <CommunityRoute>
+          <CommunityUserDashboard />
+        </CommunityRoute>
+      } />
+      <Route path="/:communityName/student/courses" element={
+        <CommunityRoute>
+          <StudentCourses />
+        </CommunityRoute>
+      } />
+      <Route path="/:communityName/student/course-viewer/:courseId?" element={
+        <CommunityRoute>
+          <CourseViewer />
+        </CommunityRoute>
+      } />
+
+      {/* Legacy routes for backward compatibility - redirect to appropriate user type */}
+      <Route path="/:communityName/dashboard" element={<LegacyRedirect to="admin/dashboard" />} />
+      <Route path="/:communityName/courses" element={<LegacyRedirect to="admin/courses" />} />
+      <Route path="/:communityName/community-user-dashboard" element={<LegacyRedirect to="student/dashboard" />} />
       
       {/* Default redirect - redirect based on user role */}
       <Route path="/" element={<Navigate to="/discovery" replace />} />
+      
+      {/* Catch-all route for unmatched paths - must be last */}
       <Route path="*" element={<Navigate to="/discovery" replace />} />
     </Routes>
   );

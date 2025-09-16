@@ -3,8 +3,28 @@ import courseApi from '../utils/courseApi';
 import communityAuthApi from '../utils/communityAuthApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import { CRYPTO_CATEGORIES } from '../config/categories';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import '../App.css';
 import {
   Box,
   Container,
@@ -31,6 +51,7 @@ import {
   List,
   ListItem,
   ListItemButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -53,6 +74,10 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   FilterList as FilterIcon,
+  Archive as ArchiveIcon,
+  DragIndicator as DragIndicatorIcon,
+  Edit as EditIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 
 const Courses = () => {
@@ -61,6 +86,11 @@ const Courses = () => {
   
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
+  
+  // Check if user is a community user (student) or admin
+  const communityUserData = localStorage.getItem('communityUserData');
+  const isCommunityUser = !!communityUserData;
+  
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -83,11 +113,22 @@ const Courses = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDragDisabled, setIsDragDisabled] = useState(true); // Start with drag disabled by default
+
+  // Debug logging
+  console.log('🔍 User Debug Info:', {
+    communityUserData,
+    isCommunityUser,
+    isDragDisabled,
+    coursesCount: courses.length,
+    firstCourseId: courses[0]?._id,
+    firstCourseTitle: courses[0]?.title
+  });
 
   // Mock data for fallback
   const mockCourses = [
     {
-      _id: '1',
+      _id: '507f1f77bcf86cd799439011',
       title: 'Complete Web Development Bootcamp',
       description: 'Learn HTML, CSS, JavaScript, React, Node.js and become a full-stack developer',
       category: 'Technology',
@@ -101,7 +142,7 @@ const Courses = () => {
       updatedAt: new Date().toISOString()
     },
     {
-      _id: '2',
+      _id: '507f1f77bcf86cd799439012',
       title: 'React.js Masterclass',
       description: 'Master React.js with hooks, context, and modern development practices',
       category: 'Technology',
@@ -114,7 +155,7 @@ const Courses = () => {
       updatedAt: new Date().toISOString()
     },
     {
-      _id: '3',
+      _id: '507f1f77bcf86cd799439013',
       title: 'Node.js Backend Development',
       description: 'Build scalable backend applications with Node.js and Express',
       category: 'Technology',
@@ -244,6 +285,13 @@ const Courses = () => {
 
         // Always update with the latest data from API
         console.log('✅ Updating courses with fresh data from API');
+        console.log('🔍 REAL COURSE IDs:', normalizedCourses.map(c => ({ title: c.title, _id: c._id, id: c.id })));
+        
+        // Show alert if we have real courses
+        if (normalizedCourses.length > 0 && normalizedCourses[0]._id && normalizedCourses[0]._id.length > 10) {
+          console.log(`✅ REAL COURSES LOADED: ${normalizedCourses.length} courses with valid IDs like ${normalizedCourses[0]._id}`);
+        }
+        
         setCourses(normalizedCourses);
 
       } catch (error) {
@@ -252,6 +300,8 @@ const Courses = () => {
           // Use mock data as fallback
           console.log('⚠️ Using mock data due to API error:', error.message);
           console.log('📊 Mock courses loaded:', mockCourses.length, 'courses');
+          console.log('🚨 USING MOCK DATA - DRAG AND DROP WILL FAIL!');
+          console.log(`❌ USING MOCK DATA: ${error.message} - Drag and drop will fail!`);
           setCourses(mockCourses);
         }
       } finally {
@@ -410,6 +460,382 @@ const Courses = () => {
     setCourseToDelete(null);
   };
 
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Drag and drop handler
+  const handleDragEnd = async (event) => {
+    console.log('🔄 Drag ended:', event);
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      console.log('❌ No valid drop or same position');
+      return;
+    }
+
+    console.log('✅ Valid drag operation:', { from: active.id, to: over.id });
+    console.log('🔍 Active course data:', filteredCourses.find(course => course._id === active.id));
+    console.log('🔍 Over course data:', filteredCourses.find(course => course._id === over.id));
+
+    // Find the indices of the dragged items
+    const oldIndex = filteredCourses.findIndex(course => course._id === active.id);
+    const newIndex = filteredCourses.findIndex(course => course._id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      console.log('❌ Could not find course indices');
+      return;
+    }
+
+    // Create new course order
+    const newCourses = arrayMove(filteredCourses, oldIndex, newIndex);
+
+    // Update the courses state with new order
+    setCourses(prevCourses => {
+      const updatedCourses = [...prevCourses];
+      
+      // Find the course that was moved
+      const movedCourse = updatedCourses.find(course => course._id === active.id);
+      if (!movedCourse) return prevCourses;
+
+      // Remove the course from its old position
+      const oldCourseIndex = updatedCourses.findIndex(course => course._id === active.id);
+      updatedCourses.splice(oldCourseIndex, 1);
+
+      // Find the new position based on the filtered courses
+      const targetCourse = newCourses[newIndex];
+      const targetIndex = updatedCourses.findIndex(course => course._id === targetCourse._id);
+      
+      // Insert at the new position
+      updatedCourses.splice(targetIndex, 0, movedCourse);
+
+      return updatedCourses;
+    });
+
+    // Save the new order to the backend
+    try {
+      const communityId = localStorage.getItem('communityId') || '68bae2a8807f3a3bb8ac6307';
+      const courseOrder = newCourses.map(course => ({ 
+        id: course._id, 
+        _id: course._id,
+        title: course.title 
+      }));
+      
+      console.log('🚀 Sending reorder request:', {
+        courseOrder,
+        communityId,
+        courseCount: courseOrder.length,
+        sampleCourseId: courseOrder[0]?.id,
+        sampleCourseIdType: typeof courseOrder[0]?.id,
+        allCourseIds: courseOrder.map(c => c.id)
+      });
+      
+      const result = await courseApi.reorderCourses(courseOrder, communityId);
+      console.log('✅ Reorder API response:', result);
+      
+      console.log('✅ Course order saved to backend:', {
+        courseId: active.id,
+        from: oldIndex,
+        to: newIndex,
+        newOrder: courseOrder
+      });
+
+    } catch (error) {
+      console.error('❌ Failed to save course order:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        status: error.status,
+        response: error.response,
+        stack: error.stack
+      });
+      // Revert the local state change if backend save fails
+      setCourses(prevCourses => {
+        const revertedCourses = [...prevCourses];
+        const movedCourse = revertedCourses.find(course => course._id === active.id);
+        if (!movedCourse) return prevCourses;
+
+        // Remove from current position
+        const currentIndex = revertedCourses.findIndex(course => course._id === active.id);
+        revertedCourses.splice(currentIndex, 1);
+
+        // Insert back at original position
+        const targetCourse = filteredCourses[oldIndex];
+        const targetIndex = revertedCourses.findIndex(course => course._id === targetCourse._id);
+        revertedCourses.splice(targetIndex, 0, movedCourse);
+
+        return revertedCourses;
+      });
+      
+      alert('Failed to save course order. Please try again.');
+    }
+  };
+
+  // Sortable Course Item Component
+  const SortableCourseItem = ({ course, index }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id: course._id || course.id });
+
+    // Debug logging (only log when drag mode changes)
+    if (isDragDisabled === false) {
+      console.log('🎯 Drag Mode Enabled for:', course.title);
+    }
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+      <Grid 
+        item 
+        size={{ xs: 12, sm: 6, md: 6, lg: 4 }} 
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...(isDragDisabled ? {} : listeners)}
+      >
+        <Card sx={{
+          cursor: isDragDisabled ? 'pointer' : 'grab',
+          background: darkMode ? '#2d2d2d' : '#ffffff',
+          border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+          borderRadius: 3,
+          transition: 'all 0.3s ease',
+          overflow: 'hidden',
+          height: 520, // Fixed height for consistent alignment
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          '&:hover': {
+            transform: isDragDisabled ? 'translateY(-2px)' : 'none',
+            boxShadow: isDragDisabled ? '0 8px 25px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.1)'
+          },
+          '&:active': {
+            cursor: isDragDisabled ? 'pointer' : 'grabbing'
+          }
+        }} 
+        onClick={isDragDisabled ? () => handleViewCourse(course) : undefined}
+      >
+        
+        {/* Drag Handle Indicator - Show when reorder mode is ON */}
+        {!isDragDisabled && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              zIndex: 10,
+              backgroundColor: 'rgba(15, 60, 96, 0.9)',
+              borderRadius: '50%',
+              width: 32,
+              height: 32,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              pointerEvents: 'none' // Don't interfere with card dragging
+            }}
+          >
+            <DragIndicatorIcon fontSize="small" />
+          </Box>
+        )}
+
+        {/* View Button - Only show when reorder mode is ON */}
+        {!isDragDisabled && (
+          <Button
+            variant="contained"
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewCourse(course);
+            }}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              zIndex: 10,
+              backgroundColor: 'rgba(15, 60, 96, 0.9)',
+              color: 'white',
+              minWidth: 'auto',
+              padding: '4px 8px',
+              fontSize: '0.75rem',
+              '&:hover': {
+                backgroundColor: 'rgba(15, 60, 96, 1)'
+              }
+            }}
+          >
+            View
+          </Button>
+        )}
+
+        {/* Reorder Mode Indicator */}
+        {!isDragDisabled && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 8,
+              left: 8,
+              zIndex: 10,
+              backgroundColor: 'rgba(76, 175, 80, 0.9)',
+              color: 'white',
+              padding: '2px 6px',
+              borderRadius: 1,
+              fontSize: '0.7rem',
+              fontWeight: 'bold'
+            }}
+          >
+            DRAG TO REORDER
+          </Box>
+        )}
+
+        {/* Course Thumbnail */}
+        <Box sx={{
+          height: 200,
+          width: '100%',
+          backgroundColor: darkMode ? '#404040' : '#f5f5f5',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          position: 'relative'
+        }}>
+          {course.thumbnail ? (
+            <img
+              src={course.thumbnail}
+              alt={course.title}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+            />
+          ) : (
+            <VideoIcon sx={{ fontSize: 48, color: darkMode ? '#666' : '#999' }} />
+          )}
+        </Box>
+
+        {/* Course Content */}
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 2 }}>
+          {/* Course Title */}
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              color: darkMode ? '#ffffff' : '#333',
+              mb: 1,
+              fontSize: '1.1rem',
+              lineHeight: 1.3,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
+            {course.title}
+          </Typography>
+
+          {/* Course Description */}
+          <Typography
+            variant="body2"
+            sx={{
+              color: darkMode ? '#cccccc' : '#666',
+              mb: 2,
+              flexGrow: 1,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              lineHeight: 1.4
+            }}
+          >
+            {course.description || 'No description available'}
+          </Typography>
+
+          {/* Course Meta Info */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {/* Category */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Chip
+                label={course.category || 'Uncategorized'}
+                size="small"
+                sx={{
+                  backgroundColor: darkMode ? '#404040' : '#e3f2fd',
+                  color: darkMode ? '#ffffff' : '#1976d2',
+                  fontSize: '0.75rem',
+                  height: 24
+                }}
+              />
+            </Box>
+
+            {/* Status and Actions */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+              <Chip
+                label={course.status || 'draft'}
+                size="small"
+                sx={{
+                  backgroundColor: course.status === 'published' 
+                    ? (darkMode ? '#2e7d32' : '#e8f5e8')
+                    : (darkMode ? '#424242' : '#f5f5f5'),
+                  color: course.status === 'published' 
+                    ? (darkMode ? '#4caf50' : '#2e7d32')
+                    : (darkMode ? '#ffffff' : '#666'),
+                  fontSize: '0.7rem',
+                  height: 20,
+                  textTransform: 'capitalize'
+                }}
+              />
+              
+              {!isCommunityUser && (
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditCourse(course);
+                    }}
+                    sx={{
+                      color: darkMode ? '#ffffff' : '#666',
+                      '&:hover': { backgroundColor: darkMode ? '#404040' : '#f0f0f0' }
+                    }}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteCourse(course);
+                    }}
+                    sx={{
+                      color: darkMode ? '#ffffff' : '#666',
+                      '&:hover': { backgroundColor: darkMode ? '#404040' : '#f0f0f0' }
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    </Grid>
+    );
+  };
+
   // Filter helper functions
   const handleFilterChange = (filterType, value) => {
     setSelectedFilters(prev => ({
@@ -489,14 +915,14 @@ const Courses = () => {
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: darkMode ? '#1a1a1a' : '#f5f5f5' }}>
+    <Box className="bg-black">
       {/* Common Focused Sidebar */}
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -518,18 +944,51 @@ const Courses = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
                   <Box>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
-                      My Courses
+                      Bell & Desk - {isCommunityUser ? 'Available Courses' : 'My Courses'}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      Manage and track all your created courses ({courses.length} courses)
+                      {isCommunityUser 
+                        ? `Browse and enroll in courses (${courses.length} courses available)`
+                        : `Manage and track all your created courses (${courses.length} courses)`
+                      }
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 2 }}>
+                    {/* Drag Mode Toggle - Only show for admins */}
+                    {!isCommunityUser && (
+                      <Tooltip 
+                        title={isDragDisabled 
+                          ? "Click to enable drag & drop reordering" 
+                          : "Click to disable drag & drop reordering"
+                        }
+                        arrow
+                      >
+                        <Button
+                          variant={isDragDisabled ? "outlined" : "contained"}
+                          onClick={() => {
+                            console.log('🔄 Toggling drag mode from', isDragDisabled, 'to', !isDragDisabled);
+                            setIsDragDisabled(!isDragDisabled);
+                          }}
+                          startIcon={<DragIndicatorIcon />}
+                          sx={{
+                            background: isDragDisabled ? 'transparent' : '#0F3C60',
+                            borderColor: '#0F3C60',
+                            color: isDragDisabled ? '#0F3C60' : 'white',
+                            '&:hover': { 
+                              background: isDragDisabled ? 'rgba(15, 60, 96, 0.1)' : '#3367d6',
+                              borderColor: '#0F3C60'
+                            }
+                          }}
+                        >
+                          {isDragDisabled ? 'Reorder Mode: OFF' : 'Reorder Mode: ON'}
+                        </Button>
+                      </Tooltip>
+                    )}
                     <IconButton
                       onClick={handleRefresh}
                       disabled={refreshing}
                       sx={{
-                        color: '#4285f4',
+                        color: '#0F3C60',
                         '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                       }}
                       title="Refresh courses"
@@ -542,23 +1001,36 @@ const Courses = () => {
                         }
                       }} />
                     </IconButton>
-                    <Button
-                      variant="contained"
-                      startIcon={<AddIcon />}
-                      onClick={() => {
-                        if (communityUrls) {
-                          navigate(communityUrls.createCourse);
-                        } else {
-                          navigate('/create-course');
-                        }
-                      }}
-                      sx={{
-                        background: '#4285f4',
-                        '&:hover': { background: '#3367d6' }
-                      }}
-                    >
-                      Create New Course
-                    </Button>
+                    {/* Only show Create New Course button for admins */}
+                    {!isCommunityUser && (
+                      <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => {
+                          // Check if user is authenticated as community admin
+                          const isCommunityAdmin = !!(localStorage.getItem('communityToken') && localStorage.getItem('communityData'));
+                          
+                          if (isCommunityAdmin) {
+                            // User is authenticated, navigate to create course
+                            if (communityUrls) {
+                              navigate(communityUrls.createCourse);
+                            } else {
+                              navigate('/create-course');
+                            }
+                          } else {
+                            // User is not authenticated, redirect to login with return URL
+                            const returnUrl = communityUrls?.createCourse || '/create-course';
+                            navigate(`/community-login?returnUrl=${encodeURIComponent(returnUrl)}`);
+                          }
+                        }}
+                        sx={{
+                          background: '#0F3C60',
+                          '&:hover': { background: '#3367d6' }
+                        }}
+                      >
+                        Create New Course
+                      </Button>
+                    )}
                   </Box>
                 </Box>
 
@@ -587,10 +1059,10 @@ const Courses = () => {
                             justifyContent: 'center',
                           }}
                         >
-                          <VideoIcon sx={{ color: '#4285f4' }} />
+                          <VideoIcon sx={{ color: '#0F3C60' }} />
                         </Box>
                         <Box>
-                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#4285f4', mb: 0 }}>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#0F3C60', mb: 0 }}>
                             {courses.length}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -638,44 +1110,7 @@ const Courses = () => {
                     </Card>
                   </Grid>
 
-                  {/* Drafts */}
-                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Card
-                      sx={{
-                        p: 3,
-                        display: 'flex',
-                        alignItems: 'center',
-                        background: 'linear-gradient(45deg, #ffffff 30%, #fff9e5 90%)',
-                        borderRadius: 3,
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: '50%',
-                            bgcolor: '#fef7e0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <WarningIcon sx={{ color: '#fbbc04' }} />
-                        </Box>
-                        <Box>
-                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fbbc04', mb: 0 }}>
-                            {courses.filter(c => c.status === 'draft').length}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Drafts
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Card>
-                  </Grid>
-
-                  {/* Total Students */}
+                  {/* Archived */}
                   <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card
                       sx={{
@@ -698,14 +1133,51 @@ const Courses = () => {
                             justifyContent: 'center',
                           }}
                         >
-                          <PeopleIcon sx={{ color: '#ea4335' }} />
+                          <ArchiveIcon sx={{ color: '#ea4335' }} />
                         </Box>
                         <Box>
                           <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335', mb: 0 }}>
+                            {courses.filter(c => c.status === 'archived').length}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Archived
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Card>
+                  </Grid>
+
+                  {/* Total Approved Users */}
+                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Card
+                      sx={{
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'linear-gradient(45deg, #ffffff 30%, #e8f5e8 90%)',
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            bgcolor: '#e8f5e8',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <PeopleIcon sx={{ color: '#34a853' }} />
+                        </Box>
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853', mb: 0 }}>
                             {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Total Students
+                            Total Approved Users
                           </Typography>
                         </Box>
                       </Box>
@@ -755,7 +1227,7 @@ const Courses = () => {
                                   : '0 4px 20px rgba(0, 0, 0, 0.08)',
                                 height: '56px',
                                 '&.Mui-focused': {
-                                  border: '1px solid #4285f4',
+                                  border: '1px solid #0F3C60',
                                 }
                               },
                               '& .MuiInputBase-input': {
@@ -834,7 +1306,7 @@ const Courses = () => {
                                     label={getActiveFiltersCount()} 
                                     size="small" 
                                     sx={{ 
-                                      bgcolor: '#4285f4', 
+                                      bgcolor: '#0F3C60', 
                                       color: '#ffffff',
                                       fontSize: '0.75rem',
                                       height: '20px'
@@ -879,7 +1351,7 @@ const Courses = () => {
                               }}>
                                 <CardContent sx={{ p: 1.5 }}>
                                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#4285f4', fontSize: '0.875rem' }}>
+                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0F3C60', fontSize: '0.875rem' }}>
                                       Filters
                                     </Typography>
                                     <Button 
@@ -915,7 +1387,7 @@ const Courses = () => {
                                         }
                                       }}
                                     >
-                                      <VideoIcon sx={{ mr: 1, color: '#4285f4', fontSize: '1rem' }} />
+                                      <VideoIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
                                       <ListItemText 
                                         primary="Type of Course" 
                                         sx={{ 
@@ -962,9 +1434,9 @@ const Courses = () => {
                                                 disabled
                                                 size="small"
                                                 sx={{ 
-                                                  color: '#4285f4',
+                                                  color: '#0F3C60',
                                                   p: 0.5,
-                                                  '&.Mui-checked': { color: '#4285f4' },
+                                                  '&.Mui-checked': { color: '#0F3C60' },
                                                   '&.Mui-disabled': { color: '#9e9e9e' }
                                                 }}
                                               />
@@ -1001,7 +1473,7 @@ const Courses = () => {
                                         }
                                       }}
                                     >
-                                      <StarIcon sx={{ mr: 1, color: '#4285f4', fontSize: '1rem' }} />
+                                      <StarIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
                                       <ListItemText 
                                         primary="Category" 
                                         sx={{ 
@@ -1016,16 +1488,7 @@ const Courses = () => {
                                     </ListItemButton>
                                     <Collapse in={expandedSections.categories}>
                                       <List sx={{ pl: 1, py: 0 }}>
-                                        {[
-                                          { value: 'cryptocurrency', label: 'Cryptocurrency' },
-                                          { value: 'blockchain', label: 'Blockchain' },
-                                          { value: 'trading', label: 'Trading' },
-                                          { value: 'defi', label: 'DeFi' },
-                                          { value: 'nft', label: 'NFT' },
-                                          { value: 'web3', label: 'Web3' },
-                                          { value: 'finance', label: 'Finance' },
-                                          { value: 'technology', label: 'Technology' }
-                                        ].map((category) => (
+                                        {CRYPTO_CATEGORIES.map((category) => (
                                           <ListItem key={category.value} sx={{ py: 0, px: 0 }}>
                                             <ListItemButton 
                                               disabled
@@ -1050,9 +1513,9 @@ const Courses = () => {
                                                 disabled
                                                 size="small"
                                                 sx={{ 
-                                                  color: '#4285f4',
+                                                  color: '#0F3C60',
                                                   p: 0.5,
-                                                  '&.Mui-checked': { color: '#4285f4' },
+                                                  '&.Mui-checked': { color: '#0F3C60' },
                                                   '&.Mui-disabled': { color: '#9e9e9e' }
                                                 }}
                                               />
@@ -1089,7 +1552,7 @@ const Courses = () => {
                                         }
                                       }}
                                     >
-                                      <PeopleIcon sx={{ mr: 1, color: '#4285f4', fontSize: '1rem' }} />
+                                      <PeopleIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
                                       <ListItemText 
                                         primary="Target Audience" 
                                         sx={{ 
@@ -1137,9 +1600,9 @@ const Courses = () => {
                                                 disabled
                                                 size="small"
                                                 sx={{ 
-                                                  color: '#4285f4',
+                                                  color: '#0F3C60',
                                                   p: 0.5,
-                                                  '&.Mui-checked': { color: '#4285f4' },
+                                                  '&.Mui-checked': { color: '#0F3C60' },
                                                   '&.Mui-disabled': { color: '#9e9e9e' }
                                                 }}
                                               />
@@ -1202,440 +1665,43 @@ const Courses = () => {
                       )}
                     </Box>
                   ) : (
-                    <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }}>
-                      {filteredCourses.map((course) => (
-                        <Grid item size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={course._id || course.id}>
-                          <Card sx={{
-                            cursor: 'pointer',
-                            background: darkMode ? '#2d2d2d' : '#ffffff',
-                            border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-                            borderRadius: 3,
-                            transition: 'all 0.3s ease',
-                            overflow: 'hidden',
-                            height: 520, // Fixed height for consistent alignment
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            '&:hover': {
-                              transform: 'translateY(-2px)',
-                              boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
-                            }
-                          }} onClick={() => handleViewCourse(course)}>
-
-                            {/* Course Thumbnail */}
-                            <Box sx={{
-                              height: 200,
-                              width: '100%',
-                              background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                              position: 'relative',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              overflow: 'hidden',
-                              flexShrink: 0 // Prevent thumbnail from shrinking
-                            }}>
-                              {course.thumbnail && course.thumbnail.trim() !== '' ? (
-                                <img
-                                  src={(() => {
-                                    // If it's a data URL, use it directly
-                                    if (course.thumbnail.startsWith('data:')) {
-                                      return course.thumbnail;
-                                    }
-                                    
-                                    // If it's a localhost URL, replace with production URL
-                                    if (course.thumbnail.includes('localhost')) {
-                                      const filename = course.thumbnail.split('/').pop();
-                                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
-                                    }
-                                    
-                                    // If it's already a full production URL, use it directly
-                                    if (course.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
-                                      return course.thumbnail;
-                                    }
-                                    
-                                    // If it starts with /uploads, construct the full URL
-                                    if (course.thumbnail.startsWith('/uploads/')) {
-                                      return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`;
-                                    }
-                                    
-                                    // If it's just a filename, add /uploads/ prefix
-                                    const thumbnailUrl = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${course.thumbnail}`;
-                                    
-                                    console.log('🖼️ Thumbnail Debug for', course.title, ':', {
-                                      original: course.thumbnail,
-                                      constructed: thumbnailUrl,
-                                      isFullUrl: course.thumbnail.startsWith('http')
-                                    });
-                                    return thumbnailUrl;
-                                  })()}
-                                  alt={course.title}
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    objectPosition: 'center',
-                                    display: 'block'
-                                  }}
-                                  onError={(e) => {
-                                    console.error('🖼️ Courses: Thumbnail failed to load for', course.title, ':', e.target.src);
-                                    e.target.style.display = 'none';
-                                    // Show fallback text
-                                    const fallbackDiv = document.createElement('div');
-                                    fallbackDiv.style.cssText = `
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      height: 100%;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 18px;
-                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                                    `;
-                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
-                                    e.target.parentNode.appendChild(fallbackDiv);
-                                  }}
-                                  onLoad={(e) => {
-                                    console.log('✅ Thumbnail loaded successfully for course:', course.title);
-                                    // Hide fallback when image loads successfully
-                                    const fallback = e.target.parentElement.querySelector('.thumbnail-fallback');
-                                    if (fallback) fallback.style.display = 'none';
-                                  }}
-                                />
-                              ) : (
-                                console.log('⚠️ No thumbnail for course:', course.title, 'thumbnail:', course.thumbnail)
-                              )}
-
-                              {/* Fallback Thumbnail (shown when no thumbnail or image fails) */}
-                              <Box
-                                className="thumbnail-fallback"
-                                sx={{
-                                  display: (course.thumbnail && course.thumbnail.trim() !== '') ? 'none' : 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  width: '100%',
-                                  height: '100%',
-                                  background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
-                                }}
-                              >
-                                <img
-                                  src={`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`}
-                                  onError={(e) => {
-                                    console.error('🖼️ Courses: Default thumbnail failed to load');
-                                    e.target.style.display = 'none';
-                                    // Show fallback text
-                                    const fallbackDiv = document.createElement('div');
-                                    fallbackDiv.style.cssText = `
-                                      display: flex;
-                                      align-items: center;
-                                      justify-content: center;
-                                      height: 100%;
-                                      color: white;
-                                      font-weight: bold;
-                                      font-size: 18px;
-                                      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                                    `;
-                                    fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
-                                    e.target.parentNode.appendChild(fallbackDiv);
-                                  }}
-                                  alt="Default course thumbnail"
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover'
-                                  }}
-                                />
-                              </Box>
-
-                              {/* Status Badge */}
-                              <Box sx={{
-                                position: 'absolute',
-                                top: 12,
-                                right: 12,
-                                px: 1.5,
-                                py: 0.5,
-                                borderRadius: 2,
-                                bgcolor: getStatusColor(course.status),
-                                color: 'white',
-                                fontSize: '0.75rem',
-                                fontWeight: 600,
-                                backdropFilter: 'blur(10px)',
-                                backgroundColor: `${getStatusColor(course.status)}CC`
-                              }}>
-                                {course.status}
-                              </Box>
-                            </Box>
-
-                            <CardContent sx={{ 
-                              p: 2, 
-                              display: 'flex', 
-                              flexDirection: 'column',
-                              flex: 1,
-                              justifyContent: 'space-between',
-                              minHeight: 0 // Allow content to shrink if needed
-                            }}>
-
-                              {/* Top Content Section */}
-                              <Box sx={{ flex: 1 }}>
-                              {/* Course Title */}
-                              <Typography variant="h6" sx={{
-                                fontWeight: 600,
-                                mb: 1,
-                                color: darkMode ? '#ffffff' : '#000000',
-                                lineHeight: 1.3,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                minHeight: '2.6em', // Ensure consistent height for 2 lines
-                                maxHeight: '2.6em'  // Prevent expansion beyond 2 lines
-                              }}>
-                                {course.title}
-                              </Typography>
-
-                              {/* Course Tags - Fixed Layout */}
-                              <Box sx={{ 
-                                mb: 2,
-                                minHeight: '64px', // Fixed height for 2 rows of tags
-                                maxHeight: '64px',
-                                overflow: 'hidden'
-                              }}>
-                                {/* First Row - Primary Tags */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  gap: 0.5, 
-                                  mb: 0.5,
-                                  overflow: 'hidden'
-                                }}>
-                                  {/* Target Audience Tag */}
-                                  {course.targetAudience && (
-                                    <Chip
-                                      label={course.targetAudience}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: '#6366f1',
-                                        color: '#6366f1',
-                                        backgroundColor: '#6366f115',
-                                        borderRadius: 2,
-                                        maxWidth: '120px',
-                                        '& .MuiChip-label': {
-                                          px: 1,
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          whiteSpace: 'nowrap'
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: '#6366f125'
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                  
-                                  {/* Course Type Tag */}
-                                  {course.contentType && (
-                                    <Chip
-                                      label={course.contentType === 'video' ? 'Video' : 'Text'}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: course.contentType === 'video' ? '#f59e0b' : '#10b981',
-                                        color: course.contentType === 'video' ? '#f59e0b' : '#10b981',
-                                        backgroundColor: course.contentType === 'video' ? '#f59e0b15' : '#10b98115',
-                                        borderRadius: 2,
-                                        '& .MuiChip-label': {
-                                          px: 1
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: course.contentType === 'video' ? '#f59e0b25' : '#10b98125'
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                </Box>
-                                
-                                {/* Second Row - Category Tag */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  gap: 0.5,
-                                  overflow: 'hidden'
-                                }}>
-                                  {/* Category Tag */}
-                                  {course.category && (
-                                    <Chip
-                                      label={course.category}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: getCategoryColor(course.category),
-                                        color: getCategoryColor(course.category),
-                                        backgroundColor: `${getCategoryColor(course.category)}15`,
-                                        borderRadius: 2,
-                                        maxWidth: '200px',
-                                        '& .MuiChip-label': {
-                                          px: 1,
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          whiteSpace: 'nowrap'
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: `${getCategoryColor(course.category)}25`
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                  
-                                  {/* Sub Type Tag */}
-                                  {course.subType && (
-                                    <Chip
-                                      label={course.subType}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: '#8b5cf6',
-                                        color: '#8b5cf6',
-                                        backgroundColor: '#8b5cf615',
-                                        borderRadius: 2,
-                                        maxWidth: '120px',
-                                        '& .MuiChip-label': {
-                                          px: 1,
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          whiteSpace: 'nowrap'
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: '#8b5cf625'
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                </Box>
-                              </Box>
-
-                              {/* Course Description */}
-                              <Typography variant="body2" sx={{
-                                color: 'text.secondary',
-                                mb: 2,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                lineHeight: 1.4,
-                                minHeight: '2.8em', // Ensure consistent height for 2 lines
-                                maxHeight: '2.8em'  // Prevent expansion beyond 2 lines
-                              }}>
-                                {course.description || 'No description available'}
-                              </Typography>
-                              </Box>
-
-                              {/* Bottom Section - Meta and Buttons */}
-                              <Box sx={{ 
-                                flexShrink: 0, // Prevent this section from shrinking
-                                mt: 'auto' // Push to bottom
-                              }}>
-                              {/* Course Meta */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
-                                  justifyContent: 'space-between', 
-                                  mb: 2,
-                                  py: 1,
-                                  px: 1.5,
-                                  backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                  borderRadius: 1.5,
-                                  border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
-                                }}>
-                                  <Typography variant="body2" sx={{ 
-                                    color: 'text.secondary',
-                                    fontWeight: 500,
-                                    fontSize: '0.8rem'
-                                  }}>
-                                  By {(() => {
-                                    // If instructor is a long ID (MongoDB ObjectId), show community name
-                                    if (course.instructor && course.instructor.length > 20) {
-                                      const community = communityAuthApi.getCurrentCommunity();
-                                      return community ? community.name : 'Community Admin';
-                                    }
-                                    // Otherwise show the instructor name
-                                    return course.instructor || 'Unknown';
-                                  })()}
-                                </Typography>
-                                  <Typography variant="body2" sx={{ 
-                                    color: 'text.secondary',
-                                    fontWeight: 500,
-                                    fontSize: '0.8rem'
-                                  }}>
-                                  {new Date(course.createdAt).toLocaleDateString()}
-                                </Typography>
-                              </Box>
-
-                              {/* Action Buttons */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  gap: 1,
-                                  mt: 1,
-                                  pb: 1 // Add bottom padding to ensure buttons are fully visible
-                                }}>
-                                <Button
-                                  size="small"
-                                  variant="contained"
-                                  color="primary"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewCourse(course);
-                                  }}
-                                  sx={{ flex: 1 }}
-                                >
-                                  View
-                                </Button>
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  color="primary"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditCourse(course);
-                                  }}
-                                  sx={{ flex: 1 }}
-                                >
-                                  Edit
-                                </Button>
-                                <Button
-                                  size="small"
-                                  variant="outlined"
-                                  color="error"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteCourse(course);
-                                  }}
-                                  sx={{ flex: 1 }}
-                                >
-                                  Delete
-                                </Button>
-                                </Box>
-                              </Box>
-                            </CardContent>
-                          </Card>
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <SortableContext
+                        items={filteredCourses.map(course => course._id || course.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <Grid 
+                          container 
+                          spacing={3} 
+                          sx={{ 
+                            justifyContent: 'flex-start',
+                            backgroundColor: !isDragDisabled 
+                              ? 'rgba(15, 60, 96, 0.02)' 
+                              : 'transparent',
+                            borderRadius: 2,
+                            transition: 'background-color 0.2s ease',
+                            border: !isDragDisabled ? '2px dashed rgba(15, 60, 96, 0.2)' : 'none',
+                            padding: !isDragDisabled ? '8px' : '0px'
+                          }}
+                        >
+                          {filteredCourses.map((course, index) => (
+                            <SortableCourseItem
+                              key={course._id || course.id}
+                              course={course}
+                              index={index}
+                            />
+                          ))}
                         </Grid>
-                      ))}
-                    </Grid>
+                      </SortableContext>
+                    </DndContext>
                   )}
                 </Box>
-              </Box>
-            )}
+                                </Box>
+                              )}
 
             {/* Course Details Dialog */}
             <Dialog
@@ -1645,149 +1711,138 @@ const Courses = () => {
               fullWidth
             >
               {selectedCourse && (
-                <>
-                  <DialogTitle>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        Course Details
-                      </Typography>
-                      <Chip
-                        icon={getStatusIcon(selectedCourse.status)}
-                        label={selectedCourse.status.charAt(0).toUpperCase() + selectedCourse.status.slice(1)}
-                        color={getStatusColor(selectedCourse.status)}
-                      />
-                    </Box>
-                  </DialogTitle>
-                  <DialogContent>
-                    <Grid container spacing={3}>
-                      <Grid item xs={12} md={4}>
-                        <Box
-                          component="img"
-                          src={selectedCourse.thumbnail}
-                          alt={selectedCourse.title}
-                          sx={{
-                            width: '100%',
-                            height: 200,
-                            objectFit: 'cover',
-                            borderRadius: 2,
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} md={8}>
-                        <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
-                          {selectedCourse.title}
-                        </Typography>
-                        <Typography variant="body1" sx={{ mb: 3 }}>
-                          {selectedCourse.description}
-                        </Typography>
-
-                        <Grid container spacing={2}>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Category
-                            </Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                              {selectedCourse.category}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Target Audience
-                            </Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                              {selectedCourse.targetAudience}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Content Type
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              {selectedCourse.contentType === 'video' ? (
-                                <VideoIcon sx={{ fontSize: 20, color: '#4285f4' }} />
-                              ) : (
-                                <TextIcon sx={{ fontSize: 20, color: '#34a853' }} />
-                              )}
-                              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                {selectedCourse.contentType === 'video' ? 'Video Based' : 'Text Based'}
+                              <Box sx={{
+                  p: 3
+                }}>
+                  <DialogTitle sx={{
+                              display: 'flex', 
+                              justifyContent: 'space-between',
+                    alignItems: 'center',
+                    pb: 2
+                  }}>
+                    <Typography variant="h5" sx={{
+                                fontWeight: 600,
+                      color: darkMode ? '#ffffff' : '#333'
+                    }}>
+                      {selectedCourse.title}
                               </Typography>
-                            </Box>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Duration
-                            </Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                              {selectedCourse.duration || 'Not specified'}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Students Enrolled
-                            </Typography>
-                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                              {selectedCourse.students?.toLocaleString() || '0'}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography variant="subtitle2" color="text.secondary">
-                              Rating
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <StarIcon sx={{ fontSize: 16, color: '#fbbc04' }} />
-                              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                {selectedCourse.rating || '0'}/5.0
-                              </Typography>
-                            </Box>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setOpenCourseDialog(false)}>Close</Button>
-                    <Button
-                      variant="contained"
-                      onClick={() => handleEditCourse(selectedCourse)}
+                    <IconButton
+                      onClick={() => setOpenCourseDialog(false)}
                       sx={{
-                        background: '#4285f4',
-                        '&:hover': { background: '#3367d6' }
+                        color: darkMode ? '#ffffff' : '#666'
                       }}
                     >
-                      Edit Course
-                    </Button>
+                      <CloseIcon />
+                    </IconButton>
+                  </DialogTitle>
+                  
+                  <DialogContent>
+                    <Box sx={{ mb: 3 }}>
+                      {selectedCourse.thumbnail && (
+                              <Box sx={{ 
+                          width: '100%',
+                          height: 200,
+                                mb: 2,
+                          borderRadius: 2,
+                                overflow: 'hidden'
+                              }}>
+                          <img
+                            src={selectedCourse.thumbnail}
+                            alt={selectedCourse.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        </Box>
+                      )}
+                      
+                      <Typography variant="body1" sx={{
+                        color: darkMode ? '#cccccc' : '#666',
+                        mb: 2,
+                        lineHeight: 1.6
+                      }}>
+                        {selectedCourse.description || 'No description available'}
+                      </Typography>
+                      
+                      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                                    <Chip
+                          label={selectedCourse.category || 'Uncategorized'}
+                                      sx={{
+                            backgroundColor: darkMode ? '#404040' : '#e3f2fd',
+                            color: darkMode ? '#ffffff' : '#1976d2'
+                          }}
+                        />
+                                    <Chip
+                          label={selectedCourse.status || 'draft'}
+                                      sx={{
+                            backgroundColor: selectedCourse.status === 'published' 
+                              ? (darkMode ? '#2e7d32' : '#e8f5e8')
+                              : (darkMode ? '#424242' : '#f5f5f5'),
+                            color: selectedCourse.status === 'published' 
+                              ? (darkMode ? '#4caf50' : '#2e7d32')
+                              : (darkMode ? '#ffffff' : '#666'),
+                            textTransform: 'capitalize'
+                          }}
+                        />
+                                </Box>
+                              </Box>
+                  </DialogContent>
+                  
+                  <DialogActions sx={{ p: 3, pt: 0 }}>
+                                <Button
+                      onClick={() => setOpenCourseDialog(false)}
+                      sx={{
+                        color: darkMode ? '#ffffff' : '#666'
+                      }}
+                    >
+                      Close
+                                </Button>
+                                {!isCommunityUser && (
+                                    <Button
+                        variant="contained"
+                        onClick={() => {
+                          setOpenCourseDialog(false);
+                          handleEditCourse(selectedCourse);
+                        }}
+                        sx={{
+                          backgroundColor: '#0F3C60',
+                          '&:hover': {
+                            backgroundColor: '#3367d6'
+                          }
+                        }}
+                      >
+                        Edit Course
+                                    </Button>
+                                )}
                   </DialogActions>
-                </>
+                                </Box>
               )}
             </Dialog>
 
-            {/* Delete Course Confirmation Dialog */}
-            <Dialog open={deleteDialogOpen} onClose={cancelDelete} maxWidth="sm" fullWidth>
-              <DialogTitle>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Delete Course
-                </Typography>
-              </DialogTitle>
-              <DialogContent>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  Are you sure you want to delete the course "{courseToDelete?.title}"?
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  This action cannot be undone. The course will be permanently removed from your course listing.
-                </Typography>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={cancelDelete} disabled={isDeleting}>
-                  Cancel
-                </Button>
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+              open={deleteDialogOpen}
+              onClose={cancelDelete}
+              maxWidth="sm"
+              fullWidth
+            >
+              <DialogTitle>Delete Course</DialogTitle>
+                  <DialogContent>
+                <Typography>
+                  Are you sure you want to delete "{courseToDelete?.title}"? This action cannot be undone.
+                        </Typography>
+                  </DialogContent>
+                  <DialogActions>
+                <Button onClick={cancelDelete}>Cancel</Button>
                 <Button
                   onClick={confirmDelete}
-                  variant="contained"
                   color="error"
+                  variant="contained"
                   disabled={isDeleting}
-                  startIcon={isDeleting ? <CircularProgress size={20} /> : <DeleteIcon />}
                 >
-                  {isDeleting ? 'Deleting...' : 'Delete Course'}
+                  {isDeleting ? 'Deleting...' : 'Delete'}
                 </Button>
               </DialogActions>
             </Dialog>

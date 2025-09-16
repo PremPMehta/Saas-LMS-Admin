@@ -846,13 +846,42 @@ const CourseViewer = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: { xs: 0, md: 10 }, // Account for fixed sidebar
+        ml: 30,
+        // ml: { xs: 0, md: 10 }, // Account for fixed sidebar
         mt: { xs: 8, md: 9 }, // Account for mobile top navigation and fixed top bar (70px) + padding
         display: 'flex',
         flexDirection: 'column'
       }}>
         {/* Common Focused Top Bar */}
         <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
+
+        {/* Back Button */}
+        <Box sx={{ px: { xs: 1, md: 3 }, pt: 2 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={() => {
+              // Check if we're in admin mode by looking at the current URL
+              const isAdminMode = window.location.pathname.includes('/admin/');
+              const backUrl = isAdminMode 
+                ? `/${communityName}/admin/courses`
+                : `/${communityName}/student/courses`;
+              console.log('CourseViewer back button:', { isAdminMode, backUrl, currentPath: window.location.pathname });
+              navigate(backUrl);
+            }}
+            sx={{
+              textTransform: 'none',
+              color: darkMode ? '#fff' : '#0F3C60',
+              borderColor: darkMode ? '#fff' : '#0F3C60',
+              '&:hover': {
+                backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(15,60,96,0.1)',
+                borderColor: darkMode ? '#fff' : '#0F3C60'
+              }
+            }}
+            variant="outlined"
+          >
+            Back to Courses
+          </Button>
+        </Box>
 
         {/* Course Content */}
         <Box sx={{ p: { xs: 1, md: 3 }, flex: 1, overflow: 'hidden' }}>
@@ -935,7 +964,7 @@ const CourseViewer = () => {
                                   width: 24,
                                   height: 24,
                                   borderRadius: '50%',
-                                  backgroundColor: (video.type === 'VIDEO' || video.videoType) ? '#4285f4' : 
+                                  backgroundColor: (video.type === 'VIDEO' || video.videoType) ? '#0F3C60' : 
                                                    video.type === 'PDF' ? '#34a853' : '#f59e0b',
                                   color: 'white',
                                   fontSize: '12px'
@@ -1033,7 +1062,7 @@ const CourseViewer = () => {
                                   }}
                                   startIcon={<FullscreenIcon />}
                                   sx={{
-                                    background: '#4285f4',
+                                    background: '#0F3C60',
                                     '&:hover': { background: '#3367d6' }
                                   }}
                                 >
@@ -1360,7 +1389,7 @@ const CourseViewer = () => {
                                     fontWeight: 600
                                   },
                                   '& blockquote': {
-                                    borderLeft: '4px solid #4285f4',
+                                    borderLeft: '4px solid #0F3C60',
                                     paddingLeft: 2,
                                     marginLeft: 0,
                                     fontStyle: 'italic',

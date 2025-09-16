@@ -19,14 +19,8 @@ const apiCall = async (endpoint, options = {}) => {
   };
 
   try {
-    console.log('🌐 API: Making request to:', apiUrl(endpoint));
-    console.log('🔑 API: Config:', config);
-    
     const response = await fetch(apiUrl(endpoint), config);
-    console.log('📡 API: Response status:', response.status);
-    
     const data = await response.json();
-    console.log('📄 API: Response data:', data);
 
     if (!response.ok) {
       throw new Error(data.message || 'API request failed');
@@ -100,6 +94,17 @@ export const courseApi = {
       method: 'POST',
       body: JSON.stringify({ rating, studentId }),
     });
+  },
+
+  // Reorder courses
+  reorderCourses: async (courseOrder, communityId) => {
+    console.log('🚀 courseApi.reorderCourses called with:', { courseOrder, communityId });
+    const result = await apiCall('/api/courses/reorder', {
+      method: 'PATCH',
+      body: JSON.stringify({ courseOrder, communityId }),
+    });
+    console.log('✅ courseApi.reorderCourses result:', result);
+    return result;
   },
 };
 

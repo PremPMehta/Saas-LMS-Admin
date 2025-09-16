@@ -103,7 +103,7 @@ const Settings = () => {
       const token = localStorage.getItem('authToken');
       if (!token) return;
 
-      const response = await fetch('http://localhost:5001/api/settings/system-stats', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/settings/system-stats`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -114,11 +114,19 @@ const Settings = () => {
         setSystemStats(data.data || {});
         setLastUpdated(new Date());
       } else {
-        console.error('Failed to fetch system stats');
+        // Only log error once per session to prevent spam
+        if (!sessionStorage.getItem('systemStatsErrorLogged')) {
+          console.warn('Failed to fetch system stats - using mock data');
+          sessionStorage.setItem('systemStatsErrorLogged', 'true');
+        }
         setLastUpdated(new Date());
       }
     } catch (error) {
-      console.error('Error fetching system stats:', error);
+      // Only log error once per session to prevent spam
+      if (!sessionStorage.getItem('systemStatsErrorLogged')) {
+        console.warn('Error fetching system stats - using mock data:', error.message);
+        sessionStorage.setItem('systemStatsErrorLogged', 'true');
+      }
       setLastUpdated(new Date());
     }
   }, []);
@@ -129,7 +137,7 @@ const Settings = () => {
       const token = localStorage.getItem('authToken');
       if (!token) return;
 
-      const response = await fetch('http://localhost:5001/api/settings/session', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/settings/session`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -143,7 +151,11 @@ const Settings = () => {
         createMockSessionSettings();
       }
     } catch (error) {
-      console.error('Error loading session settings:', error);
+      // Only log error once per session to prevent spam
+      if (!sessionStorage.getItem('sessionSettingsErrorLogged')) {
+        console.warn('Error loading session settings - using mock data:', error.message);
+        sessionStorage.setItem('sessionSettingsErrorLogged', 'true');
+      }
       createMockSessionSettings();
     }
   }, []);
@@ -154,11 +166,15 @@ const Settings = () => {
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
-        console.error('No authentication token found');
+        // Only log error once per session to prevent spam
+        if (!sessionStorage.getItem('accessLogsTokenErrorLogged')) {
+          console.warn('No authentication token found for access logs');
+          sessionStorage.setItem('accessLogsTokenErrorLogged', 'true');
+        }
         return;
       }
 
-      const response = await fetch(`http://localhost:5001/api/settings/access-logs?page=${page + 1}&limit=${rowsPerPage}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/settings/access-logs?page=${page + 1}&limit=${rowsPerPage}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -166,7 +182,11 @@ const Settings = () => {
       
       if (!response.ok) {
         if (response.status === 401) {
-          console.error('Authentication failed');
+          // Only log error once per session to prevent spam
+          if (!sessionStorage.getItem('accessLogsAuthErrorLogged')) {
+            console.warn('Authentication failed for access logs');
+            sessionStorage.setItem('accessLogsAuthErrorLogged', 'true');
+          }
           return;
         }
         throw new Error(`Failed to fetch access logs: ${response.status}`);
@@ -176,7 +196,11 @@ const Settings = () => {
       setAccessLogs(data.data || []);
       setTotalLogs(data.total || 0);
     } catch (error) {
-      console.error('Error fetching access logs:', error);
+      // Only log error once per session to prevent spam
+      if (!sessionStorage.getItem('accessLogsErrorLogged')) {
+        console.warn('Error fetching access logs - using mock data:', error.message);
+        sessionStorage.setItem('accessLogsErrorLogged', 'true');
+      }
       // For demo purposes, create mock data
       createMockAccessLogs();
     } finally {
@@ -302,11 +326,15 @@ const Settings = () => {
   const saveSessionSettings = async () => {
     try {
       if (!user?.token) {
-        console.error('No authentication token found');
+        // Only log error once per session to prevent spam
+        if (!sessionStorage.getItem('saveSessionTokenErrorLogged')) {
+          console.warn('No authentication token found for saving session settings');
+          sessionStorage.setItem('saveSessionTokenErrorLogged', 'true');
+        }
         return;
       }
 
-      const response = await fetch('http://localhost:5001/api/settings/session', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/settings/session`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${user.token}`,
@@ -320,11 +348,19 @@ const Settings = () => {
         console.log('Session settings saved successfully:', data.message);
         // You could show a success notification here
       } else {
-        console.error('Failed to save session settings:', response.statusText);
+        // Only log error once per session to prevent spam
+        if (!sessionStorage.getItem('saveSessionErrorLogged')) {
+          console.warn('Failed to save session settings:', response.statusText);
+          sessionStorage.setItem('saveSessionErrorLogged', 'true');
+        }
         // You could show an error notification here
       }
     } catch (error) {
-      console.error('Error saving session settings:', error);
+      // Only log error once per session to prevent spam
+      if (!sessionStorage.getItem('saveSessionErrorLogged')) {
+        console.warn('Error saving session settings:', error.message);
+        sessionStorage.setItem('saveSessionErrorLogged', 'true');
+      }
       // You could show an error notification here
     }
   };
@@ -338,7 +374,7 @@ const Settings = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5001/api/settings/session', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/settings/session`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -432,7 +468,7 @@ const Settings = () => {
                 textShadow: '0 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              System Settings
+              Bell & Desk - System Settings
             </Typography>
             <Typography
               variant="h6"

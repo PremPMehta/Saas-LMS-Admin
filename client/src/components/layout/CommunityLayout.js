@@ -129,7 +129,7 @@ const CommunityLayout = ({ children }) => {
       {/* Main Content Area */}
       <Box sx={{ 
         flex: 1, 
-        ml: 10, // Account for fixed sidebar
+        ml: 30, // Account for fixed sidebar (240px)
         display: 'flex',
         flexDirection: 'column'
       }}>
@@ -154,7 +154,7 @@ const CommunityLayout = ({ children }) => {
               fontWeight: 'bold',
               color: darkMode ? '#ffffff' : '#000000'
             }}>
-              {navItems.find(item => item.id === getActiveNav())?.label || 'Community Dashboard'}
+              Bell & Desk - {navItems.find(item => item.id === getActiveNav())?.label || 'Community Dashboard'}
             </h1>
           </Box>
 
