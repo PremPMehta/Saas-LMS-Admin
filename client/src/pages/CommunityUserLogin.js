@@ -63,7 +63,7 @@ const CommunityUserLogin = () => {
         formData: { email: formData.email, password: '[HIDDEN]' },
         environment: process.env.NODE_ENV
       });
-      const response = await axios.post(`${apiUrl}/api/auth/community-user-login`, formData);
+      const response = await axios.post(`${apiUrl}/api/community-user/login`, formData);
 
       if (response.data.success) {
         // Store user data and token
