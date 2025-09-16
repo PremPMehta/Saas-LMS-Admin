@@ -23,8 +23,10 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { useAuth } from '../contexts/AuthContext';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const UserLogin = () => {
+  useDocumentTitle('User Login - Bell & Desk');
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();

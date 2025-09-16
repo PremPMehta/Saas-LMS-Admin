@@ -3,6 +3,7 @@ import courseApi from '../utils/courseApi';
 import communityAuthApi from '../utils/communityAuthApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
@@ -63,10 +64,13 @@ import {
   PlayCircleOutline as PlayCircleOutlineIcon,
   VideoLibrary as VideoLibraryIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityDashboard = () => {
+  useDocumentTitle('Community Dashboard - Bell & Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
@@ -262,7 +266,7 @@ const CommunityDashboard = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 30, // Account for fixed sidebar (240px)
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'

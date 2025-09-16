@@ -3,15 +3,18 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { SidebarProvider } from './contexts/SidebarContext';
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <div className="App">
-            <AppRoutes />
-          </div>
+          <SidebarProvider>
+            <div className="App">
+              <AppRoutes />
+            </div>
+          </SidebarProvider>
         </ThemeProvider>
       </AuthProvider>
     </Router>

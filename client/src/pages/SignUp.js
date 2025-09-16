@@ -30,8 +30,10 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/api';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const SignUp = () => {
+  useDocumentTitle('Sign Up - Bell & Desk');
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({

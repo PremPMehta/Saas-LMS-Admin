@@ -48,7 +48,7 @@ code {
   max-width: 500px;
   margin: 0 auto;
   align-items: center;
-  padding: 40px 20px;
+  padding: 20px 20px;
 }
 .login_image_box{
   height: 100vh;
@@ -64,3 +64,8 @@ code {
   align-items: center;
   padding: 24px 24px;
 }
+
+
+.MuiTable-root {
+        min-width: unset !important
+    }

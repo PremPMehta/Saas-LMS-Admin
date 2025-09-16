@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import communityAuthApi from '../utils/communityAuthApi';
 import communityAdminApi from '../utils/communityAdminApi';
 import { useNavigate } from 'react-router-dom';
+import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
@@ -66,9 +67,12 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityAdmins = () => {
+  useDocumentTitle('Community Admins - Bell & Desk');
   const navigate = useNavigate();
+  const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const [darkMode, setDarkMode] = useState(false);
   const [communityData, setCommunityData] = useState(null);
   const [admins, setAdmins] = useState([]);
@@ -579,9 +583,9 @@ const CommunityAdmins = () => {
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
-      <Box sx={{ 
+      <Box sx={{
         flex: 1, 
-        ml: 30, // Account for fixed sidebar (240px)
+        ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'

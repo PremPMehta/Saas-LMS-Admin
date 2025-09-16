@@ -28,8 +28,10 @@ import {
 import loginImage from '../assets/view-building-with.jpg';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserSignup = () => {
+  useDocumentTitle('Community User Signup - Bell & Desk');
   console.log('CommunityUserSignup component rendered!');
 
   const navigate = useNavigate();
@@ -280,7 +282,7 @@ const CommunityUserSignup = () => {
     <Box>
 
       <Box className="login-card">
-        <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+        <Grid container spacing={2} sx={{ alignItems: 'center', height: '100vh', alignItems: 'center' }}>
           <Grid size={{ xs:12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <Box>
