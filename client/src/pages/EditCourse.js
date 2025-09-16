@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 import {
   Box,
   Container,
@@ -56,7 +57,7 @@ import { GENERAL_CATEGORIES } from '../config/categories';
 const EditCourse = () => {
   const navigate = useNavigate();
   const { courseId, communityName } = useParams();
-  
+
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
   const [activeStep, setActiveStep] = useState(0);
@@ -108,18 +109,18 @@ const EditCourse = () => {
       try {
         console.log('🔄 Loading course data for ID:', courseId);
         setIsLoading(true);
-        
+
         const response = await courseApi.getCourseById(courseId);
         console.log('📊 Course API response:', response);
-        
+
         const course = response.course;
         console.log('📋 Course data:', course);
-        
+
         if (!course) {
           console.error('❌ No course data received');
           return;
         }
-        
+
         const updatedCourseData = {
           title: course.title || '',
           description: course.description || '',
@@ -128,21 +129,21 @@ const EditCourse = () => {
           contentType: course.contentType || 'video',
           thumbnail: course.thumbnail || '',
         };
-        
+
         console.log('✅ Setting course data:', updatedCourseData);
         setCourseData(updatedCourseData);
-        
+
         const courseChapters = course.chapters || [];
         console.log('📚 Setting chapters:', courseChapters.length, 'chapters');
         setChapters(courseChapters);
-        
+
       } catch (error) {
         console.error('❌ Error loading course:', error);
         console.error('Error details:', error.message);
-        
+
         // Show error state but don't redirect
         alert(`Error loading course: ${error.message}`);
-        
+
         // Set some default data so the form doesn't appear empty
         setCourseData({
           title: 'Error loading course',
@@ -260,7 +261,7 @@ const EditCourse = () => {
 
   const handleSaveChapter = () => {
     console.log('📚 handleSaveChapter called with selectedChapter:', selectedChapter);
-    
+
     if (!selectedChapter?.title?.trim()) {
       console.error('❌ Chapter title validation failed');
       alert('Chapter title is required');
@@ -269,8 +270,8 @@ const EditCourse = () => {
 
     if (editingChapter) {
       console.log('✏️ Updating existing chapter:', editingChapter._id);
-      setChapters(prev => prev.map(chapter => 
-        chapter._id === editingChapter._id 
+      setChapters(prev => prev.map(chapter =>
+        chapter._id === editingChapter._id
           ? { ...chapter, title: selectedChapter.title, description: selectedChapter.description }
           : chapter
       ));
@@ -303,7 +304,7 @@ const EditCourse = () => {
 
   const handleSaveVideo = async (formData) => {
     console.log('🎬 handleSaveVideo called with formData:', formData);
-    
+
     if (!formData?.title?.trim()) {
       alert('Video title is required');
       return;
@@ -317,19 +318,19 @@ const EditCourse = () => {
         console.log('Uploading video file to server...');
         const uploadFormData = new FormData();
         uploadFormData.append('video', formData.videoFile);
-        
+
         const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/upload/video`, {
           method: 'POST',
           body: uploadFormData,
         });
-        
+
         if (!response.ok) {
           throw new Error('Failed to upload video');
         }
-        
+
         const result = await response.json();
         console.log('Video uploaded successfully:', result);
-        
+
         // Update form data with the server URL
         processedFormData = {
           ...formData,
@@ -357,14 +358,14 @@ const EditCourse = () => {
       console.log('✏️ Updating existing video:', editingVideo._id);
       setChapters(prev => prev.map(chapter => ({
         ...chapter,
-        videos: chapter.videos.map(video => 
+        videos: chapter.videos.map(video =>
           video._id === editingVideo._id ? { ...video, ...videoData } : video
         )
       })));
     } else {
       console.log('➕ Adding new video to chapter:', selectedChapter?.chapterId);
-      setChapters(prev => prev.map(chapter => 
-        chapter._id === selectedChapter?.chapterId 
+      setChapters(prev => prev.map(chapter =>
+        chapter._id === selectedChapter?.chapterId
           ? { ...chapter, videos: [...chapter.videos, { _id: Date.now().toString(), ...videoData }] }
           : chapter
       ));
@@ -390,8 +391,8 @@ const EditCourse = () => {
 
   const handleDeleteVideo = (videoId, chapterId) => {
     if (window.confirm('Are you sure you want to delete this video?')) {
-      setChapters(prev => prev.map(chapter => 
-        chapter._id === chapterId 
+      setChapters(prev => prev.map(chapter =>
+        chapter._id === chapterId
           ? { ...chapter, videos: chapter.videos.filter(video => video._id !== videoId) }
           : chapter
       ));
@@ -402,14 +403,14 @@ const EditCourse = () => {
     console.log('handleSubmit called');
     console.log('courseData:', courseData);
     console.log('chapters:', chapters);
-    
+
     // Validate final step
     if (!validateStep(activeStep)) {
       console.log('Validation failed');
       setIsSubmitting(false);
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       // Update the course object for database
@@ -443,7 +444,7 @@ const EditCourse = () => {
       // Update course in database via API
       const response = await courseApi.updateCourse(courseId, courseDataForApi);
       console.log('Course updated in database:', response.course);
-      
+
       // Redirect to courses list with success message
       let redirectUrl;
       if (communityUrls) {
@@ -454,8 +455,8 @@ const EditCourse = () => {
         redirectUrl = '/courses';
       }
       console.log('EditCourse redirect URL:', redirectUrl);
-      navigate(redirectUrl, { 
-        state: { 
+      navigate(redirectUrl, {
+        state: {
           message: 'Course updated successfully!'
         }
       });
@@ -487,16 +488,15 @@ const EditCourse = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
+      <Box sx={{
+        display: 'flex',
+        alignItems: 'center',
         mb: 4,
-        p: 3,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        py: 2,
         borderRadius: 3,
         color: 'white'
       }}>
-        <IconButton 
+        <IconButton
           onClick={() => {
             let backUrl;
             if (communityUrls) {
@@ -508,10 +508,10 @@ const EditCourse = () => {
             }
             console.log('EditCourse back button URL:', backUrl);
             navigate(backUrl);
-          }} 
-          sx={{ 
+          }}
+          sx={{
             mr: 2,
-            color: 'white',
+            color: '#0F3C60',
             backgroundColor: 'rgba(255, 255, 255, 0.1)',
             '&:hover': {
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -521,10 +521,10 @@ const EditCourse = () => {
           <ArrowBackIcon />
         </IconButton>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#0F3C60' }}>
             Edit Course
           </Typography>
-          <Typography variant="body2" sx={{ opacity: 0.9 }}>
+          <Typography variant="body2" sx={{ opacity: 0.9, color: '#34495e' }}>
             Update your course content and structure
           </Typography>
         </Box>
@@ -535,7 +535,7 @@ const EditCourse = () => {
         <Stepper activeStep={activeStep} sx={{ mb: 2 }}>
           {steps.map((label) => (
             <Step key={label}>
-              <StepLabel 
+              <StepLabel
                 sx={{
                   '& .MuiStepLabel-label': {
                     fontWeight: 600,
@@ -558,13 +558,13 @@ const EditCourse = () => {
         <Card sx={{ p: 4 }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#2c3e50' }}>
-              📝 Edit Course Information
+              Edit Course Information
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Update your course details and thumbnail
             </Typography>
           </Box>
-          
+
           <Grid container spacing={3}>
             <Grid item size={12}>
               <TextField
@@ -575,7 +575,7 @@ const EditCourse = () => {
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 error={!!errors.title}
                 helperText={errors.title}
-                sx={{ 
+                sx={{
                   mb: 3,
                   '& .MuiOutlinedInput-root': {
                     '&:hover fieldset': {
@@ -600,7 +600,7 @@ const EditCourse = () => {
                 helperText={errors.description}
                 multiline
                 rows={4}
-                sx={{ 
+                sx={{
                   mb: 3,
                   '& .MuiOutlinedInput-root': {
                     '&:hover fieldset': {
@@ -615,11 +615,11 @@ const EditCourse = () => {
             </Grid>
 
             {/* Course Thumbnail Upload */}
-            <Grid item size={12}>
+            <Grid item size={4}>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
-                🖼️ Course Thumbnail
+                Course Thumbnail
               </Typography>
-              <Card sx={{ p: 3, border: '2px dashed #e0e0e0', backgroundColor: '#fafafa' }}>
+              <Card sx={{ p: 3, border: '2px dashed #e0e0e0', }}>
                 {/* Current Thumbnail Display */}
                 {courseData.thumbnail && (
                   <Box sx={{ mb: 3 }}>
@@ -628,12 +628,14 @@ const EditCourse = () => {
                     </Typography>
                     <Box
                       sx={{
-                        width: 250,
+                        width: '100%',
                         height: 150,
                         border: '2px solid #e0e0e0',
                         borderRadius: 2,
                         overflow: 'hidden',
                         position: 'relative',
+                        textAlign: 'center',
+                        margin: '0 auto',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                       }}
                     >
@@ -642,17 +644,17 @@ const EditCourse = () => {
                           if (!courseData.thumbnail || courseData.thumbnail.trim() === '') {
                             return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`;
                           }
-                          
+
                           // If it's already a full URL (data: or http), use it directly
                           if (courseData.thumbnail.startsWith('data:') || courseData.thumbnail.startsWith('http')) {
                             return courseData.thumbnail;
                           }
-                          
+
                           // If it starts with /uploads, construct the full URL
                           if (courseData.thumbnail.startsWith('/uploads/')) {
                             return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${courseData.thumbnail}`;
                           }
-                          
+
                           // If it's just a filename, add /uploads/ prefix
                           return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${courseData.thumbnail}`;
                         })()}
@@ -716,12 +718,12 @@ const EditCourse = () => {
             </Grid>
 
             {/* Show read-only information for restricted fields */}
-            <Grid item size={12}>
+            <Grid item size={8}>
               <Typography variant="h6" sx={{ mb: 3, color: '#2c3e50', fontWeight: 600 }}>
-                🔒 Course Settings (Read Only)
+                Course Settings (Read Only)
               </Typography>
               <Grid container spacing={3}>
-                <Grid item size={{xs:12 , md:4}}>
+                <Grid item size={{ xs: 12, md: 6 }}>
                   <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <DescriptionIcon sx={{ color: '#0F3C60', mr: 1 }} />
@@ -729,15 +731,15 @@ const EditCourse = () => {
                         Category
                       </Typography>
                     </Box>
-                    <Chip 
-                      label={courseData.category} 
-                      color="primary" 
+                    <Chip
+                      label={courseData.category}
+                      color="primary"
                       variant="outlined"
                       sx={{ fontWeight: 500 }}
                     />
                   </Card>
                 </Grid>
-                <Grid item size={{xs:12 , md:4}}>
+                <Grid item size={{ xs: 12, md: 6 }}>
                   <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <VideoIcon sx={{ color: '#0F3C60', mr: 1 }} />
@@ -745,15 +747,15 @@ const EditCourse = () => {
                         Target Audience
                       </Typography>
                     </Box>
-                    <Chip 
-                      label={courseData.targetAudience} 
-                      color="secondary" 
+                    <Chip
+                      label={courseData.targetAudience}
+                      color="secondary"
                       variant="outlined"
                       sx={{ fontWeight: 500 }}
                     />
                   </Card>
                 </Grid>
-                <Grid item size={{xs:12 , md:4}}>
+                <Grid item size={{ xs: 12, md: 12 }}>
                   <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       {courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
@@ -761,7 +763,7 @@ const EditCourse = () => {
                         Content Type
                       </Typography>
                     </Box>
-                    <Chip 
+                    <Chip
                       icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
                       label={contentTypes.find(type => type.value === courseData.contentType)?.label || courseData.contentType}
                       color="success"
@@ -773,7 +775,7 @@ const EditCourse = () => {
               </Grid>
               <Alert severity="info" sx={{ mt: 3 }}>
                 <Typography variant="body2">
-                  ℹ️ These settings cannot be changed after course creation to maintain consistency.
+                  These settings cannot be changed after course creation to maintain consistency.
                 </Typography>
               </Alert>
             </Grid>
@@ -786,7 +788,7 @@ const EditCourse = () => {
           <Box sx={{ mb: 4 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
               <Typography variant="h5" sx={{ fontWeight: 600, color: '#2c3e50' }}>
-                📚 Course Structure
+                Course Structure
               </Typography>
               <Button
                 variant="contained"
@@ -800,9 +802,7 @@ const EditCourse = () => {
                 sx={{
                   background: '#0F3C60',
                   '&:hover': { background: '#3367d6' },
-                  px: 3,
-                  py: 1.5,
-                  fontSize: '1rem',
+
                   fontWeight: 600
                 }}
               >
@@ -821,9 +821,9 @@ const EditCourse = () => {
           )}
 
           {chapters.length === 0 ? (
-            <Card sx={{ 
-              p: 6, 
-              textAlign: 'center', 
+            <Card sx={{
+              p: 6,
+              textAlign: 'center',
               background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
               border: '2px dashed #dee2e6',
               borderRadius: 3
@@ -862,24 +862,21 @@ const EditCourse = () => {
             <Grid container spacing={3}>
               {chapters.map((chapter, index) => (
                 <Grid item size={{ xs: 12, md: 6 }} key={chapter._id}>
-                  <Card sx={{ 
-                    mb: 3, 
+                  <Card sx={{
+                    mb: 3,
                     border: '1px solid #e0e0e0',
                     borderRadius: 3,
                     transition: 'all 0.3s ease',
-                    '&:hover': {
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                      transform: 'translateY(-2px)'
-                    }
+                    boxShadow: 'none'
                   }}>
                     <CardContent sx={{ p: 4 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                          <Box sx={{ 
-                            width: 40, 
-                            height: 40, 
-                            borderRadius: '50%', 
-                            background: 'linear-gradient(135deg, #0F3C60 0%, #3367d6 100%)',
+                          <Box sx={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: '50%',
+                            background: '#0F3C60',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -899,18 +896,18 @@ const EditCourse = () => {
                           </Box>
                         </Box>
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                          <IconButton 
+                          <IconButton
                             onClick={() => handleEditChapter(chapter)}
-                            sx={{ 
+                            sx={{
                               color: '#0F3C60',
                               '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                             }}
                           >
                             <EditIcon />
                           </IconButton>
-                          <IconButton 
+                          <IconButton
                             onClick={() => handleDeleteChapter(chapter._id)}
-                            sx={{ 
+                            sx={{
                               color: '#dc3545',
                               '&:hover': { backgroundColor: 'rgba(220, 53, 69, 0.1)' }
                             }}
@@ -919,59 +916,49 @@ const EditCourse = () => {
                           </IconButton>
                         </Box>
                       </Box>
-                      
+
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
                         {chapter.description}
                       </Typography>
-                      
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-                        <Chip
-                          icon={<VideoIcon />}
-                          label={`${chapter.videos?.length || 0} ${courseData.contentType === 'video' ? 'videos' : 'lessons'}`}
-                          size="small"
-                          variant="outlined"
-                          sx={{ 
-                            borderColor: '#0F3C60',
-                            color: '#0F3C60',
-                            '& .MuiChip-icon': { color: '#0F3C60' }
-                          }}
-                        />
-                        <Button
-                          size="small"
-                          startIcon={<AddIcon />}
-                          onClick={() => {
-                            console.log('🆕 Adding new video to chapter:', chapter._id);
-                            setEditingVideo(null);
-                            setSelectedChapter({ title: '', description: '', videoUrl: '', chapterId: chapter._id });
-                            setOpenVideoDialog(true);
-                          }}
-                          disabled={!courseData.contentType}
-                          sx={{
-                            background: '#0F3C60',
-                            color: 'white',
-                            '&:hover': { background: '#3367d6' },
-                            '&:disabled': { 
-                              background: '#e0e0e0',
-                              color: '#9e9e9e'
-                            }
-                          }}
-                        >
-                          Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
-                        </Button>
-                      </Box>
+
+                   
 
                       {chapter.videos && chapter.videos.length > 0 && (
                         <Box sx={{ mt: 3 }}>
-                          <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
-                            📹 Lessons ({chapter.videos.length})
-                          </Typography>
-                          <List dense sx={{ p: 0 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                            <Typography variant="subtitle2" sx={{ mb: 0, fontWeight: 600, color: '#2c3e50' }}>
+                              Lessons ({chapter.videos.length})
+                            </Typography>
+                            <Button
+                              size="small"
+                              startIcon={<AddIcon />}
+                              onClick={() => {
+                                console.log('🆕 Adding new video to chapter:', chapter._id);
+                                setEditingVideo(null);
+                                setSelectedChapter({ title: '', description: '', videoUrl: '', chapterId: chapter._id });
+                                setOpenVideoDialog(true);
+                              }}
+                              disabled={!courseData.contentType}
+                              sx={{
+                                background: '#0F3C60',
+                                color: 'white',
+                                '&:hover': { background: '#3367d6' },
+                                '&:disabled': {
+                                  background: '#e0e0e0',
+                                  color: '#9e9e9e'
+                                }
+                              }}
+                            >
+                              Add {courseData.contentType === 'video' ? 'Video' : 'Lesson'}
+                            </Button>
+                          </Box>
+                          <List dense sx={{ p: 0, m: 0 }}>
                             {chapter.videos.map((video, videoIndex) => (
-                              <ListItem 
-                                key={video._id} 
-                                sx={{ 
-                                  pl: 0, 
-                                  pr: 0, 
+                              <ListItem
+                                key={video._id}
+                                sx={{
+                                  pl: 0,
+                                  pr: 0,
                                   mb: 1,
                                   p: 2,
                                   border: '1px solid #f0f0f0',
@@ -985,10 +972,10 @@ const EditCourse = () => {
                                 <ListItemText
                                   primary={
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                                      <Box sx={{ 
-                                        width: 24, 
-                                        height: 24, 
-                                        borderRadius: '50%', 
+                                      <Box sx={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '50%',
                                         backgroundColor: '#0F3C60',
                                         display: 'flex',
                                         alignItems: 'center',
@@ -1016,7 +1003,7 @@ const EditCourse = () => {
                                     <IconButton
                                       size="small"
                                       onClick={() => handleEditVideo(video, chapter._id)}
-                                      sx={{ 
+                                      sx={{
                                         color: '#0F3C60',
                                         '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
                                       }}
@@ -1026,7 +1013,7 @@ const EditCourse = () => {
                                     <IconButton
                                       size="small"
                                       onClick={() => handleDeleteVideo(video._id, chapter._id)}
-                                      sx={{ 
+                                      sx={{
                                         color: '#dc3545',
                                         '&:hover': { backgroundColor: 'rgba(220, 53, 69, 0.1)' }
                                       }}
@@ -1053,25 +1040,25 @@ const EditCourse = () => {
         <Card sx={{ p: 4 }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, color: '#2c3e50' }}>
-              🔍 Review & Update Course
+              Review & Update Course
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Review your course details before updating
             </Typography>
           </Box>
-          
+
           <Grid container spacing={4}>
             <Grid item size={{ xs: 12, md: 6 }}>
-              <Card sx={{ 
+              <Card sx={{
                 border: '1px solid #e0e0e0',
                 borderRadius: 3,
                 background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
               }}>
                 <CardContent sx={{ p: 4 }}>
                   <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
-                    📋 Course Information
+                    Course Information
                   </Typography>
-                  
+
                   <Box sx={{ mb: 4 }}>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Course Title
@@ -1080,7 +1067,7 @@ const EditCourse = () => {
                       {courseData.title}
                     </Typography>
                   </Box>
-                  
+
                   <Box sx={{ mb: 4 }}>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Description
@@ -1089,16 +1076,16 @@ const EditCourse = () => {
                       {courseData.description}
                     </Typography>
                   </Box>
-                  
+
                   <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
                       <Box sx={{ mb: 3 }}>
                         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                           Category
                         </Typography>
-                        <Chip 
-                          label={courseData.category} 
-                          color="primary" 
+                        <Chip
+                          label={courseData.category}
+                          color="primary"
                           sx={{ fontWeight: 500 }}
                         />
                       </Box>
@@ -1109,9 +1096,9 @@ const EditCourse = () => {
                         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                           Target Audience
                         </Typography>
-                        <Chip 
-                          label={courseData.targetAudience} 
-                          color="secondary" 
+                        <Chip
+                          label={courseData.targetAudience}
+                          color="secondary"
                           sx={{ fontWeight: 500 }}
                         />
                       </Box>
@@ -1121,38 +1108,38 @@ const EditCourse = () => {
                         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                           Content Type
                         </Typography>
-                        <Chip 
+                        <Chip
                           icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
-                          label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'} 
+                          label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'}
                           color="success"
                           sx={{ fontWeight: 500 }}
                         />
                       </Box>
                     </Grid>
                   </Grid>
-                  
+
                 </CardContent>
               </Card>
             </Grid>
-            
+
             <Grid item size={{ xs: 12, md: 6 }}>
-              <Card sx={{ 
+              <Card sx={{
                 border: '1px solid #e0e0e0',
                 borderRadius: 3,
                 background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
               }}>
                 <CardContent sx={{ p: 4 }}>
                   <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
-                    📊 Content Summary
+                    Content Summary
                   </Typography>
-                  
+
                   <Box sx={{ mb: 4 }}>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Total Chapters
                     </Typography>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
                       gap: 2,
                       p: 2,
                       backgroundColor: 'rgba(66, 133, 244, 0.1)',
@@ -1167,14 +1154,14 @@ const EditCourse = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <Box sx={{ mb: 4 }}>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Total {courseData.contentType === 'video' ? 'Videos' : 'Lessons'}
                     </Typography>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
                       gap: 2,
                       p: 2,
                       backgroundColor: 'rgba(52, 168, 83, 0.1)',
@@ -1189,12 +1176,12 @@ const EditCourse = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <Box>
                     <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
                       Course Type
                     </Typography>
-                    <Chip 
+                    <Chip
                       icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
                       label={courseData.contentType === 'video' ? 'Video Course' : 'Text Course'}
                       color="success"
@@ -1236,7 +1223,7 @@ const EditCourse = () => {
           >
             Back
           </Button>
-          
+
           <Box>
             {activeStep === steps.length - 1 ? (
               <Button
@@ -1281,11 +1268,11 @@ const EditCourse = () => {
       </Card>
 
       {/* Chapter Dialog */}
-      <Dialog 
+      <Dialog
         key={editingChapter ? `edit-chapter-${editingChapter._id}` : 'new-chapter'}
-        open={openChapterDialog} 
-        onClose={() => setOpenChapterDialog(false)} 
-        maxWidth="sm" 
+        open={openChapterDialog}
+        onClose={() => setOpenChapterDialog(false)}
+        maxWidth="sm"
         fullWidth
       >
         <DialogTitle>
@@ -1334,7 +1321,7 @@ const EditCourse = () => {
             videoUrl: '',
             videoFile: null,
           });
-          
+
           // TinyMCE editor configuration
           const handleEditorChange = (content) => {
             setFormData(prev => ({ ...prev, content }));
@@ -1342,7 +1329,7 @@ const EditCourse = () => {
 
           useEffect(() => {
             console.log('🎬 VideoDialog: video prop changed:', video);
-            
+
             if (video) {
               console.log('📝 VideoDialog: Setting form data for editing video:', video.title);
               setFormData({
@@ -1354,7 +1341,7 @@ const EditCourse = () => {
                 videoUrl: video.videoUrl || '',
                 videoFile: video.videoFile || null,
               });
-              
+
 
             } else {
               console.log('🆕 VideoDialog: Resetting form data for new video');
@@ -1375,7 +1362,7 @@ const EditCourse = () => {
             console.log('🔍 VideoDialog: Validating form data:', formData);
             console.log('📝 VideoDialog: Title length:', formData.title?.length);
             console.log('📝 VideoDialog: Title trimmed:', formData.title?.trim()?.length);
-            
+
             // Validate required fields
             if (!formData.title?.trim()) {
               console.error('❌ VideoDialog: Title validation failed');
@@ -1387,7 +1374,7 @@ const EditCourse = () => {
               alert('Please enter a video description');
               return;
             }
-            
+
             // Validate video content based on type
             if (formData.videoType === 'upload' && !formData.videoFile) {
               console.error('❌ VideoDialog: Video file validation failed');
@@ -1399,7 +1386,7 @@ const EditCourse = () => {
               alert('Please enter a video URL');
               return;
             }
-            
+
             console.log('✅ VideoDialog: Validation passed, saving video data:', formData);
             onSave(formData);
           };
@@ -1422,115 +1409,115 @@ const EditCourse = () => {
             }
           };
 
-            // Enhanced helper functions to extract video IDs from URLs
-  const getYouTubeVideoId = (url) => {
-    if (!url) return null;
-    
-    // Handle various YouTube URL formats
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/watch\?.*&v=)([^#&?]{11})/,
-      /youtube\.com\/watch\?.*v=([^#&?]{11})/,
-      /youtu\.be\/([^#&?]{11})/,
-      /youtube\.com\/embed\/([^#&?]{11})/,
-      /youtube\.com\/v\/([^#&?]{11})/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1] && match[1].length === 11) {
-        return match[1];
-      }
-    }
-    return null;
-  };
+          // Enhanced helper functions to extract video IDs from URLs
+          const getYouTubeVideoId = (url) => {
+            if (!url) return null;
 
-  const getVimeoVideoId = (url) => {
-    if (!url) return null;
-    
-    // Handle various Vimeo URL formats
-    const patterns = [
-      /vimeo\.com\/([0-9]+)/,
-      /vimeo\.com\/groups\/[^\/]+\/videos\/([0-9]+)/,
-      /vimeo\.com\/channels\/[^\/]+\/([0-9]+)/,
-      /player\.vimeo\.com\/video\/([0-9]+)/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    return null;
-  };
+            // Handle various YouTube URL formats
+            const patterns = [
+              /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/watch\?.*&v=)([^#&?]{11})/,
+              /youtube\.com\/watch\?.*v=([^#&?]{11})/,
+              /youtu\.be\/([^#&?]{11})/,
+              /youtube\.com\/embed\/([^#&?]{11})/,
+              /youtube\.com\/v\/([^#&?]{11})/
+            ];
 
-  const getLoomVideoId = (url) => {
-    if (!url) return null;
-    
-    // Handle various Loom URL formats
-    const patterns = [
-      /loom\.com\/share\/([a-zA-Z0-9]+)/,
-      /loom\.com\/embed\/([a-zA-Z0-9]+)/,
-      /useloom\.com\/share\/([a-zA-Z0-9]+)/,
-      /useloom\.com\/embed\/([a-zA-Z0-9]+)/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match && match[1]) {
-        return match[1];
-      }
-    }
-    return null;
-  };
+            for (const pattern of patterns) {
+              const match = url.match(pattern);
+              if (match && match[1] && match[1].length === 11) {
+                return match[1];
+              }
+            }
+            return null;
+          };
 
-  // Enhanced URL validation function
-  const validateVideoUrl = (url, videoType) => {
-    if (!url || !url.trim()) return false;
-    
-    const trimmedUrl = url.trim();
-    
-    switch (videoType) {
-      case 'youtube':
-        return getYouTubeVideoId(trimmedUrl) !== null;
-      case 'vimeo':
-        return getVimeoVideoId(trimmedUrl) !== null;
-      case 'loom':
-        return getLoomVideoId(trimmedUrl) !== null;
-      case 'upload':
-        return true; // File uploads are handled separately
-      default:
-        return false;
-    }
-  };
+          const getVimeoVideoId = (url) => {
+            if (!url) return null;
 
-  // Get embed URL for preview
-  const getEmbedUrl = (url, videoType) => {
-    if (!url || !url.trim()) return '';
-    
-    const trimmedUrl = url.trim();
-    
-    switch (videoType) {
-      case 'youtube':
-        const youtubeId = getYouTubeVideoId(trimmedUrl);
-        return youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : '';
-      case 'vimeo':
-        const vimeoId = getVimeoVideoId(trimmedUrl);
-        return vimeoId ? `https://player.vimeo.com/video/${vimeoId}` : '';
-      case 'loom':
-        const loomId = getLoomVideoId(trimmedUrl);
-        return loomId ? `https://www.loom.com/embed/${loomId}` : '';
-      default:
-        return trimmedUrl;
-    }
-  };
+            // Handle various Vimeo URL formats
+            const patterns = [
+              /vimeo\.com\/([0-9]+)/,
+              /vimeo\.com\/groups\/[^\/]+\/videos\/([0-9]+)/,
+              /vimeo\.com\/channels\/[^\/]+\/([0-9]+)/,
+              /player\.vimeo\.com\/video\/([0-9]+)/
+            ];
+
+            for (const pattern of patterns) {
+              const match = url.match(pattern);
+              if (match && match[1]) {
+                return match[1];
+              }
+            }
+            return null;
+          };
+
+          const getLoomVideoId = (url) => {
+            if (!url) return null;
+
+            // Handle various Loom URL formats
+            const patterns = [
+              /loom\.com\/share\/([a-zA-Z0-9]+)/,
+              /loom\.com\/embed\/([a-zA-Z0-9]+)/,
+              /useloom\.com\/share\/([a-zA-Z0-9]+)/,
+              /useloom\.com\/embed\/([a-zA-Z0-9]+)/
+            ];
+
+            for (const pattern of patterns) {
+              const match = url.match(pattern);
+              if (match && match[1]) {
+                return match[1];
+              }
+            }
+            return null;
+          };
+
+          // Enhanced URL validation function
+          const validateVideoUrl = (url, videoType) => {
+            if (!url || !url.trim()) return false;
+
+            const trimmedUrl = url.trim();
+
+            switch (videoType) {
+              case 'youtube':
+                return getYouTubeVideoId(trimmedUrl) !== null;
+              case 'vimeo':
+                return getVimeoVideoId(trimmedUrl) !== null;
+              case 'loom':
+                return getLoomVideoId(trimmedUrl) !== null;
+              case 'upload':
+                return true; // File uploads are handled separately
+              default:
+                return false;
+            }
+          };
+
+          // Get embed URL for preview
+          const getEmbedUrl = (url, videoType) => {
+            if (!url || !url.trim()) return '';
+
+            const trimmedUrl = url.trim();
+
+            switch (videoType) {
+              case 'youtube':
+                const youtubeId = getYouTubeVideoId(trimmedUrl);
+                return youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : '';
+              case 'vimeo':
+                const vimeoId = getVimeoVideoId(trimmedUrl);
+                return vimeoId ? `https://player.vimeo.com/video/${vimeoId}` : '';
+              case 'loom':
+                const loomId = getLoomVideoId(trimmedUrl);
+                return loomId ? `https://www.loom.com/embed/${loomId}` : '';
+              default:
+                return trimmedUrl;
+            }
+          };
 
           return (
-            <Dialog 
+            <Dialog
               key={video ? `edit-${video._id}` : 'new-video'}
-              open={open} 
-              onClose={onClose} 
-              maxWidth="md" 
+              open={open}
+              onClose={onClose}
+              maxWidth="md"
               fullWidth
             >
               <DialogTitle>
@@ -1547,7 +1534,7 @@ const EditCourse = () => {
                       onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                     />
                   </Grid>
-                  
+
                   <Grid item size={12}>
                     <TextField
                       fullWidth
@@ -1605,73 +1592,73 @@ const EditCourse = () => {
                         <Grid container spacing={2}>
                           {(() => {
                             const videoTypes = [
-                              { 
-                                value: 'upload', 
-                                label: 'Upload Video', 
+                              {
+                                value: 'upload',
+                                label: 'Upload Video',
                                 icon: UploadIcon,
                                 description: 'Upload video file directly',
                                 color: '#0F3C60'
                               },
-                              { 
-                                value: 'youtube', 
-                                label: 'YouTube Link', 
+                              {
+                                value: 'youtube',
+                                label: 'YouTube Link',
                                 icon: PlayIcon,
                                 description: 'Paste YouTube video URL',
                                 color: '#ff0000'
                               },
-                              { 
-                                value: 'loom', 
-                                label: 'Loom Link', 
+                              {
+                                value: 'loom',
+                                label: 'Loom Link',
                                 icon: PlayIcon,
                                 description: 'Paste Loom video URL',
                                 color: '#625df5'
                               },
-                              { 
-                                value: 'vimeo', 
-                                label: 'Vimeo Link', 
+                              {
+                                value: 'vimeo',
+                                label: 'Vimeo Link',
                                 icon: PlayIcon,
                                 description: 'Paste Vimeo video URL',
                                 color: '#1ab7ea'
                               },
                             ];
                             return videoTypes.map((type) => (
-                            <Grid item size={{ xs: 12, sm: 6, md: 3 }} key={type.value}>
-                              <Card
-                                sx={{
-                                  cursor: 'pointer',
-                                  border: formData.videoType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
-                                  background: formData.videoType === type.value ? '#f8f9ff' : '#ffffff',
-                                  transition: 'all 0.3s ease',
-                                  '&:hover': {
-                                    borderColor: type.color,
-                                    background: '#f8f9ff',
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                  }
-                                }}
-                                onClick={() => setFormData(prev => ({ ...prev, videoType: type.value }))}
-                              >
-                                <CardContent sx={{ p: 3, textAlign: 'center' }}>
-                                  <Box sx={{ 
-                                    mb: 2,
-                                    color: formData.videoType === type.value ? type.color : '#666666'
-                                  }}>
-                                    <type.icon />
-                                  </Box>
-                                  <Typography variant="body1" sx={{ 
-                                    fontWeight: 600,
-                                    color: formData.videoType === type.value ? type.color : '#000000',
-                                    mb: 1
-                                  }}>
-                                    {type.label}
-                                  </Typography>
-                                  <Typography variant="caption" color="text.secondary">
-                                    {type.description}
-                                  </Typography>
-                                </CardContent>
-                              </Card>
-                            </Grid>
-                          ));
+                              <Grid item size={{ xs: 12, sm: 6, md: 3 }} key={type.value}>
+                                <Card
+                                  sx={{
+                                    cursor: 'pointer',
+                                    border: formData.videoType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
+                                    background: formData.videoType === type.value ? '#f8f9ff' : '#ffffff',
+                                    transition: 'all 0.3s ease',
+                                    '&:hover': {
+                                      borderColor: type.color,
+                                      background: '#f8f9ff',
+                                      transform: 'translateY(-2px)',
+                                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                                    }
+                                  }}
+                                  onClick={() => setFormData(prev => ({ ...prev, videoType: type.value }))}
+                                >
+                                  <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                                    <Box sx={{
+                                      mb: 2,
+                                      color: formData.videoType === type.value ? type.color : '#666666'
+                                    }}>
+                                      <type.icon />
+                                    </Box>
+                                    <Typography variant="body1" sx={{
+                                      fontWeight: 600,
+                                      color: formData.videoType === type.value ? type.color : '#000000',
+                                      mb: 1
+                                    }}>
+                                      {type.label}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      {type.description}
+                                    </Typography>
+                                  </CardContent>
+                                </Card>
+                              </Grid>
+                            ));
                           })()}
                         </Grid>
                       </Grid>
@@ -1768,8 +1755,8 @@ const EditCourse = () => {
                               onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
                               error={formData.videoUrl && !validateVideoUrl(formData.videoUrl, formData.videoType)}
                               helperText={
-                                formData.videoUrl && !validateVideoUrl(formData.videoUrl, formData.videoType) 
-                                  ? `Invalid ${formData.videoType} URL format. Please check the URL and try again.` 
+                                formData.videoUrl && !validateVideoUrl(formData.videoUrl, formData.videoType)
+                                  ? `Invalid ${formData.videoType} URL format. Please check the URL and try again.`
                                   : ''
                               }
                               InputProps={{
@@ -1791,9 +1778,9 @@ const EditCourse = () => {
                               }}
                             />
                             <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                              Example: {formData.videoType === 'youtube' ? 'https://www.youtube.com/watch?v=VIDEO_ID' : 
-                                       formData.videoType === 'vimeo' ? 'https://vimeo.com/VIDEO_ID' : 
-                                       'https://www.loom.com/share/VIDEO_ID'}
+                              Example: {formData.videoType === 'youtube' ? 'https://www.youtube.com/watch?v=VIDEO_ID' :
+                                formData.videoType === 'vimeo' ? 'https://vimeo.com/VIDEO_ID' :
+                                  'https://www.loom.com/share/VIDEO_ID'}
                             </Typography>
                           </Box>
                         )}
@@ -1819,9 +1806,9 @@ const EditCourse = () => {
                                     </Typography>
                                   </Box>
                                 </Box>
-                                <Box sx={{ 
-                                  width: '100%', 
-                                  height: 200, 
+                                <Box sx={{
+                                  width: '100%',
+                                  height: 200,
                                   background: '#000000',
                                   borderRadius: 2,
                                   display: 'flex',
@@ -1852,20 +1839,20 @@ const EditCourse = () => {
                                       {formData.title || `${formData.videoType.charAt(0).toUpperCase() + formData.videoType.slice(1)} Video`}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                      {formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl) ? 
+                                      {formData.videoType === 'youtube' && getYouTubeVideoId(formData.videoUrl) ?
                                         `Video ID: ${getYouTubeVideoId(formData.videoUrl)}` :
                                         formData.videoType === 'vimeo' && getVimeoVideoId(formData.videoUrl) ?
-                                        `Video ID: ${getVimeoVideoId(formData.videoUrl)}` :
-                                        formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl) ?
-                                        `Video ID: ${getLoomVideoId(formData.videoUrl)}` :
-                                        formData.videoUrl
+                                          `Video ID: ${getVimeoVideoId(formData.videoUrl)}` :
+                                          formData.videoType === 'loom' && getLoomVideoId(formData.videoUrl) ?
+                                            `Video ID: ${getLoomVideoId(formData.videoUrl)}` :
+                                            formData.videoUrl
                                       }
                                     </Typography>
                                   </Box>
                                 </Box>
-                                <Box sx={{ 
-                                  width: '100%', 
-                                  height: 300, 
+                                <Box sx={{
+                                  width: '100%',
+                                  height: 300,
                                   background: '#000000',
                                   borderRadius: 2,
                                   display: 'flex',
@@ -1909,15 +1896,15 @@ const EditCourse = () => {
                                   {((formData.videoType === 'youtube' && !getYouTubeVideoId(formData.videoUrl)) ||
                                     (formData.videoType === 'vimeo' && !getVimeoVideoId(formData.videoUrl)) ||
                                     (formData.videoType === 'loom' && !getLoomVideoId(formData.videoUrl))) && (
-                                    <Box sx={{ textAlign: 'center', color: 'white' }}>
-                                      <Typography variant="h6" sx={{ mb: 2 }}>
-                                        Invalid {formData.videoType} URL
-                                      </Typography>
-                                      <Typography variant="body2">
-                                        Please enter a valid {formData.videoType} video URL
-                                      </Typography>
-                                    </Box>
-                                  )}
+                                      <Box sx={{ textAlign: 'center', color: 'white' }}>
+                                        <Typography variant="h6" sx={{ mb: 2 }}>
+                                          Invalid {formData.videoType} URL
+                                        </Typography>
+                                        <Typography variant="body2">
+                                          Please enter a valid {formData.videoType} video URL
+                                        </Typography>
+                                      </Box>
+                                    )}
                                 </Box>
                               </Box>
                             ) : null}
@@ -1933,7 +1920,7 @@ const EditCourse = () => {
                         Lesson Content
                       </Typography>
                       <Card sx={{ p: 2, border: '1px solid #e0e0e0' }}>
-                        <Box sx={{ 
+                        <Box sx={{
                           '& .tox-tinymce': {
                             border: '1px solid #e0e0e0',
                             borderRadius: '4px',
@@ -1979,11 +1966,11 @@ const EditCourse = () => {
               </DialogContent>
               <DialogActions>
                 <Button onClick={onClose}>Cancel</Button>
-                <Button 
+                <Button
                   onClick={() => {
                     console.log('Add/Update button clicked');
                     handleSubmit();
-                  }} 
+                  }}
                   variant="contained"
                 >
                   {video ? 'Update' : 'Add'} {contentType === 'video' ? 'Video' : 'Lesson'}
@@ -1993,7 +1980,7 @@ const EditCourse = () => {
           );
         };
 
-        return <VideoDialog 
+        return <VideoDialog
           open={openVideoDialog}
           onClose={() => setOpenVideoDialog(false)}
           onSave={handleSaveVideo}

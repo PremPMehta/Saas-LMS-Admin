@@ -140,11 +140,11 @@ const CommunityUsers = () => {
       open: true,
       type: action,
       title: action === 'approve' ? 'Approve User' : action === 'reject' ? 'Reject User' : 'Deactivate User',
-      content: action === 'approve' 
+      content: action === 'approve'
         ? `Are you sure you want to approve ${user.firstName} ${user.lastName}?`
         : action === 'reject'
-        ? `Are you sure you want to reject ${user.firstName} ${user.lastName}?`
-        : `Are you sure you want to deactivate ${user.firstName} ${user.lastName}?`,
+          ? `Are you sure you want to reject ${user.firstName} ${user.lastName}?`
+          : `Are you sure you want to deactivate ${user.firstName} ${user.lastName}?`,
     });
   };
 
@@ -259,256 +259,256 @@ const CommunityUsers = () => {
 
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4 }}>
-          <Container maxWidth="xl">
-        {/* Page Header */}
-        <Fade in timeout={800}>
-          <Box sx={{ mb: 4 }}>
-            <Typography
-              variant="h3"
-              component="h1"
-              sx={{
-                fontWeight: 800,
-                color: 'text.primary',
-                mb: 1,
-                textAlign: { xs: 'center', md: 'left' },
-                fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-                textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-              }}
-            >
-              Community Users
-            </Typography>
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              sx={{
-                fontWeight: 500,
-                textAlign: { xs: 'center', md: 'left' },
-                mb: 3,
-              }}
-            >
-              Manage community users and approvals
-            </Typography>
-          </Box>
-        </Fade>
-
-        {/* Message Alert */}
-        {message.text && (
-          <Alert 
-            severity={message.type} 
-            sx={{ mb: 3 }}
-            onClose={() => setMessage({ type: '', text: '' })}
-          >
-            {message.text}
-          </Alert>
-        )}
-
-        {/* Tabs */}
-        <Grow in timeout={1000}>
-          <Paper
-            sx={{
-              borderRadius: 3,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              overflow: 'hidden',
-              mb: 4,
-            }}
-          >
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              sx={{
-                borderBottom: 1,
-                borderColor: 'divider',
-                '& .MuiTab-root': {
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  fontSize: '1.1rem',
-                },
-              }}
-            >
-              <Tab
-                icon={<PeopleIcon />}
-                label="All Users"
-                iconPosition="start"
-              />
-              <Tab
-                icon={<AdminIcon />}
-                label="Approval Pending Users"
-                iconPosition="start"
-              />
-            </Tabs>
-
-            {/* Search Bar */}
-            <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
-              <TextField
-                fullWidth
-                placeholder="Search users by name or email..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ maxWidth: 400 }}
-              />
-            </Box>
-
-            {/* Users Table */}
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Community</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Created</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {users.length > 0 ? (
-                    users.map((user) => (
-                      <TableRow key={user._id} hover>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                            {user.firstName} {user.lastName}
-                          </Box>
-                        </TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.communityId?.name || 'N/A'}</TableCell>
-                        <TableCell>{getStatusChip(user)}</TableCell>
-                        <TableCell>{formatDate(user.createdAt)}</TableCell>
-                        <TableCell>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
-                            {user.approvalStatus === 'pending' && (
-                              <>
-                                <Tooltip title="Approve">
-                                  <IconButton
-                                    color="success"
-                                    onClick={() => handleAction(user, 'approve')}
-                                    size="small"
-                                  >
-                                    <CheckIcon />
-                                  </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Reject">
-                                  <IconButton
-                                    color="error"
-                                    onClick={() => handleAction(user, 'reject')}
-                                    size="small"
-                                  >
-                                    <CancelIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              </>
-                            )}
-                            {user.approvalStatus === 'approved' && !user.isDeactivated && (
-                              <Tooltip title="Deactivate">
-                                <IconButton
-                                  color="warning"
-                                  onClick={() => handleAction(user, 'deactivate')}
-                                  size="small"
-                                >
-                                  <BlockIcon />
-                                </IconButton>
-                              </Tooltip>
-                            )}
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8 }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                          {tabValue === 1 ? (
-                            <>
-                              <HourglassIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
-                              <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                No Pending Approvals
-                              </Typography>
-                              <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
-                                All user registrations have been reviewed. New approval requests will appear here.
-                              </Typography>
-                            </>
-                          ) : (
-                            <>
-                              <PeopleIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
-                              <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                No Users Found
-                              </Typography>
-                              <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
-                                {searchTerm ? 'No users match your search criteria. Try adjusting your search terms.' : 'No users have registered yet.'}
-                              </Typography>
-                            </>
-                          )}
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            {/* Pagination */}
-            {pagination.totalPages > 1 && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-                <Pagination
-                  count={pagination.totalPages}
-                  page={pagination.currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
-                  size="large"
-                />
+          <Container maxWidth="xxl">
+            {/* Page Header */}
+            <Fade in timeout={800}>
+              <Box sx={{ mb: 4 }}>
+                <Typography
+                  variant="h3"
+                  component="h1"
+                  sx={{
+                    fontWeight: 800,
+                    color: 'text.primary',
+                    mb: 1,
+                    textAlign: { xs: 'center', md: 'left' },
+                    fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                    textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  Community Users
+                </Typography>
+                <Typography
+                  variant="h6"
+                  color="text.secondary"
+                  sx={{
+                    fontWeight: 500,
+                    textAlign: { xs: 'center', md: 'left' },
+                    mb: 3,
+                  }}
+                >
+                  Manage community users and approvals
+                </Typography>
               </Box>
-            )}
-          </Paper>
-        </Grow>
+            </Fade>
 
-        {/* Action Confirmation Dialog */}
-        <Dialog open={actionDialog.open} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-          <DialogTitle>{actionDialog.title}</DialogTitle>
-          <DialogContent>
-            <Typography sx={{ mb: 2 }}>{actionDialog.content}</Typography>
-            {actionDialog.type === 'reject' && (
-              <TextField
-                fullWidth
-                label="Rejection Reason"
-                multiline
-                rows={3}
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                sx={{ mt: 2 }}
-              />
+            {/* Message Alert */}
+            {message.text && (
+              <Alert
+                severity={message.type}
+                sx={{ mb: 3 }}
+                onClose={() => setMessage({ type: '', text: '' })}
+              >
+                {message.text}
+              </Alert>
             )}
-            {actionDialog.type === 'deactivate' && (
-              <TextField
-                fullWidth
-                label="Deactivation Reason"
-                multiline
-                rows={3}
-                value={deactivationReason}
-                onChange={(e) => setDeactivationReason(e.target.value)}
-                sx={{ mt: 2 }}
-              />
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button
-              onClick={handleConfirmAction}
-              variant="contained"
-              color={actionDialog.type === 'approve' ? 'success' : actionDialog.type === 'reject' ? 'error' : 'warning'}
-              disabled={actionLoading}
-            >
-              {actionLoading ? <CircularProgress size={20} /> : 'Confirm'}
-            </Button>
-          </DialogActions>
-        </Dialog>
+
+            {/* Tabs */}
+            <Grow in timeout={1000}>
+              <Paper
+                sx={{
+                  borderRadius: 3,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  overflow: 'hidden',
+                  mb: 4,
+                }}
+              >
+                <Tabs
+                  value={tabValue}
+                  onChange={handleTabChange}
+                  sx={{
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                    '& .MuiTab-root': {
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '1.1rem',
+                    },
+                  }}
+                >
+                  <Tab
+                    icon={<PeopleIcon />}
+                    label="All Users"
+                    iconPosition="start"
+                  />
+                  <Tab
+                    icon={<AdminIcon />}
+                    label="Approval Pending Users"
+                    iconPosition="start"
+                  />
+                </Tabs>
+
+                {/* Search Bar */}
+                <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
+                  <TextField
+                    fullWidth
+                    placeholder="Search users by name or email..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ maxWidth: 400 }}
+                  />
+                </Box>
+
+                {/* Users Table */}
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Email</TableCell>
+                        <TableCell>Community</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Created</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {users.length > 0 ? (
+                        users.map((user) => (
+                          <TableRow key={user._id} hover>
+                            <TableCell>
+                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                                {user.firstName} {user.lastName}
+                              </Box>
+                            </TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell>{user.communityId?.name || 'N/A'}</TableCell>
+                            <TableCell>{getStatusChip(user)}</TableCell>
+                            <TableCell>{formatDate(user.createdAt)}</TableCell>
+                            <TableCell>
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                {user.approvalStatus === 'pending' && (
+                                  <>
+                                    <Tooltip title="Approve">
+                                      <IconButton
+                                        color="success"
+                                        onClick={() => handleAction(user, 'approve')}
+                                        size="small"
+                                      >
+                                        <CheckIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Reject">
+                                      <IconButton
+                                        color="error"
+                                        onClick={() => handleAction(user, 'reject')}
+                                        size="small"
+                                      >
+                                        <CancelIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </>
+                                )}
+                                {user.approvalStatus === 'approved' && !user.isDeactivated && (
+                                  <Tooltip title="Deactivate">
+                                    <IconButton
+                                      color="warning"
+                                      onClick={() => handleAction(user, 'deactivate')}
+                                      size="small"
+                                    >
+                                      <BlockIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                )}
+                              </Box>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8 }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                              {tabValue === 1 ? (
+                                <>
+                                  <HourglassIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
+                                  <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                    No Pending Approvals
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
+                                    All user registrations have been reviewed. New approval requests will appear here.
+                                  </Typography>
+                                </>
+                              ) : (
+                                <>
+                                  <PeopleIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
+                                  <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                    No Users Found
+                                  </Typography>
+                                  <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
+                                    {searchTerm ? 'No users match your search criteria. Try adjusting your search terms.' : 'No users have registered yet.'}
+                                  </Typography>
+                                </>
+                              )}
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                {/* Pagination */}
+                {pagination.totalPages > 1 && (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                    <Pagination
+                      count={pagination.totalPages}
+                      page={pagination.currentPage}
+                      onChange={handlePageChange}
+                      color="primary"
+                      size="large"
+                    />
+                  </Box>
+                )}
+              </Paper>
+            </Grow>
+
+            {/* Action Confirmation Dialog */}
+            <Dialog open={actionDialog.open} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+              <DialogTitle>{actionDialog.title}</DialogTitle>
+              <DialogContent>
+                <Typography sx={{ mb: 2 }}>{actionDialog.content}</Typography>
+                {actionDialog.type === 'reject' && (
+                  <TextField
+                    fullWidth
+                    label="Rejection Reason"
+                    multiline
+                    rows={3}
+                    value={rejectionReason}
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    sx={{ mt: 2 }}
+                  />
+                )}
+                {actionDialog.type === 'deactivate' && (
+                  <TextField
+                    fullWidth
+                    label="Deactivation Reason"
+                    multiline
+                    rows={3}
+                    value={deactivationReason}
+                    onChange={(e) => setDeactivationReason(e.target.value)}
+                    sx={{ mt: 2 }}
+                  />
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseDialog}>Cancel</Button>
+                <Button
+                  onClick={handleConfirmAction}
+                  variant="contained"
+                  color={actionDialog.type === 'approve' ? 'success' : actionDialog.type === 'reject' ? 'error' : 'warning'}
+                  disabled={actionLoading}
+                >
+                  {actionLoading ? <CircularProgress size={20} /> : 'Confirm'}
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Container>
         </Box>
       </Box>

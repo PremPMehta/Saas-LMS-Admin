@@ -13,7 +13,12 @@ import {
   Button,
   Paper,
   CircularProgress,
-  Alert
+  Alert,
+  Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -132,7 +137,7 @@ const categories = [
 // Target audiences for search functionality
 const TARGET_AUDIENCES = [
   'Student',
-  'Professional', 
+  'Professional',
   'Entrepreneur',
   'Freelancer',
   'Teacher/Instructor',
@@ -155,15 +160,23 @@ const Discovery = () => {
   const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(9);
+  
+  // Modal state
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [hasScrolledTwoRows, setHasScrolledTwoRows] = useState(false);
+
   // Category slider functions
   const scrollCategories = (direction) => {
     const container = document.getElementById('category-slider');
     if (container) {
       const scrollAmount = 200; // Adjust scroll distance
-      const newPosition = direction === 'left' 
+      const newPosition = direction === 'left'
         ? Math.max(0, categoryScrollPosition - scrollAmount)
         : categoryScrollPosition + scrollAmount;
-      
+
       container.scrollTo({
         left: newPosition,
         behavior: 'smooth'
@@ -180,7 +193,7 @@ const Discovery = () => {
       [courseId]: !prev[courseId]
     }));
   };
-  
+
   // Get community URLs for proper navigation
   const communityUrls = getCommunityUrls();
   const [loading, setLoading] = useState(true);
@@ -197,6 +210,33 @@ const Discovery = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [loginDropdownOpen]);
+
+  // Scroll detection for modal
+  useEffect(() => {
+    const handleScroll = () => {
+      const coursesContainer = document.getElementById('courses-container');
+      if (coursesContainer) {
+        const containerRect = coursesContainer.getBoundingClientRect();
+        const containerTop = containerRect.top;
+        
+        // Calculate if user has scrolled past 4-5 rows of courses (more content)
+        // Assuming each row has 3 courses and each course card is ~400px tall
+        const fourRowsHeight = 4 * 400; // 4 rows * 400px per row = 1600px
+        const scrollThreshold = containerTop + fourRowsHeight;
+        
+        // Also add a minimum scroll distance from top of page
+        const minScrollFromTop = 1200; // User must scroll at least 1200px from top
+        
+        if (window.scrollY > Math.max(scrollThreshold, minScrollFromTop) && !hasScrolledTwoRows) {
+          setHasScrolledTwoRows(true);
+          setShowLoginModal(true);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasScrolledTwoRows]);
 
   // Handle course click
   const handleCourseClick = (course) => {
@@ -220,7 +260,7 @@ const Discovery = () => {
         if (response.success && response.courses) {
           // Normalize course data for display
           const normalizedCourses = response.courses.map(course => {
-            
+
             return {
               id: course._id || course.id,
               title: course.title || 'Untitled Course',
@@ -236,7 +276,7 @@ const Discovery = () => {
               updatedAt: course.updatedAt || new Date().toISOString()
             };
           });
-          
+
           setCourses(normalizedCourses);
           setFilteredCommunities(normalizedCourses);
         } else {
@@ -265,28 +305,28 @@ const Discovery = () => {
     // Enhanced search: Filter by search term (title, description, category, or target audience)
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      
+
       // Check if search term matches any category name
-      const matchingCategory = DETAILED_CATEGORIES.find(category => 
-        category.toLowerCase().includes(searchLower) || 
+      const matchingCategory = DETAILED_CATEGORIES.find(category =>
+        category.toLowerCase().includes(searchLower) ||
         searchLower.includes(category.toLowerCase())
       );
-      
+
       // Check if search term matches any target audience
-      const matchingAudience = TARGET_AUDIENCES.find(audience => 
-        audience.toLowerCase().includes(searchLower) || 
+      const matchingAudience = TARGET_AUDIENCES.find(audience =>
+        audience.toLowerCase().includes(searchLower) ||
         searchLower.includes(audience.toLowerCase())
       );
-      
+
       if (matchingCategory) {
         // If search term matches a category, show all courses from that category
-        filtered = filtered.filter(course => 
+        filtered = filtered.filter(course =>
           course.category.toLowerCase().includes(matchingCategory.toLowerCase()) ||
           matchingCategory.toLowerCase().includes(course.category.toLowerCase())
         );
       } else if (matchingAudience) {
         // If search term matches a target audience, show all courses for that audience
-        filtered = filtered.filter(course => 
+        filtered = filtered.filter(course =>
           course.targetAudience && (
             course.targetAudience.toLowerCase().includes(matchingAudience.toLowerCase()) ||
             matchingAudience.toLowerCase().includes(course.targetAudience.toLowerCase())
@@ -304,6 +344,8 @@ const Discovery = () => {
     }
 
     setFilteredCommunities(filtered);
+    // Reset to first page when filters change
+    setCurrentPage(1);
   }, [searchTerm, selectedCategory, courses]);
 
   const formatMemberCount = (count) => {
@@ -313,16 +355,35 @@ const Discovery = () => {
     return count.toString();
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredCommunities.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredCommunities.slice(startIndex, endIndex);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+    // Close the login modal when user clicks next page
+    setShowLoginModal(false);
+    // Reset the scroll detection so modal can appear again on new page
+    setHasScrolledTwoRows(false);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh' }}>
       {/* Header */}
       <Box sx={{ bgcolor: 'white', borderBottom: '1px solid #e9ecef', py: 2 }}>
         <Container maxWidth="xl">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box>
-              <img src={logo} alt="Logo" style={{ width: '200px', height: 'auto' }} />
+            <Box sx={{
+              width: { xs: '120px', sm: '160px', md: '200px', lg: '240px' },
+              height: 'auto'
+            }}>
+              <img src={logo} alt="Logo" style={{ width: '100%', height: 'auto' }} />
             </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Box sx={{ position: 'relative' }} data-login-dropdown>
                 <Button
                   variant="outlined"
@@ -332,15 +393,15 @@ const Discovery = () => {
                   }}
                   endIcon={<KeyboardArrowDownIcon sx={{
                     transition: 'transform 0.2s ease',
-                    transform: loginDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                    transform: loginDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                   }} />}
                   sx={{
                     textTransform: 'none',
                     borderRadius: '25px',
-                    px: 4,
-                    py: 1.5,
+                    px: { xs: 0.7, sm: 3, md: 4 }, // responsive horizontal padding
+                    py: { xs: 0.6, md: 1.5 },        // responsive vertical padding
                     fontWeight: 600,
-                    fontSize: '0.95rem',
+                    fontSize: { xs: '0.7rem', sm: '0.9rem', md: '0.95rem', lg: '1rem' }, // font scales
                     borderColor: '#0F3C60',
                     color: '#FFF',
                     background: '#0F3C60',
@@ -513,35 +574,6 @@ const Discovery = () => {
                 )}
               </Box>
 
-              <Button
-                variant="contained"
-                onClick={() => navigate('/community-user-signup')}
-                sx={{
-                  textTransform: 'none',
-                  borderRadius: '25px',
-                  px: 4,
-                  py: 1.5,
-                  fontWeight: 600,
-                  fontSize: '0.95rem',
-                  borderColor: '#0F3C60',
-                  color: '#FFF',
-                  background: '#0F3C60',
-                  backdropFilter: 'blur(10px)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    borderColor: '#0F3C60',
-                    background: '#0F3C60',
-                    color: 'white',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-                    '& .MuiSvgIcon-root': {
-                      color: 'white'
-                    }
-                  }
-                }}
-              >
-                SIGN UP
-              </Button>
             </Box>
           </Box>
         </Container>
@@ -625,11 +657,11 @@ const Discovery = () => {
               disabled={categoryScrollPosition === 0}
               sx={{
                 position: 'absolute',
-                left: -50,
+                left: { xs: 0, sm: -40, md: -50 }, // shifts in for small screens
                 top: '50%',
                 transform: 'translateY(-50%)',
-                minWidth: 40,
-                height: 40,
+                minWidth: { xs: 30, sm: 35, md: 40 }, // smaller on mobile
+                height: { xs: 40, sm: 35, md: 40 },
                 borderRadius: '50%',
                 bgcolor: 'background.paper',
                 boxShadow: 2,
@@ -637,6 +669,7 @@ const Discovery = () => {
                 '&:hover': { bgcolor: 'action.hover' },
                 '&:disabled': { opacity: 0.3 }
               }}
+
             >
               <ChevronLeftIcon />
             </Button>
@@ -646,17 +679,18 @@ const Discovery = () => {
               onClick={() => scrollCategories('right')}
               sx={{
                 position: 'absolute',
-                right: -50,
+                right: { xs: 0, sm: -40, md: -50 }, // closer on smaller screens
                 top: '50%',
                 transform: 'translateY(-50%)',
-                minWidth: 40,
-                height: 40,
+                minWidth: { xs: 30, sm: 35, md: 40 }, // scale with screen size
+                height: { xs: 40, sm: 35, md: 40 },
                 borderRadius: '50%',
                 bgcolor: 'background.paper',
                 boxShadow: 2,
                 zIndex: 2,
                 '&:hover': { bgcolor: 'action.hover' }
               }}
+
             >
               <ChevronRightIcon />
             </Button>
@@ -681,7 +715,7 @@ const Discovery = () => {
                   onClick={() => setSelectedCategory(category.value)}
                   variant={selectedCategory === category.value ? 'filled' : 'outlined'}
                   color={selectedCategory === category.value ? 'primary' : 'default'}
-                  sx={{ 
+                  sx={{
                     borderRadius: '20px',
                     px: 1,
                     flexShrink: 0, // Prevent chips from shrinking
@@ -714,26 +748,26 @@ const Discovery = () => {
         {/* Communities Grid - Force 3 cards per row */}
         {!loading && !error && (
           <Box
+            id="courses-container"
             sx={{
               display: 'grid',
               gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(3, 1fr)',
-                lg: 'repeat(3, 1fr)',
-                xl: 'repeat(3, 1fr)'
+                xs: '1fr',              // 1 column on mobile
+                sm: 'repeat(2, 1fr)',   // 2 columns on small screens
+                md: 'repeat(3, 1fr)',   // 3 columns on medium and up
               },
-              gap: 3,
+              gap: { xs: 2, sm: 2.5, md: 3 }, // adjust spacing per screen size
               maxWidth: '1400px',
               mx: 'auto',
-              alignItems: 'start' // Align cards to start so they don't stretch
+              alignItems: 'start' // cards align at the top
             }}
+
           >
-            {filteredCommunities.map((community, index) => (
+            {currentItems.map((community, index) => (
               <Card
                 key={community.id || index}
                 onClick={() => handleCourseClick(community)}
-                sx={{ 
+                sx={{
                   // minHeight: '420px',
                   // height: expandedDescriptions[community.id] ? 'auto' : '420px', // Dynamic height
                   display: 'flex',
@@ -768,7 +802,7 @@ const Discovery = () => {
                     zIndex: 1
                   }}
                 >
-                  #{index + 1}
+                  #{startIndex + index + 1}
                 </Box>
 
                 <Box sx={{ position: 'relative' }}>
@@ -781,7 +815,7 @@ const Discovery = () => {
                         const title = community.title || 'Course';
                         const category = community.category || 'Education';
                         const truncatedTitle = title.length > 25 ? title.substring(0, 25) + '...' : title;
-                        
+
                         const svgContent = `
                           <svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
                             <defs>
@@ -812,18 +846,18 @@ const Discovery = () => {
                       if (community.thumbnail.startsWith('data:')) {
                         return community.thumbnail;
                       }
-                      
+
                       // If it's already a full URL (http/https), use it directly
                       if (community.thumbnail.startsWith('http')) {
                         return community.thumbnail;
                       }
-                      
+
                       // If it's a localhost URL, replace with production URL
                       if (community.thumbnail.includes('localhost')) {
                         const filename = community.thumbnail.split('/').pop();
                         return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
                       }
-                      
+
                       // If it starts with /uploads, construct the full URL
                       if (community.thumbnail.startsWith('/uploads/')) {
                         return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${community.thumbnail}`;
@@ -890,9 +924,9 @@ const Discovery = () => {
                   </Box>
                 </Box>
 
-                <CardContent sx={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
+                <CardContent sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
                   p: 3,
                   height: '100%',
                   minHeight: 0 // Allow content to shrink if needed
@@ -914,19 +948,19 @@ const Discovery = () => {
                       {community.title}
                     </Typography>
                   </Box>
-                  
+
                   {/* Description Section - Flexible */}
-                  <Box sx={{ 
-                    mb: 2, 
-                    flexGrow: 1, 
-                    display: 'flex', 
+                  <Box sx={{
+                    mb: 2,
+                    flexGrow: 1,
+                    display: 'flex',
                     flexDirection: 'column',
                     minHeight: '90px' // Allow this section to grow/shrink
                   }}>
-                    <Typography 
-                      variant="body2" 
-                      color="text.secondary" 
-                      sx={{ 
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
                         lineHeight: 1.5,
                         display: '-webkit-box',
                         WebkitLineClamp: expandedDescriptions[community.id] ? 'none' : 3,
@@ -938,7 +972,7 @@ const Discovery = () => {
                     >
                       {community.description}
                     </Typography>
-                    
+
                     {/* View More/Less Button */}
                     {community.description && community.description.length > 120 && (
                       <Button
@@ -965,12 +999,12 @@ const Discovery = () => {
                       </Button>
                     )}
                   </Box>
-                  
+
                   {/* Bottom Section - Fixed at bottom */}
-                  <Box sx={{ 
+                  <Box sx={{
                     mt: 'auto', // Push to bottom
                     flexShrink: 0, // Don't shrink this section
-                 
+
                   }}>
                     {/* Course Tags */}
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2, minHeight: '56px' }}>
@@ -1094,6 +1128,124 @@ const Discovery = () => {
           </Box>
         )}
 
+        {/* Footer with Pagination, Results Summary, and Navigation */}
+        {!loading && !error && filteredCommunities.length > 0 && (
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mt: 4,
+            mb: 2,
+            px: 3,
+            py: 2,
+            backgroundColor: '#f8f9fa',
+            borderRadius: 2,
+            border: '1px solid #e9ecef'
+          }}>
+            {/* Left side - Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                size="large"
+                showFirstButton
+                showLastButton
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    fontSize: '1rem',
+                    fontWeight: 500,
+                    '&.Mui-selected': {
+                      backgroundColor: '#0F3C60',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: '#0F3C60',
+                        opacity: 0.9
+                      }
+                    },
+                    '&:hover': {
+                      backgroundColor: '#0F3C6015',
+                      color: '#0F3C60'
+                    }
+                  }
+                }}
+              />
+            )}
+
+            {/* Center - Results Summary */}
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#6c757d',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                flex: 1,
+                textAlign: 'center'
+              }}
+            >
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredCommunities.length)} of {filteredCommunities.length} courses
+            </Typography>
+
+            {/* Right side - Navigation Links */}
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 3,
+              alignItems: 'center'
+            }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Community
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Affiliates
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Support
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Careers
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
+
         {/* No Results */}
         {!loading && !error && filteredCommunities.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -1106,6 +1258,92 @@ const Discovery = () => {
           </Box>
         )}
       </Container>
+
+      {/* Login/Signup Modal */}
+      <Dialog
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '16px',
+            padding: '24px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#0F3C60' }}>
+            Join Our Community! 🚀
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#6c757d', mt: 1 }}>
+            Sign up to access exclusive courses and connect with like-minded learners
+          </Typography>
+        </DialogTitle>
+        
+        <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setShowLoginModal(false);
+                navigate('/community-user-signup');
+              }}
+              sx={{
+                py: 1.5,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                }
+              }}
+            >
+              Sign Up Now
+            </Button>
+            
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setShowLoginModal(false);
+                navigate('/community-user-login');
+              }}
+              sx={{
+                py: 1.5,
+                borderRadius: '12px',
+                borderColor: '#0F3C60',
+                color: '#0F3C60',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  borderColor: '#0F3C60',
+                  backgroundColor: 'rgba(15, 60, 96, 0.04)',
+                }
+              }}
+            >
+              Already have an account? Log In
+            </Button>
+          </Box>
+        </DialogContent>
+        
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button
+            onClick={() => setShowLoginModal(false)}
+            sx={{
+              color: '#6c757d',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: 'rgba(108, 117, 125, 0.04)',
+              }
+            }}
+          >
+            Maybe Later
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Course Login Modal */}
       <CourseLoginModal

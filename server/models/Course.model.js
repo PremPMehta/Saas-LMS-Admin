@@ -149,6 +149,10 @@ const courseSchema = new mongoose.Schema({
   }],
   publishedAt: {
     type: Date
+  },
+  order: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true
