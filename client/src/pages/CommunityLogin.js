@@ -194,7 +194,7 @@ const CommunityLogin = () => {
                     {isLoading ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
-                      'Sign In to Community'
+                      'Sign In'
                     )}
                   </Button>
                 </Box>
