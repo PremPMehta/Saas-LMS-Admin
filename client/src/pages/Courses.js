@@ -523,7 +523,7 @@ const Courses = () => {
             ) : (
               <Box>
                 {/* Header */}
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end', mb: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center',  justifyContent: { xs: 'start', md: 'end' }, mb: 4 }}>
                   {/* <Box>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
                       {isCommunityUser ? 'Available Courses' : 'My Courses'}

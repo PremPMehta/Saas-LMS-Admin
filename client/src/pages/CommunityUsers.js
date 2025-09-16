@@ -258,7 +258,7 @@ const CommunityUsers = () => {
         <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
 
         {/* Main Content */}
-        <Box sx={{ flex: 1, p: 4 }}>
+        <Box sx={{ flex: 1, px: 1, py: 4 }}>
           <Container maxWidth="xl">
             {/* Page Header */}
             {/* <Fade in timeout={800}>
@@ -356,116 +356,120 @@ const CommunityUsers = () => {
                 </Box>
 
                 {/* Users Table */}
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Community</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell>Created</TableCell>
-                        <TableCell>Actions</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {users.length > 0 ? (
-                        users.map((user) => (
-                          <TableRow key={user._id} hover>
-                            <TableCell>
-                              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                {user.firstName} {user.lastName}
-                              </Box>
-                            </TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>{user.communityId?.name || 'N/A'}</TableCell>
-                            <TableCell>{getStatusChip(user)}</TableCell>
-                            <TableCell>{formatDate(user.createdAt)}</TableCell>
-                            <TableCell>
-                              <Box sx={{ display: 'flex', gap: 1 }}>
-                                {user.approvalStatus === 'pending' && (
-                                  <>
-                                    <Tooltip title="Approve">
-                                      <IconButton
-                                        color="success"
-                                        onClick={() => handleAction(user, 'approve')}
-                                        size="small"
-                                      >
-                                        <CheckIcon />
-                                      </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Reject">
-                                      <IconButton
-                                        color="error"
-                                        onClick={() => handleAction(user, 'reject')}
-                                        size="small"
-                                      >
-                                        <CancelIcon />
-                                      </IconButton>
-                                    </Tooltip>
-                                  </>
-                                )}
-                                {user.approvalStatus === 'approved' && !user.isDeactivated && (
-                                  <Tooltip title="Deactivate">
-                                    <IconButton
-                                      color="warning"
-                                      onClick={() => handleAction(user, 'deactivate')}
-                                      size="small"
-                                    >
-                                      <BlockIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                )}
-                              </Box>
-                            </TableCell>
+                <Box sx={{ overflow: "auto" }}>
+                  <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
+                    <TableContainer component={Paper} sx={{ boxShadow: 'none', overflowX: 'auto' }}>
+                      <Table sx={{ minWidth: 650 }} aria-label="users table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell sx={{ minWidth: 200 }}>Name</TableCell>
+                            <TableCell>Email</TableCell>
+                            <TableCell sx={{ minWidth: 200 }}>Community</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell sx={{ minWidth: 200 }}>Created</TableCell>
+                            <TableCell>Actions</TableCell>
                           </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8 }}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                              {tabValue === 1 ? (
-                                <>
-                                  <HourglassIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
-                                  <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                    No Pending Approvals
-                                  </Typography>
-                                  <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
-                                    All user registrations have been reviewed. New approval requests will appear here.
-                                  </Typography>
-                                </>
-                              ) : (
-                                <>
-                                  <PeopleIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
-                                  <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                                    No Users Found
-                                  </Typography>
-                                  <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
-                                    {searchTerm ? 'No users match your search criteria. Try adjusting your search terms.' : 'No users have registered yet.'}
-                                  </Typography>
-                                </>
-                              )}
-                            </Box>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-
-                {/* Pagination */}
-                {pagination.totalPages > 1 && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-                    <Pagination
-                      count={pagination.totalPages}
-                      page={pagination.currentPage}
-                      onChange={handlePageChange}
-                      color="primary"
-                      size="large"
-                    />
+                        </TableHead>
+                        <TableBody>
+                          {users.length > 0 ? (
+                            users.map((user) => (
+                              <TableRow key={user._id} hover>
+                                <TableCell>
+                                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                                    {user.firstName} {user.lastName}
+                                  </Box>
+                                </TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.communityId?.name || 'N/A'}</TableCell>
+                                <TableCell>{getStatusChip(user)}</TableCell>
+                                <TableCell>{formatDate(user.createdAt)}</TableCell>
+                                <TableCell>
+                                  <Box sx={{ display: 'flex', gap: 1 }}>
+                                    {user.approvalStatus === 'pending' && (
+                                      <>
+                                        <Tooltip title="Approve">
+                                          <IconButton
+                                            color="success"
+                                            onClick={() => handleAction(user, 'approve')}
+                                            size="small"
+                                          >
+                                            <CheckIcon />
+                                          </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Reject">
+                                          <IconButton
+                                            color="error"
+                                            onClick={() => handleAction(user, 'reject')}
+                                            size="small"
+                                          >
+                                            <CancelIcon />
+                                          </IconButton>
+                                        </Tooltip>
+                                      </>
+                                    )}
+                                    {user.approvalStatus === 'approved' && !user.isDeactivated && (
+                                      <Tooltip title="Deactivate">
+                                        <IconButton
+                                          color="warning"
+                                          onClick={() => handleAction(user, 'deactivate')}
+                                          size="small"
+                                        >
+                                          <BlockIcon />
+                                        </IconButton>
+                                      </Tooltip>
+                                    )}
+                                  </Box>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={6} sx={{ textAlign: 'center', py: 8 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+                                  {tabValue === 1 ? (
+                                    <>
+                                      <HourglassIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
+                                      <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                        No Pending Approvals
+                                      </Typography>
+                                      <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
+                                        All user registrations have been reviewed. New approval requests will appear here.
+                                      </Typography>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <PeopleIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.5 }} />
+                                      <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                                        No Users Found
+                                      </Typography>
+                                      <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400, textAlign: 'center' }}>
+                                        {searchTerm ? 'No users match your search criteria. Try adjusting your search terms.' : 'No users have registered yet.'}
+                                      </Typography>
+                                    </>
+                                  )}
+                                </Box>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    </Box>
                   </Box>
-                )}
+
+                  {/* Pagination */}
+                  {pagination.totalPages > 1 && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                      <Pagination
+                        count={pagination.totalPages}
+                        page={pagination.currentPage}
+                        onChange={handlePageChange}
+                        color="primary"
+                        size="large"
+                      />
+                    </Box>
+                  )}
               </Paper>
             </Grow>
 

@@ -64,3 +64,8 @@ code {
   align-items: center;
   padding: 24px 24px;
 }
+
+
+.MuiTable-root {
+        min-width: unset !important
+    }

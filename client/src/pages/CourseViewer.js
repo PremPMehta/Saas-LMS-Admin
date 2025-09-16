@@ -933,7 +933,7 @@ const CourseViewer = () => {
                           {selectedCourse.chapters?.map((chapter) => (
                             <Box key={chapter._id} sx={{}}>
                               <Typography variant="h6" sx={{ p: 2, fontWeight: 600, color: 'primary.main' }}>
-                                📚 {chapter.title}
+                                 {chapter.title}
                               </Typography>
 
                               {chapter.videos?.map((video) => (
