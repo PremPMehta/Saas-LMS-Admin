@@ -24,7 +24,8 @@ import {
   Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
-import loginImage from '../assets/view-building-with.jpg'; 
+import loginImage from '../assets/view-building-with.jpg';
+import googleLogo from '../assets/google-logo.png'; 
 
 const CommunityUserLogin = () => {
   const navigate = useNavigate();
@@ -89,7 +90,6 @@ const CommunityUserLogin = () => {
       setIsLoading(false);
     }
   };
-
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -360,7 +360,7 @@ const CommunityUserLogin = () => {
                     startIcon={
                       <Box
                         component="img"
-                        src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIyLjU2IDEyLjI1QzIyLjU2IDExLjQ3IDIyLjQ5IDEwLjcyIDIyLjM2IDEwSDEyVjE0LjMzSDE3Ljk2QzE3LjY2IDE1Ljk4IDE2Ljg4IDE3LjM4IDE1LjY4IDE4LjQzVjIxLjM0SDE5LjQ0QzIxLjA3IDE5Ljg1IDIyLjU2IDE3LjM0IDIyLjU2IDEyLjI1WiIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNMTIgMjNDMTQuOTcgMjMgMTcuNDYgMjIuMTIgMTkuNDQgMjAuNjZMMTUuNjggMTguNDNDMTQuNzYgMTkuMDkgMTMuNDkgMTkuNSAxMiAxOS41QzkuMTYgMTkuNSA2LjgxIDE3LjY2IDYuMDcgMTUuMDdIMi4xOVYxOC4wM0M0LjE3IDIxLjk4IDcuODIgMjMgMTIgMjNaIiBmaWxsPSIjMzRBRTUzIi8+CjxwYXRoIGQ9Ik02LjA3IDE1LjA3QzUuNzMgMTQuMTcgNS41IDEzLjEgNS41IDEyQzUuNSAxMC45IDUuNzMgOS44MyA2LjA3IDguOTNWNi4wM0gyLjE5QzEuMDMgOC4wMiAwIDEwLjQ0IDAgMTNDMCAxNS41NiAxLjAzIDE3Ljk4IDIuMTkgMjBWNjAuMDNINi4wN1YxNS4wN1oiIGZpbGw9IiNGQkJDMzUiLz4KPHBhdGggZD0iTTEyIDUuNUgDE0LjE0QzE1LjA5IDUuNSAxNS45MSA1Ljk0IDE2LjQ0IDYuNzJMMTkuNDQgMy43MkMxNy40NiAxLjI2IDE0Ljk3IDAgMTIgMEM3LjgyIDAgNC4xNyAxLjAyIDIuMTkgNS4wM0w2LjA3IDguOTNDNi44MSA2LjM0IDkuMTYgNS41IDEyIDUuNVoiIGZpbGw9IiNFQTQzMzUiLz4KPC9zdmc+"
+                        src={googleLogo}
                         alt="Google"
                         sx={{ width: 20, height: 20 }}
                       />

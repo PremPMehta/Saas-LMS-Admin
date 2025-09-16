@@ -330,8 +330,8 @@ const AddAcademyModal = ({ open, onClose, onSave, editingAcademy }) => {
         }
 
         const url = editingAcademy
-          ? `http://localhost:5001/api/academies/${editingAcademy._id}`
-          : 'http://localhost:5001/api/academies';
+          ? `${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/academies/${editingAcademy._id}`
+          : `${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/academies`;
 
         const method = editingAcademy ? 'PUT' : 'POST';
 

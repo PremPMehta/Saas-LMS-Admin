@@ -158,8 +158,8 @@ const AddPlanModal = ({
     try {
       const token = localStorage.getItem('authToken');
       const url = editingPlan 
-        ? `http://localhost:5001/api/plans/${editingPlan._id || editingPlan.id}`
-        : 'http://localhost:5001/api/plans';
+        ? `${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/plans/${editingPlan._id || editingPlan.id}`
+        : `${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/plans`;
       
       const method = editingPlan ? 'PUT' : 'POST';
       

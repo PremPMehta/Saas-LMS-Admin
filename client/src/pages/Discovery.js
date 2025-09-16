@@ -38,6 +38,7 @@ import { courseApi } from '../utils/courseApi';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
 import logo from '../assets/logo.png';
+import googleLogo from '../assets/google-logo.png';
 
 const communities = [
   {
@@ -124,14 +125,29 @@ const communities = [
   }
 ];
 
-// Use centralized categories from config - convert to chip format
+// Use only the 8 specific categories for Discovery page
 const categories = [
   { label: 'All', value: 'all', color: 'default' },
-  ...DETAILED_CATEGORIES.map(category => ({
-    label: category,
-    value: category.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-    color: 'primary'
-  }))
+  { label: 'Education', value: 'education', color: 'primary' },
+  { label: 'Finance', value: 'finance', color: 'success' },
+  { label: 'Self-Improvement', value: 'self-improvement', color: 'default' },
+  { label: 'Health', value: 'health', color: 'error' },
+  { label: 'Sports', value: 'sports', color: 'default' },
+  { label: 'Music', value: 'music', color: 'secondary' },
+  { label: 'Food', value: 'food', color: 'warning' },
+  { label: 'Gaming', value: 'gaming', color: 'secondary' }
+];
+
+// Simple array of category names for search functionality
+const DISCOVERY_CATEGORIES = [
+  'Education',
+  'Finance', 
+  'Self-Improvement',
+  'Health',
+  'Sports',
+  'Music',
+  'Food',
+  'Gaming'
 ];
 
 // Target audiences for search functionality
@@ -307,7 +323,7 @@ const Discovery = () => {
       const searchLower = searchTerm.toLowerCase();
 
       // Check if search term matches any category name
-      const matchingCategory = DETAILED_CATEGORIES.find(category =>
+      const matchingCategory = DISCOVERY_CATEGORIES.find(category =>
         category.toLowerCase().includes(searchLower) ||
         searchLower.includes(category.toLowerCase())
       );
@@ -1292,12 +1308,13 @@ const Discovery = () => {
               sx={{
                 py: 1.5,
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: '#0F3C60',
                 fontSize: '1rem',
                 fontWeight: 600,
                 textTransform: 'none',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                  background: '#0F3C60',
+                  opacity: 0.9,
                 }
               }}
             >
@@ -1325,6 +1342,48 @@ const Discovery = () => {
               }}
             >
               Already have an account? Log In
+            </Button>
+
+            {/* Divider */}
+            <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
+              <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+              <Typography variant="body2" sx={{ mx: 2, color: '#666' }}>
+                or
+              </Typography>
+              <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+            </Box>
+
+            {/* Google Sign In Button */}
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              sx={{
+                py: 1.5,
+                fontSize: '14px',
+                textTransform: 'none',
+                borderRadius: '12px',
+                borderColor: '#dadce0',
+                color: '#3c4043',
+                backgroundColor: '#fff',
+                '&:hover': {
+                  backgroundColor: '#f8f9fa',
+                  borderColor: '#dadce0',
+                },
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+              startIcon={
+                <Box
+                  component="img"
+                  src={googleLogo}
+                  alt="Google"
+                  sx={{ width: 20, height: 20 }}
+                />
+              }
+            >
+              Sign in with Google
             </Button>
           </Box>
         </DialogContent>
