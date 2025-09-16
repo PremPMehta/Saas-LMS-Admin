@@ -304,7 +304,6 @@ const EditCourse = () => {
 
   const handleSaveVideo = async (formData) => {
     console.log('🎬 handleSaveVideo called with formData:', formData);
-
     if (!formData?.title?.trim()) {
       alert('Video title is required');
       return;
@@ -330,7 +329,6 @@ const EditCourse = () => {
 
         const result = await response.json();
         console.log('Video uploaded successfully:', result);
-
         // Update form data with the server URL
         processedFormData = {
           ...formData,
@@ -352,10 +350,8 @@ const EditCourse = () => {
       duration: processedFormData.duration || '0:00'
     };
 
-    console.log('📝 Processing video data:', videoData);
 
     if (editingVideo) {
-      console.log('✏️ Updating existing video:', editingVideo._id);
       setChapters(prev => prev.map(chapter => ({
         ...chapter,
         videos: chapter.videos.map(video =>
@@ -1329,9 +1325,7 @@ const EditCourse = () => {
 
           useEffect(() => {
             console.log('🎬 VideoDialog: video prop changed:', video);
-
             if (video) {
-              console.log('📝 VideoDialog: Setting form data for editing video:', video.title);
               setFormData({
                 title: video.title || '',
                 description: video.description || '',
@@ -1344,7 +1338,6 @@ const EditCourse = () => {
 
 
             } else {
-              console.log('🆕 VideoDialog: Resetting form data for new video');
               setFormData({
                 title: '',
                 description: '',
@@ -1362,7 +1355,6 @@ const EditCourse = () => {
             console.log('🔍 VideoDialog: Validating form data:', formData);
             console.log('📝 VideoDialog: Title length:', formData.title?.length);
             console.log('📝 VideoDialog: Title trimmed:', formData.title?.trim()?.length);
-
             // Validate required fields
             if (!formData.title?.trim()) {
               console.error('❌ VideoDialog: Title validation failed');
@@ -1386,7 +1378,6 @@ const EditCourse = () => {
               alert('Please enter a video URL');
               return;
             }
-
             console.log('✅ VideoDialog: Validation passed, saving video data:', formData);
             onSave(formData);
           };

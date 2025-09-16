@@ -311,7 +311,7 @@ const DashboardOverview = () => {
                   textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 }}
               >
-                Dashboard Overview
+                Bell & Desk - Dashboard Overview
               </Typography>
             </Box>
             <Typography 

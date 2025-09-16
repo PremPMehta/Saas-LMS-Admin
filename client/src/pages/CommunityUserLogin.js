@@ -55,6 +55,12 @@ const CommunityUserLogin = () => {
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
+      console.log('🔍 Community User Login Debug:', {
+        apiUrl,
+        endpoint: `${apiUrl}/api/community-user/login`,
+        formData: { email: formData.email, password: '[HIDDEN]' },
+        environment: process.env.NODE_ENV
+      });
       const response = await axios.post(`${apiUrl}/api/community-user/login`, formData);
 
       if (response.data.success) {
@@ -81,8 +87,17 @@ const CommunityUserLogin = () => {
 
     } catch (error) {
       console.error('Login error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      
       if (error.response?.data?.message) {
         setError(error.response.data.message);
+      } else if (error.response?.status === 401) {
+        setError('Invalid email or password. Please check your credentials.');
+      } else if (error.response?.status === 403) {
+        setError('Account access denied. Please contact support.');
+      } else if (error.response?.status === 423) {
+        setError('Account temporarily locked. Please try again later.');
       } else {
         setError('Login failed. Please try again.');
       }

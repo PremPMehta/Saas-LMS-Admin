@@ -468,7 +468,7 @@ const Settings = () => {
                 textShadow: '0 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              System Settings
+              Bell & Desk - System Settings
             </Typography>
             <Typography
               variant="h6"

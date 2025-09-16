@@ -37,7 +37,7 @@ import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import googleLogo from '../assets/google-logo.png';
 
 const communities = [
@@ -598,6 +598,19 @@ const Discovery = () => {
       {/* Hero Section */}
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
+          {/* Bell & Desk Logo */}
+          <Box sx={{ mb: 3 }}>
+            <img 
+              src="/bell-desk-logo.webp" 
+              alt="Bell & Desk" 
+              style={{ 
+                height: '80px', 
+                width: 'auto',
+                maxWidth: '300px'
+              }}
+            />
+          </Box>
+          
           <Typography
             variant="h2"
             sx={{
@@ -606,7 +619,7 @@ const Discovery = () => {
               fontSize: { xs: '2rem', md: '3rem' }
             }}
           >
-            Discover courses
+            Bell & Desk - Discover courses
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
             or{' '}
