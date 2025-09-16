@@ -558,3 +558,60 @@ exports.rateCourse = async (req, res) => {
     });
   }
 };
+
+// Reorder courses
+exports.reorderCourses = async (req, res) => {
+  try {
+    const { courseOrder, communityId } = req.body;
+
+    if (!courseOrder || !Array.isArray(courseOrder)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Course order array is required'
+      });
+    }
+
+    console.log('🔄 Reordering courses:', {
+      communityId,
+      courseCount: courseOrder.length,
+      courseIds: courseOrder.map(c => c.id || c._id),
+      fullCourseOrder: courseOrder
+    });
+
+    // Update each course with its new order
+    const updatePromises = courseOrder.map((courseData, index) => {
+      const courseId = courseData.id || courseData._id;
+      console.log(`🔄 Updating course ${index + 1}:`, { courseId, title: courseData.title });
+      
+      return Course.findByIdAndUpdate(
+        courseId,
+        { 
+          order: index + 1, // Start order from 1
+          updatedAt: new Date()
+        },
+        { new: true }
+      ).catch(error => {
+        console.error(`❌ Failed to update course ${courseId}:`, error);
+        throw error;
+      });
+    });
+
+    await Promise.all(updatePromises);
+
+    console.log('✅ Courses reordered successfully');
+
+    res.status(200).json({
+      success: true,
+      message: 'Courses reordered successfully',
+      courseCount: courseOrder.length
+    });
+
+  } catch (error) {
+    console.error('Error reordering courses:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error reordering courses',
+      error: error.message
+    });
+  }
+};

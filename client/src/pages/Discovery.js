@@ -13,7 +13,12 @@ import {
   Button,
   Paper,
   CircularProgress,
-  Alert
+  Alert,
+  Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -154,6 +159,14 @@ const Discovery = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(9);
+  
+  // Modal state
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [hasScrolledTwoRows, setHasScrolledTwoRows] = useState(false);
 
   // Category slider functions
   const scrollCategories = (direction) => {
@@ -197,6 +210,33 @@ const Discovery = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [loginDropdownOpen]);
+
+  // Scroll detection for modal
+  useEffect(() => {
+    const handleScroll = () => {
+      const coursesContainer = document.getElementById('courses-container');
+      if (coursesContainer) {
+        const containerRect = coursesContainer.getBoundingClientRect();
+        const containerTop = containerRect.top;
+        
+        // Calculate if user has scrolled past 4-5 rows of courses (more content)
+        // Assuming each row has 3 courses and each course card is ~400px tall
+        const fourRowsHeight = 4 * 400; // 4 rows * 400px per row = 1600px
+        const scrollThreshold = containerTop + fourRowsHeight;
+        
+        // Also add a minimum scroll distance from top of page
+        const minScrollFromTop = 1200; // User must scroll at least 1200px from top
+        
+        if (window.scrollY > Math.max(scrollThreshold, minScrollFromTop) && !hasScrolledTwoRows) {
+          setHasScrolledTwoRows(true);
+          setShowLoginModal(true);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasScrolledTwoRows]);
 
   // Handle course click
   const handleCourseClick = (course) => {
@@ -304,6 +344,8 @@ const Discovery = () => {
     }
 
     setFilteredCommunities(filtered);
+    // Reset to first page when filters change
+    setCurrentPage(1);
   }, [searchTerm, selectedCategory, courses]);
 
   const formatMemberCount = (count) => {
@@ -311,6 +353,22 @@ const Discovery = () => {
       return `${(count / 1000).toFixed(1)}k`;
     }
     return count.toString();
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredCommunities.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredCommunities.slice(startIndex, endIndex);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+    // Close the login modal when user clicks next page
+    setShowLoginModal(false);
+    // Reset the scroll detection so modal can appear again on new page
+    setHasScrolledTwoRows(false);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -516,35 +574,6 @@ const Discovery = () => {
                 )}
               </Box>
 
-              <Button
-                variant="contained"
-                onClick={() => navigate('/community-user-signup')}
-                sx={{
-                  textTransform: 'none',
-                  borderRadius: '25px',
-                  px: { xs: 0.7, sm: 3, md: 4 }, // responsive horizontal padding
-                  py: { xs: 0.6, md: 1.5 },        // responsive vertical padding
-                  fontWeight: 600,
-                  fontSize: { xs: '0.7rem', sm: '0.9rem', md: '0.95rem', lg: '1rem' }, // font scales
-                  borderColor: '#0F3C60',
-                  color: '#FFF',
-                  background: '#0F3C60',
-                  backdropFilter: 'blur(10px)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    borderColor: '#0F3C60',
-                    background: '#0F3C60',
-                    color: 'white',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-                    '& .MuiSvgIcon-root': {
-                      color: 'white'
-                    }
-                  }
-                }}
-              >
-                SIGN UP
-              </Button>
             </Box>
           </Box>
         </Container>
@@ -719,6 +748,7 @@ const Discovery = () => {
         {/* Communities Grid - Force 3 cards per row */}
         {!loading && !error && (
           <Box
+            id="courses-container"
             sx={{
               display: 'grid',
               gridTemplateColumns: {
@@ -733,7 +763,7 @@ const Discovery = () => {
             }}
 
           >
-            {filteredCommunities.map((community, index) => (
+            {currentItems.map((community, index) => (
               <Card
                 key={community.id || index}
                 onClick={() => handleCourseClick(community)}
@@ -772,7 +802,7 @@ const Discovery = () => {
                     zIndex: 1
                   }}
                 >
-                  #{index + 1}
+                  #{startIndex + index + 1}
                 </Box>
 
                 <Box sx={{ position: 'relative' }}>
@@ -1098,6 +1128,124 @@ const Discovery = () => {
           </Box>
         )}
 
+        {/* Footer with Pagination, Results Summary, and Navigation */}
+        {!loading && !error && filteredCommunities.length > 0 && (
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mt: 4,
+            mb: 2,
+            px: 3,
+            py: 2,
+            backgroundColor: '#f8f9fa',
+            borderRadius: 2,
+            border: '1px solid #e9ecef'
+          }}>
+            {/* Left side - Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                size="large"
+                showFirstButton
+                showLastButton
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    fontSize: '1rem',
+                    fontWeight: 500,
+                    '&.Mui-selected': {
+                      backgroundColor: '#0F3C60',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: '#0F3C60',
+                        opacity: 0.9
+                      }
+                    },
+                    '&:hover': {
+                      backgroundColor: '#0F3C6015',
+                      color: '#0F3C60'
+                    }
+                  }
+                }}
+              />
+            )}
+
+            {/* Center - Results Summary */}
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#6c757d',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                flex: 1,
+                textAlign: 'center'
+              }}
+            >
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredCommunities.length)} of {filteredCommunities.length} courses
+            </Typography>
+
+            {/* Right side - Navigation Links */}
+            <Box sx={{ 
+              display: 'flex', 
+              gap: 3,
+              alignItems: 'center'
+            }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Community
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Affiliates
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Support
+              </Typography>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: '#6c757d',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  '&:hover': { color: '#0F3C60' }
+                }}
+              >
+                Careers
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
+
         {/* No Results */}
         {!loading && !error && filteredCommunities.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
@@ -1110,6 +1258,92 @@ const Discovery = () => {
           </Box>
         )}
       </Container>
+
+      {/* Login/Signup Modal */}
+      <Dialog
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '16px',
+            padding: '24px'
+          }
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center', pb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: '#0F3C60' }}>
+            Join Our Community! 🚀
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#6c757d', mt: 1 }}>
+            Sign up to access exclusive courses and connect with like-minded learners
+          </Typography>
+        </DialogTitle>
+        
+        <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setShowLoginModal(false);
+                navigate('/community-user-signup');
+              }}
+              sx={{
+                py: 1.5,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                }
+              }}
+            >
+              Sign Up Now
+            </Button>
+            
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setShowLoginModal(false);
+                navigate('/community-user-login');
+              }}
+              sx={{
+                py: 1.5,
+                borderRadius: '12px',
+                borderColor: '#0F3C60',
+                color: '#0F3C60',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': {
+                  borderColor: '#0F3C60',
+                  backgroundColor: 'rgba(15, 60, 96, 0.04)',
+                }
+              }}
+            >
+              Already have an account? Log In
+            </Button>
+          </Box>
+        </DialogContent>
+        
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button
+            onClick={() => setShowLoginModal(false)}
+            sx={{
+              color: '#6c757d',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: 'rgba(108, 117, 125, 0.04)',
+              }
+            }}
+          >
+            Maybe Later
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Course Login Modal */}
       <CourseLoginModal
