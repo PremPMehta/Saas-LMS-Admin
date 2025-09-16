@@ -35,7 +35,7 @@ import {
 const API_BASE_URL = process.env.REACT_APP_API_URL || 
   (process.env.NODE_ENV === 'production' 
     ? 'https://saas-lms-admin-1.onrender.com' 
-    : 'http://localhost:5001');
+    : (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001'));
 
 const LoginModal = ({ open, onClose, onLoginSuccess }) => {
   const [activeTab, setActiveTab] = useState(0);

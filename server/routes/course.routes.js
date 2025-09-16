@@ -17,5 +17,6 @@ router.delete('/:id', courseController.deleteCourse);
 router.patch('/:id/publish', courseController.publishCourse);
 router.post('/:courseId/enroll/:studentId', courseController.enrollStudent);
 router.post('/:courseId/rate', courseController.rateCourse);
+router.patch('/reorder', courseController.reorderCourses);
 
 module.exports = router;

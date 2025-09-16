@@ -95,6 +95,17 @@ export const courseApi = {
       body: JSON.stringify({ rating, studentId }),
     });
   },
+
+  // Reorder courses
+  reorderCourses: async (courseOrder, communityId) => {
+    console.log('🚀 courseApi.reorderCourses called with:', { courseOrder, communityId });
+    const result = await apiCall('/api/courses/reorder', {
+      method: 'PATCH',
+      body: JSON.stringify({ courseOrder, communityId }),
+    });
+    console.log('✅ courseApi.reorderCourses result:', result);
+    return result;
+  },
 };
 
 export default courseApi;

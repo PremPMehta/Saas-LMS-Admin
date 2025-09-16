@@ -24,6 +24,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import communityAuthApi from '../utils/communityAuthApi';
 import loginImage from '../assets/view-building-with.jpg';
+import googleLogo from '../assets/google-logo.png';
 import { getCommunityUrl } from '../utils/communityUrlUtils';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
@@ -106,7 +107,7 @@ const CommunityLogin = () => {
               <Box sx={{ mb: 4 }}>
                 <School sx={{ fontSize: 48, mb: 2 }} />
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                  Community Login
+                  Bell & Desk Login
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Access your community dashboard
@@ -196,10 +197,52 @@ const CommunityLogin = () => {
                     {isLoading ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
-                      'Sign In to Community'
+                      'Sign In'
                     )}
                   </Button>
                 </Box>
+
+                {/* Divider */}
+                <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+                  <Typography variant="body2" sx={{ mx: 2, color: '#666' }}>
+                    or
+                  </Typography>
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+                </Box>
+
+                {/* Google Sign In Button */}
+                <Button
+                  variant="outlined"
+                  size="large"
+                  fullWidth
+                  sx={{
+                    py: 1.5,
+                    fontSize: '14px',
+                    textTransform: 'none',
+                    borderRadius: 2,
+                    borderColor: '#dadce0',
+                    color: '#3c4043',
+                    backgroundColor: '#fff',
+                    '&:hover': {
+                      backgroundColor: '#f8f9fa',
+                      borderColor: '#dadce0',
+                    },
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                  startIcon={
+                    <Box
+                      component="img"
+                      src={googleLogo}
+                      alt="Google G"
+                      sx={{ width: 20, height: 20 }}
+                    />
+                  }
+                >
+                  Sign in with Google
+                </Button>
 
                 <Box sx={{ mt: 3, }}>
                   <Link

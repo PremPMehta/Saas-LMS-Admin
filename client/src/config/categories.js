@@ -37,6 +37,15 @@ export const DETAILED_CATEGORIES = [
   'Smart contracts, Solidity, dApps, blockchain infrastructure',
   'Taxes, fiscal reporting, crypto compliance',
   'Legal smart contracts, Web3 regulation',
+  // NEW LIFESTYLE CATEGORIES
+  'Education',
+  'Finance',
+  'Self-Improvement',
+  'Health',
+  'Sports',
+  'Music',
+  'Food',
+  'Gaming',
 ];
 
 // DERIVED: General categories (used in EditCourse.js)
@@ -52,6 +61,12 @@ export const GENERAL_CATEGORIES = [
   'Finance',
   'Healthcare',
   'Education',
+  'Self-Improvement',
+  'Health',
+  'Sports',
+  'Music',
+  'Food',
+  'Gaming',
 ];
 
 // DERIVED: Crypto-focused categories (used in Courses.js filtering)
@@ -79,7 +94,11 @@ export const LIFESTYLE_CATEGORIES = [
   { label: '🏃 Health', value: 'Health', color: 'error' },
   { label: '⚽ Sports', value: 'Sports', color: 'default' },
   { label: '📚 Self-improvement', value: 'Self-improvement', color: 'default' },
-  { label: '❤️ Relationships', value: 'Relationships', color: 'secondary' }
+  { label: '❤️ Relationships', value: 'Relationships', color: 'secondary' },
+  { label: '🎓 Education', value: 'Education', color: 'primary' },
+  { label: '💵 Finance', value: 'Finance', color: 'success' },
+  { label: '🍕 Food', value: 'Food', color: 'warning' },
+  { label: '🎮 Gaming', value: 'Gaming', color: 'secondary' }
 ];
 
 // MAPPING: Map detailed categories to general categories
@@ -122,6 +141,16 @@ export const DETAILED_TO_GENERAL_MAPPING = {
   'Smart contracts, Solidity, dApps, blockchain infrastructure': 'Technology',
   'Taxes, fiscal reporting, crypto compliance': 'Finance',
   'Legal smart contracts, Web3 regulation': 'Business',
+  
+  // NEW LIFESTYLE CATEGORIES MAPPING
+  'Education': 'Education',
+  'Finance': 'Finance',
+  'Self-Improvement': 'Self-Improvement',
+  'Health': 'Health',
+  'Sports': 'Sports',
+  'Music': 'Music',
+  'Food': 'Food',
+  'Gaming': 'Gaming',
 };
 
 // MAPPING: Map detailed categories to crypto categories
@@ -161,6 +190,16 @@ export const DETAILED_TO_CRYPTO_MAPPING = {
   'Smart contracts, Solidity, dApps, blockchain infrastructure': 'blockchain',
   'Taxes, fiscal reporting, crypto compliance': 'finance',
   'Legal smart contracts, Web3 regulation': 'blockchain',
+  
+  // NEW LIFESTYLE CATEGORIES CRYPTO MAPPING
+  'Education': 'technology',
+  'Finance': 'finance',
+  'Self-Improvement': 'technology',
+  'Health': 'technology',
+  'Sports': 'technology',
+  'Music': 'technology',
+  'Food': 'technology',
+  'Gaming': 'technology',
 };
 
 // UTILITY FUNCTIONS

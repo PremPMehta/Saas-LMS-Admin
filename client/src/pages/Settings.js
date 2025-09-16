@@ -376,7 +376,7 @@ const Settings = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5001/api/settings/session', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/settings/session`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

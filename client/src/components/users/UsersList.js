@@ -100,7 +100,7 @@ const UsersList = ({ users, onUserUpdate, onUserDelete, defaultRowsPerPage = 10 
         throw new Error('Authentication token not found. Please login again.');
       }
 
-      const response = await fetch(`http://localhost:5001/api/users/${selectedUser._id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/users/${selectedUser._id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

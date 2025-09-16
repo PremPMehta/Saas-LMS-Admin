@@ -102,7 +102,7 @@ const PlansTable = ({
       setIsDeleting(planId);
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch(`http://localhost:5001/api/plans/${planId}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/plans/${planId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,

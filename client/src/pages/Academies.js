@@ -51,7 +51,7 @@ const Academies = () => {
       }
 
       // Fetch academies list
-      const academiesResponse = await fetch('http://localhost:5001/api/academies', {
+      const academiesResponse = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/academies`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -73,7 +73,7 @@ const Academies = () => {
       const academies = academiesData.data || academiesData;
 
       // Fetch KPI statistics
-      const statsResponse = await fetch('http://localhost:5001/api/academies/stats/summary', {
+      const statsResponse = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/academies/stats/summary`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

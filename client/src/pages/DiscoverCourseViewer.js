@@ -318,21 +318,6 @@ const DiscoverCourseViewer = () => {
               >
                 LOG IN
               </Button>
-              <Button 
-                variant="contained" 
-                onClick={() => navigate('/community-user-signup')}
-                sx={{ 
-                  textTransform: 'none',
-                  borderRadius: '20px',
-                  px: 3,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-                  }
-                }}
-              >
-                SIGN UP
-              </Button>
             </Box>
           </Box>
         </Container>

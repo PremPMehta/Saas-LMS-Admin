@@ -51,7 +51,7 @@ const Plans = () => {
       }
 
       // Fetch plans list
-      const plansResponse = await fetch('http://localhost:5001/api/plans', {
+      const plansResponse = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/plans`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -73,7 +73,7 @@ const Plans = () => {
       const plans = plansData.data?.plans || plansData.plans || [];
 
       // Fetch KPI statistics
-      const statsResponse = await fetch('http://localhost:5001/api/plans/stats/summary', {
+      const statsResponse = await fetch(`${process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? 'https://saas-lms-admin-1.onrender.com' : 'http://localhost:5001')}/api/plans/stats/summary`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
