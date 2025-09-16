@@ -272,14 +272,17 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         }
       }}
     >
-      <DialogTitle sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        pb: 1,
-        background: '#0F3C60',
-        color: 'white'
-      }}>
+      <DialogTitle 
+        component="div"
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          pb: 1,
+          background: '#0F3C60',
+          color: 'white'
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <SchoolIcon sx={{ fontSize: 28 }} />
           <Box>
