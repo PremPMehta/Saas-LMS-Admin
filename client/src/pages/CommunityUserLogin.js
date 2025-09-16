@@ -248,7 +248,7 @@ const CommunityUserLogin = () => {
               <CardContent sx={{ p: 0 }}>
                 <Box sx={{ textAlign: 'left', mb: 4 }}>
                   <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, color: '#333' }}>
-                    Community User Login
+                    Bell and Desk User Login
                   </Typography>
                   <Typography variant="body1" sx={{ color: '#666' }}>
                     Sign in to access your community dashboard

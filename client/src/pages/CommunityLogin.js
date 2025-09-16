@@ -104,7 +104,7 @@ const CommunityLogin = () => {
               <Box sx={{ mb: 4 }}>
                 <School sx={{ fontSize: 48, mb: 2 }} />
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                  Community Login
+                  Bell & Desk Login
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Access your community dashboard
