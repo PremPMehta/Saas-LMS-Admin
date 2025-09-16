@@ -912,25 +912,25 @@ const CreateCourse = () => {
                                         primary={`${videoIndex + 1}. ${video.title}`}
                                         secondary={video.videoType === 'upload' ? 'Uploaded Video' : `${video.videoType} video`}
                                       />
-                                      <ListItemSecondaryAction>
-                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                          <Button
-                                            size="small"
-                                            variant='outlined'
-                                            onClick={() => handleEditVideo(video, chapter.id)}
-                                          >
-                                            Edit
-                                          </Button>
-                                          <Button
-                                            size="small"
-                                            variant='outlined'
-                                            onClick={() => handleDeleteVideo(video.id, chapter.id)}
-                                            color="error"
-                                          >
-                                             Delete 
-                                          </Button>
-                                        </Box>
-                                      </ListItemSecondaryAction>
+
+                                      <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Button
+                                          size="small"
+                                          variant='outlined'
+                                          onClick={() => handleEditVideo(video, chapter.id)}
+                                        >
+                                          Edit
+                                        </Button>
+                                        <Button
+                                          size="small"
+                                          variant='outlined'
+                                          onClick={() => handleDeleteVideo(video.id, chapter.id)}
+                                          color="error"
+                                        >
+                                          Delete
+                                        </Button>
+                                      </Box>
+
                                     </ListItem>
                                   ))}
                                 </List>
@@ -964,9 +964,14 @@ const CreateCourse = () => {
       case 2:
         return (
           <Box>
-            <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-              Review & Publish
-            </Typography>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ mb: 0, fontWeight: 600 }}>
+                Review & Publish
+              </Typography>
+              <Typography >
+                Carefully review your content and publish it when everything looks perfect.
+              </Typography>
+            </Box>
 
             <Grid container spacing={3}>
               <Grid item size={{ xs: 12, md: 6 }}>
@@ -1052,8 +1057,8 @@ const CreateCourse = () => {
                     <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                       Course Structure
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between' }}>
-                      <Box sx={{ mb: 2 }}>
+                    <Box >
+                      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="subtitle2" color="text.secondary">
                           Total Chapters
                         </Typography>
@@ -1061,7 +1066,7 @@ const CreateCourse = () => {
                           {chapters.length}
                         </Typography>
                       </Box>
-                      <Box sx={{ mb: 2 }}>
+                      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="subtitle2" color="text.secondary">
                           Total {courseData.contentType === 'video' ? 'Videos' : 'Lessons'}
                         </Typography>
@@ -1069,7 +1074,7 @@ const CreateCourse = () => {
                           {chapters.reduce((total, chapter) => total + chapter.videos.length, 0)}
                         </Typography>
                       </Box>
-                      <Box sx={{ mb: 2 }}>
+                      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Typography variant="subtitle2" color="text.secondary">
                           Course Type
                         </Typography>
