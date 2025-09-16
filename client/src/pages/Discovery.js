@@ -37,7 +37,6 @@ import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
-import logo from '../assets/logo.webp';
 import googleLogo from '../assets/google-logo.png';
 
 const communities = [
@@ -397,7 +396,7 @@ const Discovery = () => {
               width: { xs: '120px', sm: '160px', md: '200px', lg: '240px' },
               height: 'auto'
             }}>
-              <img src={logo} alt="Logo" style={{ width: '100%', height: 'auto' }} />
+              <img src="/bell-desk-logo.webp" alt="Bell & Desk Logo" style={{ width: '100%', height: 'auto' }} />
             </Box>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Box sx={{ position: 'relative' }} data-login-dropdown>
