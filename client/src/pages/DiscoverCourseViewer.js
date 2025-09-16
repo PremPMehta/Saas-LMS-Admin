@@ -36,8 +36,10 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { courseApi } from '../utils/courseApi';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const DiscoverCourseViewer = () => {
+  useDocumentTitle('Discover Course Viewer - Bell & Desk');
   const navigate = useNavigate();
   const { courseId } = useParams();
   const [courses, setCourses] = useState([]);

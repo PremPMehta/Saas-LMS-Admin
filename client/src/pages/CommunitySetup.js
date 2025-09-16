@@ -33,8 +33,10 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getCommunityUrl } from '../utils/communityUrlUtils';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunitySetup = () => {
+  useDocumentTitle('Community Setup - Bell & Desk');
   console.log('CommunitySetup: Component is loading');
   const navigate = useNavigate();
   const location = useLocation();

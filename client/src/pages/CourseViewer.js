@@ -56,8 +56,10 @@ import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CourseViewer = () => {
+  useDocumentTitle('Course Viewer - Bell & Desk');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();

@@ -33,6 +33,7 @@ import { courseApi } from '../utils/courseApi';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
 import logo from '../assets/logo.png';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const communities = [
   {
@@ -144,6 +145,7 @@ const TARGET_AUDIENCES = [
 ];
 
 const Discovery = () => {
+  useDocumentTitle('Discover  - Bell & Desk');
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');

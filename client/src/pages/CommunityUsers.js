@@ -46,8 +46,10 @@ import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
 import axios from 'axios';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUsers = () => {
+  useDocumentTitle('Community Users - Bell & Desk');
   const { mode } = useTheme();
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

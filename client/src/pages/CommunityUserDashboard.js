@@ -35,8 +35,10 @@ import {
   People as PeopleIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserDashboard = () => {
+  useDocumentTitle('Community User Dashboard - Bell & Desk');
   const { communityName } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);

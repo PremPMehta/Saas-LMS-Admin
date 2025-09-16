@@ -25,11 +25,13 @@ import { useTheme } from '../contexts/ThemeContext';
 import KPICard from '../components/dashboard/KPICard';
 import axios from 'axios';
 import API_BASE_URL from '../config/api';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 // Configure axios base URL
 axios.defaults.baseURL = API_BASE_URL;
 
 const Dashboard = () => {
+  useDocumentTitle('Dashboard - Bell & Desk');
   const { mode } = useTheme();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

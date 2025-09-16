@@ -36,8 +36,10 @@ import {
   School as SchoolIcon,
   Code as CodeIcon
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityProfile = () => {
+  useDocumentTitle('Community Profile - Bell & Desk');
   const navigate = useNavigate();
   const [community, setCommunity] = useState(null);
   const [isEditing, setIsEditing] = useState(false);

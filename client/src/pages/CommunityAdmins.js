@@ -66,8 +66,10 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityAdmins = () => {
+  useDocumentTitle('Community Admins - Bell & Desk');
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
   const [communityData, setCommunityData] = useState(null);

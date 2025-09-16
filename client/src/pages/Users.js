@@ -20,8 +20,10 @@ import { useTheme } from '../contexts/ThemeContext';
 import UsersList from '../components/users/UsersList';
 import AddUserModal from '../components/users/AddUserModal';
 import KPICard from '../components/dashboard/KPICard';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Users = () => {
+  useDocumentTitle('Users - Bell & Desk');
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);

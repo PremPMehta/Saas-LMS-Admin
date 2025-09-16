@@ -25,8 +25,10 @@ import { useTheme } from '../contexts/ThemeContext';
 import KPICard from '../components/dashboard/KPICard';
 import AcademiesList from '../components/dashboard/AcademiesList';
 import AddAcademyModal from '../components/dashboard/AddAcademyModal';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const DashboardOverview = () => {
+  useDocumentTitle('Dashboard Overview - Bell & Desk');
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isPlansLoading, setIsPlansLoading] = useState(false);

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Box, Typography, Container } from '@mui/material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const TestPage = () => {
+  useDocumentTitle('Test Page - Bell & Desk');
   return (
     <Box sx={{ 
       minHeight: '100vh',

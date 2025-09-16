@@ -25,8 +25,10 @@ import { useNavigate } from 'react-router-dom';
 import communityAuthApi from '../utils/communityAuthApi';
 import loginImage from '../assets/view-building-with.jpg';
 import { getCommunityUrl } from '../utils/communityUrlUtils';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityLogin = () => {
+  useDocumentTitle('Community Login - Bell & Desk');
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -98,7 +100,7 @@ const CommunityLogin = () => {
   return (
     <Box>
       <Box className="login-card" >
-        <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+        <Grid container spacing={2} sx={{ alignItems: 'center', height: '100vh', alignItems: 'center' }}>
           <Grid size={{ xs:12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <Box sx={{ mb: 4 }}>

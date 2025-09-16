@@ -21,8 +21,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoginTransition from '../components/LoginTransition';
 import "../index.css";
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Login = () => {
+  useDocumentTitle('Login - Bell & Desk');
   const { mode } = useTheme();
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -41,6 +43,7 @@ const Login = () => {
 
   // Validation rules
   const validateField = (name, value) => {
+    
     switch (name) {
       case 'email':
         if (!value) {

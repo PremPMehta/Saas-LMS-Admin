@@ -58,10 +58,12 @@ import {
   ExpandLess as ExpandLessIcon,
   FilterList as FilterIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Courses = () => {
   const navigate = useNavigate();
   const { communityName } = useParams();
+  useDocumentTitle('Courses - Bell & Desk');
 
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;

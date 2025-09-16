@@ -25,8 +25,10 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import loginImage from '../assets/view-building-with.jpg'; 
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserLogin = () => {
+  useDocumentTitle('Community User Login - Bell & Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
   const [formData, setFormData] = useState({
@@ -242,7 +244,7 @@ const CommunityUserLogin = () => {
   return (
     <Box>
       <Box className="login-card" >
-        <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+        <Grid container spacing={2} sx={{ alignItems: 'center', height: '100vh', alignItems: 'center' }}>
           <Grid size={{ xs:12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <CardContent sx={{ p: 0 }}>

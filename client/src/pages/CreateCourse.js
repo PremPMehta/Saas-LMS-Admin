@@ -54,14 +54,16 @@ import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { apiUrl } from '../config/api';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import FocusedSidebar from '../components/FocusedSidebar';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CreateCourse = () => {
+  useDocumentTitle('Create Course - Bell & Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
 
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
-
+  const communityUserData = localStorage.getItem('communityUserData');
   // Debug logging
   console.log('CreateCourse component loaded:', { communityName, communityUrls });
   const [activeStep, setActiveStep] = useState(0);
@@ -539,7 +541,7 @@ const CreateCourse = () => {
       case 0:
         return (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 8, lg: 8 }}>
+            <Grid size={{ xs: 12, md: 12, lg: 8 }}>
               <Grid spacing={3}>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="h5" sx={{
@@ -623,7 +625,7 @@ const CreateCourse = () => {
                       fullWidth
                       error={!!errors.targetAudience}
                       sx={{
-                        mb: 3,
+                        mb: {xs: 2, md: 0, lg: 0},
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 3,
                           transition: 'all 0.3s ease',
@@ -1105,7 +1107,7 @@ const CreateCourse = () => {
 
       <Box sx={{
         flex: 1,
-        ml: 30,
+        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
         mt: 0,
         display: 'flex',
         flexDirection: 'column'
@@ -1154,11 +1156,16 @@ const CreateCourse = () => {
                         color: '#0f3b609e',
                         fontWeight: 600,
                         fontSize: '1rem',
+                        '@media (max-width: 560px)': {
+                          padding: '8px 7px',
+                          fontSize: '0.75rem',
+                        },
                         '&.Mui-active': {
                           color: '#0F3C60',
                           fontWeight: 700,
-                          padding: '8px 20px',
+                         
                           borderBottom: '2px solid #0F3C60',
+
                         },
                         '&.Mui-completed': {
                           color: '#16A34A',
@@ -1191,6 +1198,12 @@ const CreateCourse = () => {
                   {steps.map((label, index) => (
                     <Step key={label}>
                       <StepLabel
+                        sx={{
+
+                          '& MuiStepLabel-labelContainer': {
+                            fontSize: { xs: '0.75rem', sm: '0.9rem', md: '1rem' },
+                          }
+                        }}
                         StepIconComponent={({ active, completed }) => (
                           <Box
                             sx={{

@@ -16,8 +16,10 @@ import {
   TrendingUp as TrendingUpIcon,
   Book as BookIcon
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const StudentDashboard = () => {
+  useDocumentTitle('Student Dashboard - Bell & Desk');
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>

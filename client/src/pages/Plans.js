@@ -21,8 +21,10 @@ import { useTheme } from '../contexts/ThemeContext';
 import KPICard from '../components/dashboard/KPICard';
 import PlansTable from '../components/dashboard/PlansTable';
 import AddPlanModal from '../components/dashboard/AddPlanModal';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Plans = () => {
+  useDocumentTitle('Subscription Plans - Bell & Desk');
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);

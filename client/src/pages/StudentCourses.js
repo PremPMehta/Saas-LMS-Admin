@@ -32,8 +32,10 @@ import {
   ExpandLess as ExpandLessIcon,
   Schedule as ScheduleIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const StudentCourses = () => {
+  useDocumentTitle('Student Courses - Bell & Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
   

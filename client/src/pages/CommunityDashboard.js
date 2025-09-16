@@ -63,8 +63,10 @@ import {
   PlayCircleOutline as PlayCircleOutlineIcon,
   VideoLibrary as VideoLibraryIcon,
 } from '@mui/icons-material';
+import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityDashboard = () => {
+  useDocumentTitle('Community Dashboard - Bell & Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
   
