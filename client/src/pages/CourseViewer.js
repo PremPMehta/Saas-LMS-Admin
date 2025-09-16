@@ -22,7 +22,8 @@ import {
   MenuItem,
   Slider,
   Tooltip,
-  Container
+  Container,
+  Avatar
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -54,7 +55,7 @@ import { getCommunityUrls } from '../utils/communityUrlUtils';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
 import '../App.css';
-
+import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
 
 const CourseViewer = () => {
   const theme = useTheme();
@@ -851,37 +852,37 @@ const CourseViewer = () => {
         {/* Common Focused Top Bar */}
         <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
 
-        {/* Back Button */}
-        <Box sx={{ px: { xs: 1, md: 3 }, pt: 2 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(`/${communityName}/student/courses`)}
-            sx={{
-              textTransform: 'none',
-              color: darkMode ? '#fff' : '#0F3C60',
-              borderColor: darkMode ? '#fff' : '#0F3C60',
-              '&:hover': {
-                backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(15,60,96,0.1)',
-                borderColor: darkMode ? '#fff' : '#0F3C60'
-              }
-            }}
-            variant="outlined"
-          >
-            Back to Courses
-          </Button>
-        </Box>
 
         {/* Course Content */}
         <Box sx={{ flex: 1, px: 1, py: 4, overflow: 'visible' }}>
           <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
+            {/* Back Button */}
+            <Box sx={{ pb: 2 }}>
+              <Button
+                startIcon={<ArrowBackIcon />}
+                onClick={() => navigate(`/${communityName}/student/courses`)}
+                sx={{
+                  textTransform: 'none',
+                  color: darkMode ? '#fff' : '#0F3C60',
+                  borderColor: darkMode ? '#fff' : '#0F3C60',
+                  '&:hover': {
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(15,60,96,0.1)',
+                    borderColor: darkMode ? '#fff' : '#0F3C60'
+                  }
+                }}
+                variant="outlined"
+              >
+                Back to Courses
+              </Button>
+            </Box>
             <Grid container spacing={2}>
               {/* Sidebar - Courses and Lectures */}
-              <Grid size={{ xs: 12, md: 4, lg: 4 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
+              <Grid size={{ xs: 12, md: 5, lg: 5, xl: 4 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardContent sx={{ flexGrow: 1, overflow: 'hidden', p: 0 }}>
-                    <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+                    <Box sx={{ p: 2, pb: 0, borderColor: 'divider' }}>
                       <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        Courses & Lectures
+                        Tributación (Crypto)
                       </Typography>
                     </Box>
 
@@ -889,13 +890,28 @@ const CourseViewer = () => {
                       {selectedCourse && (
                         <Box>
                           {/* Simple Course Header */}
-                          <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-                            <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-                              {selectedCourse.title}
-                            </Typography>
+                          <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Avatar
+                              sx={{
+                                bgcolor: "#0F3C60",
+                                width: 40,
+                                height: 40,
+                              }}
+                            >
+                              <PlayCircleFilledWhiteIcon sx={{ color: "#ffffff" }} />
+                            </Avatar>
+                            <Box>
+                              <Typography variant="body2" sx={{ fontSize: '16px', fontWeight: 600 }}>
+                                {selectedCourse.title}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                0:00
+                              </Typography>
+                            </Box>
+
 
                             {/* Course Content Type Indicator */}
-                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                            {/* <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                               <Chip
                                 icon={selectedCourse.contentType === 'video' ? <VideoIcon fontSize="small" /> : <TextIcon fontSize="small" />}
                                 label={selectedCourse.contentType === 'video' ? 'Video Course' : 'Text Course'}
@@ -910,13 +926,13 @@ const CourseViewer = () => {
                                 variant="outlined"
                                 color={selectedCourse.status === 'published' ? 'success' : 'warning'}
                               />
-                            </Box>
+                            </Box> */}
                           </Box>
 
                           {/* Simple List of Chapters and Videos */}
                           {selectedCourse.chapters?.map((chapter) => (
-                            <Box key={chapter._id} sx={{ mb: 3, p: 2 }}>
-                              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: 'primary.main' }}>
+                            <Box key={chapter._id} sx={{}}>
+                              <Typography variant="h6" sx={{ p: 2, fontWeight: 600, color: 'primary.main' }}>
                                 📚 {chapter.title}
                               </Typography>
 
@@ -929,24 +945,24 @@ const CourseViewer = () => {
                                     gap: 1,
                                     p: 1.5,
                                     cursor: 'pointer',
-                                    backgroundColor: activeLectureId === video._id ? 'action.selected' : 'transparent',
+                                    backgroundColor: activeLectureId === video._id ? '#0F3C6033' : 'transparent',
                                     '&:hover': { backgroundColor: 'action.hover' },
                                     mb: 0.5,
-                                    ml: 2,
-                                    borderRadius: 1,
-                                    border: activeLectureId === video._id ? 1 : 0,
-                                    borderColor: 'primary.main'
+                                    // ml: 2,
+                                    // borderRadius: 1,
+                                    borderLeft: activeLectureId === video._id ? 3 : 3,
+                                    borderColor: activeLectureId === video._id ? '#0F3C60' : 'transparent',
                                   }}
                                   onClick={() => handleLectureSelect(video)}
                                 >
-                                  {video.completed ? (
+                                  {/* {video.completed ? (
                                     <CheckIcon sx={{ fontSize: 18, color: 'success.main' }} />
                                   ) : (
                                     <CircleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                                  )}
+                                  )} */}
 
                                   {/* Content Type Icon */}
-                                  <Box sx={{
+                                  {/* <Box sx={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -960,10 +976,20 @@ const CourseViewer = () => {
                                   }}>
                                     {(video.type === 'VIDEO' || video.videoType) ? '▶️' :
                                       video.type === 'PDF' ? '📄' : '📝'}
-                                  </Box>
+                                  </Box> */}
 
-                                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                                  <Avatar
+                                    sx={{
+                                      bgcolor: "#0F3C60",
+                                      width: 40,
+                                      height: 40,
+                                    }}
+                                  >
+                                    <PlayCircleFilledWhiteIcon sx={{ color: "#ffffff" }} />
+                                  </Avatar>
+
+                                  <Box sx={{ flex: 1 }}>
+                                    <Typography variant="body2" sx={{ fontSize: '16px', fontWeight: 600 }}>
                                       {video.title}
                                     </Typography>
                                     <Typography variant="caption" sx={{ color: 'text.secondary' }}>
@@ -982,7 +1008,7 @@ const CourseViewer = () => {
               </Grid>
 
               {/* Main Content Area */}
-              <Grid size={{ xs: 12, md: 8, lg: 8 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
+              <Grid size={{ xs: 12, md: 7, lg: 7, xl: 8 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <CardContent sx={{ flexGrow: 1, p: 0, display: 'flex', flexDirection: 'column' }}>
                     {selectedLecture ? (
@@ -1003,7 +1029,7 @@ const CourseViewer = () => {
                           position: 'relative',
                           borderRadius: 1,
                           overflow: 'hidden',
-                          aspectRatio: { xs: '4/3', sm: '16/10', md: '16/9' },
+                          // aspectRatio: { xs: '4/3', sm: '16/10', md: '16/9' },
                           width: '100%',
                           boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
                         }}>
@@ -1423,7 +1449,14 @@ const CourseViewer = () => {
 
                         {/* Lecture Details */}
                         <Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', backgroundColor: 'background.paper' }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+                          <Box sx={{
+                            display: 'flex',
+                            flexDirection: { xs: 'column', md: 'row' },
+                            gap: 2,
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            mb: 3
+                          }}>
                             <Box sx={{ flex: 1 }}>
                               <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
                                 {selectedLecture.title}
@@ -1479,7 +1512,8 @@ const CourseViewer = () => {
                               {selectedLecture.type === 'VIDEO' && (
                                 <Button
                                   variant="outlined"
-                                  size="small"
+                                  size="large"
+                                  sx={{ backgroundColor: "#0F3C60", color: "#fff" , width: "fit-content" }}
                                   onClick={() => {
                                     const iframe = document.querySelector('iframe');
                                     if (iframe && iframe.requestFullscreen) {

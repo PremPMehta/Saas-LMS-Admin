@@ -514,7 +514,7 @@ const Courses = () => {
 
         {/* Main Content */}
         <Box sx={{ flex: 1, px: 1, py: 4, overflow: 'visible' }}>
-          <Container maxWidth="lg" sx={{ overflow: 'visible' }}>
+          <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
                 <CircularProgress />
@@ -741,7 +741,7 @@ const Courses = () => {
 
                   <Card sx={{ mb: 1, background: darkMode ? '#2d2d2d' : 'transparent', boxShadow: 'none', border: "none", p: 0, overflow: 'visible' }}>
                     <CardContent sx={{ p: 0, overflow: 'visible' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2}}>
                         <Box sx={{ position: 'relative', overflow: 'visible' }} className="filter-dropdown">
                           <Button
                             fullWidth
@@ -1108,13 +1108,15 @@ const Courses = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             sx={{
                               '& .MuiOutlinedInput-root': {
-                                borderRadius: 3,
+                                borderRadius: 5,
                                 background: darkMode
                                   ? 'rgba(255, 255, 255, 0.05)'
                                   : 'rgba(255, 255, 255, 0.8)',
                                 backdropFilter: 'blur(10px)',
                                 borderColor: ' #0F3C60',
-                                width: '600px',
+                                md: {
+                                  width: '600px',
+                                },
                                 height: '56px',
                                 '&.Mui-focused': {
                                   borderColor: ' #0F3C60',
