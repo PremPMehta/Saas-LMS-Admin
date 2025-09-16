@@ -859,7 +859,15 @@ const CourseViewer = () => {
         <Box sx={{ px: { xs: 1, md: 3 }, pt: 2 }}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(`/${communityName}/student/courses`)}
+            onClick={() => {
+              // Check if we're in admin mode by looking at the current URL
+              const isAdminMode = window.location.pathname.includes('/admin/');
+              const backUrl = isAdminMode 
+                ? `/${communityName}/admin/courses`
+                : `/${communityName}/student/courses`;
+              console.log('CourseViewer back button:', { isAdminMode, backUrl, currentPath: window.location.pathname });
+              navigate(backUrl);
+            }}
             sx={{
               textTransform: 'none',
               color: darkMode ? '#fff' : '#0F3C60',
