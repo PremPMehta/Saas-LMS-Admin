@@ -275,7 +275,7 @@ const CommunityUsers = () => {
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }}
                 >
-                  Community Users
+                  Bell & Desk - Community Users
                 </Typography>
                 <Typography
                   variant="h6"

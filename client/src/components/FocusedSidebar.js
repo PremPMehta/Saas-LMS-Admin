@@ -35,7 +35,7 @@ const FocusedSidebar = ({ darkMode }) => {
       {/* Logo */}
       <Box sx={{ mb: 4, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', pl: 2 }}>
         <img
-          src="/bell-desk-logo.png"
+          src="/bell-desk-logo.webp"
           alt="Bell & Desk"
           style={{
             height: '50px',

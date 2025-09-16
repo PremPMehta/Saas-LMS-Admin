@@ -944,7 +944,7 @@ const Courses = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
                   <Box>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
-                      {isCommunityUser ? 'Available Courses' : 'My Courses'}
+                      Bell & Desk - {isCommunityUser ? 'Available Courses' : 'My Courses'}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
                       {isCommunityUser 

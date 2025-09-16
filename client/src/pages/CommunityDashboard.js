@@ -276,7 +276,7 @@ const CommunityDashboard = () => {
           {activeNav === 'home' ? (
             <Box>
               <Typography variant="h4" sx={{ mb: 3, fontWeight: 700, color: darkMode ? '#ffffff' : '#000000', fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
-                Welcome to {communityData?.name || 'Your'} Dashboard
+                Bell & Desk - Welcome to {communityData?.name || 'Your'} Dashboard
               </Typography>
 
               <Grid container spacing={3} sx={{ mb: 4 }}>

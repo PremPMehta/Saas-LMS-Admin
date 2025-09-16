@@ -37,7 +37,7 @@ import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import googleLogo from '../assets/google-logo.png';
 
 const communities = [
@@ -606,7 +606,7 @@ const Discovery = () => {
               fontSize: { xs: '2rem', md: '3rem' }
             }}
           >
-            Discover courses
+            Bell & Desk - Discover courses
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
             or{' '}
