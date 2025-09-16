@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import googleLogo from '../assets/google-logo.png';
 
 const CourseLoginModal = ({ open, onClose, courseData }) => {
   const navigate = useNavigate();
@@ -311,12 +312,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
           >
             <Tab 
               icon={<PersonIcon />} 
-              label="Community User" 
+              label="Bell & Desk User Login" 
               iconPosition="start"
             />
             <Tab 
               icon={<BusinessIcon />} 
-              label="Community Admin" 
+              label="Bell & Desk Login" 
               iconPosition="start"
             />
           </Tabs>
@@ -416,6 +417,48 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                         {isUserLoading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
                       </Button>
                     </Box>
+
+                    {/* Divider */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
+                      <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+                      <Typography variant="body2" sx={{ mx: 2, color: '#666' }}>
+                        or
+                      </Typography>
+                      <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+                    </Box>
+
+                    {/* Google Sign In Button */}
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      fullWidth
+                      sx={{
+                        py: 1.5,
+                        fontSize: '14px',
+                        textTransform: 'none',
+                        borderRadius: 2,
+                        borderColor: '#dadce0',
+                        color: '#3c4043',
+                        backgroundColor: '#fff',
+                        '&:hover': {
+                          backgroundColor: '#f8f9fa',
+                          borderColor: '#dadce0',
+                        },
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                      }}
+                      startIcon={
+                        <Box
+                          component="img"
+                          src={googleLogo}
+                          alt="Google"
+                          sx={{ width: 20, height: 20 }}
+                        />
+                      }
+                    >
+                      Sign in with Google
+                    </Button>
 
                     <Box sx={{ textAlign: 'center', mt: 2 }}>
                       <Typography variant="body2" color="text.secondary">
@@ -672,6 +715,48 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                     {isAdminLoading ? <CircularProgress size={24} color="inherit" /> : 'Login as Admin'}
                   </Button>
                 </Box>
+
+                {/* Divider */}
+                <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+                  <Typography variant="body2" sx={{ mx: 2, color: '#666' }}>
+                    or
+                  </Typography>
+                  <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
+                </Box>
+
+                {/* Google Sign In Button */}
+                <Button
+                  variant="outlined"
+                  size="large"
+                  fullWidth
+                  sx={{
+                    py: 1.5,
+                    fontSize: '14px',
+                    textTransform: 'none',
+                    borderRadius: 2,
+                    borderColor: '#dadce0',
+                    color: '#3c4043',
+                    backgroundColor: '#fff',
+                    '&:hover': {
+                      backgroundColor: '#f8f9fa',
+                      borderColor: '#dadce0',
+                    },
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                  startIcon={
+                    <Box
+                      component="img"
+                      src={googleLogo}
+                      alt="Google"
+                      sx={{ width: 20, height: 20 }}
+                    />
+                  }
+                >
+                  Sign in with Google
+                </Button>
               </CardContent>
             </Card>
           )}
