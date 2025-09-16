@@ -579,9 +579,9 @@ const CommunityAdmins = () => {
       <FocusedSidebar darkMode={darkMode} />
 
       {/* Main Content Area */}
-      <Box sx={{ 
+      <Box sx={{
         flex: 1, 
-        ml: 30, // Account for fixed sidebar (240px)
+        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'

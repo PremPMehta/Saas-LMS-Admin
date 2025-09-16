@@ -6,6 +6,8 @@ import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { CRYPTO_CATEGORIES } from '../config/categories';
 import FocusedSidebar from '../components/FocusedSidebar';
 import FocusedTopBar from '../components/FocusedTopBar';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
 import '../App.css';
 import {
   Box,
@@ -55,16 +57,15 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   FilterList as FilterIcon,
-  Archive as ArchiveIcon,
 } from '@mui/icons-material';
 
 const Courses = () => {
   const navigate = useNavigate();
   const { communityName } = useParams();
-  
+
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
-  
+
   // Check if user is a community user (student) or admin
   const communityUserData = localStorage.getItem('communityUserData');
   const isCommunityUser = !!communityUserData;
@@ -154,29 +155,29 @@ const Courses = () => {
         console.log('🔍 communityAuthApi.getCurrentCommunity():', community);
         console.log('🔍 localStorage communityData:', localStorage.getItem('communityData'));
         let communityId = community ? (community._id || community.id) : localStorage.getItem('communityId');
-        
+
         // If no communityId found, use the Crypto Manji community ID
         if (!communityId || communityId === 'null' || communityId === 'undefined') {
           communityId = '68bae2a8807f3a3bb8ac6307';
           console.log('🔧 Using fallback community ID for course listing:', communityId);
         }
-        
+
         // FORCE: Always use the correct Crypto Manji community ID for now
         communityId = '68bae2a8807f3a3bb8ac6307';
         console.log('🔧 FORCED: Using Crypto Manji community ID:', communityId);
-        
+
         // FORCE: Set the correct community ID in localStorage to fix the issue
         localStorage.setItem('communityId', '68bae2a8807f3a3bb8ac6307');
         console.log('🔧 FORCED: Set communityId in localStorage to:', '68bae2a8807f3a3bb8ac6307');
-        
+
         // FORCE: Also fix the communityData in localStorage if it has wrong community ID
         const communityData = localStorage.getItem('communityData');
         if (communityData) {
           try {
             const parsedData = JSON.parse(communityData);
             if (parsedData._id === '68bae2119b907eb2a8d357f2' || parsedData.id === '68bae2119b907eb2a8d357f2' ||
-                parsedData._id === '68b03c92fac3b1af515ccc69' || parsedData.id === '68b03c92fac3b1af515ccc69' ||
-                parsedData._id === '68b684467fd9b766dc7cc337' || parsedData.id === '68b684467fd9b766dc7cc337') {
+              parsedData._id === '68b03c92fac3b1af515ccc69' || parsedData.id === '68b03c92fac3b1af515ccc69' ||
+              parsedData._id === '68b684467fd9b766dc7cc337' || parsedData.id === '68b684467fd9b766dc7cc337') {
               parsedData._id = '68bae2a8807f3a3bb8ac6307';
               parsedData.id = '68bae2a8807f3a3bb8ac6307';
               localStorage.setItem('communityData', JSON.stringify(parsedData));
@@ -186,11 +187,11 @@ const Courses = () => {
             console.log('🔧 Could not parse communityData:', e);
           }
         }
-        
+
         console.log('🔍 Courses page using community ID:', communityId);
         console.log('🆕 UPDATED Courses.js - Community ID fix applied!');
         console.log('🕐 Timestamp:', new Date().toISOString());
-        
+
         console.log('🔍 Loading courses for community:', communityId);
 
         // Fetch courses for the specific community only
@@ -231,7 +232,7 @@ const Courses = () => {
             thumbnailType: typeof course.thumbnail,
             thumbnailLength: course.thumbnail ? course.thumbnail.length : 0
           });
-          
+
           return {
             _id: course._id || course.id,
             title: course.title || 'Untitled Course',
@@ -282,17 +283,17 @@ const Courses = () => {
     setRefreshing(true);
     try {
       let communityId = localStorage.getItem('communityId');
-      
+
       // If no communityId found, use the same fallback as main course loading
       if (!communityId || communityId === 'null' || communityId === 'undefined') {
         communityId = '68bae2a8807f3a3bb8ac6307';
         console.log('🔧 Manual refresh: Using fallback community ID:', communityId);
       }
-      
+
       // FORCE: Set the correct community ID in localStorage to fix the issue
       localStorage.setItem('communityId', '68bae2a8807f3a3bb8ac6307');
       console.log('🔧 FORCED: Set communityId in localStorage to:', '68bae2a8807f3a3bb8ac6307');
-      
+
       console.log('🔄 Manual refresh: Loading courses for community:', communityId);
       console.log('🆕 UPDATED Manual refresh - Community ID fix applied!');
 
@@ -458,7 +459,7 @@ const Courses = () => {
     if (filterDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -469,19 +470,19 @@ const Courses = () => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     // Check if any filters are selected, if not, show all courses
     const hasTypeFilters = selectedFilters.types.length > 0;
     const hasCategoryFilters = selectedFilters.categories.length > 0;
     const hasAudienceFilters = selectedFilters.audiences.length > 0;
-    
+
     const matchesType = !hasTypeFilters || selectedFilters.types.includes(course.contentType);
     const matchesCategory = !hasCategoryFilters || selectedFilters.categories.includes(course.category);
     const matchesAudience = !hasAudienceFilters || selectedFilters.audiences.includes(course.targetAudience);
-    
+
     // Always exclude archived courses from listing
     const isNotArchived = course.status !== 'archived';
-    
+
     return matchesSearch && matchesType && matchesCategory && matchesAudience && isNotArchived;
   });
 
@@ -503,7 +504,7 @@ const Courses = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 30, // Account for fixed sidebar (240px)
+        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -513,7 +514,7 @@ const Courses = () => {
 
         {/* Main Content */}
         <Box sx={{ flex: 1, px: 1, py: 4, overflow: 'visible' }}>
-          <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
+          <Container maxWidth="lg" sx={{ overflow: 'visible' }}>
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
                 <CircularProgress />
@@ -522,8 +523,8 @@ const Courses = () => {
             ) : (
               <Box>
                 {/* Header */}
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-                  <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'end', mb: 4 }}>
+                  {/* <Box>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
                       {isCommunityUser ? 'Available Courses' : 'My Courses'}
                     </Typography>
@@ -533,7 +534,7 @@ const Courses = () => {
                         : `Manage and track all your created courses (${courses.length} courses)`
                       }
                     </Typography>
-                  </Box>
+                  </Box> */}
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <IconButton
                       onClick={handleRefresh}
@@ -552,31 +553,19 @@ const Courses = () => {
                         }
                       }} />
                     </IconButton>
-                    {/* Only show Create New Course button for admins */}
                     {!isCommunityUser && (
                       <Button
                         variant="contained"
                         startIcon={<AddIcon />}
                         onClick={() => {
-                          // Check if user is authenticated as community admin
-                          const isCommunityAdmin = !!(localStorage.getItem('communityToken') && localStorage.getItem('communityData'));
-                          
-                          if (isCommunityAdmin) {
-                            // User is authenticated, navigate to create course
-                            if (communityUrls) {
-                              navigate(communityUrls.createCourse);
-                            } else {
-                              navigate('/create-course');
-                            }
+                          if (communityUrls) {
+                            navigate(communityUrls.createCourse);
                           } else {
-                            // User is not authenticated, redirect to login with return URL
-                            const returnUrl = communityUrls?.createCourse || '/create-course';
-                            navigate(`/community-login?returnUrl=${encodeURIComponent(returnUrl)}`);
+                            navigate('/create-course');
                           }
                         }}
                         sx={{
                           background: '#0F3C60',
-                          '&:hover': { background: '#3367d6' }
                         }}
                       >
                         Create New Course
@@ -585,9 +574,7 @@ const Courses = () => {
                   </Box>
                 </Box>
 
-                {/* Stats Cards */}
-                <Grid container spacing={3} sx={{ mb: 4 }}>
-                  {/* Total Courses */}
+                {/* <Grid container spacing={3} sx={{ mb: 4 }}>
                   <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card
                       sx={{
@@ -624,7 +611,6 @@ const Courses = () => {
                     </Card>
                   </Grid>
 
-                  {/* Published */}
                   <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card
                       sx={{
@@ -661,7 +647,42 @@ const Courses = () => {
                     </Card>
                   </Grid>
 
-                  {/* Archived */}
+                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Card
+                      sx={{
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'linear-gradient(45deg, #ffffff 30%, #fff9e5 90%)',
+                        borderRadius: 3,
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: '50%',
+                            bgcolor: '#fef7e0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <WarningIcon sx={{ color: '#fbbc04' }} />
+                        </Box>
+                        <Box>
+                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#fbbc04', mb: 0 }}>
+                            {courses.filter(c => c.status === 'draft').length}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Drafts
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Card>
+                  </Grid>
+
                   <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
                     <Card
                       sx={{
@@ -684,57 +705,20 @@ const Courses = () => {
                             justifyContent: 'center',
                           }}
                         >
-                          <ArchiveIcon sx={{ color: '#ea4335' }} />
+                          <PeopleIcon sx={{ color: '#ea4335' }} />
                         </Box>
                         <Box>
                           <Typography variant="h4" sx={{ fontWeight: 700, color: '#ea4335', mb: 0 }}>
-                            {courses.filter(c => c.status === 'archived').length}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Archived
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Card>
-                  </Grid>
-
-                  {/* Total Approved Users */}
-                  <Grid item size={{ xs: 12, sm: 6, md: 3 }}>
-                    <Card
-                      sx={{
-                        p: 3,
-                        display: 'flex',
-                        alignItems: 'center',
-                        background: 'linear-gradient(45deg, #ffffff 30%, #e8f5e8 90%)',
-                        borderRadius: 3,
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: '50%',
-                            bgcolor: '#e8f5e8',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <PeopleIcon sx={{ color: '#34a853' }} />
-                        </Box>
-                        <Box>
-                          <Typography variant="h4" sx={{ fontWeight: 700, color: '#34a853', mb: 0 }}>
                             {String(courses.reduce((total, course) => total + (course.students || 0), 0))}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Total Approved Users
+                            Total Students
                           </Typography>
                         </Box>
                       </Box>
                     </Card>
                   </Grid>
-                </Grid>
+                </Grid> */}
 
 
                 {/* Filters and Search */}
@@ -751,41 +735,399 @@ const Courses = () => {
                   },
                   overflow: 'visible'
                 }}>
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                  {/* <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
                     {communityData?.name || 'My'} Courses ({filteredCourses.length})
-                  </Typography>
+                  </Typography> */}
 
-                  <Card sx={{mb: 1, background: darkMode ? '#2d2d2d' : 'transparent', boxShadow: 'none' , border: "none", p:0, overflow: 'visible'}}>
-                    <CardContent sx={{p:0, overflow: 'visible'}}>
-                      <Grid container spacing={2} alignItems="center">
-                        <Grid item size={{ xs: 12, md: 8 }}>
+                  <Card sx={{ mb: 1, background: darkMode ? '#2d2d2d' : 'transparent', boxShadow: 'none', border: "none", p: 0, overflow: 'visible' }}>
+                    <CardContent sx={{ p: 0, overflow: 'visible' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box sx={{ position: 'relative', overflow: 'visible' }} className="filter-dropdown">
+                          <Button
+                            fullWidth
+                            variant="outlined"
+                            onClick={() => {
+                              console.log('Filter button clicked, current state:', filterDropdownOpen);
+                              setFilterDropdownOpen(!filterDropdownOpen);
+                            }}
+                            startIcon={<FilterIcon />}
+                            endIcon={filterDropdownOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                            sx={{
+                              height: '56px',
+                              borderRadius: '12px',
+                              border: '1px solid #0F3C60',
+                              backgroundColor: '#ffffff',
+                              color: '#0F3C60',
+                              fontSize: '1rem',
+                              fontWeight: 500,
+                              textTransform: 'none',
+                              justifyContent: 'center',
+                              px: 3,
+                              boxShadow: 'none',
+                              '& .MuiSvgIcon-root': {
+                                color: '#0F3C60'
+                              },
+                              '&:hover': {
+                                backgroundColor: '#f7faff',
+                              }
+                            }}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              {/* <FilterIcon /> */}
+                              <Typography variant="body1" sx={{ fontWeight: 500, color: '#0F3C60' }}>
+                                Filters
+                              </Typography>
+                              {getActiveFiltersCount() > 0 && (
+                                <Chip
+                                  label={getActiveFiltersCount()}
+                                  size="small"
+                                  sx={{
+                                    bgcolor: '#0F3C60',
+                                    color: '#ffffff',
+                                    fontSize: '0.75rem',
+                                    height: '20px'
+                                  }}
+                                />
+                              )}
+                            </Box>
+                          </Button>
+
+                          {filterDropdownOpen && (
+                            <Card sx={{
+                              position: 'absolute',
+                              top: '100%',
+                              left: 0,
+                              right: 0,
+                              mt: 2,
+                              zIndex: 99999,
+                              background: darkMode ? '#2d2d2d' : '#ffffff',
+                              border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+                              borderRadius: 2,
+                              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+                              width: '250px',
+                              maxHeight: '70vh',
+                              overflow: 'auto',
+                              filter: 'drop-shadow(0px 4px 20px rgba(0,0,0,0.15))',
+                              '&:before': {
+                                content: '""',
+                                display: 'block',
+                                position: 'absolute',
+                                top: -6,
+                                left: 20,
+                                width: 12,
+                                height: 12,
+                                bgcolor: darkMode ? '#2d2d2d' : '#ffffff',
+                                border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
+                                borderBottom: 'none',
+                                borderRight: 'none',
+                                transform: 'rotate(45deg)',
+                                zIndex: 1,
+                              },
+                            }}>
+                              <CardContent sx={{ p: 1.5 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                  <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0F3C60', fontSize: '0.875rem' }}>
+                                    Filters
+                                  </Typography>
+                                  <Button
+                                    size="small"
+                                    onClick={clearAllFilters}
+                                    disabled
+                                    sx={{
+                                      color: '#9e9e9e',
+                                      textTransform: 'none',
+                                      fontSize: '0.75rem',
+                                      minWidth: 'auto',
+                                      px: 1
+                                    }}
+                                  >
+                                    Clear
+                                  </Button>
+                                </Box>
+
+                                <Box sx={{ mb: 1 }}>
+                                  <ListItemButton
+                                    onClick={() => toggleSection('types')}
+                                    sx={{
+                                      px: 1.5,
+                                      py: 0.75,
+                                      borderRadius: 1,
+                                      mx: 0.5,
+                                      my: 0.25,
+                                      minHeight: 'auto',
+                                      transition: 'all 0.2s ease',
+                                      '&:hover': {
+                                        backgroundColor: darkMode ? '#404040' : '#f5f5f5',
+                                      }
+                                    }}
+                                  >
+                                    <VideoIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
+                                    <ListItemText
+                                      primary="Type of Course"
+                                      sx={{
+                                        '& .MuiTypography-root': {
+                                          fontWeight: 500,
+                                          fontSize: '0.875rem',
+                                          color: darkMode ? '#ffffff' : '#333333'
+                                        }
+                                      }}
+                                    />
+                                    {expandedSections.types ? <ExpandLessIcon sx={{ fontSize: '1rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '1rem' }} />}
+                                  </ListItemButton>
+                                  <Collapse in={expandedSections.types}>
+                                    <List sx={{ pl: 1, py: 0 }}>
+                                      {[
+                                        { value: 'vimeo', label: 'Vimeo' },
+                                        { value: 'youtube', label: 'YouTube' },
+                                        { value: 'loom', label: 'Loom' },
+                                        { value: 'physical-video', label: 'Physical Video' },
+                                        { value: 'text-based', label: 'Text Based' },
+                                        { value: 'pdf-based', label: 'PDF Based' }
+                                      ].map((type) => (
+                                        <ListItem key={type.value} sx={{ py: 0, px: 0 }}>
+                                          <ListItemButton
+                                            disabled
+                                            sx={{
+                                              px: 1.5,
+                                              py: 0.5,
+                                              borderRadius: 1,
+                                              mx: 0.5,
+                                              my: 0.125,
+                                              minHeight: 'auto',
+                                              transition: 'all 0.2s ease',
+                                              '&:hover': {
+                                                backgroundColor: 'transparent',
+                                              },
+                                              '&.Mui-disabled': {
+                                                opacity: 0.6
+                                              }
+                                            }}
+                                          >
+                                            <Checkbox
+                                              checked={false}
+                                              disabled
+                                              size="small"
+                                              sx={{
+                                                color: '#0F3C60',
+                                                p: 0.5,
+                                                '&.Mui-checked': { color: '#0F3C60' },
+                                                '&.Mui-disabled': { color: '#9e9e9e' }
+                                              }}
+                                            />
+                                            <ListItemText
+                                              primary={type.label}
+                                              sx={{
+                                                '& .MuiTypography-root': {
+                                                  fontSize: '0.8rem',
+                                                  color: darkMode ? '#ffffff' : '#333333'
+                                                }
+                                              }}
+                                            />
+                                          </ListItemButton>
+                                        </ListItem>
+                                      ))}
+                                    </List>
+                                  </Collapse>
+                                </Box>
+
+                                {/* Category Section */}
+                                <Box sx={{ mb: 1 }}>
+                                  <ListItemButton
+                                    onClick={() => toggleSection('categories')}
+                                    sx={{
+                                      px: 1.5,
+                                      py: 0.75,
+                                      borderRadius: 1,
+                                      mx: 0.5,
+                                      my: 0.25,
+                                      minHeight: 'auto',
+                                      transition: 'all 0.2s ease',
+                                      '&:hover': {
+                                        backgroundColor: darkMode ? '#404040' : '#f5f5f5',
+                                      }
+                                    }}
+                                  >
+                                    <StarIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
+                                    <ListItemText
+                                      primary="Category"
+                                      sx={{
+                                        '& .MuiTypography-root': {
+                                          fontWeight: 500,
+                                          fontSize: '0.875rem',
+                                          color: darkMode ? '#ffffff' : '#333333'
+                                        }
+                                      }}
+                                    />
+                                    {expandedSections.categories ? <ExpandLessIcon sx={{ fontSize: '1rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '1rem' }} />}
+                                  </ListItemButton>
+                                  <Collapse in={expandedSections.categories}>
+                                    <List sx={{ pl: 1, py: 0 }}>
+                                      {CRYPTO_CATEGORIES.map((category) => (
+                                        <ListItem key={category.value} sx={{ py: 0, px: 0 }}>
+                                          <ListItemButton
+                                            disabled
+                                            sx={{
+                                              px: 1.5,
+                                              py: 0.5,
+                                              borderRadius: 1,
+                                              mx: 0.5,
+                                              my: 0.125,
+                                              minHeight: 'auto',
+                                              transition: 'all 0.2s ease',
+                                              '&:hover': {
+                                                backgroundColor: 'transparent',
+                                              },
+                                              '&.Mui-disabled': {
+                                                opacity: 0.6
+                                              }
+                                            }}
+                                          >
+                                            <Checkbox
+                                              checked={false}
+                                              disabled
+                                              size="small"
+                                              sx={{
+                                                color: '#0F3C60',
+                                                p: 0.5,
+                                                '&.Mui-checked': { color: '#0F3C60' },
+                                                '&.Mui-disabled': { color: '#9e9e9e' }
+                                              }}
+                                            />
+                                            <ListItemText
+                                              primary={category.label}
+                                              sx={{
+                                                '& .MuiTypography-root': {
+                                                  fontSize: '0.8rem',
+                                                  color: darkMode ? '#ffffff' : '#333333'
+                                                }
+                                              }}
+                                            />
+                                          </ListItemButton>
+                                        </ListItem>
+                                      ))}
+                                    </List>
+                                  </Collapse>
+                                </Box>
+
+                                {/* Target Audience Section */}
+                                <Box sx={{ mb: 0.5 }}>
+                                  <ListItemButton
+                                    onClick={() => toggleSection('audiences')}
+                                    sx={{
+                                      px: 1.5,
+                                      py: 0.75,
+                                      borderRadius: 1,
+                                      mx: 0.5,
+                                      my: 0.25,
+                                      minHeight: 'auto',
+                                      transition: 'all 0.2s ease',
+                                      '&:hover': {
+                                        backgroundColor: darkMode ? '#404040' : '#f5f5f5',
+                                      }
+                                    }}
+                                  >
+                                    <PeopleIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
+                                    <ListItemText
+                                      primary="Target Audience"
+                                      sx={{
+                                        '& .MuiTypography-root': {
+                                          fontWeight: 500,
+                                          fontSize: '0.875rem',
+                                          color: darkMode ? '#ffffff' : '#333333'
+                                        }
+                                      }}
+                                    />
+                                    {expandedSections.audiences ? <ExpandLessIcon sx={{ fontSize: '1rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '1rem' }} />}
+                                  </ListItemButton>
+                                  <Collapse in={expandedSections.audiences}>
+                                    <List sx={{ pl: 1, py: 0 }}>
+                                      {[
+                                        { value: 'beginner', label: 'Beginner' },
+                                        { value: 'intermediate', label: 'Intermediate' },
+                                        { value: 'advanced', label: 'Advanced' },
+                                        { value: 'professional', label: 'Professional' },
+                                        { value: 'student', label: 'Student' },
+                                        { value: 'investor', label: 'Investor' },
+                                        { value: 'developer', label: 'Developer' }
+                                      ].map((audience) => (
+                                        <ListItem key={audience.value} sx={{ py: 0, px: 0 }}>
+                                          <ListItemButton
+                                            disabled
+                                            sx={{
+                                              px: 1.5,
+                                              py: 0.5,
+                                              borderRadius: 1,
+                                              mx: 0.5,
+                                              my: 0.125,
+                                              minHeight: 'auto',
+                                              transition: 'all 0.2s ease',
+                                              '&:hover': {
+                                                backgroundColor: 'transparent',
+                                              },
+                                              '&.Mui-disabled': {
+                                                opacity: 0.6
+                                              }
+                                            }}
+                                          >
+                                            <Checkbox
+                                              checked={false}
+                                              disabled
+                                              size="small"
+                                              sx={{
+                                                color: '#0F3C60',
+                                                p: 0.5,
+                                                '&.Mui-checked': { color: '#0F3C60' },
+                                                '&.Mui-disabled': { color: '#9e9e9e' }
+                                              }}
+                                            />
+                                            <ListItemText
+                                              primary={audience.label}
+                                              sx={{
+                                                '& .MuiTypography-root': {
+                                                  fontSize: '0.8rem',
+                                                  color: darkMode ? '#ffffff' : '#333333'
+                                                }
+                                              }}
+                                            />
+                                          </ListItemButton>
+                                        </ListItem>
+                                      ))}
+                                    </List>
+                                  </Collapse>
+                                </Box>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </Box>
+                        <Box sx={{ justifyContent: 'flex-end' }}>
                           <TextField
                             fullWidth
-                            placeholder="🔍 Search through your courses, categories, and descriptions..."
+                            placeholder="Search through your courses, categories, and descriptions..."
                             value={searchTerm}
                             size='medium'
                             onChange={(e) => setSearchTerm(e.target.value)}
                             sx={{
                               '& .MuiOutlinedInput-root': {
-                                borderRadius: 4,
-                                background: darkMode 
-                                  ? 'rgba(255, 255, 255, 0.05)' 
+                                borderRadius: 3,
+                                background: darkMode
+                                  ? 'rgba(255, 255, 255, 0.05)'
                                   : 'rgba(255, 255, 255, 0.8)',
                                 backdropFilter: 'blur(10px)',
-                                border: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-                                boxShadow: darkMode 
-                                  ? '0 4px 20px rgba(0, 0, 0, 0.2)' 
-                                  : '0 4px 20px rgba(0, 0, 0, 0.08)',
+                                borderColor: ' #0F3C60',
+                                width: '600px',
                                 height: '56px',
                                 '&.Mui-focused': {
-                                  border: '1px solid #0F3C60',
+                                  borderColor: ' #0F3C60',
+                                },
+                                '&.hover': {
+                                  borderColor: ' #0F3C60',
                                 }
                               },
                               '& .MuiInputBase-input': {
                                 color: darkMode ? '#ffffff' : '#333333',
                                 fontSize: '1rem',
                                 fontWeight: 500,
-                                padding: '16px 20px',
+                                padding: '16px 16px',
                                 '&::placeholder': {
                                   color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
                                   opacity: 1,
@@ -796,13 +1138,13 @@ const Courses = () => {
                             }}
                             InputProps={{
                               startAdornment: (
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
                                   mr: 2,
                                   ml: 1
                                 }}>
-                                  <SearchIcon sx={{ 
+                                  <SearchIcon sx={{
                                     fontSize: '1.5rem',
                                     color: darkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.7)',
                                   }} />
@@ -810,379 +1152,8 @@ const Courses = () => {
                               )
                             }}
                           />
-                        </Grid>
-                        <Grid item size={{ xs: 12, md: 4 }}>
-                          <Box sx={{ position: 'relative', overflow: 'visible' }} className="filter-dropdown">
-                            <Button
-                              fullWidth
-                              variant="outlined"
-                              onClick={() => {
-                                console.log('Filter button clicked, current state:', filterDropdownOpen);
-                                setFilterDropdownOpen(!filterDropdownOpen);
-                              }}
-                              startIcon={<FilterIcon />}
-                              endIcon={filterDropdownOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                              sx={{
-                                height: '56px',
-                                borderRadius: 4,
-                                background: darkMode 
-                                  ? 'rgba(255, 255, 255, 0.05)' 
-                                  : 'rgba(255, 255, 255, 0.8)',
-                                backdropFilter: 'blur(10px)',
-                                border: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-                                boxShadow: darkMode 
-                                  ? '0 4px 20px rgba(0, 0, 0, 0.2)' 
-                                  : '0 4px 20px rgba(0, 0, 0, 0.08)',
-                                color: darkMode ? '#ffffff' : '#333333',
-                                fontSize: '1rem',
-                                fontWeight: 500,
-                                textTransform: 'none',
-                                justifyContent: 'space-between',
-                                px: 3,
-                                '&:hover': {
-                                  background: darkMode 
-                                    ? 'rgba(255, 255, 255, 0.08)' 
-                                    : 'rgba(255, 255, 255, 0.9)',
-                                  border: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)'}`,
-                                }
-                              }}
-                            >
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <FilterIcon />
-                                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                                  Filters
-                                </Typography>
-                                {getActiveFiltersCount() > 0 && (
-                                  <Chip 
-                                    label={getActiveFiltersCount()} 
-                                    size="small" 
-                                    sx={{ 
-                                      bgcolor: '#0F3C60', 
-                                      color: '#ffffff',
-                                      fontSize: '0.75rem',
-                                      height: '20px'
-                                    }} 
-                                  />
-                                )}
-                              </Box>
-                            </Button>
-
-
-                            {/* Nested Filter Dropdown */}
-                            {filterDropdownOpen && (
-                              <Card sx={{
-                                position: 'absolute',
-                                top: '100%',
-                                left: 0,
-                                right: 0,
-                                mt: 2,
-                                zIndex: 99999,
-                                background: darkMode ? '#2d2d2d' : '#ffffff',
-                                border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-                                borderRadius: 2,
-                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
-                                maxHeight: '70vh',
-                                overflow: 'auto',
-                                filter: 'drop-shadow(0px 4px 20px rgba(0,0,0,0.15))',
-                                '&:before': {
-                                  content: '""',
-                                  display: 'block',
-                                  position: 'absolute',
-                                  top: -6,
-                                  left: 20,
-                                  width: 12,
-                                  height: 12,
-                                  bgcolor: darkMode ? '#2d2d2d' : '#ffffff',
-                                  border: `1px solid ${darkMode ? '#404040' : '#e0e0e0'}`,
-                                  borderBottom: 'none',
-                                  borderRight: 'none',
-                                  transform: 'rotate(45deg)',
-                                  zIndex: 1,
-                                },
-                              }}>
-                                <CardContent sx={{ p: 1.5 }}>
-                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0F3C60', fontSize: '0.875rem' }}>
-                                      Filters
-                                    </Typography>
-                                    <Button 
-                                      size="small" 
-                                      onClick={clearAllFilters}
-                                      disabled
-                                      sx={{ 
-                                        color: '#9e9e9e',
-                                        textTransform: 'none',
-                                        fontSize: '0.75rem',
-                                        minWidth: 'auto',
-                                        px: 1
-                                      }}
-                                    >
-                                      Clear
-                                    </Button>
-                                  </Box>
-
-                                  {/* Type of Course Section */}
-                                  <Box sx={{ mb: 1 }}>
-                                    <ListItemButton 
-                                      onClick={() => toggleSection('types')}
-                                      sx={{ 
-                                        px: 1.5,
-                                        py: 0.75,
-                                        borderRadius: 1,
-                                        mx: 0.5,
-                                        my: 0.25,
-                                        minHeight: 'auto',
-                                        transition: 'all 0.2s ease',
-                                        '&:hover': { 
-                                          backgroundColor: darkMode ? '#404040' : '#f5f5f5',
-                                        }
-                                      }}
-                                    >
-                                      <VideoIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
-                                      <ListItemText 
-                                        primary="Type of Course" 
-                                        sx={{ 
-                                          '& .MuiTypography-root': { 
-                                            fontWeight: 500,
-                                            fontSize: '0.875rem',
-                                            color: darkMode ? '#ffffff' : '#333333'
-                                          } 
-                                        }} 
-                                      />
-                                      {expandedSections.types ? <ExpandLessIcon sx={{ fontSize: '1rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '1rem' }} />}
-                                    </ListItemButton>
-                                    <Collapse in={expandedSections.types}>
-                                      <List sx={{ pl: 1, py: 0 }}>
-                                        {[
-                                          { value: 'vimeo', label: 'Vimeo' },
-                                          { value: 'youtube', label: 'YouTube' },
-                                          { value: 'loom', label: 'Loom' },
-                                          { value: 'physical-video', label: 'Physical Video' },
-                                          { value: 'text-based', label: 'Text Based' },
-                                          { value: 'pdf-based', label: 'PDF Based' }
-                                        ].map((type) => (
-                                          <ListItem key={type.value} sx={{ py: 0, px: 0 }}>
-                                            <ListItemButton 
-                                              disabled
-                                              sx={{ 
-                                                px: 1.5,
-                                                py: 0.5,
-                                                borderRadius: 1,
-                                                mx: 0.5,
-                                                my: 0.125,
-                                                minHeight: 'auto',
-                                                transition: 'all 0.2s ease',
-                                                '&:hover': { 
-                                                  backgroundColor: 'transparent',
-                                                },
-                                                '&.Mui-disabled': {
-                                                  opacity: 0.6
-                                                }
-                                              }}
-                                            >
-                                              <Checkbox 
-                                                checked={false}
-                                                disabled
-                                                size="small"
-                                                sx={{ 
-                                                  color: '#0F3C60',
-                                                  p: 0.5,
-                                                  '&.Mui-checked': { color: '#0F3C60' },
-                                                  '&.Mui-disabled': { color: '#9e9e9e' }
-                                                }}
-                                              />
-                                              <ListItemText 
-                                                primary={type.label}
-                                                sx={{ 
-                                                  '& .MuiTypography-root': { 
-                                                    fontSize: '0.8rem',
-                                                    color: darkMode ? '#ffffff' : '#333333'
-                                                  } 
-                                                }} 
-                                              />
-                                            </ListItemButton>
-                                          </ListItem>
-                                        ))}
-                                      </List>
-                                    </Collapse>
-                                  </Box>
-
-                                  {/* Category Section */}
-                                  <Box sx={{ mb: 1 }}>
-                                    <ListItemButton 
-                                      onClick={() => toggleSection('categories')}
-                                      sx={{ 
-                                        px: 1.5,
-                                        py: 0.75,
-                                        borderRadius: 1,
-                                        mx: 0.5,
-                                        my: 0.25,
-                                        minHeight: 'auto',
-                                        transition: 'all 0.2s ease',
-                                        '&:hover': { 
-                                          backgroundColor: darkMode ? '#404040' : '#f5f5f5',
-                                        }
-                                      }}
-                                    >
-                                      <StarIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
-                                      <ListItemText 
-                                        primary="Category" 
-                                        sx={{ 
-                                          '& .MuiTypography-root': { 
-                                            fontWeight: 500,
-                                            fontSize: '0.875rem',
-                                            color: darkMode ? '#ffffff' : '#333333'
-                                          } 
-                                        }} 
-                                      />
-                                      {expandedSections.categories ? <ExpandLessIcon sx={{ fontSize: '1rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '1rem' }} />}
-                                    </ListItemButton>
-                                    <Collapse in={expandedSections.categories}>
-                                      <List sx={{ pl: 1, py: 0 }}>
-                                        {CRYPTO_CATEGORIES.map((category) => (
-                                          <ListItem key={category.value} sx={{ py: 0, px: 0 }}>
-                                            <ListItemButton 
-                                              disabled
-                                              sx={{ 
-                                                px: 1.5,
-                                                py: 0.5,
-                                                borderRadius: 1,
-                                                mx: 0.5,
-                                                my: 0.125,
-                                                minHeight: 'auto',
-                                                transition: 'all 0.2s ease',
-                                                '&:hover': { 
-                                                  backgroundColor: 'transparent',
-                                                },
-                                                '&.Mui-disabled': {
-                                                  opacity: 0.6
-                                                }
-                                              }}
-                                            >
-                                              <Checkbox 
-                                                checked={false}
-                                                disabled
-                                                size="small"
-                                                sx={{ 
-                                                  color: '#0F3C60',
-                                                  p: 0.5,
-                                                  '&.Mui-checked': { color: '#0F3C60' },
-                                                  '&.Mui-disabled': { color: '#9e9e9e' }
-                                                }}
-                                              />
-                                              <ListItemText 
-                                                primary={category.label}
-                                                sx={{ 
-                                                  '& .MuiTypography-root': { 
-                                                    fontSize: '0.8rem',
-                                                    color: darkMode ? '#ffffff' : '#333333'
-                                                  } 
-                                                }} 
-                                              />
-                                            </ListItemButton>
-                                          </ListItem>
-                                        ))}
-                                      </List>
-                                    </Collapse>
-                                  </Box>
-
-                                  {/* Target Audience Section */}
-                                  <Box sx={{ mb: 0.5 }}>
-                                    <ListItemButton 
-                                      onClick={() => toggleSection('audiences')}
-                                      sx={{ 
-                                        px: 1.5,
-                                        py: 0.75,
-                                        borderRadius: 1,
-                                        mx: 0.5,
-                                        my: 0.25,
-                                        minHeight: 'auto',
-                                        transition: 'all 0.2s ease',
-                                        '&:hover': { 
-                                          backgroundColor: darkMode ? '#404040' : '#f5f5f5',
-                                        }
-                                      }}
-                                    >
-                                      <PeopleIcon sx={{ mr: 1, color: '#0F3C60', fontSize: '1rem' }} />
-                                      <ListItemText 
-                                        primary="Target Audience" 
-                                        sx={{ 
-                                          '& .MuiTypography-root': { 
-                                            fontWeight: 500,
-                                            fontSize: '0.875rem',
-                                            color: darkMode ? '#ffffff' : '#333333'
-                                          } 
-                                        }} 
-                                      />
-                                      {expandedSections.audiences ? <ExpandLessIcon sx={{ fontSize: '1rem' }} /> : <ExpandMoreIcon sx={{ fontSize: '1rem' }} />}
-                                    </ListItemButton>
-                                    <Collapse in={expandedSections.audiences}>
-                                      <List sx={{ pl: 1, py: 0 }}>
-                                        {[
-                                          { value: 'beginner', label: 'Beginner' },
-                                          { value: 'intermediate', label: 'Intermediate' },
-                                          { value: 'advanced', label: 'Advanced' },
-                                          { value: 'professional', label: 'Professional' },
-                                          { value: 'student', label: 'Student' },
-                                          { value: 'investor', label: 'Investor' },
-                                          { value: 'developer', label: 'Developer' }
-                                        ].map((audience) => (
-                                          <ListItem key={audience.value} sx={{ py: 0, px: 0 }}>
-                                            <ListItemButton 
-                                              disabled
-                                              sx={{ 
-                                                px: 1.5,
-                                                py: 0.5,
-                                                borderRadius: 1,
-                                                mx: 0.5,
-                                                my: 0.125,
-                                                minHeight: 'auto',
-                                                transition: 'all 0.2s ease',
-                                                '&:hover': { 
-                                                  backgroundColor: 'transparent',
-                                                },
-                                                '&.Mui-disabled': {
-                                                  opacity: 0.6
-                                                }
-                                              }}
-                                            >
-                                              <Checkbox 
-                                                checked={false}
-                                                disabled
-                                                size="small"
-                                                sx={{ 
-                                                  color: '#0F3C60',
-                                                  p: 0.5,
-                                                  '&.Mui-checked': { color: '#0F3C60' },
-                                                  '&.Mui-disabled': { color: '#9e9e9e' }
-                                                }}
-                                              />
-                                              <ListItemText 
-                                                primary={audience.label}
-                                                sx={{ 
-                                                  '& .MuiTypography-root': { 
-                                                    fontSize: '0.8rem',
-                                                    color: darkMode ? '#ffffff' : '#333333'
-                                                  } 
-                                                }} 
-                                              />
-                                            </ListItemButton>
-                                          </ListItem>
-                                        ))}
-                                      </List>
-                                    </Collapse>
-                                  </Box>
-                                </CardContent>
-                              </Card>
-                            )}
-                          </Box>
-                        </Grid>
-                        <Grid item size={{ xs: 12, md: 12 }}>
-                          <Typography variant="body2" color="text.secondary">
-                            Showing {filteredCourses.length} of {courses.length} courses
-                          </Typography>
-                        </Grid>
-                      </Grid>
+                        </Box>
+                      </Box>
                     </CardContent>
                   </Card>
 
@@ -1226,28 +1197,28 @@ const Courses = () => {
                             borderRadius: 3,
                             transition: 'all 0.3s ease',
                             overflow: 'hidden',
-                            height: 520, // Fixed height for consistent alignment
+                            height: '100%',
                             width: '100%',
                             display: 'flex',
                             flexDirection: 'column',
+                            boxShadow: ' 0px 0px 8px 0px #3B82F61F',
                             '&:hover': {
                               transform: 'translateY(-2px)',
                               boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                            },
+
+                            '&:hover .hover-actions': {
+                              opacity: 1,
+                              visibility: 'visible'
                             }
                           }} onClick={() => handleViewCourse(course)}>
 
                             {/* Course Thumbnail */}
-                            <Box sx={{
-                              height: 200,
-                              width: '100%',
-                              background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                              position: 'relative',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              overflow: 'hidden',
-                              flexShrink: 0 // Prevent thumbnail from shrinking
-                            }}>
+                            <Box
+                              padding={2}
+                              position="relative"
+                            >
+                              {/* Thumbnail Image */}
                               {course.thumbnail && course.thumbnail.trim() !== '' ? (
                                 <img
                                   src={(() => {
@@ -1255,78 +1226,66 @@ const Courses = () => {
                                     if (course.thumbnail.startsWith('data:')) {
                                       return course.thumbnail;
                                     }
-                                    
+
                                     // If it's already a full URL (http/https), use it directly
                                     if (course.thumbnail.startsWith('http')) {
                                       return course.thumbnail;
                                     }
-                                    
+
                                     // If it's a localhost URL, replace with production URL
                                     if (course.thumbnail.includes('localhost')) {
                                       const filename = course.thumbnail.split('/').pop();
                                       return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
                                     }
-                                    
+
                                     // If it starts with /uploads, construct the full URL
                                     if (course.thumbnail.startsWith('/uploads/')) {
                                       return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`;
                                     }
-                                    
-                                    // If it's just a filename, add /uploads/ prefix
-                                    const thumbnailUrl = `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${course.thumbnail}`;
-                                    
-                                    console.log('🖼️ Thumbnail Debug for', course.title, ':', {
-                                      original: course.thumbnail,
-                                      constructed: thumbnailUrl,
-                                      isFullUrl: course.thumbnail.startsWith('http')
-                                    });
-                                    return thumbnailUrl;
+
+                                    // Fallback: assume it's just a filename
+                                    return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${course.thumbnail}`;
                                   })()}
                                   alt={course.title}
                                   style={{
                                     width: '100%',
-                                    height: '100%',
+                                    height: '200px',
                                     objectFit: 'cover',
                                     objectPosition: 'center',
-                                    display: 'block'
+                                    display: 'block',
+                                    borderRadius: 10
                                   }}
                                   onError={(e) => {
-                                    // Try multiple fallback strategies
                                     const fallbackAttempts = e.target.dataset.fallbackAttempts || '0';
                                     const attempts = parseInt(fallbackAttempts);
-                                    
+
                                     if (attempts === 0) {
-                                      // First attempt: Try with different URL construction
                                       e.target.dataset.fallbackAttempts = '1';
                                       if (course.thumbnail && !course.thumbnail.startsWith('data:') && !course.thumbnail.startsWith('http')) {
-                                        // Try direct filename approach
                                         e.target.src = `https://saas-lms-admin-1.onrender.com/uploads/${course.thumbnail}`;
                                       } else {
-                                        // Try placeholder
                                         e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(course.title)}`;
                                       }
                                     } else if (attempts === 1) {
-                                      // Second attempt: Try placeholder
                                       e.target.dataset.fallbackAttempts = '2';
                                       e.target.src = `https://via.placeholder.com/400x200/4285f4/ffffff?text=${encodeURIComponent(course.title)}`;
                                     } else {
-                                      // Final fallback: Show text fallback
                                       e.target.style.display = 'none';
                                       const existingFallback = e.target.parentNode.querySelector('.thumbnail-fallback');
                                       if (!existingFallback) {
                                         const fallbackDiv = document.createElement('div');
                                         fallbackDiv.className = 'thumbnail-fallback';
                                         fallbackDiv.style.cssText = `
-                                          display: flex;
-                                          align-items: center;
-                                          justify-content: center;
-                                          height: 100%;
-                                          color: white;
-                                          font-weight: bold;
-                                          font-size: 18px;
-                                          text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-                                          background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
-                                        `;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+          `;
                                         fallbackDiv.textContent = course.title.charAt(0).toUpperCase();
                                         e.target.parentNode.appendChild(fallbackDiv);
                                       }
@@ -1334,36 +1293,14 @@ const Courses = () => {
                                   }}
                                   onLoad={(e) => {
                                     console.log('✅ Thumbnail loaded successfully for course:', course.title);
-                                    // Hide fallback when image loads successfully
                                     const fallback = e.target.parentElement.querySelector('.thumbnail-fallback');
                                     if (fallback) fallback.style.display = 'none';
                                   }}
                                 />
-                              ) : (
-                                // Show fallback when no thumbnail
-                                <Box sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  height: '100%',
-                                  color: 'white',
-                                  textAlign: 'center',
-                                  padding: 2,
-                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                                }}>
-                                  <Typography variant="h6" sx={{
-                                    fontWeight: 600,
-                                    fontSize: '1.1rem',
-                                    lineHeight: 1.3,
-                                    textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                                    wordBreak: 'break-word'
-                                  }}>
-                                    {course.title}
-                                  </Typography>
-                                </Box>
-                              )}
+                              ) : null}
 
-                              {/* Fallback Thumbnail (shown when no thumbnail or image fails) */}
+
+                              {/* Fallback */}
                               <Box
                                 className="thumbnail-fallback"
                                 sx={{
@@ -1372,45 +1309,157 @@ const Courses = () => {
                                   justifyContent: 'center',
                                   width: '100%',
                                   height: '100%',
-                                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                  color: 'white',
-                                  textAlign: 'center',
-                                  padding: 2
+                                  background: `linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category, true)} 100%)`
                                 }}
                               >
-                                <Typography variant="h6" sx={{
-                                  fontWeight: 600,
-                                  fontSize: '1.1rem',
-                                  lineHeight: 1.3,
-                                  textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                                  wordBreak: 'break-word'
-                                }}>
-                                  {course.title}
-                                </Typography>
+                                <img
+                                  src={`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/default-course-thumbnail.jpg`}
+                                  alt="Default"
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
                               </Box>
 
-                              {/* Status Badge */}
-                              <Box sx={{
-                                position: 'absolute',
-                                top: 12,
-                                right: 12,
-                                px: 1.5,
-                                py: 0.5,
-                                borderRadius: 2,
-                                bgcolor: getStatusColor(course.status),
-                                color: 'white',
-                                fontSize: '0.75rem',
-                                fontWeight: 600,
-                                backdropFilter: 'blur(10px)',
-                                backgroundColor: `${getStatusColor(course.status)}CC`
-                              }}>
-                                {course.status}
+                              {/* Hover Action Buttons */}
+                              <Box
+                                className="hover-actions"
+                                sx={{
+                                  position: 'absolute',
+                                  top: 25,
+                                  right: 25,
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 1,
+                                  opacity: 0,
+                                  visibility: 'hidden',
+                                  transition: 'opacity 0.3s ease'
+                                }}
+                              >
+                                {/* View */}
+                                <IconButton
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewCourse(course);
+                                  }}
+                                  sx={{
+                                    backgroundColor: '#0F3C60',
+                                    color: '#ffffff',
+                                    width: 44,
+                                    height: 44,
+                                    '&:hover': { backgroundColor: '#0c2e4a' }
+                                  }}
+                                >
+                                  <VisibilityIcon />
+                                </IconButton>
+
+                                {/* Edit */}
+                                {!isCommunityUser && (
+                                  <IconButton
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEditCourse(course);
+                                    }}
+                                    sx={{
+                                      backgroundColor: '#F2B700',
+                                      color: '#ffffff',
+                                      width: 44,
+                                      height: 44,
+                                      '&:hover': { backgroundColor: '#d9a300' }
+                                    }}
+                                  >
+                                    <EditIcon />
+                                  </IconButton>
+                                )}
+
+                                {/* Delete */}
+                                {!isCommunityUser && (
+                                  <IconButton
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteCourse(course);
+                                    }}
+                                    sx={{
+                                      backgroundColor: '#E53935',
+                                      color: '#ffffff',
+                                      width: 44,
+                                      height: 44,
+                                      '&:hover': { backgroundColor: '#c62828' }
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                )}
                               </Box>
                             </Box>
 
-                            <CardContent sx={{ 
-                              p: 2, 
-                              display: 'flex', 
+                            {/* <Box
+                                sx={{
+                                  position: 'absolute',
+                                  top: 18,
+                                  right: 25,
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  gap: 2,
+                                  mt: 1,
+                                  pb: 1
+                                }}
+                              >
+                                <IconButton
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewCourse(course);
+                                  }}
+                                  sx={{
+                                    backgroundColor: '#0F3C60',
+                                    color: '#ffffff',
+                                    width: 40,
+                                    height: 40,
+                                    '&:hover': { backgroundColor: '#0c2e4a' }
+                                  }}
+                                >
+                                  <VisibilityIcon />
+                                </IconButton>
+
+                                {!isCommunityUser && (
+                                  <IconButton
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEditCourse(course);
+                                    }}
+                                    sx={{
+                                      backgroundColor: '#F2B700',
+                                      color: '#ffffff',
+                                      width: 40,
+                                      height: 40,
+                                      '&:hover': { backgroundColor: '#d9a300' }
+                                    }}
+                                  >
+                                    <EditIcon />
+                                  </IconButton>
+                                )}
+
+                                {!isCommunityUser && (
+                                  <IconButton
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteCourse(course);
+                                    }}
+                                    sx={{
+                                      backgroundColor: '#E53935',
+                                      color: '#ffffff',
+                                      width: 40,
+                                      height: 40,
+                                      '&:hover': { backgroundColor: '#c62828' }
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                )}
+                              </Box> */}
+                            <CardContent sx={{
+                              p: 2,
+                              paddingTop: 0,
+                              display: 'flex',
                               flexDirection: 'column',
                               flex: 1,
                               justifyContent: 'space-between',
@@ -1419,262 +1468,262 @@ const Courses = () => {
 
                               {/* Top Content Section */}
                               <Box sx={{ flex: 1 }}>
-                              {/* Course Title */}
-                              <Typography variant="h6" sx={{
-                                fontWeight: 600,
-                                mb: 1,
-                                color: darkMode ? '#ffffff' : '#000000',
-                                lineHeight: 1.3,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                minHeight: '2.6em', // Ensure consistent height for 2 lines
-                                maxHeight: '2.6em'  // Prevent expansion beyond 2 lines
-                              }}>
-                                {course.title}
-                              </Typography>
+                                {/* Course Title */}
+                                <Typography variant="h6" sx={{
+                                  fontWeight: 600,
+                                  mb: 1,
+                                  color: darkMode ? '#ffffff' : '#000000',
+                                  // lineHeight: 1.3,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 1,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  textTransform: 'uppercase'
 
-                              {/* Course Tags - Fixed Layout */}
-                              <Box sx={{ 
-                                mb: 2,
-                                minHeight: '64px', // Fixed height for 2 rows of tags
-                                maxHeight: '64px',
-                                overflow: 'hidden'
-                              }}>
-                                {/* First Row - Primary Tags */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  gap: 0.5, 
-                                  mb: 0.5,
+                                }}>
+                                  {course.title}
+                                </Typography>
+
+                                {/* Course Tags - Fixed Layout */}
+                                <Box sx={{
+                                  // mb: 2,
+                                  minHeight: '64px', // Fixed height for 2 rows of tags
+                                  maxHeight: '64px',
                                   overflow: 'hidden'
                                 }}>
-                                  {/* Target Audience Tag */}
-                                  {course.targetAudience && (
-                                    <Chip
-                                      label={course.targetAudience}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: '#6366f1',
-                                        color: '#6366f1',
-                                        backgroundColor: '#6366f115',
-                                        borderRadius: 2,
-                                        maxWidth: '120px',
-                                        '& .MuiChip-label': {
-                                          px: 1,
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          whiteSpace: 'nowrap'
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: '#6366f125'
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                  
-                                  {/* Course Type Tag */}
-                                  {course.contentType && (
-                                    <Chip
-                                      label={course.contentType === 'video' ? 'Video' : 'Text'}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: course.contentType === 'video' ? '#f59e0b' : '#10b981',
-                                        color: course.contentType === 'video' ? '#f59e0b' : '#10b981',
-                                        backgroundColor: course.contentType === 'video' ? '#f59e0b15' : '#10b98115',
-                                        borderRadius: 2,
-                                        '& .MuiChip-label': {
-                                          px: 1
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: course.contentType === 'video' ? '#f59e0b25' : '#10b98125'
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                </Box>
-                                
-                                {/* Second Row - Category Tag */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  gap: 0.5,
-                                  overflow: 'hidden'
-                                }}>
-                                  {/* Category Tag */}
-                                  {course.category && (
-                                    <Chip
-                                      label={course.category}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: getCategoryColor(course.category),
-                                        color: getCategoryColor(course.category),
-                                        backgroundColor: `${getCategoryColor(course.category)}15`,
-                                        borderRadius: 2,
-                                        maxWidth: '200px',
-                                        '& .MuiChip-label': {
-                                          px: 1,
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          whiteSpace: 'nowrap'
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: `${getCategoryColor(course.category)}25`
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                  
-                                  {/* Sub Type Tag */}
-                                  {course.subType && (
-                                    <Chip
-                                      label={course.subType}
-                                      size="small"
-                                      variant="outlined"
-                                      sx={{
-                                        fontSize: '0.7rem',
-                                        height: 24,
-                                        fontWeight: 500,
-                                        borderColor: '#8b5cf6',
-                                        color: '#8b5cf6',
-                                        backgroundColor: '#8b5cf615',
-                                        borderRadius: 2,
-                                        maxWidth: '120px',
-                                        '& .MuiChip-label': {
-                                          px: 1,
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          whiteSpace: 'nowrap'
-                                        },
-                                        '&:hover': {
-                                          backgroundColor: '#8b5cf625'
-                                        }
-                                      }}
-                                    />
-                                  )}
-                                </Box>
-                              </Box>
+                                  {/* First Row - Primary Tags */}
+                                  <Box sx={{
+                                    display: 'flex',
+                                    gap: 0.5,
+                                    mb: 0.5,
+                                    overflow: 'hidden'
+                                  }}>
+                                    {/* Target Audience Tag */}
+                                    {course.targetAudience && (
+                                      <Chip
+                                        label={course.targetAudience}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{
+                                          fontSize: '0.7rem',
+                                          height: 24,
+                                          fontWeight: 500,
+                                          borderColor: '#EF4444',
+                                          color: '#fff',
+                                          backgroundColor: '#EF4444',
+                                          borderRadius: 2,
+                                          maxWidth: '120px',
+                                          '& .MuiChip-label': {
+                                            px: 1,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                          },
+                                        }}
+                                      />
+                                    )}
 
-                              {/* Course Description */}
-                              <Typography variant="body2" sx={{
-                                color: 'text.secondary',
-                                mb: 2,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                lineHeight: 1.4,
-                                minHeight: '2.8em', // Ensure consistent height for 2 lines
-                                maxHeight: '2.8em'  // Prevent expansion beyond 2 lines
-                              }}>
-                                {course.description || 'No description available'}
-                              </Typography>
+                                    {/* Course Type Tag */}
+                                    {course.contentType && (
+                                      <Chip
+                                        label={course.contentType === 'video' ? 'Video' : 'Text'}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{
+                                          fontSize: '0.7rem',
+                                          height: 24,
+                                          fontWeight: 500,
+                                          borderColor: course.contentType === 'video' ? '#E8B931' : '#10b981',
+                                          color: course.contentType === 'video' ? '#fff' : '#10b981',
+                                          backgroundColor: course.contentType === 'video' ? '#E8B931' : '#10b98115',
+                                          borderRadius: 2,
+                                          '& .MuiChip-label': {
+                                            px: 1
+                                          },
+                                        }}
+                                      />
+                                    )}
+                                  </Box>
+
+                                  {/* Second Row - Category Tag */}
+                                  <Box sx={{
+                                    display: 'flex',
+                                    gap: 0.5,
+                                    overflow: 'hidden'
+                                  }}>
+                                    {/* Category Tag */}
+                                    {course.category && (
+                                      <Chip
+                                        label={course.category}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{
+                                          fontSize: '0.7rem',
+                                          height: 24,
+                                          fontWeight: 500,
+                                          borderColor: '#0F3C60',
+                                          color: '#ffffff',
+                                          backgroundColor: '#0F3C60',
+                                          borderRadius: 2,
+                                          maxWidth: '200px',
+                                          '& .MuiChip-label': {
+                                            px: 1,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                          },
+                                        }}
+                                      />
+                                    )}
+
+                                    {/* Sub Type Tag */}
+                                    {course.subType && (
+                                      <Chip
+                                        label={course.subType}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{
+                                          fontSize: '0.7rem',
+                                          height: 24,
+                                          fontWeight: 500,
+                                          borderColor: '#0F3C60',
+                                          color: '#ffffff',
+                                          backgroundColor: '#0F3C60',
+                                          borderRadius: 2,
+                                          maxWidth: '120px',
+                                          '& .MuiChip-label': {
+                                            px: 1,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                          },
+                                        }}
+                                      />
+                                    )}
+                                  </Box>
+                                </Box>
+
+                                {/* Course Description */}
+                                <Typography variant="body2" sx={{
+                                  color: 'text.secondary',
+                                  mb: 2,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  lineHeight: 1.4,
+                                  minHeight: '2.8em', // Ensure consistent height for 2 lines
+                                  maxHeight: '2.8em'  // Prevent expansion beyond 2 lines
+                                }}>
+                                  {course.description || 'No description available'}
+                                </Typography>
+                                <Box sx={{
+                                  flexShrink: 0, // Prevent this section from shrinking
+                                  mt: 'auto' // Push to bottom
+                                }}>
+                                  {/* Course Meta */}
+                                  <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    // px: 1.5,
+                                    // backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                                    // borderRadius: 1.5,
+                                    // border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
+                                  }}>
+                                    <Typography variant="body2" sx={{
+                                      color: 'text.secondary',
+                                      fontWeight: 500,
+                                      fontSize: '0.8rem'
+                                    }}>
+                                      By {(() => {
+                                        // If instructor is a long ID (MongoDB ObjectId), show community name
+                                        if (course.instructor && course.instructor.length > 20) {
+                                          const community = communityAuthApi.getCurrentCommunity();
+                                          return community ? community.name : 'Community Admin';
+                                        }
+                                        // Otherwise show the instructor name
+                                        return course.instructor || 'Unknown';
+                                      })()}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{
+                                      color: '#0F3C60',
+                                      fontWeight: 500,
+                                      fontSize: '14px'
+                                    }}>
+                                      {new Date(course.createdAt).toLocaleDateString()}
+                                    </Typography>
+                                  </Box>
+
+                                  {/* <Box
+                                    sx={{
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      alignItems: 'center',
+                                      gap: 2,
+                                      mt: 1,
+                                      pb: 1
+                                    }}
+                                  >
+                                    <IconButton
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleViewCourse(course);
+                                      }}
+                                      sx={{
+                                        backgroundColor: '#0F3C60',
+                                        color: '#ffffff',
+                                        width: 56,
+                                        height: 56,
+                                        '&:hover': { backgroundColor: '#0c2e4a' }
+                                      }}
+                                    >
+                                      <VisibilityIcon />
+                                    </IconButton>
+
+                                    {!isCommunityUser && (
+                                      <IconButton
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleEditCourse(course);
+                                        }}
+                                        sx={{
+                                          backgroundColor: '#F2B700',
+                                          color: '#ffffff',
+                                          width: 56,
+                                          height: 56,
+                                          '&:hover': { backgroundColor: '#d9a300' }
+                                        }}
+                                      >
+                                        <EditIcon />
+                                      </IconButton>
+                                    )}
+
+                                    {!isCommunityUser && (
+                                      <IconButton
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteCourse(course);
+                                        }}
+                                        sx={{
+                                          backgroundColor: '#E53935',
+                                          color: '#ffffff',
+                                          width: 56,
+                                          height: 56,
+                                          '&:hover': { backgroundColor: '#c62828' }
+                                        }}
+                                      >
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    )}
+                                  </Box> */}
+
+                                </Box>
                               </Box>
 
                               {/* Bottom Section - Meta and Buttons */}
-                              <Box sx={{ 
-                                flexShrink: 0, // Prevent this section from shrinking
-                                mt: 'auto' // Push to bottom
-                              }}>
-                              {/* Course Meta */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
-                                  justifyContent: 'space-between', 
-                                  mb: 2,
-                                  py: 1,
-                                  px: 1.5,
-                                  backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                  borderRadius: 1.5,
-                                  border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
-                                }}>
-                                  <Typography variant="body2" sx={{ 
-                                    color: 'text.secondary',
-                                    fontWeight: 500,
-                                    fontSize: '0.8rem'
-                                  }}>
-                                  By {(() => {
-                                    // If instructor is a long ID (MongoDB ObjectId), show community name
-                                    if (course.instructor && course.instructor.length > 20) {
-                                      const community = communityAuthApi.getCurrentCommunity();
-                                      return community ? community.name : 'Community Admin';
-                                    }
-                                    // Otherwise show the instructor name
-                                    return course.instructor || 'Unknown';
-                                  })()}
-                                </Typography>
-                                  <Typography variant="body2" sx={{ 
-                                    color: 'text.secondary',
-                                    fontWeight: 500,
-                                    fontSize: '0.8rem'
-                                  }}>
-                                  {new Date(course.createdAt).toLocaleDateString()}
-                                </Typography>
-                              </Box>
-
-                              {/* Action Buttons */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  gap: 1,
-                                  mt: 1,
-                                  pb: 1 // Add bottom padding to ensure buttons are fully visible
-                                }}>
-                                <Button
-                                  size="small"
-                                  variant="contained"
-                                  color="primary"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewCourse(course);
-                                  }}
-                                  sx={{ flex: 1 }}
-                                >
-                                  {isCommunityUser ? 'Enroll' : 'View'}
-                                </Button>
-                                {/* Only show Edit and Delete buttons for admins */}
-                                {!isCommunityUser && (
-                                  <>
-                                    <Button
-                                      size="small"
-                                      variant="outlined"
-                                      color="primary"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleEditCourse(course);
-                                      }}
-                                      sx={{ flex: 1 }}
-                                    >
-                                      Edit
-                                    </Button>
-                                    <Button
-                                      size="small"
-                                      variant="outlined"
-                                      color="error"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteCourse(course);
-                                      }}
-                                      sx={{ flex: 1 }}
-                                    >
-                                      Delete
-                                    </Button>
-                                  </>
-                                )}
-                                </Box>
-                              </Box>
                             </CardContent>
                           </Card>
                         </Grid>

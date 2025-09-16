@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Avatar, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import {
   WbSunny as SunIcon,
@@ -14,6 +14,13 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(localStorage.getItem('sidebarCollapsed') !== 'false');
+  
+  useEffect(() => {
+    const handler = (e) => setSidebarCollapsed(e.detail?.collapsed ?? (localStorage.getItem('sidebarCollapsed') !== 'false'));
+    window.addEventListener('sidebar-toggle', handler);
+    return () => window.removeEventListener('sidebar-toggle', handler);
+  }, []);
   
   // Check if user is a community user (student) or admin
   const communityUserData = localStorage.getItem('communityUser');
@@ -51,7 +58,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
     if (path.includes('/student-dashboard')) return 'My Dashboard';
     if (path.includes('/student-courses')) return 'My Courses';
     if (path.includes('/discovery')) return 'Discover Courses';
-    if (path.includes('/course-viewer')) return 'Course Viewer';
+    if (path.includes('/course-viewer')) return 'Courses & Lectures';
     if (path.includes('/discover-course-viewer')) return 'Course Viewer';
     
     // General routes
@@ -110,9 +117,10 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
       px: 3,
       position: 'fixed',
       top: 0,
-      left: 240, // Start right after sidebar (240px width)
+      left: sidebarCollapsed ? 60 : 240, // Start right after sidebar width
       right: 0, // Extend to right edge
       zIndex: 1000,
+      transition: 'left 0.3s ease'
     }}>
       {/* Left side - Page Title */}
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -121,12 +129,9 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
           component="h1"
           sx={{
             fontWeight: 700,
-            color: 'text.primary',
+            color: '#0F3C60',
             fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
             letterSpacing: '-0.5px',
-            // background: darkMode 
-            //   ? 'linear-gradient(45deg, #ffffff, #e0e0e0)' 
-            //   : 'linear-gradient(45deg, #0F3C60, #1976d2)',
             backgroundClip: 'text',            // textShadow: darkMode ? '0 2px 4px rgba(0,0,0,0.3)' : '0 2px 4px rgba(0,0,0,0.1)',
           }}
         >

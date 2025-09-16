@@ -1,226 +1,188 @@
-import React from 'react';
-import { Box, IconButton, Typography, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+  Box, IconButton, Typography, ListItem, ListItemButton,
+  ListItemIcon, ListItemText, AppBar, Toolbar, Avatar
+} from '@mui/material';
 import {
   VideoLibrary as VideoIcon,
   ArrowBack as ArrowBackIcon,
   People as PeopleIcon,
 } from '@mui/icons-material';
+import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { communityAuthApi } from '../utils/communityAuthApi';
+import '../App.css';
+
+// Ensure a default collapsed state before first render
+if (typeof window !== 'undefined') {
+  const v = localStorage.getItem('sidebarCollapsed');
+  if (v === null || v === undefined) {
+    localStorage.setItem('sidebarCollapsed', 'true');
+  }
+}
 
 const FocusedSidebar = ({ darkMode }) => {
   const navigate = useNavigate();
   const { communityName } = useParams();
-  
-  // Get community-specific URLs
+  const [collapsed, setCollapsed] = useState(() => (localStorage.getItem('sidebarCollapsed') !== 'false'));
+
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    if (saved === 'true') {
+      setCollapsed(true);
+    }
+  }, []);
+
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
-  
-  // Get community data
   const communityData = communityAuthApi.getCurrentCommunity();
+
+  const toggleSidebar = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('sidebarCollapsed', String(next));
+      window.dispatchEvent(new CustomEvent('sidebar-toggle', { detail: { collapsed: next } }));
+      return next;
+    });
+  };
 
   return (
     <Box sx={{
-      width: 240,
+      width: collapsed ? 60 : 240,
       background: '#0F3C60',
       borderRight: '1px solid rgba(255, 255, 255, 0.2)',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
       py: 2,
       position: 'fixed',
       height: '100vh',
-      zIndex: 1000
+      zIndex: 1000,
+      transition: 'width 0.3s ease'
     }}>
-      {/* Logo */}
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', pl: 2 }}>
-        <img
-          src="/bell-desk-logo.png"
-          alt="Bell & Desk"
-          style={{
-            height: '50px',
-            width: '100px',
-            // maxWidth: '180px',
-            objectFit: 'contain',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            // filter: 'brightness(0) invert(1)' // Logo is already white
+
+      {/* Logo + Collapse Icon */}
+      <Box
+        sx={{
+          mb: 4,
+          mx: 2,
+          display: 'flex',
+          justifyContent: collapsed ? 'center' : 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        {!collapsed && (
+          <img
+            src="/bell-desk-logo.png"
+            alt="Bell & Desk"
+            style={{
+              width: '130px',
+              objectFit: 'contain',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+          />
+        )}
+
+        <IconButton
+          onClick={toggleSidebar}
+          sx={{
+            color: '#ffffff',
+            backgroundColor: 'transparent',
+            transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.3s ease',
+            '&:hover': {
+              backgroundColor: 'rgba(255,255,255,0.1)'
+            }
           }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'scale(1.05)';
-            e.target.style.filter = 'brightness(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'scale(1)';
-            e.target.style.filter = 'brightness(1)';
-          }}
-          onError={(e) => {
-            // If image fails, replace with text
-            e.target.style.display = 'none';
-            const textLogo = document.createElement('div');
-            textLogo.textContent = 'Bell & Desk';
-            textLogo.style.cssText = `
-              font-weight: 800;
-              color: #ffffff;
-              font-size: 1.1rem;
-              letter-spacing: -0.5px;
-              text-align: center;
-              cursor: pointer;
-              transition: all 0.2s ease;
-            `;
-            e.target.parentNode.appendChild(textLogo);
-          }}
-        />
+        >
+          <ArrowBackIcon />
+        </IconButton>
       </Box>
 
       {/* Navigation Items */}
       {(() => {
-        // Check if we're in community user context
-        const communityUserData = localStorage.getItem('communityUserData');
-        const communityData = localStorage.getItem('communityData');
-        const communityToken = localStorage.getItem('communityToken');
         const communityUserToken = localStorage.getItem('communityUserToken');
-        
-        // Determine user type based on current path and available tokens
-        // If we're on an admin path, we're an admin regardless of localStorage
+        const communityToken = localStorage.getItem('communityToken');
         const isOnAdminPath = window.location.pathname.includes('/admin/');
         const isOnStudentPath = window.location.pathname.includes('/student/');
-        
-        // Priority: 1) Current path, 2) Available tokens
-        // If on student path, definitely a community user
-        // If on admin path, definitely a community admin
-        // If on neither, check tokens (communityUserToken = student, communityToken = admin)
         const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !isOnStudentPath && !!communityUserToken && !communityToken);
-        
-        console.log('🔍 FocusedSidebar Debug:', {
-          communityUserData: communityUserData ? 'EXISTS' : 'NULL',
-          communityData: communityData ? 'EXISTS' : 'NULL',
-          communityToken: communityToken ? 'EXISTS' : 'NULL',
-          communityUserToken: communityUserToken ? 'EXISTS' : 'NULL',
-          isOnAdminPath: isOnAdminPath,
-          isOnStudentPath: isOnStudentPath,
-          isCommunityUser: isCommunityUser,
-          currentPath: window.location.pathname,
-          userType: isCommunityUser ? 'STUDENT' : 'ADMIN'
-        });
-        
+
         const navItems = isCommunityUser ? [
           // Navigation for community users (students) - only show Courses
           { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/student/courses` }
         ] : [
-          // Navigation for community admins
           { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/admin/courses` },
           { icon: <PeopleIcon />, label: 'Community Users', path: `/${communityName}/admin/community-users` }
         ];
-        
+
         return navItems.map((item, index) => {
-          // Check if we're currently on this page
-          const isActive = window.location.pathname.includes(item.path.split('/').pop()) || 
-            (isCommunityUser && item.label === 'Courses' && window.location.pathname.includes('/student/'));
-        
+          const isActive = window.location.pathname.includes(item.path.split('/').pop());
           return (
             <ListItem key={index} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
-                onClick={() => {
-                  console.log('Navigation clicked:', {
-                    label: item.label,
-                    path: item.path,
-                    isActive: isActive,
-                    currentPath: window.location.pathname
-                  });
-                  
-                  // If already on this page, do nothing
-                  if (isActive) {
-                    console.log('Already on this page, no action needed');
-                  } else {
-                    console.log('Navigating to:', item.path);
-                    navigate(item.path);
-                  }
-                }}
+                onClick={() => !isActive && navigate(item.path)}
                 sx={{
-                  borderRadius: 2,
-                  mx: 1,
+                  borderRadius: 0,
                   py: 1.5,
+                  borderLeft: isActive ? '4px solid #ffffff' : 'none',
                   color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
                   backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                   '&:hover': {
                     backgroundColor: isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff',
-                  }
+                    color: '#ffffff'
+                  },
+                  justifyContent: collapsed ? 'center' : 'flex-start'
                 }}
               >
                 <ListItemIcon sx={{ 
-                  minWidth: 40,
-                  color: 'inherit'
+                  minWidth: 0,
+                  color: 'inherit',
+                  mr: collapsed ? 0 : 1.5,
+                  display: 'flex',
+                  justifyContent: 'center'
                 }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText 
-                  primary={item.label}
-                  primaryTypographyProps={{
-                    fontSize: '0.9rem',
-                    fontWeight: isActive ? 600 : 400,
-                    color: 'inherit'
-                  }}
-                />
+                {!collapsed && (
+                  <ListItemText 
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontSize: '0.9rem',
+                      fontWeight: isActive ? 600 : 400,
+                      color: 'inherit'
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           );
         });
       })()}
 
-      {/* Logout Button */}
-      <Box sx={{ mt: 'auto', mb: 2, width: '100%' }}>
-        <ListItem disablePadding>
-          <ListItemButton
-            onClick={() => {
-              // Check if we're in community user context using same logic
-              const communityUserToken = localStorage.getItem('communityUserToken');
-              const communityToken = localStorage.getItem('communityToken');
-              const isOnAdminPath = window.location.pathname.includes('/admin/');
-              const isOnStudentPath = window.location.pathname.includes('/student/');
-              
-              const isCommunityUser = isOnStudentPath || (!isOnAdminPath && !isOnStudentPath && !!communityUserToken && !communityToken);
-              
-              if (isCommunityUser) {
-                // Logout community user
-                localStorage.removeItem('communityUserToken');
-                localStorage.removeItem('communityUserData');
-                navigate('/discovery');
-              } else {
-                // Logout community admin
-                communityAuthApi.logout();
-                navigate('/discovery');
-              }
-            }}
-            sx={{
-              borderRadius: 2,
-              mx: 1,
-              py: 1.5,
-              color: 'rgba(255, 255, 255, 0.7)',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                color: '#ffffff',
-              }
-            }}
-          >
-            <ListItemIcon sx={{ 
-              minWidth: 40,
-              color: 'inherit'
-            }}>
-              <ArrowBackIcon />
-            </ListItemIcon>
-            <ListItemText 
-              primary="Logout"
-              primaryTypographyProps={{
-                fontSize: '0.9rem',
-                fontWeight: 400,
-                color: 'inherit'
-              }}
-            />
-          </ListItemButton>
-        </ListItem>
-      </Box>
+      {/* Bottom Avatar Section */}
+      {/* <Box sx={{ mt: 'auto', mb: 2, width: '100%' }}>
+        <AppBar position="static" sx={{ backgroundColor: "#0F3C60" , boxShadow: 'none' , border: 'none' }}>
+          <Toolbar className='sidebar_profile' sx={{ display: "flex", justifyContent: "space-between"}}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: collapsed ? 0 : 1.5 }}>
+              <Avatar
+                alt="Profile"
+                src="https://via.placeholder.com/40"
+                sx={{ width: 40, height: 40 }}
+              />
+              {!collapsed && (
+                <Typography variant="subtitle1" sx={{ color: "#fff" }}>
+                  Hi, John
+                </Typography>
+              )}
+            </Box>
+            {!collapsed && (
+              <IconButton edge="end" sx={{ color: "#ffffff" }}>
+                <MenuIcon sx={{ color: "#ffffff" }} />
+              </IconButton>
+            )}
+          </Toolbar>
+        </AppBar>
+      </Box> */}
     </Box>
   );
 };

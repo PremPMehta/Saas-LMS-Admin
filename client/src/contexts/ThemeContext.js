@@ -83,7 +83,7 @@ export const ThemeProvider = ({ children }) => {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: mode === 'light' ? '#f8fafc' : '#0a0a0a',
+            backgroundColor: mode === 'light' ? '#ffffff' : '#0a0a0a',
             color: mode === 'light' ? '#1a202c' : '#ffffff',
           },
         },

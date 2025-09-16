@@ -249,7 +249,7 @@ const CommunityUsers = () => {
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: 30, // Account for fixed sidebar (240px)
+        ml: (localStorage.getItem('sidebarCollapsed') !== 'false') ? 7.5 : 30, // default collapsed
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
@@ -258,10 +258,10 @@ const CommunityUsers = () => {
         <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
 
         {/* Main Content */}
-        <Box sx={{ flex: 1, p: 4 }}>
+        <Box sx={{ flex: 1 }}>
           <Container maxWidth="xl">
         {/* Page Header */}
-        <Fade in timeout={800}>
+        {/* <Fade in timeout={800}>
           <Box sx={{ mb: 4 }}>
             <Typography
               variant="h3"
@@ -289,7 +289,7 @@ const CommunityUsers = () => {
               Manage community users and approvals
             </Typography>
           </Box>
-        </Fade>
+        </Fade> */}
 
         {/* Message Alert */}
         {message.text && (
