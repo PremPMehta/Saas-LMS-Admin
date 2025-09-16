@@ -57,7 +57,7 @@ const CommunityUserLogin = () => {
       const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
       console.log('🔍 Community User Login Debug:', {
         apiUrl,
-        endpoint: `${apiUrl}/api/auth/community-user-login`,
+        endpoint: `${apiUrl}/api/community-user/login`,
         formData: { email: formData.email, password: '[HIDDEN]' },
         environment: process.env.NODE_ENV
       });
