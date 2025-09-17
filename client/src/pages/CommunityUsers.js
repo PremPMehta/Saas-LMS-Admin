@@ -322,11 +322,13 @@ const CommunityUsers = () => {
                 }}
               >
                 <Tabs
+                  className='user_tabs'
                   value={tabValue}
                   onChange={handleTabChange}
                   sx={{
                     borderBottom: 1,
                     borderColor: 'divider',
+                    paddingInline: 2,
                     '& .MuiTab-root': {
                       textTransform: 'none',
                       fontWeight: 600,

@@ -188,13 +188,25 @@ const CreateCourse = () => {
   };
 
   const handleNext = () => {
+    console.log('➡️ handleNext clicked. Current activeStep:', activeStep);
     if (validateStep(activeStep)) {
-      setActiveStep(prev => prev + 1);
+      setActiveStep(prev => {
+        const nextStep = prev + 1;
+        console.log('✅ Advancing to step:', nextStep);
+        return nextStep;
+      });
+    } else {
+      console.log('⛔️ Validation failed, staying on step:', activeStep);
     }
   };
 
   const handleBack = () => {
-    setActiveStep(prev => prev - 1);
+    console.log('⬅️ handleBack clicked. Current activeStep:', activeStep);
+    setActiveStep(prev => {
+      const prevStep = prev - 1;
+      console.log('↩️ Going back to step:', prevStep);
+      return prevStep;
+    });
   };
 
   const handleAddChapter = () => {
@@ -546,7 +558,7 @@ const CreateCourse = () => {
       case 0:
         return (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 12, lg: 8 }}>
+            <Grid size={{ xs: 12, md: 12, lg: 12 }}>
               <Grid spacing={3}>
                 <Grid size={{ xs: 12, md: 12 }}>
                   <Typography variant="h5" sx={{
@@ -653,6 +665,7 @@ const CreateCourse = () => {
                         value={courseData.targetAudience}
                         onChange={(e) => handleInputChange('targetAudience', e.target.value)}
                         label="Target Audience"
+                        className='Category_select'
                       >
                         {targetAudiences.map((audience) => (
                           <MenuItem key={audience} value={audience}>
@@ -696,6 +709,7 @@ const CreateCourse = () => {
                         value={courseData.category}
                         onChange={(e) => handleInputChange('category', e.target.value)}
                         label="Category"
+                        className='Category_select'
                       >
                         {categories.map((category) => (
                           <MenuItem key={category} value={category}>
@@ -829,10 +843,10 @@ const CreateCourse = () => {
       case 1:
         return (
           <Grid container spacing={2}>
-            <Grid item size={{ xs: 12, md: 8, lg: 8 }}>
+            <Grid item size={{ xs: 12, md: 12, lg: 12 }}>
               <Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
                     Course Structure
                   </Typography>
                   <Button
@@ -841,7 +855,7 @@ const CreateCourse = () => {
                     onClick={handleAddChapter}
                     sx={{
                       background: '#0F3C60',
-                      '&:hover': { background: '#3367d6' }
+                      '&:hover': { background: '#30648e' }
                     }}
                   >
                     Add Chapter
@@ -875,28 +889,27 @@ const CreateCourse = () => {
                     <Grid container spacing={2}>
                       {chapters.map((chapter, index) => (
                         <Grid item size={{ xs: 12, md: 6 }}>
-                          <Card key={chapter.id} sx={{ mb: 2 }}>
+                          <Card key={chapter.id}>
                             <CardContent sx={{ p: 3 }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                   <DragIcon sx={{ color: 'text.secondary', cursor: 'grab' }} />
-                                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                  <Typography variant="h6" sx={{ fontSize: 16, fontWeight: 600 }}>
                                     Chapter {index + 1}: {chapter.title}
                                   </Typography>
-                                  <Chip
-                                    label={`${chapter.videos.length} ${courseData.contentType === 'video' ? 'videos' : 'lessons'}`}
-                                    size="small"
-                                    color="primary"
-                                  />
                                 </Box>
-
+                                <Chip
+                                  label={`${chapter.videos.length} ${courseData.contentType === 'video' ? 'videos' : 'lessons'}`}
+                                  size="small"
+                                  color="primary"
+                                />
                               </Box>
 
                               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                                 {chapter.description}
                               </Typography>
 
-                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                                 <Typography variant="caption" color="text.secondary">
                                   {chapter.videos.length} {courseData.contentType === 'video' ? 'videos' : 'lessons'}
                                 </Typography>
@@ -972,8 +985,8 @@ const CreateCourse = () => {
         return (
           <Grid container spacing={2}>
             <Grid item size={{ xs: 12, md: 12 }}>
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ mb: 0, fontWeight: 600 }}>
+              <Box>
+                <Typography variant="h6" sx={{ mb: 0, fontWeight: 600 }}>
                   Review & Publish
                 </Typography>
 
@@ -981,8 +994,8 @@ const CreateCourse = () => {
             </Grid>
             <Grid item size={{ xs: 12, md: 12 }}>
               <Grid container spacing={2}>
-                <Grid item size={{ xs: 10, md: 6 }}>
-                  <Card sx={{ mb: 3 }}>
+                <Grid item size={{ xs: 12, lg: 6 }}>
+                  <Card>
                     <CardContent sx={{ width: '100%' }}>
                       {courseData.thumbnail && !chapters.some(chapter => chapter.videos.length > 0) && (
                         <Box>
@@ -1029,7 +1042,12 @@ const CreateCourse = () => {
                             <Typography variant="subtitle2" color="text.secondary">
                               Category
                             </Typography>
-                            <Chip label={courseData.category} size="small" />
+                            <Chip label={courseData.category} size="small" sx={{
+                              width: {
+                                xs: '200px',
+                                md: '100%'
+                              }
+                            }} />
                           </Box>
                         </Grid>
 
@@ -1058,7 +1076,7 @@ const CreateCourse = () => {
                   </Card>
                 </Grid>
 
-                <Grid size={{ xs: 10, md: 6 }}>
+                <Grid size={{ xs: 12, lg: 6 }}>
                   <Card>
                     <CardContent>
                       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
@@ -1124,7 +1142,7 @@ const CreateCourse = () => {
         <Box sx={{ flex: 1, px: 0, py: 0, overflow: 'visible' }}>
           <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
             <Card sx={{
-              mb: 4,
+              // mb: 4,
               borderRadius: 4,
               border: 'none',
               boxShadow: 'none',
@@ -1133,8 +1151,14 @@ const CreateCourse = () => {
                 <Stepper
                   activeStep={activeStep}
                   sx={{
-                    mb: 4,
+                    mb: 3,
+                    gap: 1,
                     justifyContent: 'start',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    '@media (max-width: 560px)': {
+                      justifyContent: 'center',
+                    },
                     '& .MuiStepLabel-root': {
                       padding: '0',
                       '& .MuiStepLabel-label': {
@@ -1143,7 +1167,7 @@ const CreateCourse = () => {
                         fontSize: '1rem',
                         '@media (max-width: 560px)': {
                           padding: '8px 7px',
-                          fontSize: '0.75rem',
+                          fontSize: '14px',
                         },
                         '&.Mui-active': {
                           color: '#0F3C60',
@@ -1241,128 +1265,137 @@ const CreateCourse = () => {
 
                 }}>
                   <CardContent sx={{ p: 0, }}>
-
-                    {getStepContent(activeStep)}
-                  </CardContent>
-                </Card>
-
-                {/* Enhanced Navigation Buttons */}
-                <Box sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  pt: 2,
-                  borderTop: '1px solid rgba(255, 255, 255, 0.2)'
-                }}>
-                  <Button
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    startIcon={<ArrowBackIcon />}
-                    sx={{
-                      px: 4,
-                      py: 1.5,
+                    <Box sx={{
+                      p: { xs: 2, md: 4 },
                       borderRadius: 3,
-                      background: activeStep === 0
-                        ? 'rgba(255, 255, 255, 0.1)'
-                        : 'rgba(255, 255, 255, 0.2)',
-                      color: activeStep === 0
-                        ? 'rgba(255, 255, 255, 0.5)'
-                        : '#ffffff',
-                      border: '1px solid rgba(255, 255, 255, 0.3)',
-                      '&:hover': {
-                        background: 'rgba(255, 255, 255, 0.3)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)',
-                      },
-                      transition: 'all 0.3s ease',
-                      '&:disabled': {
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        color: 'rgba(255, 255, 255, 0.3)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                      }
-                    }}
-                  >
-                    Back
-                  </Button>
+                      backgroundColor: '#f7f7f7ff'
+                    }}>
 
-                  <Box>
-                    {activeStep === steps.length - 1 ? (
-                      <Box sx={{ display: 'flex', gap: 3 }}>
-                        <Button
-                          variant="outlined"
-                          onClick={() => {
-                            console.log('Save as Draft clicked!');
-                            handleSubmitDraft();
-                          }}
-                          disabled={isSubmitting}
-                          startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
+                      {getStepContent(activeStep)}
+                      {/* Enhanced Navigation Buttons */}
+                      {console.log('🧭 Rendering nav buttons. activeStep:', activeStep, 'Back disabled =', activeStep === 0)}
+                      <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'end',
+                        alignItems: 'center',
+                        pt: 2,
+                        borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+                      }}>
+                        {/* <Button
+                          disabled={activeStep === 0}
+                          onClick={handleBack}
+                          startIcon={<ArrowBackIcon />}
                           sx={{
+                            position: 'relative',
+                            zIndex: 2,
                             px: 4,
                             py: 1.5,
                             borderRadius: 3,
-                            borderColor: 'rgba(255, 255, 255, 0.5)',
-                            color: '#ffffff',
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            backdropFilter: 'blur(10px)',
+                            background: activeStep === 0
+                              ? 'rgba(255, 255, 255, 0.1)'
+                              : 'rgba(255, 255, 255, 0.2)',
+                            color: activeStep === 0
+                              ? 'rgba(255, 255, 255, 0.5)'
+                              : '#ffffff',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
                             '&:hover': {
-                              borderColor: '#ffffff',
-                              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                              background: 'rgba(255, 255, 255, 0.3)',
                               transform: 'translateY(-2px)',
                               boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)',
                             },
-                            '&:disabled': {
-                              borderColor: 'rgba(255, 255, 255, 0.2)',
-                              color: 'rgba(255, 255, 255, 0.5)',
-                              background: 'rgba(255, 255, 255, 0.05)',
-                            },
                             transition: 'all 0.3s ease',
+                            '&:disabled': {
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              color: 'rgba(255, 255, 255, 0.3)',
+                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                            }
                           }}
                         >
-                          {isSubmitting ? 'Saving...' : 'Save as Draft'}
-                        </Button>
-                        <Button
-                          variant="contained"
-                          onClick={() => {
-                            console.log('Publish Course clicked!');
-                            console.log('Current step:', activeStep);
-                            console.log('Total steps:', steps.length);
-                            handleSubmit();
-                          }}
-                          disabled={isSubmitting}
-                          startIcon={isSubmitting ? <CircularProgress size={20} /> : <PublishIcon />}
-                          sx={{
-                            px: 4,
-                            py: 1.5,
-                            borderRadius: 3,
-                            background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
-                            boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)',
-                            '&:hover': {
-                              background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
-                              transform: 'translateY(-2px)',
-                              boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)',
-                            },
-                            '&:disabled': {
-                              background: 'rgba(76, 175, 80, 0.3)',
-                              boxShadow: 'none',
-                            },
-                            transition: 'all 0.3s ease',
-                          }}
-                        >
-                          {isSubmitting ? 'Publishing...' : 'Publish Course'}
-                        </Button>
-                      </Box>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        onClick={handleNext}
-                        endIcon={<ArrowForwardIcon />}
+                          Back
+                        </Button> */}
 
-                      >
-                        Next
-                      </Button>
-                    )}
-                  </Box>
-                </Box>
+                        <Box>
+                          {activeStep === steps.length - 1 ? (
+                            <Box sx={{ display: 'flex', gap: 3 }}>
+                              {/* <Button
+                                variant="outlined"
+                                onClick={() => {
+                                  console.log('Save as Draft clicked!');
+                                  handleSubmitDraft();
+                                }}
+                                disabled={isSubmitting}
+                                startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
+                                sx={{
+                                  px: 4,
+                                  py: 1.5,
+                                  borderRadius: 3,
+                                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                                  color: '#ffffff',
+                                  background: 'rgba(255, 255, 255, 0.1)',
+                                  backdropFilter: 'blur(10px)',
+                                  '&:hover': {
+                                    borderColor: '#ffffff',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 4px 20px rgba(255, 255, 255, 0.2)',
+                                  },
+                                  '&:disabled': {
+                                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                                    color: 'rgba(255, 255, 255, 0.5)',
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                  },
+                                  transition: 'all 0.3s ease',
+                                }}
+                              >
+                                {isSubmitting ? 'Saving...' : 'Save as Draft'}
+                              </Button> */}
+                              <Button
+                                variant="contained"
+                                onClick={() => {
+                                  console.log('Publish Course clicked!');
+                                  console.log('Current step:', activeStep);
+                                  console.log('Total steps:', steps.length);
+                                  handleSubmit();
+                                }}
+                                disabled={isSubmitting}
+                                startIcon={isSubmitting ? <CircularProgress size={20} /> : <PublishIcon />}
+                                sx={{
+                                  px: 4,
+                                  py: 1.5,
+                                  borderRadius: 3,
+                                  background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+                                  boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)',
+                                  '&:hover': {
+                                    background: 'linear-gradient(135deg, #45a049 0%, #3d8b40 100%)',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 6px 25px rgba(76, 175, 80, 0.4)',
+                                  },
+                                  // '&:disabled': {
+                                  //   background: 'rgba(76, 175, 80, 0.3)',
+                                  //   boxShadow: 'none',
+                                  // },
+                                  transition: 'all 0.3s ease',
+                                }}
+                              >
+                                {isSubmitting ? 'Publishing...' : 'Publish Course'}
+                              </Button>
+                            </Box>
+                          ) : (
+                            <Button
+                              variant="contained"
+                              onClick={handleNext}
+                              endIcon={<ArrowForwardIcon />}
+
+                            >
+                              Next
+                            </Button>
+                          )}
+                        </Box>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+
               </CardContent>
             </Card>
           </Container>
@@ -1798,7 +1831,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                       },
                     ];
                     return videoTypes.map((type) => (
-                      <Grid item size={{ xs: 12, sm: 6, md: 3 }} key={type.value}>
+                      <Grid item size={{ xs: 12, sm: 6 }} key={type.value}>
                         <Card
                           sx={{
                             cursor: 'pointer',
@@ -1904,7 +1937,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                             startIcon={<UploadIcon />}
                             sx={{
                               background: '#0F3C60',
-                              '&:hover': { background: '#3367d6' }
+                              '&:hover': { background: '#30648e' }
                             }}
                           >
                             Choose Video File
@@ -2351,7 +2384,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                           startIcon={<UploadIcon />}
                           sx={{
                             background: '#0F3C60',
-                            '&:hover': { background: '#3367d6' }
+                            '&:hover': { background: '#30648e' }
                           }}
                         >
                           Choose PDF File
@@ -2372,7 +2405,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
 
           {/* PDF Upload Section for Video Dialog */}
           {(contentType === 'pdf' || formData.contentType === 'pdf') && (
-            <Grid item xs={12}>
+            <Grid item size={12}>
               <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                 Upload PDF Document
               </Typography>
@@ -2434,7 +2467,7 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                       startIcon={<UploadIcon />}
                       sx={{
                         background: '#0F3C60',
-                        '&:hover': { background: '#3367d6' }
+                        '&:hover': { background: '#30648e' }
                       }}
                     >
                       Choose PDF File

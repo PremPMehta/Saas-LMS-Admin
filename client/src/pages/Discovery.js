@@ -1132,7 +1132,7 @@ const Discovery = () => {
                         borderColor: '#0F3C60',
                         color: '#0F3C60',
                         '&:hover': {
-                          borderColor: '#3367d6',
+                          borderColor: '#30648e',
                           backgroundColor: '#0F3C6015'
                         }
                       }}

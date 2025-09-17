@@ -46,3 +46,17 @@
 .sidebar_profile {
   padding-inline: 10px !important;
 }
+
+@media (max-width: 575px) {
+  .user_tabs .MuiTabs-list {
+    /* flex-direction: column;
+    align-items: center; */
+  }
+  .user_tabs .MuiTabs-list button {
+    min-height: 50px;
+    font-size: 14px;
+  }
+}
+.Category_select .MuiSelect-select {
+  white-space: unset !important;
+}

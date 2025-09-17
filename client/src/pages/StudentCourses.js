@@ -936,7 +936,7 @@ const StudentCourses = () => {
                       }}
                       sx={{
                         background: '#0F3C60',
-                        '&:hover': { background: '#3367d6' }
+                        '&:hover': { background: '#30648e' }
                       }}
                     >
                       Start Learning

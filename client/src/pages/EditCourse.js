@@ -523,7 +523,7 @@ const EditCourse = () => {
           <ArrowBackIcon />
         </IconButton>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#0F3C60' }}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#0F3C60' , fontSize: { xs: '20px', sm: '30px' }}}>
             Edit Course
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.9, color: '#34495e' }}>
@@ -534,7 +534,17 @@ const EditCourse = () => {
 
       {/* Stepper */}
       <Card sx={{ mb: 4, p: 3 }}>
-        <Stepper activeStep={activeStep} sx={{ mb: 2 }}>
+        <Stepper
+          activeStep={activeStep}
+          sx={{
+            mb: 2,
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 2, md: 0 },
+            alignItems: { xs: 'flex-start', sm: 'center' }
+          }}
+        >
+          {/* Stepper Steps */}
+
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel
@@ -557,7 +567,7 @@ const EditCourse = () => {
 
       {/* Step Content */}
       {activeStep === 0 && (
-        <Card sx={{ p: 4 }}>
+        <Card sx={{ p: { xs: 1.5, sm: 2, md: 4 } }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#2c3e50' }}>
               Edit Course Information
@@ -617,7 +627,7 @@ const EditCourse = () => {
             </Grid>
 
             {/* Course Thumbnail Upload */}
-            <Grid item size={4}>
+            <Grid item size={{ xs: 12, md: 4 }}>
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
                 Course Thumbnail
               </Typography>
@@ -701,11 +711,11 @@ const EditCourse = () => {
                       sx={{
                         background: '#0F3C60',
                         '&:hover': {
-                          background: '#3367d6',
+                          background: '#30648e',
                         },
-                        px: 4,
+                        px: { xs: 2, sm: 3, md: 4 },
                         py: 1.5,
-                        fontSize: '1rem',
+                        fontSize: '12px',
                         fontWeight: 600
                       }}
                     >
@@ -720,12 +730,12 @@ const EditCourse = () => {
             </Grid>
 
             {/* Show read-only information for restricted fields */}
-            <Grid item size={8}>
+            <Grid item size={{ xs: 12, md: 8 }}>
               <Typography variant="h6" sx={{ mb: 3, color: '#2c3e50', fontWeight: 600 }}>
                 Course Settings (Read Only)
               </Typography>
               <Grid container spacing={3}>
-                <Grid item size={{ xs: 12, md: 6 }}>
+                <Grid item size={{ xs: 12, sm: 6 }}>
                   <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <DescriptionIcon sx={{ color: '#0F3C60', mr: 1 }} />
@@ -741,7 +751,7 @@ const EditCourse = () => {
                     />
                   </Card>
                 </Grid>
-                <Grid item size={{ xs: 12, md: 6 }}>
+                <Grid item size={{ xs: 12, sm: 6 }}>
                   <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <VideoIcon sx={{ color: '#0F3C60', mr: 1 }} />
@@ -788,7 +798,7 @@ const EditCourse = () => {
       {activeStep === 1 && (
         <Card sx={{ p: 4 }}>
           <Box sx={{ mb: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
               <Typography variant="h5" sx={{ fontWeight: 600, color: '#2c3e50' }}>
                 Course Structure
               </Typography>
@@ -803,7 +813,7 @@ const EditCourse = () => {
                 }}
                 sx={{
                   background: '#0F3C60',
-                  '&:hover': { background: '#3367d6' },
+                  '&:hover': { background: '#30648e' },
 
                   fontWeight: 600
                 }}
@@ -850,7 +860,7 @@ const EditCourse = () => {
                 }}
                 sx={{
                   background: '#0F3C60',
-                  '&:hover': { background: '#3367d6' },
+                  '&:hover': { background: '#30648e' },
                   px: 4,
                   py: 1.5,
                   fontSize: '1rem',
@@ -865,14 +875,14 @@ const EditCourse = () => {
               {chapters.map((chapter, index) => (
                 <Grid item size={{ xs: 12, md: 6 }} key={chapter._id}>
                   <Card sx={{
-                    mb: 3,
+                    // mb: 3,
                     border: '1px solid #e0e0e0',
                     borderRadius: 3,
                     transition: 'all 0.3s ease',
                     boxShadow: 'none'
                   }}>
-                    <CardContent sx={{ p: 4 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                    <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 4 } }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',  flexWrap: 'wrap', gap: 2, mb: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                           <Box sx={{
                             width: 40,
@@ -882,6 +892,7 @@ const EditCourse = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
+                            flexShrink: 0,
                             color: 'white',
                             fontWeight: 600,
                             fontSize: '1.1rem'
@@ -889,7 +900,7 @@ const EditCourse = () => {
                             {index + 1}
                           </Box>
                           <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50', mb: 0.5 }}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50', mb: 0.5 , fontSize: '16px'}}>
                               {chapter.title}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
@@ -923,11 +934,11 @@ const EditCourse = () => {
                         {chapter.description}
                       </Typography>
 
-                   
+
 
                       {chapter.videos && chapter.videos.length > 0 && (
                         <Box sx={{ mt: 3 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 2 }}>
                             <Typography variant="subtitle2" sx={{ mb: 0, fontWeight: 600, color: '#2c3e50' }}>
                               Lessons ({chapter.videos.length})
                             </Typography>
@@ -944,7 +955,7 @@ const EditCourse = () => {
                               sx={{
                                 background: '#0F3C60',
                                 color: 'white',
-                                '&:hover': { background: '#3367d6' },
+                                '&:hover': { background: '#30648e' },
                                 '&:disabled': {
                                   background: '#e0e0e0',
                                   color: '#9e9e9e'
@@ -963,6 +974,8 @@ const EditCourse = () => {
                                   pr: 0,
                                   mb: 1,
                                   p: 2,
+                                  flexWrap: 'wrap',
+                                  justifyContent: 'center',
                                   border: '1px solid #f0f0f0',
                                   borderRadius: 2,
                                   backgroundColor: '#fafafa',
@@ -982,6 +995,7 @@ const EditCourse = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
+                                        flexShrink: 0,
                                         color: 'white',
                                         fontSize: '0.75rem',
                                         fontWeight: 600
@@ -995,35 +1009,33 @@ const EditCourse = () => {
                                     </Box>
                                   }
                                   secondary={
-                                    <Typography variant="caption" color="text.secondary" sx={{ ml: 3 }}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ ml: 2 }}>
                                       {video.description}
                                     </Typography>
                                   }
                                 />
-                                <ListItemSecondaryAction>
-                                  <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                    <IconButton
-                                      size="small"
-                                      onClick={() => handleEditVideo(video, chapter._id)}
-                                      sx={{
-                                        color: '#0F3C60',
-                                        '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
-                                      }}
-                                    >
-                                      <EditIcon fontSize="small" />
-                                    </IconButton>
-                                    <IconButton
-                                      size="small"
-                                      onClick={() => handleDeleteVideo(video._id, chapter._id)}
-                                      sx={{
-                                        color: '#dc3545',
-                                        '&:hover': { backgroundColor: 'rgba(220, 53, 69, 0.1)' }
-                                      }}
-                                    >
-                                      <DeleteIcon fontSize="small" />
-                                    </IconButton>
-                                  </Box>
-                                </ListItemSecondaryAction>
+                                <Box sx={{ display: 'flex', gap: 0.5 , gap: 1}}>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => handleEditVideo(video, chapter._id)}
+                                    sx={{
+                                      color: '#0F3C60',
+                                      '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
+                                    }}
+                                  >
+                                    <EditIcon fontSize="small" />
+                                  </IconButton>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => handleDeleteVideo(video._id, chapter._id)}
+                                    sx={{
+                                      color: '#dc3545',
+                                      '&:hover': { backgroundColor: 'rgba(220, 53, 69, 0.1)' }
+                                    }}
+                                  >
+                                    <DeleteIcon fontSize="small" />
+                                  </IconButton>
+                                </Box>
                               </ListItem>
                             ))}
                           </List>
@@ -1200,20 +1212,20 @@ const EditCourse = () => {
 
       {/* Navigation Buttons */}
       <Card sx={{ mt: 4, p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
           <Button
             disabled={activeStep === 0}
             onClick={handleBack}
             startIcon={<ArrowBackIcon />}
             sx={{
-              px: 3,
-              py: 1.5,
-              fontSize: '1rem',
+              px: { xs: 2, sm: 3, md: 4 },
+              py: 1,
+              fontSize: '14px',
               fontWeight: 600,
               borderColor: '#0F3C60',
               color: '#0F3C60',
               '&:hover': {
-                borderColor: '#3367d6',
+                borderColor: '#30648e',
                 backgroundColor: 'rgba(66, 133, 244, 0.04)'
               },
               '&:disabled': {
@@ -1235,10 +1247,10 @@ const EditCourse = () => {
                 startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
                 sx={{
                   background: '#0F3C60',
-                  '&:hover': { background: '#3367d6' },
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1rem',
+                  '&:hover': { background: '#30648e' },
+                  px: { xs: 2, sm: 3, md: 4 },
+                  py: 1,
+                  fontSize: '14px',
                   fontWeight: 600,
                   '&:disabled': {
                     background: '#e0e0e0',
@@ -1255,10 +1267,10 @@ const EditCourse = () => {
                 endIcon={<ArrowForwardIcon />}
                 sx={{
                   background: '#0F3C60',
-                  '&:hover': { background: '#3367d6' },
-                  px: 4,
-                  py: 1.5,
-                  fontSize: '1rem',
+                  '&:hover': { background: '#30648e' },
+                  px: { xs: 2, sm: 3, md: 4 },
+                  py: 1,
+                  fontSize: '14px',
                   fontWeight: 600
                 }}
               >
@@ -1730,7 +1742,7 @@ const EditCourse = () => {
                                     startIcon={<UploadIcon />}
                                     sx={{
                                       background: '#0F3C60',
-                                      '&:hover': { background: '#3367d6' }
+                                      '&:hover': { background: '#30648e' }
                                     }}
                                   >
                                     Choose Video File

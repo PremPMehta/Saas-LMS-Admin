@@ -580,8 +580,8 @@ const CommunityDashboard = () => {
                       borderColor: '#0F3C60',
                       color: '#0F3C60',
                       '&:hover': { 
-                        borderColor: '#3367d6',
-                        color: '#3367d6',
+                        borderColor: '#30648e',
+                        color: '#30648e',
                         backgroundColor: 'rgba(15, 60, 96, 0.04)'
                       }
                     }}
@@ -593,7 +593,7 @@ const CommunityDashboard = () => {
                     onClick={() => handleEditCourse(selectedCourse._id || selectedCourse.id)}
                     sx={{
                       background: '#0F3C60',
-                      '&:hover': { background: '#3367d6' }
+                      '&:hover': { background: '#30648e' }
                     }}
                   >
                     Edit Course
