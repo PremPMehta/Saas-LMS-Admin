@@ -357,11 +357,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
               fontSize: '16px',
               fontWeight: 'bold',
               borderRadius: '10px',
-              borderColor: '#dadce0',
-              color: '#3c4043',
+              borderColor: '#1976d2',
+              color: '#1976d2',
+              backgroundColor: '#fff',
               '&:hover': {
-                borderColor: '#dadce0',
-                backgroundColor: '#f8f9fa',
+                borderColor: '#1976d2',
+                backgroundColor: 'rgba(25, 118, 210, 0.04)',
               }
             }}
           >
