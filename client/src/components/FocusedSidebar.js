@@ -81,7 +81,7 @@ const FocusedSidebar = ({ darkMode }) => {
         {(isMobile || !collapsed) && (
           <img
             src="/bell-desk-logo.png"
-            alt="Bell & Desk"
+            alt="Bell n Desk"
             style={{
               width: '130px',
               objectFit: 'contain',

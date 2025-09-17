@@ -29,7 +29,7 @@ import { getCommunityUrl } from '../utils/communityUrlUtils';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityLogin = () => {
-  useDocumentTitle('Community Login - Bell & Desk');
+  useDocumentTitle('Community Login - Bell n Desk');
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -107,7 +107,7 @@ const CommunityLogin = () => {
               <Box sx={{ mb: 4 }}>
                 <School sx={{ fontSize: 48, mb: 2 }} />
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                  Bell & Desk Login
+                  Bell n Desk Login
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Access your community dashboard

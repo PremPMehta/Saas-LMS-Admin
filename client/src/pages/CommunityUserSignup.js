@@ -31,7 +31,7 @@ import axios from 'axios';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserSignup = () => {
-  useDocumentTitle('Community User Signup - Bell & Desk');
+  useDocumentTitle('Community User Signup - Bell n Desk');
   console.log('CommunityUserSignup component rendered!');
 
   const navigate = useNavigate();

@@ -39,7 +39,7 @@ import {
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityProfile = () => {
-  useDocumentTitle('Community Profile - Bell & Desk');
+  useDocumentTitle('Community Profile - Bell n Desk');
   const navigate = useNavigate();
   const [community, setCommunity] = useState(null);
   const [isEditing, setIsEditing] = useState(false);

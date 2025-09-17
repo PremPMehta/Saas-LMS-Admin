@@ -87,7 +87,7 @@ const Courses = () => {
   const navigate = useNavigate();
   const { communityName } = useParams();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
-  useDocumentTitle('Courses - Bell & Desk');
+  useDocumentTitle('Courses - Bell n Desk');
 
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
@@ -181,6 +181,7 @@ const Courses = () => {
 
     const loadCourses = async () => {
       try {
+
         setLoading(true);
 
         // Add timeout to prevent infinite loading
@@ -336,6 +337,7 @@ const Courses = () => {
 
   // Manual refresh function
   const handleRefresh = async () => {
+
     setRefreshing(true);
     try {
       let communityId = localStorage.getItem('communityId');
@@ -982,7 +984,7 @@ const Courses = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center',  justifyContent: { xs: 'start', md: 'end' }, mb: 4 }}>
                   {/* <Box>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
-                      Bell & Desk - {isCommunityUser ? 'Available Courses' : 'My Courses'}
+                      Bell n Desk - {isCommunityUser ? 'Available Courses' : 'My Courses'}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
                       {isCommunityUser 

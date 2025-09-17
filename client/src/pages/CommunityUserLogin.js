@@ -29,7 +29,7 @@ import googleLogo from '../assets/google-logo.png';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserLogin = () => {
-  useDocumentTitle('Community User Login - Bell & Desk');
+  useDocumentTitle('Community User Login - Bell n Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
   const [formData, setFormData] = useState({

@@ -46,7 +46,7 @@ import FocusedTopBar from '../components/FocusedTopBar';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const AboutUsAdmin = () => {
-  useDocumentTitle('About Us Management - Bell & Desk');
+  useDocumentTitle('About Us Management - Bell n Desk');
   const { communityName } = useParams();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
 
@@ -97,6 +97,7 @@ const AboutUsAdmin = () => {
   }, [communityName]);
 
   const loadAboutUsData = async () => {
+
     try {
       setLoading(true);
       const token = localStorage.getItem('communityToken');
@@ -127,6 +128,7 @@ const AboutUsAdmin = () => {
   };
 
   const loadVideos = async () => {
+
     try {
       const token = localStorage.getItem('communityToken');
       
@@ -149,6 +151,7 @@ const AboutUsAdmin = () => {
   };
 
   const loadThumbnails = async () => {
+
     try {
       const token = localStorage.getItem('communityToken');
       
@@ -178,6 +181,7 @@ const AboutUsAdmin = () => {
   };
 
   const handleSave = async (status = 'draft') => {
+
     try {
       setSaving(true);
       const token = localStorage.getItem('communityToken');

@@ -24,7 +24,7 @@ import "../index.css";
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Login = () => {
-  useDocumentTitle('Login - Bell & Desk');
+  useDocumentTitle('Login - Bell n Desk');
   const { mode } = useTheme();
   const { login } = useAuth();
   const navigate = useNavigate();

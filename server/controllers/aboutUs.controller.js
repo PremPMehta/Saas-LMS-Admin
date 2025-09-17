@@ -1,38 +1,26 @@
-const db = require('../config/db');
+const CommunityAbout = require('../models/CommunityAbout');
 
 // Get About Us settings for a community
 const getAboutUsSettings = async (req, res) => {
   try {
     const { communityName } = req.params;
     
-    const [settings] = await db.execute(
-      'SELECT * FROM community_about_settings WHERE community_id = ?',
-      [communityName]
-    );
+    let settings = await CommunityAbout.findOne({ communityName });
     
-    if (settings.length === 0) {
+    if (!settings) {
       // Create default settings if none exist
-      await db.execute(
-        `INSERT INTO community_about_settings 
-         (community_id, community_name, community_brand_name, community_description, page_status)
-         VALUES (?, ?, ?, ?, 'draft')`,
-        [communityName, communityName, communityName, `Welcome to ${communityName} community`]
-      );
-      
-      const [newSettings] = await db.execute(
-        'SELECT * FROM community_about_settings WHERE community_id = ?',
-        [communityName]
-      );
-      
-      return res.json({
-        success: true,
-        data: newSettings[0]
+      settings = new CommunityAbout({
+        communityName,
+        communityBrandName: communityName,
+        communityDescription: `Welcome to ${communityName} community`,
+        pageStatus: 'draft'
       });
+      await settings.save();
     }
     
     res.json({
       success: true,
-      data: settings[0]
+      data: settings
     });
   } catch (error) {
     console.error('Error getting About Us settings:', error);
@@ -44,43 +32,21 @@ const getAboutUsSettings = async (req, res) => {
   }
 };
 
-// Update About Us settings
+// Update About Us settings for a community
 const updateAboutUsSettings = async (req, res) => {
   try {
     const { communityName } = req.params;
-    const settingsData = req.body;
+    const updateData = req.body;
     
-    // Check if settings exist
-    const [existing] = await db.execute(
-      'SELECT id FROM community_about_settings WHERE community_id = ?',
-      [communityName]
+    const settings = await CommunityAbout.findOneAndUpdate(
+      { communityName },
+      { ...updateData, updatedAt: new Date() },
+      { new: true, upsert: true }
     );
-    
-    if (existing.length === 0) {
-      // Create new settings
-      const fields = Object.keys(settingsData);
-      const values = Object.values(settingsData);
-      const placeholders = fields.map(() => '?').join(', ');
-      
-      await db.execute(
-        `INSERT INTO community_about_settings (community_id, ${fields.join(', ')}) 
-         VALUES (?, ${placeholders})`,
-        [communityName, ...values]
-      );
-    } else {
-      // Update existing settings
-      const fields = Object.keys(settingsData);
-      const setClause = fields.map(field => `${field} = ?`).join(', ');
-      const values = Object.values(settingsData);
-      
-      await db.execute(
-        `UPDATE community_about_settings SET ${setClause} WHERE community_id = ?`,
-        [...values, communityName]
-      );
-    }
     
     res.json({
       success: true,
+      data: settings,
       message: 'About Us settings updated successfully'
     });
   } catch (error) {
@@ -98,10 +64,8 @@ const getVideos = async (req, res) => {
   try {
     const { communityName } = req.params;
     
-    const [videos] = await db.execute(
-      'SELECT * FROM community_videos WHERE community_id = ? ORDER BY upload_date DESC',
-      [communityName]
-    );
+    const settings = await CommunityAbout.findOne({ communityName });
+    const videos = settings ? settings.videos || [] : [];
     
     res.json({
       success: true,
@@ -117,23 +81,27 @@ const getVideos = async (req, res) => {
   }
 };
 
-// Upload a new video
+// Upload/Add video for a community
 const uploadVideo = async (req, res) => {
   try {
     const { communityName } = req.params;
-    const { title, description, videoUrl, thumbnailUrl, duration, fileSize } = req.body;
+    const videoData = req.body;
     
-    const [result] = await db.execute(
-      `INSERT INTO community_videos 
-       (community_id, title, description, video_url, thumbnail_url, duration, file_size, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'active')`,
-      [communityName, title, description, videoUrl, thumbnailUrl, duration || 0, fileSize || 0]
-    );
+    const settings = await CommunityAbout.findOne({ communityName });
+    if (!settings) {
+      return res.status(404).json({
+        success: false,
+        message: 'Community not found'
+      });
+    }
+    
+    settings.videos.push(videoData);
+    await settings.save();
     
     res.json({
       success: true,
-      message: 'Video uploaded successfully',
-      data: { id: result.insertId }
+      data: settings.videos,
+      message: 'Video added successfully'
     });
   } catch (error) {
     console.error('Error uploading video:', error);
@@ -145,19 +113,34 @@ const uploadVideo = async (req, res) => {
   }
 };
 
-// Update video
+// Update video for a community
 const updateVideo = async (req, res) => {
   try {
     const { communityName, videoId } = req.params;
-    const { title, description, status } = req.body;
+    const updateData = req.body;
     
-    await db.execute(
-      'UPDATE community_videos SET title = ?, description = ?, status = ? WHERE id = ? AND community_id = ?',
-      [title, description, status, videoId, communityName]
-    );
+    const settings = await CommunityAbout.findOne({ communityName });
+    if (!settings) {
+      return res.status(404).json({
+        success: false,
+        message: 'Community not found'
+      });
+    }
+    
+    const videoIndex = settings.videos.findIndex(video => video._id.toString() === videoId);
+    if (videoIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Video not found'
+      });
+    }
+    
+    settings.videos[videoIndex] = { ...settings.videos[videoIndex], ...updateData };
+    await settings.save();
     
     res.json({
       success: true,
+      data: settings.videos,
       message: 'Video updated successfully'
     });
   } catch (error) {
@@ -170,24 +153,25 @@ const updateVideo = async (req, res) => {
   }
 };
 
-// Delete video
+// Delete video for a community
 const deleteVideo = async (req, res) => {
   try {
     const { communityName, videoId } = req.params;
     
-    await db.execute(
-      'DELETE FROM community_videos WHERE id = ? AND community_id = ?',
-      [videoId, communityName]
-    );
+    const settings = await CommunityAbout.findOne({ communityName });
+    if (!settings) {
+      return res.status(404).json({
+        success: false,
+        message: 'Community not found'
+      });
+    }
     
-    // Also remove from thumbnails if it was being used
-    await db.execute(
-      'UPDATE community_video_thumbnails SET video_id = NULL WHERE video_id = ? AND community_id = ?',
-      [videoId, communityName]
-    );
+    settings.videos = settings.videos.filter(video => video._id.toString() !== videoId);
+    await settings.save();
     
     res.json({
       success: true,
+      data: settings.videos,
       message: 'Video deleted successfully'
     });
   } catch (error) {
@@ -200,19 +184,13 @@ const deleteVideo = async (req, res) => {
   }
 };
 
-// Get thumbnails configuration
+// Get thumbnails for a community
 const getThumbnails = async (req, res) => {
   try {
     const { communityName } = req.params;
     
-    const [thumbnails] = await db.execute(
-      `SELECT t.*, v.title as video_title, v.video_url, v.thumbnail_url as video_thumbnail_url
-       FROM community_video_thumbnails t
-       LEFT JOIN community_videos v ON t.video_id = v.id
-       WHERE t.community_id = ?
-       ORDER BY t.position`,
-      [communityName]
-    );
+    const settings = await CommunityAbout.findOne({ communityName });
+    const thumbnails = settings ? settings.thumbnails || {} : {};
     
     res.json({
       success: true,
@@ -228,37 +206,21 @@ const getThumbnails = async (req, res) => {
   }
 };
 
-// Update thumbnails configuration
+// Update thumbnails for a community
 const updateThumbnails = async (req, res) => {
   try {
     const { communityName } = req.params;
-    const { thumbnails } = req.body;
+    const thumbnailData = req.body;
     
-    // Delete existing thumbnails for this community
-    await db.execute(
-      'DELETE FROM community_video_thumbnails WHERE community_id = ?',
-      [communityName]
+    const settings = await CommunityAbout.findOneAndUpdate(
+      { communityName },
+      { thumbnails: thumbnailData, updatedAt: new Date() },
+      { new: true, upsert: true }
     );
-    
-    // Insert new thumbnails
-    for (const thumbnail of thumbnails) {
-      await db.execute(
-        `INSERT INTO community_video_thumbnails 
-         (community_id, position, video_id, custom_thumbnail_url, show_play_button, thumbnail_title)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [
-          communityName,
-          thumbnail.position,
-          thumbnail.videoId || null,
-          thumbnail.customThumbnailUrl || null,
-          thumbnail.showPlayButton !== false,
-          thumbnail.thumbnailTitle || null
-        ]
-      );
-    }
     
     res.json({
       success: true,
+      data: settings.thumbnails,
       message: 'Thumbnails updated successfully'
     });
   } catch (error) {
@@ -271,57 +233,32 @@ const updateThumbnails = async (req, res) => {
   }
 };
 
-// Get published About Us page data (for public viewing)
+// Get published About Us page (public route)
 const getPublishedAboutUs = async (req, res) => {
   try {
     const { communityName } = req.params;
     
-    // Get published settings
-    const [settings] = await db.execute(
-      'SELECT * FROM community_about_settings WHERE community_id = ? AND page_status = "published"',
-      [communityName]
-    );
+    const settings = await CommunityAbout.findOne({ 
+      communityName, 
+      pageStatus: 'published' 
+    });
     
-    if (settings.length === 0) {
+    if (!settings) {
       return res.status(404).json({
         success: false,
-        message: 'About Us page not found or not published'
+        message: 'Published About Us page not found'
       });
     }
     
-    // Get main video if specified
-    let mainVideo = null;
-    if (settings[0].main_video_id) {
-      const [videos] = await db.execute(
-        'SELECT * FROM community_videos WHERE id = ? AND status = "active"',
-        [settings[0].main_video_id]
-      );
-      mainVideo = videos[0] || null;
-    }
-    
-    // Get thumbnails
-    const [thumbnails] = await db.execute(
-      `SELECT t.*, v.title as video_title, v.video_url, v.thumbnail_url as video_thumbnail_url
-       FROM community_video_thumbnails t
-       LEFT JOIN community_videos v ON t.video_id = v.id AND v.status = "active"
-       WHERE t.community_id = ?
-       ORDER BY t.position`,
-      [communityName]
-    );
-    
     res.json({
       success: true,
-      data: {
-        settings: settings[0],
-        mainVideo,
-        thumbnails
-      }
+      data: settings
     });
   } catch (error) {
     console.error('Error getting published About Us:', error);
     res.status(500).json({
       success: false,
-      message: 'Error retrieving About Us page',
+      message: 'Error retrieving published About Us page',
       error: error.message
     });
   }

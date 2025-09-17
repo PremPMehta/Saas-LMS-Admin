@@ -36,7 +36,7 @@ import {
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const StudentCourses = () => {
-  useDocumentTitle('Student Courses - Bell & Desk');
+  useDocumentTitle('Student Courses - Bell n Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();

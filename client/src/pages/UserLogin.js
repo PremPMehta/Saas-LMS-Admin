@@ -26,7 +26,7 @@ import { useAuth } from '../contexts/AuthContext';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const UserLogin = () => {
-  useDocumentTitle('User Login - Bell & Desk');
+  useDocumentTitle('User Login - Bell n Desk');
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();

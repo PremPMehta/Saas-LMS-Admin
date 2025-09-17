@@ -39,7 +39,7 @@ import { courseApi } from '../utils/courseApi';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const DiscoverCourseViewer = () => {
-  useDocumentTitle('Discover Course Viewer - Bell & Desk');
+  useDocumentTitle('Discover Course Viewer - Bell n Desk');
   const navigate = useNavigate();
   const { courseId } = useParams();
   const [courses, setCourses] = useState([]);
@@ -304,7 +304,7 @@ const DiscoverCourseViewer = () => {
                 }
               }}
             >
-              Bell & Desk
+              Bell n Desk
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <Button 

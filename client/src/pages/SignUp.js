@@ -33,7 +33,7 @@ import { apiUrl } from '../config/api';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const SignUp = () => {
-  useDocumentTitle('Sign Up - Bell & Desk');
+  useDocumentTitle('Sign Up - Bell n Desk');
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({

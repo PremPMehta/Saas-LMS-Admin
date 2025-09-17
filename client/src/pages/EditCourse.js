@@ -56,7 +56,7 @@ import { GENERAL_CATEGORIES } from '../config/categories';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const EditCourse = () => {
-  useDocumentTitle('Edit Course - Bell & Desk');
+  useDocumentTitle('Edit Course - Bell n Desk');
   const navigate = useNavigate();
   const { courseId, communityName } = useParams();
 

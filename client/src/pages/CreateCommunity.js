@@ -89,7 +89,7 @@ const categories = [
 ];
 
 const CreateCommunity = () => {
-  useDocumentTitle('Create Community - Bell & Desk');
+  useDocumentTitle('Create Community - Bell n Desk');
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     name: '',

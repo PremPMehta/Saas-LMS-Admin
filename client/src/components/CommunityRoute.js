@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import communityAuthApi from '../utils/communityAuthApi';
+import { validateCommunityNameForAPI } from '../utils/securityUtils';
+import { apiUrl } from '../config/api';
 
 const CommunityRoute = ({ children }) => {
   const { communityName } = useParams();
@@ -20,91 +22,71 @@ const CommunityRoute = ({ children }) => {
   useEffect(() => {
     const validateCommunity = async () => {
       try {
-        console.log('CommunityRoute validation started for:', communityName);
+        console.log('🔍 CommunityRoute validation started for:', communityName);
+        
+        // STEP 1: SECURITY CHECK - Validate community name format first
+        if (!validateCommunityNameForAPI(communityName, 'CommunityRoute')) {
+          console.log('🚫 Invalid community name format, redirecting to 404');
+          setIsValidating(false);
+          setIsValidCommunity(false);
+          return;
+        }
+
+        // STEP 2: Check if community actually exists in database
+        console.log('🔍 Checking if community exists in database for:', communityName);
+        try {
+          const response = await fetch(apiUrl(`/api/communities/check/${communityName}`), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          console.log('🔍 Database check response status:', response.status);
+
+          if (!response.ok) {
+            console.log('🚫 Community not found in database, status:', response.status);
+            setIsValidating(false);
+            setIsValidCommunity(false);
+            return;
+          }
+
+          const communityData = await response.json();
+          console.log('🔍 Database check response data:', communityData);
+          
+          if (!communityData.success || !communityData.community) {
+            console.log('🚫 Community not found in database response');
+            setIsValidating(false);
+            setIsValidCommunity(false);
+            return;
+          }
+
+          console.log('✅ Community found in database:', communityData.community.name);
+          setCurrentCommunity(communityData.community);
+        } catch (dbError) {
+          console.error('❌ Error checking community in database:', dbError);
+          console.log('🚫 Database check failed, redirecting to 404');
+          setIsValidating(false);
+          setIsValidCommunity(false);
+          return;
+        }
+
+        // STEP 3: Check authentication after community validation
+        console.log('✅ Community exists in database, checking authentication...');
         
         // Check if user is authenticated (either community admin or community user)
         const isCommunityAdmin = communityAuthApi.isAuthenticated();
         const isCommunityUser = !!(localStorage.getItem('communityUserToken') && localStorage.getItem('communityUser'));
         
         if (!isCommunityAdmin && !isCommunityUser) {
-          console.log('User not authenticated, redirecting to login');
+          console.log('🚫 User not authenticated, redirecting to login');
           setIsValidating(false);
-          return;
-        }
-        
-        console.log('Authentication status:', { isCommunityAdmin, isCommunityUser });
-        
-        console.log('User is authenticated, proceeding with community validation');
-
-        // Get current community from auth (try both admin and user)
-        let community = communityAuthApi.getCurrentCommunity();
-        
-        // If no community from admin auth, try community user auth
-        if (!community && isCommunityUser) {
-          const communityUserData = localStorage.getItem('communityUser');
-          if (communityUserData) {
-            try {
-              const userData = JSON.parse(communityUserData);
-              // Extract community data from user data
-              if (userData.community) {
-                community = {
-                  _id: userData.community.id,
-                  name: userData.community.name,
-                  id: userData.community.id
-                };
-                console.log('Using community data from user:', community);
-              } else {
-                // Fallback: use hardcoded community for Crypto Manji Academy
-                if (communityName === 'crypto-manji-academy') {
-                  community = {
-                    _id: '68bae2a8807f3a3bb8ac6307',
-                    name: 'Crypto Manji Academy',
-                    id: '68bae2a8807f3a3bb8ac6307'
-                  };
-                  console.log('Using hardcoded community for community user:', community);
-                }
-              }
-            } catch (e) {
-              console.error('Error parsing community user data:', e);
-            }
-          }
-        }
-        
-        console.log('Current community from auth:', community);
-        
-        if (!community) {
-          console.log('No community data found, redirecting to login');
-          setIsValidating(false);
-          return;
-        }
-
-        // Convert community name to URL format for comparison
-        const communityUrlName = community.name.toLowerCase().replace(/\s+/g, '-');
-        
-        // Special handling for CryptoManji community
-        const isCryptoManji = communityName === 'crypto-manji-academy' && 
-          (community.name.toLowerCase().includes('crypto') && community.name.toLowerCase().includes('manji'));
-        
-        console.log('Community validation:', {
-          urlCommunity: communityName,
-          authCommunity: communityUrlName,
-          originalName: community.name,
-          isCryptoManji,
-          match: communityUrlName === communityName || isCryptoManji
-        });
-        
-        // Validate that the URL community name matches the authenticated user's community
-        if (communityUrlName === communityName || isCryptoManji) {
-          console.log('Community validation successful');
-          setCurrentCommunity(community);
-          setIsValidCommunity(true);
-        } else {
-          console.log('Community name mismatch, redirecting to login');
-          console.log('URL community:', communityName);
-          console.log('Auth community:', communityUrlName);
-          console.log('Original name:', community.name);
           setIsValidCommunity(false);
+          return;
         }
+        
+        console.log('✅ User is authenticated, community validation successful');
+        setIsValidCommunity(true);
       } catch (error) {
         console.error('Error validating community:', error);
         setIsValidCommunity(false);
@@ -124,6 +106,7 @@ const CommunityRoute = ({ children }) => {
     }
   }, [communityName]);
 
+  // Don't render children until validation is complete
   if (isValidating) {
     return (
       <Box sx={{ 
@@ -143,10 +126,11 @@ const CommunityRoute = ({ children }) => {
   }
 
   if (!isValidCommunity) {
-    // Redirect to community login if not authenticated or community doesn't match
-    return <Navigate to="/community-login" replace />;
+    // Redirect to 404 page for invalid community names or authentication issues
+    return <Navigate to="/404" replace />;
   }
 
+  // Only render children after successful validation
   return children;
 };
 

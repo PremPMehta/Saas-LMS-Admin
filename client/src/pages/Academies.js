@@ -24,7 +24,7 @@ import AddAcademyModal from '../components/dashboard/AddAcademyModal';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Academies = () => {
-  useDocumentTitle('Academies - Bell & Desk');
+  useDocumentTitle('Academies - Bell n Desk');
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -176,7 +176,7 @@ const Academies = () => {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                Bell & Desk - Academies
+                Bell n Desk - Academies
               </Typography>
               <Typography 
                 variant="body1" 
