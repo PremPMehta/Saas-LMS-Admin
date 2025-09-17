@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -29,15 +29,60 @@ import {
 
 const CommunityAbout = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [pageData, setPageData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const videoThumbnails = [
-    { id: 1, thumbnail: '/api/placeholder/120/80', hasPlay: true },
-    { id: 2, thumbnail: '/api/placeholder/120/80', hasPlay: false },
-    { id: 3, thumbnail: '/api/placeholder/120/80', hasPlay: false },
-    { id: 4, thumbnail: '/api/placeholder/120/80', hasPlay: false },
-    { id: 5, thumbnail: '/api/placeholder/120/80', hasPlay: false },
-    { id: 6, thumbnail: '/api/placeholder/120/80', hasPlay: true },
-  ];
+  // Get community name from URL
+  const communityName = window.location.pathname.split('/')[1];
+
+  // Load published About Us data
+  useEffect(() => {
+    loadAboutUsData();
+  }, [communityName]);
+
+  const loadAboutUsData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/about-us/${communityName}/published`);
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setPageData(result.data);
+        } else {
+          setError('About Us page not found or not published');
+        }
+      } else {
+        setError('Error loading About Us page');
+      }
+    } catch (error) {
+      console.error('Error loading About Us data:', error);
+      setError('Error loading About Us page');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  // Show error state
+  if (error || !pageData) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <Typography color="error">{error || 'About Us page not found'}</Typography>
+      </Box>
+    );
+  }
+
+  const { settings, mainVideo, thumbnails } = pageData;
 
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
@@ -60,14 +105,14 @@ const CommunityAbout = () => {
                 alignItems: 'center', 
                 justifyContent: 'center' 
               }}>
-                <Typography sx={{ color: '#fbbf24', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                  ₿
-                </Typography>
-              </Box>
-              <Typography variant="h5" sx={{ fontWeight: '600', color: '#111827' }}>
-                Cryptomanji
+              <Typography sx={{ color: '#fbbf24', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                ₿
               </Typography>
-              <Typography sx={{ color: '#9ca3af', fontSize: '1rem' }}>⟡</Typography>
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: '600', color: '#111827' }}>
+              {settings.community_name || 'Community'}
+            </Typography>
+            <Typography sx={{ color: '#9ca3af', fontSize: '1rem' }}>⟡</Typography>
             </Box>
             <Button 
               variant="outlined" 
@@ -79,8 +124,9 @@ const CommunityAbout = () => {
                   borderColor: '#9ca3af'
                 }
               }}
+              href={settings.login_button_url || '/login'}
             >
-              LOG IN
+              {settings.login_button_text || 'LOG IN'}
             </Button>
           </Box>
         </Container>
@@ -91,7 +137,7 @@ const CommunityAbout = () => {
         <Card sx={{ mb: 4, boxShadow: 1, overflow: 'hidden' }}>
           <CardContent sx={{ p: 0 }}>
             <Typography variant="h4" sx={{ fontWeight: 'bold', p: 3, pb: 2 }}>
-              Cryptomanji
+              {settings.community_name || 'Community'}
             </Typography>
             
             <Box sx={{ px: 3, pb: 3 }}>
@@ -111,17 +157,19 @@ const CommunityAbout = () => {
                       inset: 0,
                       backgroundColor: 'rgba(0,0,0,0.3)'
                     }} />
-                    <Box 
-                      component="img"
-                      src="/api/placeholder/600/337"
-                      alt="Crypto education video"
-                      sx={{ 
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        opacity: 0.7
-                      }}
-                    />
+                    {mainVideo && (
+                      <Box 
+                        component="img"
+                        src={mainVideo.thumbnail_url || mainVideo.video_url || "/api/placeholder/600/337"}
+                        alt={mainVideo.title || "Community video"}
+                        sx={{ 
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          opacity: 0.7
+                        }}
+                      />
+                    )}
                     <Box sx={{ 
                       position: 'absolute',
                       inset: 0,
@@ -159,7 +207,7 @@ const CommunityAbout = () => {
                       }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                           <Chip 
-                            label="esc" 
+                            label={settings.esc_button_text || "esc"} 
                             size="small" 
                             sx={{ 
                               backgroundColor: 'rgba(0,0,0,0.5)',
@@ -168,7 +216,7 @@ const CommunityAbout = () => {
                             }} 
                           />
                           <Chip 
-                            label="↻ 1.2×" 
+                            label={`↻ ${settings.speed_indicator || "1.2×"}`} 
                             size="small" 
                             sx={{ 
                               backgroundColor: 'rgba(0,0,0,0.5)',
@@ -177,7 +225,7 @@ const CommunityAbout = () => {
                             }} 
                           />
                           <Chip 
-                            label="1dd" 
+                            label={settings.additional_control_text || "1dd"} 
                             size="small" 
                             sx={{ 
                               backgroundColor: 'rgba(0,0,0,0.5)',
@@ -189,10 +237,10 @@ const CommunityAbout = () => {
                       </Box>
                       <Box sx={{ mt: 1, color: 'white', fontSize: '0.875rem' }}>
                         <Typography component="span" sx={{ textDecoration: 'line-through' }}>
-                          2 min 57 sec
+                          {settings.original_duration || "2 min 57 sec"}
                         </Typography>
                         <Typography component="span" sx={{ ml: 2 }}>
-                          ⟡ 2 min 28 sec
+                          ⟡ {settings.current_duration || "2 min 28 sec"}
                         </Typography>
                       </Box>
                     </Box>
@@ -215,17 +263,17 @@ const CommunityAbout = () => {
                           color: '#fbbf24',
                           mb: 1
                         }}>
-                          Crypto Manji
+                          {settings.community_brand_name || settings.community_name || 'Community'}
                         </Typography>
                       </Box>
                       
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <Box>
                           <Typography variant="subtitle1" sx={{ fontWeight: '600' }}>
-                            Cryptomanji
+                            {settings.community_name || 'Community'}
                           </Typography>
                           <Typography variant="caption" sx={{ color: '#d1d5db' }}>
-                            skool.com/cryptomanji
+                            {communityName}.com
                           </Typography>
                         </Box>
 
@@ -233,8 +281,7 @@ const CommunityAbout = () => {
                           color: '#d1d5db',
                           lineHeight: 1.5
                         }}>
-                          Comunidad de criptomonedas diseñada para aquellos que buscan aprender, crecer y 
-                          prosperar en el emocionante mundo de inversiones en activos digitales.
+                          {settings.community_description || 'Welcome to our community'}
                         </Typography>
 
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -312,8 +359,8 @@ const CommunityAbout = () => {
 
               {/* Video Thumbnails */}
               <Grid container spacing={1}>
-                {videoThumbnails.map((video) => (
-                  <Grid item xs={2} key={video.id}>
+                {thumbnails && thumbnails.map((thumbnail) => (
+                  <Grid item xs={2} key={thumbnail.id}>
                     <Box sx={{ 
                       position: 'relative',
                       cursor: 'pointer',
@@ -327,15 +374,15 @@ const CommunityAbout = () => {
                       }}>
                         <Box 
                           component="img"
-                          src={video.thumbnail}
-                          alt={`Video ${video.id}`}
+                          src={thumbnail.custom_thumbnail_url || thumbnail.video_thumbnail_url || "/api/placeholder/120/80"}
+                          alt={thumbnail.thumbnail_title || `Video ${thumbnail.position}`}
                           sx={{ 
                             width: '100%',
                             height: '100%',
                             objectFit: 'cover'
                           }}
                         />
-                        {video.hasPlay && (
+                        {thumbnail.show_play_button && (
                           <Box sx={{ 
                             position: 'absolute',
                             inset: 0,
