@@ -24,6 +24,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import communityAuthApi from '../utils/communityAuthApi';
 import { apiUrl } from '../config/api';
+import googleLogo from '../assets/google-logo.png';
 
 const CourseLoginModal = ({ open, onClose, courseData }) => {
   const navigate = useNavigate();
@@ -338,6 +339,36 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
             ) : (
               'Login'
             )}
+          </Button>
+
+          {/* Google Login Button */}
+          <Button
+            fullWidth
+            variant="outlined"
+            size="large"
+            startIcon={
+              <img
+                src={googleLogo}
+                alt="Google"
+                style={{ width: 20, height: 20 }}
+              />
+            }
+            sx={{
+              marginTop: '16px',
+              marginBottom: '16px',
+              padding: '12px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              borderRadius: '10px',
+              borderColor: '#dadce0',
+              color: '#3c4043',
+              '&:hover': {
+                borderColor: '#dadce0',
+                backgroundColor: '#f8f9fa',
+              }
+            }}
+          >
+            Login with Google
           </Button>
 
           {/* Signup Link */}
