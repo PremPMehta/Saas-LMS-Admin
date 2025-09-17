@@ -50,7 +50,7 @@ const CommunityUserDashboard = () => {
 
   useEffect(() => {
     // Get user data from localStorage or API
-    const userData = localStorage.getItem('communityUserData');
+    const userData = localStorage.getItem('communityUser');
     if (userData) {
       setUser(JSON.parse(userData));
     }
@@ -64,7 +64,7 @@ const CommunityUserDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('communityUserToken');
-    localStorage.removeItem('communityUserData');
+    localStorage.removeItem('communityUser');
     navigate('/community-user-signup');
   };
 
