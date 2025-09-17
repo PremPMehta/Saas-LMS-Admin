@@ -42,7 +42,7 @@ export default function Newsletter() {
             Build. Teach. Earn. Repeat.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Join thousands of creators making $10k+ per month with their online courses. No tech skills needed. <br /> Just bring your expertise, we'll handle the rest.
+            Join thousands of creators making money per month with their online courses. No tech skills needed. <br /> Just bring your expertise, we'll handle the rest.
           </Typography>
         </Grid>
 
