@@ -289,11 +289,21 @@ const Discovery = () => {
               contentType: course.contentType || 'video',
               subType: course.subType || null,
               chapters: course.chapters || [],
+              community: course.community || null, // Include community information
               createdAt: course.createdAt || new Date().toISOString(),
               updatedAt: course.updatedAt || new Date().toISOString()
             };
           });
 
+          // Debug community information
+          if (normalizedCourses.length > 0) {
+            console.log('🔍 Discovery Debug: First course community info:', {
+              community: normalizedCourses[0]?.community,
+              communityType: typeof normalizedCourses[0]?.community,
+              communityName: normalizedCourses[0]?.community?.name
+            });
+          }
+          
           setCourses(normalizedCourses);
           setFilteredCommunities(normalizedCourses);
         } else {
@@ -979,6 +989,30 @@ const Discovery = () => {
                       {community.title}
                     </Typography>
                   </Box>
+
+                  {/* Community Name */}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#1976d2',
+                      mb: 1,
+                      fontSize: '0.85rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      textDecoration: 'none',
+                      '&:hover': {
+                        textDecoration: 'underline'
+                      }
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const communityName = community.community?.name || 'Default Community';
+                      const communitySlug = communityName.toLowerCase().replace(/\s+/g, '-');
+                      navigate(`/${communitySlug}/about`);
+                    }}
+                  >
+                    {community.community?.name || 'Default Community'}
+                  </Typography>
 
                   {/* Description Section - Flexible */}
                   <Box sx={{

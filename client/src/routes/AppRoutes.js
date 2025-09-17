@@ -29,6 +29,8 @@ import CommunityUserLogin from '../pages/CommunityUserLogin';
 import StudentCourses from '../pages/StudentCourses';
 import DiscoverCourseViewer from '../pages/DiscoverCourseViewer';
 import TestPage from '../pages/TestPage';
+import CommunityAbout from '../pages/CommunityAbout';
+import AboutUsAdmin from '../pages/AboutUsAdmin';
 
 // Component to handle legacy route redirects with community name
 const LegacyRedirect = ({ to }) => {
@@ -150,6 +152,9 @@ const AppRoutes = () => {
       <Route path="/community-user-login" element={<CommunityUserLogin />} />
       <Route path="/test" element={<TestPage />} />
       
+      {/* Community About Page - Public route */}
+      <Route path="/:communityName/about" element={<CommunityAbout />} />
+      
       {/* Legacy routes - redirect to community-specific URLs */}
       <Route path="/community-dashboard" element={<Navigate to="/community-login" replace />} />
       <Route path="/community-admins" element={<Navigate to="/community-login" replace />} />
@@ -198,6 +203,11 @@ const AppRoutes = () => {
       <Route path="/:communityName/admin/community-users" element={
         <CommunityRoute>
           <CommunityUsers />
+        </CommunityRoute>
+      } />
+      <Route path="/:communityName/admin/about-us" element={
+        <CommunityRoute>
+          <AboutUsAdmin />
         </CommunityRoute>
       } />
       

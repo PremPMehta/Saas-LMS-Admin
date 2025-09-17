@@ -136,9 +136,19 @@ const StudentCourses = () => {
             targetAudience: course.targetAudience || 'General',
             status: course.status || 'published',
             thumbnailUrl: course.thumbnail ? getThumbnailUrl(course) : 'https://via.placeholder.com/300x200/4285f4/ffffff?text=Course',
+            community: course.community || { _id: communityId, name: 'Unknown Community' },
             createdAt: course.createdAt || new Date().toISOString(),
             chapters: course.chapters || []
           }));
+          
+          // Debug community information
+          if (normalizedCourses.length > 0) {
+            console.log('🔍 StudentCourses Debug: First course community info:', {
+              community: normalizedCourses[0]?.community,
+              communityType: typeof normalizedCourses[0]?.community,
+              communityName: normalizedCourses[0]?.community?.name
+            });
+          }
           
           setCourses(normalizedCourses);
           console.log('✅ StudentCourses: Loaded', normalizedCourses.length, 'courses');
@@ -651,6 +661,30 @@ const StudentCourses = () => {
                               maxHeight: '2.6em'  // Prevent expansion beyond 2 lines
                             }}>
                               {course.title}
+                            </Typography>
+
+                            {/* Community Name */}
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: darkMode ? '#90caf9' : '#1976d2',
+                                mb: 1,
+                                fontSize: '0.85rem',
+                                fontWeight: 500,
+                                cursor: 'pointer',
+                                textDecoration: 'none',
+                                '&:hover': {
+                                  textDecoration: 'underline'
+                                }
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const communityName = course.community?.name || 'Default Community';
+                                const communitySlug = communityName.toLowerCase().replace(/\s+/g, '-');
+                                navigate(`/${communitySlug}/about`);
+                              }}
+                            >
+                              {course.community?.name || 'Default Community'}
                             </Typography>
 
                             {/* Course Tags - Fixed Layout */}
