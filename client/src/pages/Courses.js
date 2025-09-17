@@ -87,7 +87,7 @@ const Courses = () => {
   const navigate = useNavigate();
   const { communityName } = useParams();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
-  useDocumentTitle('Courses - Bell & Desk');
+  useDocumentTitle('Courses - Bell n Desk');
 
   // Get community-specific URLs
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
@@ -181,6 +181,7 @@ const Courses = () => {
 
     const loadCourses = async () => {
       try {
+
         setLoading(true);
 
         // Add timeout to prevent infinite loading
@@ -278,7 +279,7 @@ const Courses = () => {
             category: course.category || 'Uncategorized',
             status: course.status || 'draft',
             instructor: course.instructor || 'Unknown',
-            community: course.community || communityId,
+            community: course.community || { _id: communityId, name: 'Unknown Community' },
             thumbnail: course.thumbnail || null,
             targetAudience: course.targetAudience || null,
             contentType: course.contentType || null,
@@ -291,6 +292,15 @@ const Courses = () => {
         // Always update with the latest data from API
         console.log('✅ Updating courses with fresh data from API');
         console.log('🔍 REAL COURSE IDs:', normalizedCourses.map(c => ({ title: c.title, _id: c._id, id: c.id })));
+        
+        // Debug community information
+        if (normalizedCourses.length > 0) {
+          console.log('🔍 Debug: First course community info:', {
+            community: normalizedCourses[0]?.community,
+            communityType: typeof normalizedCourses[0]?.community,
+            communityName: normalizedCourses[0]?.community?.name
+          });
+        }
         
         // Show alert if we have real courses
         if (normalizedCourses.length > 0 && normalizedCourses[0]._id && normalizedCourses[0]._id.length > 10) {
@@ -327,6 +337,7 @@ const Courses = () => {
 
   // Manual refresh function
   const handleRefresh = async () => {
+
     setRefreshing(true);
     try {
       let communityId = localStorage.getItem('communityId');
@@ -751,6 +762,30 @@ const Courses = () => {
             {course.title}
           </Typography>
 
+          {/* Community Name */}
+          <Typography
+            variant="body2"
+            sx={{
+              color: darkMode ? '#90caf9' : '#1976d2',
+              mb: 1,
+              fontSize: '0.85rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline'
+              }
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              const communityName = course.community?.name || 'Default Community';
+              const communitySlug = communityName.toLowerCase().replace(/\s+/g, '-');
+              navigate(`/${communitySlug}/about`);
+            }}
+          >
+            {course.community?.name || 'Default Community'}
+          </Typography>
+
           {/* Course Description */}
           <Typography
             variant="body2"
@@ -949,7 +984,7 @@ const Courses = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center',  justifyContent: { xs: 'start', md: 'end' }, mb: 4 }}>
                   {/* <Box>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem', lg: '1.5rem' } }}>
-                      Bell & Desk - {isCommunityUser ? 'Available Courses' : 'My Courses'}
+                      Bell n Desk - {isCommunityUser ? 'Available Courses' : 'My Courses'}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
                       {isCommunityUser 

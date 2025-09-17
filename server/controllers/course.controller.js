@@ -252,11 +252,21 @@ exports.getCourses = async (req, res) => {
     console.log('🔍 Backend: Fetching courses with filter:', filter);
 
     const courses = await Course.find(filter)
+      .populate('community')
       .sort({ createdAt: -1 })
       .limit(50); // Add limit to prevent memory issues
 
     console.log('📊 Backend: Found', courses.length, 'courses');
     console.log('📋 Backend: Course IDs:', courses.map(c => c._id));
+    
+    // Debug: Check community information
+    if (courses.length > 0) {
+      console.log('🔍 Debug: First course community info:', {
+        community: courses[0].community,
+        communityType: typeof courses[0].community,
+        communityName: courses[0].community?.name
+      });
+    }
     
     // Debug: Check if crypto course has chapters
     const cryptoCourse = courses.find(c => c.title && c.title.includes('Crypto Trading Mastery'));
@@ -264,6 +274,7 @@ exports.getCourses = async (req, res) => {
       console.log('🔍 Debug: Crypto course chapters length:', cryptoCourse.chapters ? cryptoCourse.chapters.length : 'null');
       console.log('🔍 Debug: Crypto course chaptersCount virtual:', cryptoCourse.chaptersCount);
       console.log('🔍 Debug: Crypto course videosCount virtual:', cryptoCourse.videosCount);
+      console.log('🔍 Debug: Crypto course community:', cryptoCourse.community);
     }
 
     res.status(200).json({

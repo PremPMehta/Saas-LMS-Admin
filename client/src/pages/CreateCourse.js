@@ -59,7 +59,7 @@ import FocusedTopBar from '../components/FocusedTopBar';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CreateCourse = () => {
-  useDocumentTitle('Create Course - Bell & Desk');
+  useDocumentTitle('Create Course - Bell n Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();

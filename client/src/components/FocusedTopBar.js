@@ -46,11 +46,11 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
     const path = location.pathname;
     
     // Community Admin routes
-    if (path.includes('/community-dashboard')) return 'Bell & Desk - Dashboard';
-    if (path.includes('/community-courses')) return 'Bell & Desk - Courses';
-    if (path.includes('/community-users')) return 'Bell & Desk - Community Users';
-    if (path.includes('/community-admins')) return 'Bell & Desk - Community Admins';
-    if (path.includes('/community-settings')) return 'Bell & Desk - Settings';
+    if (path.includes('/community-dashboard')) return 'Bell n Desk - Dashboard';
+    if (path.includes('/community-courses')) return 'Bell n Desk - Courses';
+    if (path.includes('/community-users')) return 'Bell n Desk - Community Users';
+    if (path.includes('/community-admins')) return 'Bell n Desk - Community Admins';
+    if (path.includes('/community-settings')) return 'Bell n Desk - Settings';
     
     // Student routes
     if (path.includes('/student-dashboard')) return 'My Dashboard';
@@ -60,16 +60,16 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
     if (path.includes('/discover-course-viewer')) return 'Course Viewer';
     
     // General routes
-    if (path.includes('/dashboard')) return 'Bell & Desk - Dashboard';
-    if (path.includes('/courses')) return 'Bell & Desk - Courses';
-    if (path.includes('/users')) return 'Bell & Desk - Users';
-    if (path.includes('/academies')) return 'Bell & Desk - Academies';
-    if (path.includes('/plans')) return 'Bell & Desk - Plans';
-    if (path.includes('/settings')) return 'Bell & Desk - Settings';
-    if (path.includes('/profile')) return 'Bell & Desk - Profile';
+    if (path.includes('/dashboard')) return 'Bell n Desk - Dashboard';
+    if (path.includes('/courses')) return 'Bell n Desk - Courses';
+    if (path.includes('/users')) return 'Bell n Desk - Users';
+    if (path.includes('/academies')) return 'Bell n Desk - Academies';
+    if (path.includes('/plans')) return 'Bell n Desk - Plans';
+    if (path.includes('/settings')) return 'Bell n Desk - Settings';
+    if (path.includes('/profile')) return 'Bell n Desk - Profile';
     
     // Default fallback
-    return isCommunityUser ? 'Bell & Desk - Courses' : 'Bell & Desk - Community';
+    return isCommunityUser ? 'Bell n Desk - Courses' : 'Bell n Desk - Community';
   };
 
   const toggleDarkMode = () => {
@@ -311,7 +311,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Sign Out</ListItemText>
+          <ListItemText>Logout</ListItemText>
         </MenuItem>
       </Menu>
     </Box>

@@ -19,7 +19,7 @@ import {
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const StudentDashboard = () => {
-  useDocumentTitle('Student Dashboard - Bell & Desk');
+  useDocumentTitle('Student Dashboard - Bell n Desk');
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>

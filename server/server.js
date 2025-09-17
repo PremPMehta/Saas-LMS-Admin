@@ -48,6 +48,8 @@ app.use('/api/courses', require('./routes/course.routes'));
 app.use('/api/community-auth', require('./routes/communityAuth.routes'));
 app.use('/api/community-admins', require('./routes/communityAdmin.routes'));
 app.use('/api/community-user', require('./routes/communityUser.routes'));
+app.use('/api/communities', require('./routes/communities.routes'));
+app.use('/api/about-us', require('./routes/aboutUs.routes'));
 app.use('/api/upload', require('./routes/upload.routes'));
 
 // Serve uploaded files statically

@@ -163,7 +163,7 @@ const CommunityLayout = ({ children }) => {
               fontWeight: 'bold',
               color: darkMode ? '#ffffff' : '#000000'
             }}>
-              Bell & Desk - {navItems.find(item => item.id === getActiveNav())?.label || 'Community Dashboard'}
+              Bell n Desk - {navItems.find(item => item.id === getActiveNav())?.label || 'Community Dashboard'}
             </h1>
           </Box>
 

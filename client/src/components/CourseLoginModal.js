@@ -3,726 +3,366 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   Box,
   Typography,
-  TextField,
   Button,
+  TextField,
   Alert,
   InputAdornment,
   IconButton,
   CircularProgress,
-  Tabs,
-  Tab,
-  Divider,
-  Card,
-  CardContent,
-  Chip
+  Link
 } from '@mui/material';
 import {
+  Close as CloseIcon,
+  School as SchoolIcon,
   Email as EmailIcon,
   Lock as LockIcon,
   Visibility,
-  VisibilityOff,
-  Person as PersonIcon,
-  Business as BusinessIcon,
-  CheckCircle as CheckCircleIcon,
-  Schedule as ScheduleIcon,
-  Close as CloseIcon,
-  School as SchoolIcon,
-  BackHandTwoTone,
-  ForkLeftOutlined,
-  ArrowBackIosOutlined
+  VisibilityOff
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import googleLogo from '../assets/google-logo.png';
+import communityAuthApi from '../utils/communityAuthApi';
+import { apiUrl } from '../config/api';
 
 const CourseLoginModal = ({ open, onClose, courseData }) => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(0);
-
-  // Community User Login State
-  const [userFormData, setUserFormData] = useState({
+  
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [showUserPassword, setShowUserPassword] = useState(false);
-  const [isUserLoading, setIsUserLoading] = useState(false);
-  const [userError, setUserError] = useState('');
-  const [showUserApprovalStatus, setShowUserApprovalStatus] = useState(false);
-  const [userStatus, setUserStatus] = useState(null);
-  const [showSignupForm, setShowSignupForm] = useState(false);
+  
+  const [detectedCommunity, setDetectedCommunity] = useState(null);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  // Community Admin Login State
-  const [adminFormData, setAdminFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [showAdminPassword, setShowAdminPassword] = useState(false);
-  const [isAdminLoading, setIsAdminLoading] = useState(false);
-  const [adminError, setAdminError] = useState('');
-
-  // Signup State
-  const [signupData, setSignupData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  const [showSignupPassword, setShowSignupPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSignupLoading, setIsSignupLoading] = useState(false);
-  const [signupError, setSignupError] = useState('');
-  const [signupSuccess, setSignupSuccess] = useState('');
-
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-    // Clear all errors when switching tabs
-    setUserError('');
-    setAdminError('');
-    setSignupError('');
-    setSignupSuccess('');
-    setShowUserApprovalStatus(false);
-    setShowSignupForm(false);
-  };
-
-  // Community User Login Functions
-  const handleUserInputChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserFormData(prev => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    if (userError) setUserError('');
+
+    if (error) setError('');
+    
+    if (name === 'email' && value.includes('@')) {
+      checkEmailCommunity(value);
+    }
   };
 
-  const handleUserSubmit = async (e) => {
+  const checkEmailCommunity = async (email) => {
+    if (!email || !email.includes('@')) return;
+    
+    setIsCheckingEmail(true);
+    setDetectedCommunity(null);
+    
+    try {
+      const response = await fetch(apiUrl('/api/communities/check-email'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setDetectedCommunity(data);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking email:', error);
+    } finally {
+      setIsCheckingEmail(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsUserLoading(true);
-    setUserError('');
-    setShowUserApprovalStatus(false);
+
+    if (!formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
-      console.log('🔍 CourseLoginModal - Login attempt:', {
-        apiUrl,
-        email: userFormData.email,
-        courseData,
-        environment: process.env.NODE_ENV
-      });
+      let loginResult;
+      let userType;
 
-      const response = await axios.post(`${apiUrl}/api/community-user/login`, {
-        email: userFormData.email,
-        password: userFormData.password
-      });
+      if (detectedCommunity) {
+        userType = detectedCommunity.userType;
+        
+        if (detectedCommunity.userType === 'admin') {
+          loginResult = await communityAuthApi.login(formData.email, formData.password);
+        } else {
+          const response = await fetch(apiUrl('/api/community-user/login'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: formData.email,
+              password: formData.password,
+            }),
+          });
 
-      if (response.data.success) {
-        const { user, token } = response.data.data;
+          if (!response.ok) {
+            throw new Error('Community User login failed');
+          }
 
-        // Check approval status
-        if (user.approvalStatus === 'pending') {
-          setUserStatus('pending');
-          setShowUserApprovalStatus(true);
-          setIsUserLoading(false);
-          return;
+          const userData = await response.json();
+          if (!userData.success) {
+            throw new Error(userData.message || 'Login failed');
+          }
+
+          localStorage.setItem('communityUserToken', userData.data.token);
+          localStorage.setItem('communityUser', JSON.stringify(userData.data.user));
+          localStorage.setItem('communityId', userData.data.user.community.id);
+          
+          loginResult = userData;
         }
+      } else {
+        // Try both login types automatically
+        try {
+          loginResult = await communityAuthApi.login(formData.email, formData.password);
+          userType = 'admin';
+        } catch (adminError) {
+          const response = await fetch(apiUrl('/api/community-user/login'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: formData.email,
+              password: formData.password,
+            }),
+          });
 
-        // Store token and user data
-        localStorage.setItem('communityUserToken', token);
-        localStorage.setItem('communityUser', JSON.stringify(user));
+          if (!response.ok) {
+            throw new Error('Community User login failed');
+          }
 
-        console.log('✅ CourseLoginModal - Login successful:', {
-          user,
-          token: token ? 'present' : 'missing',
-          courseData,
-          navigationUrl: `/${courseData?.communityName || 'crypto-manji-academy'}/student/course-viewer/${courseData?.id}`
-        });
+          const userData = await response.json();
+          if (!userData.success) {
+            throw new Error(userData.message || 'Login failed');
+          }
 
-        // Navigate to course viewer
-        navigate(`/${courseData?.communityName || 'crypto-manji-academy'}/student/course-viewer/${courseData?.id}`);
-        onClose();
+          localStorage.setItem('communityUserToken', userData.data.token);
+          localStorage.setItem('communityUser', JSON.stringify(userData.data.user));
+          localStorage.setItem('communityId', userData.data.user.community.id);
+          
+          loginResult = userData;
+          userType = 'user';
+        }
       }
+
+      // Success - redirect to course
+      setSuccess('Login successful! Redirecting to course...');
+
+      let communityForRedirect = null;
+      
+      if (detectedCommunity) {
+        communityForRedirect = detectedCommunity.community;
+      } else if (userType === 'admin') {
+        communityForRedirect = communityAuthApi.getCurrentCommunity();
+      } else {
+        const userData = JSON.parse(localStorage.getItem('communityUser'));
+        communityForRedirect = userData?.community;
+      }
+      
+      if (communityForRedirect && communityForRedirect.name) {
+        const communityUrlName = communityForRedirect.name.toLowerCase().replace(/\s+/g, '-');
+        
+        if (userType === 'admin') {
+          const courseUrl = `/${communityUrlName}/admin/course-viewer/${courseData?.id}`;
+          setTimeout(() => {
+            navigate(courseUrl);
+            onClose();
+          }, 1500);
+        } else {
+          const courseUrl = `/${communityUrlName}/student/course-viewer/${courseData?.id}`;
+          setTimeout(() => {
+            navigate(courseUrl);
+            onClose();
+          }, 1500);
+        }
+      } else {
+        setError('Login successful but unable to redirect. Please try again.');
+      }
+
     } catch (error) {
       console.error('Login error:', error);
-      if (error.response?.data?.message) {
-        setUserError(error.response.data.message);
-      } else {
-        setUserError('Login failed. Please try again.');
-      }
+      setError(error.message || 'Login failed. Please check your credentials.');
     } finally {
-      setIsUserLoading(false);
-    }
-  };
-
-  // Community Admin Login Functions
-  const handleAdminInputChange = (field, value) => {
-    setAdminFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    if (adminError) setAdminError('');
-  };
-
-  const handleAdminSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!adminFormData.email || !adminFormData.password) {
-      setAdminError('Please fill in all fields');
-      return;
-    }
-
-    setIsAdminLoading(true);
-    setAdminError('');
-
-    try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
-      const response = await axios.post(`${apiUrl}/api/auth/community-login`, {
-        email: adminFormData.email,
-        password: adminFormData.password
-      });
-
-      if (response.data.success) {
-        localStorage.setItem('communityToken', response.data.token);
-        localStorage.setItem('community', JSON.stringify(response.data.community));
-
-        // Navigate to admin course viewer
-        navigate(`/${courseData?.communityName || 'crypto-manji-academy'}/admin/course-viewer/${courseData?.id}`);
-        onClose();
-      }
-    } catch (error) {
-      console.error('Admin login error:', error);
-      setAdminError(error.response?.data?.message || 'Login failed. Please try again.');
-    } finally {
-      setIsAdminLoading(false);
-    }
-  };
-
-  // Signup Functions
-  const handleSignupInputChange = (e) => {
-    const { name, value } = e.target;
-    setSignupData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (signupError) setSignupError('');
-  };
-
-  const handleSignupSubmit = async (e) => {
-    e.preventDefault();
-
-    if (signupData.password !== signupData.confirmPassword) {
-      setSignupError('Passwords do not match');
-      return;
-    }
-
-    if (signupData.password.length < 6) {
-      setSignupError('Password must be at least 6 characters long');
-      return;
-    }
-
-    setIsSignupLoading(true);
-    setSignupError('');
-
-    try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
-      console.log('🔍 CourseLoginModal - Signup attempt:', {
-        apiUrl,
-        email: signupData.email,
-        courseData,
-        environment: process.env.NODE_ENV
-      });
-
-      const response = await axios.post(`${apiUrl}/api/community-user/signup`, {
-        firstName: signupData.firstName,
-        lastName: signupData.lastName,
-        email: signupData.email,
-        password: signupData.password,
-        confirmPassword: signupData.confirmPassword,
-        termsAccepted: true // Auto-accept terms for course access
-      });
-
-      if (response.data.success) {
-        console.log('✅ CourseLoginModal - Signup successful:', response.data);
-        setSignupSuccess('Registration successful! Please wait for admin approval.');
-        setSignupData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          confirmPassword: ''
-        });
-      }
-    } catch (error) {
-      console.error('Signup error:', error);
-      setSignupError(error.response?.data?.message || 'Registration failed. Please try again.');
-    } finally {
-      setIsSignupLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <Dialog
-      open={open}
+    <Dialog 
+      open={open} 
       onClose={onClose}
-      maxWidth="xs"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: 3,
+          minHeight: 400
         }
       }}
     >
+      <DialogTitle sx={{ pb: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h5" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <SchoolIcon />
+            Access Course
+          </Typography>
+          <CloseIcon 
+            onClick={onClose}
+            sx={{ 
+              cursor: 'pointer',
+              '&:hover': { opacity: 0.7 }
+            }}
+          />
+        </Box>
+      </DialogTitle>
 
-
-      <DialogContent sx={{ p: 0 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            variant="fullWidth"
-            role="navigation"
-            centered>
-            <Tab
-              label="User Login"
-              iconPosition="start"
-            />
-            <Tab
-              label="Admin Login"
-              iconPosition="start"
-            />
-          </Tabs>
+      <DialogContent sx={{ pt: 0 }}>
+        <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Typography variant="h6" sx={{ mb: 1, color: 'text.primary' }}>
+            {courseData?.title || 'This Course'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Please log in to access this course content
+          </Typography>
         </Box>
 
-        <Box sx={{ p: 3 }}>
-          {/* Community User Tab */}
-          {activeTab === 0 && (
-            <Box>
-              {!showSignupForm ? (
-                /* Login Form */
-                <Box>
-                  <Box>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
-                      Login to Access Course
-                    </Typography>
-                    {userError && (
-                      <Alert severity="error" sx={{ mb: 2 }}>
-                        {userError}
-                      </Alert>
-                    )}
+        {/* Success Message */}
+        {success && (
+          <Alert severity="success" style={{ marginBottom: '20px' }}>
+            {success}
+          </Alert>
+        )}
 
-                    {showUserApprovalStatus && (
-                      <Alert
-                        severity="warning"
-                        sx={{ mb: 2 }}
-                        icon={<ScheduleIcon />}
-                      >
-                        <Typography variant="body2">
-                          Your account is pending approval. Please wait for an admin to approve your access.
-                        </Typography>
-                      </Alert>
-                    )}
+        {/* Error Message */}
+        {error && (
+          <Alert severity="error" style={{ marginBottom: '20px' }}>
+            {error}
+          </Alert>
+        )}
 
-                    <Box component="form" onSubmit={handleUserSubmit}>
-                      <TextField
-                        fullWidth
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={userFormData.email}
-                        onChange={handleUserInputChange}
-                        margin="normal"
-                        required
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <EmailIcon color="action" />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Password"
-                        name="password"
-                        type={showUserPassword ? 'text' : 'password'}
-                        value={userFormData.password}
-                        onChange={handleUserInputChange}
-                        margin="normal"
-                        required
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LockIcon color="action" />
-                            </InputAdornment>
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                onClick={() => setShowUserPassword(!showUserPassword)}
+        {/* Login Form */}
+        <form onSubmit={handleSubmit}>
+          {/* Email Field */}
+          <TextField
+            fullWidth
+            margin="normal"
+            name="email"
+            label="Email Address"
+            type="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            variant="outlined"
+            required
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <EmailIcon color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: isCheckingEmail ? (
+                <InputAdornment position="end">
+                  <CircularProgress size={20} />
+                </InputAdornment>
+              ) : null,
+            }}
+          />
 
-
-                              >
-                                {showUserPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        disabled={isUserLoading}
-                        sx={{
-                          mt: 3,
-                           
-                          py: 1.5,
-                          background: '#0F3C60',
-                          '&:hover': {
-                            background: '#0F3C60',
-                            opacity: 0.9
-                          }
-                        }}
-                      >
-                        {isUserLoading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
-                      </Button>
-                    </Box>
-
-                    {/* Divider */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
-                      <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
-                      <Typography variant="body2" sx={{ mx: 2, color: '#666' }}>
-                        or
-                      </Typography>
-                      <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
-                    </Box>
-
-                    {/* Google Sign In Button */}
-                    <Button
-                      variant="outlined"
-                      size="large"
-                      fullWidth
-                      sx={{
-                        py: 1.5,
-                        fontSize: '14px',
-                        textTransform: 'none',
-                        borderRadius: 2,
-                        borderColor: '#dadce0',
-                        color: '#3c4043',
-                        backgroundColor: '#fff',
-                        '&:hover': {
-                          backgroundColor: '#f8f9fa',
-                          borderColor: '#dadce0',
-                        },
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                      }}
-                      startIcon={
-                        <Box
-                          component="img"
-                          src={googleLogo}
-                          alt="Google"
-                          sx={{ width: 20, height: 20 }}
-                        />
-                      }
-                    >
-                      Sign in with Google
-                    </Button>
-
-                    <Box sx={{ textAlign: 'center', mt: 2 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Don't have an account?{' '}
-                        <Button
-                          variant="text"
-                          onClick={() => setShowSignupForm(true)}
-                          sx={{
-                            textTransform: 'none',
-                            color: '#0F3C60',
-                            fontWeight: 600,
-                            p: 0,
-                            minWidth: 'auto',
-                            '&:hover': {
-                              backgroundColor: 'transparent',
-                              textDecoration: 'underline'
-                            }
-                          }}
-                        >
-                          New User? Sign up here
-                        </Button>
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              ) : (
-                /* Signup Form */
-                <Box >
-                  <Box>
-                    <Box sx={{ mb: 2 }}>
-                      <Button
-                        startIcon={<ArrowBackIosOutlined />}
-                        variant="outlined"
-                        onClick={() => setShowSignupForm(false)}
-                        sx={{ mb: 2 }}
-                      >
-                        Back
-                      </Button >
-                      <Typography variant="h6" sx={{ fontWeight: 600,  color: '#2c3e50' }}>
-                        Create New Account
-                      </Typography>
-                    </Box>
-
-                    {signupError && (
-                      <Alert severity="error" sx={{ mb: 2 }}>
-                        {signupError}
-                      </Alert>
-                    )}
-
-                    {signupSuccess && (
-                      <Alert severity="success" sx={{ mb: 2 }} icon={<CheckCircleIcon />}>
-                        {signupSuccess}
-                      </Alert>
-                    )}
-
-                    <Box component="form" onSubmit={handleSignupSubmit}>
-                      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                        <TextField
-                          fullWidth
-                          label="First Name"
-                          name="firstName"
-                          value={signupData.firstName}
-                          onChange={handleSignupInputChange}
-                          required
-                        />
-                        <TextField
-                          fullWidth
-                          label="Last Name"
-                          name="lastName"
-                          value={signupData.lastName}
-                          onChange={handleSignupInputChange}
-                          required
-                        />
-                      </Box>
-                      <TextField
-                        fullWidth
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={signupData.email}
-                        onChange={handleSignupInputChange}
-                        margin="normal"
-                        required
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <EmailIcon color="action" />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Password"
-                        name="password"
-                        type={showSignupPassword ? 'text' : 'password'}
-                        value={signupData.password}
-                        onChange={handleSignupInputChange}
-                        margin="normal"
-                        required
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LockIcon color="action" />
-                            </InputAdornment>
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                onClick={() => setShowSignupPassword(!showSignupPassword)}
-                                edge="end"
-                              >
-                                {showSignupPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Confirm Password"
-                        name="confirmPassword"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={signupData.confirmPassword}
-                        onChange={handleSignupInputChange}
-                        margin="normal"
-                        required
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LockIcon color="action" />
-                            </InputAdornment>
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                edge="end"
-                              >
-                                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        disabled={isSignupLoading}
-
-                        sx={{
-                          mt: 3,
-                          mb: 0,
-                          py: 1.5,
-                          background: '#0F3C60',
-                          '&:hover': {
-                            background: '#0F3C60',
-                            opacity: 0.9
-                          }
-                        }}
-                      >
-                        {isSignupLoading ? <CircularProgress size={24} color="inherit" /> : 'Create Account'}
-                      </Button>
-                    </Box>
-                  </Box>
-                </Box>
-              )}
-            </Box>
-          )}
-
-          {/* Community Admin Tab */}
-          {activeTab === 1 && (
-            <Box>
-              <Box>
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
-                  Admin Login
-                </Typography>
-                {adminError && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
-                    {adminError}
-                  </Alert>
-                )}
-
-                <Box component="form" onSubmit={handleAdminSubmit}>
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    value={adminFormData.email}
-                    onChange={(e) => handleAdminInputChange('email', e.target.value)}
-                    margin="normal"
-                    required
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EmailIcon color="action" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                  <TextField
-                    fullWidth
-                    label="Password"
-                    type={showAdminPassword ? 'text' : 'password'}
-                    value={adminFormData.password}
-                    onChange={(e) => handleAdminInputChange('password', e.target.value)}
-                    margin="normal"
-                    required
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon color="action" />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowAdminPassword(!showAdminPassword)}
-                            edge="end"
-                          >
-                            {showAdminPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    disabled={isAdminLoading}
-                    sx={{
-                      mt: 3,
-                 
-                      py: 1.5,
-                      background: '#0F3C60',
-                      '&:hover': {
-                        background: '#0F3C60',
-                        opacity: 0.9
-                      }
-                    }}
+          {/* Password Field */}
+          <TextField
+            fullWidth
+            margin="normal"
+            name="password"
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            value={formData.password}
+            onChange={handleInputChange}
+            variant="outlined"
+            required
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockIcon color="action" />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
                   >
-                    {isAdminLoading ? <CircularProgress size={24} color="inherit" /> : 'Login as Admin'}
-                  </Button>
-                </Box>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
 
-                {/* Divider */}
-                <Box sx={{ display: 'flex', alignItems: 'center', my: 3 }}>
-                  <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
-                  <Typography variant="body2" sx={{ mx: 2, color: '#666' }}>
-                    or
-                  </Typography>
-                  <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
-                </Box>
+          {/* Login Button */}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
+            disabled={isLoading}
+            style={{
+              marginTop: '24px',
+              marginBottom: '16px',
+              padding: '12px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              borderRadius: '10px',
+              background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+            }}
+          >
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Login'
+            )}
+          </Button>
 
-                {/* Google Sign In Button */}
-                <Button
-                  variant="outlined"
-                  size="large"
-                  fullWidth
-                  sx={{
-                    py: 1.5,
-                    fontSize: '14px',
-                    textTransform: 'none',
-                    borderRadius: 2,
-                    borderColor: '#dadce0',
-                    color: '#3c4043',
-                    backgroundColor: '#fff',
-                    '&:hover': {
-                      backgroundColor: '#f8f9fa',
-                      borderColor: '#dadce0',
-                    },
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                  }}
-                  startIcon={
-                    <Box
-                      component="img"
-                      src={googleLogo}
-                      alt="Google"
-                      sx={{ width: 20, height: 20 }}
-                    />
-                  }
-                >
-                  Sign in with Google
-                </Button>
-              </Box>
-            </Box>
-          )}
-        </Box>
+          {/* Signup Link */}
+          <Box textAlign="center" mt={1}>
+            <Typography variant="body2" color="text.secondary">
+              Don't have an account?{' '}
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  onClose();
+                  navigate('/community-user-signup');
+                }}
+                style={{ 
+                  textDecoration: 'none',
+                  color: '#1976d2',
+                  fontWeight: 500
+                }}
+              >
+                Sign up here
+              </Link>
+            </Typography>
+          </Box>
+        </form>
       </DialogContent>
     </Dialog>
   );

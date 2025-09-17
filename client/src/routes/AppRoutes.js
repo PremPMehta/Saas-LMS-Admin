@@ -26,9 +26,13 @@ import CommunityUserSignup from '../pages/CommunityUserSignup';
 import CommunityUsers from '../pages/CommunityUsers';
 import CommunityUserDashboard from '../pages/CommunityUserDashboard';
 import CommunityUserLogin from '../pages/CommunityUserLogin';
+import UnifiedLogin from '../pages/UnifiedLogin';
 import StudentCourses from '../pages/StudentCourses';
 import DiscoverCourseViewer from '../pages/DiscoverCourseViewer';
 import TestPage from '../pages/TestPage';
+import CommunityAbout from '../pages/CommunityAbout';
+import AboutUsAdmin from '../pages/AboutUsAdmin';
+import NotFound from '../pages/NotFound';
 import SignUpLanding from '../pages/SignUpLanding';
 
 // Component to handle legacy route redirects with community name
@@ -41,7 +45,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Login route - no layout */}
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<UnifiedLogin />} />
       
       {/* Main app routes with layout - protected */}
       <Route
@@ -146,20 +150,24 @@ const AppRoutes = () => {
       <Route path="/discover-courseViewer/:courseId?" element={<DiscoverCourseViewer />} />
       <Route path="/create-community" element={<CreateCommunity />} />
       <Route path="/community-setup" element={<CommunitySetup />} />
-      <Route path="/community-login" element={<CommunityLogin />} />
+      <Route path="/community-login" element={<UnifiedLogin />} />
+      <Route path="/community-user-login" element={<UnifiedLogin />} />
       <Route path="/community-user-signup" element={<CommunityUserSignup />} />
       <Route path="/community-user-login" element={<CommunityUserLogin />} />
       <Route path="/signup-landing" element={<SignUpLanding />} />
       <Route path="/test" element={<TestPage />} />
       
-      {/* Legacy routes - redirect to community-specific URLs */}
-      <Route path="/community-dashboard" element={<Navigate to="/community-login" replace />} />
-      <Route path="/community-admins" element={<Navigate to="/community-login" replace />} />
-      <Route path="/student-dashboard" element={<Navigate to="/community-login" replace />} />
-      <Route path="/create-course" element={<Navigate to="/community-login" replace />} />
-      <Route path="/edit-course/:courseId" element={<Navigate to="/community-login" replace />} />
-      <Route path="/courses" element={<Navigate to="/community-login" replace />} />
-      <Route path="/course-viewer/:courseId?" element={<Navigate to="/community-login" replace />} />
+      {/* Community About Page - Public route */}
+      <Route path="/:communityName/about" element={<CommunityAbout />} />
+      
+      {/* Legacy routes - redirect to login */}
+      <Route path="/community-dashboard" element={<Navigate to="/login" replace />} />
+      <Route path="/community-admins" element={<Navigate to="/login" replace />} />
+      <Route path="/student-dashboard" element={<Navigate to="/login" replace />} />
+      <Route path="/create-course" element={<Navigate to="/login" replace />} />
+      <Route path="/edit-course/:courseId" element={<Navigate to="/login" replace />} />
+      <Route path="/courses" element={<Navigate to="/login" replace />} />
+      <Route path="/course-viewer/:courseId?" element={<Navigate to="/login" replace />} />
       
       {/* Community Admin routes - these use :communityName parameter */}
       <Route path="/:communityName/admin/dashboard" element={
@@ -200,6 +208,11 @@ const AppRoutes = () => {
       <Route path="/:communityName/admin/community-users" element={
         <CommunityRoute>
           <CommunityUsers />
+        </CommunityRoute>
+      } />
+      <Route path="/:communityName/admin/about-us" element={
+        <CommunityRoute>
+          <AboutUsAdmin />
         </CommunityRoute>
       } />
       
@@ -252,11 +265,14 @@ const AppRoutes = () => {
       <Route path="/:communityName/courses" element={<LegacyRedirect to="admin/courses" />} />
       <Route path="/:communityName/community-user-dashboard" element={<LegacyRedirect to="student/dashboard" />} />
       
+      {/* 404 route for invalid community names */}
+      <Route path="/404" element={<NotFound />} />
+      
       {/* Default redirect - redirect based on user role */}
       <Route path="/" element={<Navigate to="/discovery" replace />} />
       
       {/* Catch-all route for unmatched paths - must be last */}
-      <Route path="*" element={<Navigate to="/discovery" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

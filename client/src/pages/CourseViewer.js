@@ -60,7 +60,7 @@ import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CourseViewer = () => {
-  useDocumentTitle('Course Viewer - Bell & Desk');
+  useDocumentTitle('Course Viewer - Bell n Desk');
   const theme = useTheme();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const navigate = useNavigate();
