@@ -236,7 +236,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       <DialogContent sx={{ pt: 0 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography variant="h6" sx={{ mb: 1, color: 'text.primary' }}>
-            {courseData?.title || ''}
+            Log In
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Please log in to access this course content
