@@ -35,6 +35,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   // Get appropriate data based on user type
   const communityData = communityAuthApi.getCurrentCommunity();
   const studentData = isCommunityUser ? JSON.parse(communityUserData) : null;
+  const adminData = !isCommunityUser ? communityData : null;
   
   console.log('🔍 FocusedTopBar User Data:', {
     studentData: studentData ? { firstName: studentData.firstName, lastName: studentData.lastName, email: studentData.email } : null,
@@ -167,7 +168,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
                 `${studentData.firstName} ${studentData.lastName}` : 
                 (studentData?.firstName || studentData?.email || 'Student')
               ) : 
-              (communityData?.name || 'Community')
+              (adminData?.ownerName || adminData?.name || 'Admin')
             }
           </Box>
           <Box sx={{ 
@@ -184,7 +185,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             `${studentData.firstName} ${studentData.lastName}` : 
             (studentData?.firstName || studentData?.email || 'Student')
           ) : 
-          (communityData?.name || 'Community')
+          (adminData?.ownerName || adminData?.name || 'Admin')
         } Profile`}>
           <IconButton
             onClick={handleAvatarClick}
@@ -213,7 +214,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             >
               {isCommunityUser ? 
                 (studentData?.firstName?.charAt(0) || studentData?.email?.charAt(0) || 'S') : 
-                (communityData?.name?.charAt(0) || 'C')
+                (adminData?.ownerName?.charAt(0) || adminData?.name?.charAt(0) || 'A')
               }
             </Avatar>
           </IconButton>
