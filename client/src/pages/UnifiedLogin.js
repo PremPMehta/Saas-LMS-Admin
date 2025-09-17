@@ -27,6 +27,7 @@ import {
   Person as UserIcon,
 } from '@mui/icons-material';
 import loginImage from '../assets/view-building-with.jpg';
+import googleLogo from '../assets/google-logo.png';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 import communityAuthApi from '../utils/communityAuthApi';
 import { apiUrl } from '../config/api';
@@ -422,6 +423,37 @@ const UnifiedLogin = () => {
                     ) : (
                       'Login'
                     )}
+                  </Button>
+
+                  {/* Google Login Button */}
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    size="large"
+                    startIcon={
+                      <img
+                        src={googleLogo}
+                        alt="Google"
+                        style={{ width: 20, height: 20 }}
+                      />
+                    }
+                    sx={{
+                      marginTop: '16px',
+                      marginBottom: '16px',
+                      padding: '12px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      borderRadius: '10px',
+                      borderColor: '#dadce0',
+                      color: '#3c4043',
+                      backgroundColor: '#fff',
+                      '&:hover': {
+                        backgroundColor: '#f8f9fa',
+                        borderColor: '#dadce0',
+                      }
+                    }}
+                  >
+                    Login with Google
                   </Button>
 
                   {/* Forgot Password Link */}
