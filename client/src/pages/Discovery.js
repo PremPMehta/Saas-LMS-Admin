@@ -433,7 +433,7 @@ const Discovery = () => {
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           {/* Bell & Desk Logo */}
-          <Box sx={{ mb: 3 }}>
+          {/* <Box sx={{ mb: 3 }}>
             <img
               src="/bnd-dark.png"
               alt="Bell & Desk"
@@ -444,7 +444,7 @@ const Discovery = () => {
                 objectFit: 'contain'
               }}
             />
-          </Box>
+          </Box> */}
 
           <Box
 
@@ -464,22 +464,22 @@ const Discovery = () => {
                 fontSize: { xs: '2rem', md: '3rem' }
               }}
             >
-              Bell & Desk - Discover courses
+              Build your communities
             </Typography>
           </Box>
 
-          <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
+          <Typography variant="h6" sx={{ mb: 4 }}>
             or{' '}
             <Button
               variant="text"
               sx={{
                 color: '#0F3C60',
                 textTransform: 'none',
-                fontSize: '1.25rem',
-                fontWeight: 400,
+                fontSize: '20px',
+                fontWeight: 500,
+                textDecoration: 'underline',
                 p: 0,
                 minWidth: 'auto',
-                opacity: 0.6,
                 '&:hover': {
                   backgroundColor: 'transparent',
                   color: '#0F3C60',
@@ -488,7 +488,7 @@ const Discovery = () => {
               }}
               onClick={() => navigate('/signup-landing')}
             >
-              Discover Courses
+              discover courses
             </Button>
           </Typography>
 

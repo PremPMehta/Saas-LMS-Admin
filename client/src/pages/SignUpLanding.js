@@ -6,48 +6,56 @@ import 'swiper/css/navigation';
 import { EffectCards } from 'swiper/modules';
 import logo from "../assets/logo.png";
 import { Pagination, Navigation } from 'swiper/modules';
+import slider1 from '../assets/Sesiones-en-Vivo.jpg';
+import slider2 from '../assets/Real-World-Assets.jpg';
+import slider3 from '../assets/Podcast.jpg';
+import slider4 from '../assets/Avanzado.jpg';
+import slider5 from '../assets/Desarrollador-Web3.jpg';
+import slider6 from '../assets/Legal-Tech.jpg';
+import googleLogo from '../assets/google-logo.png';
+
 
 const sliderData = [
     {
         title: "Learn Modern Calligraphy",
         subtitle: "Calligraphy School",
         income: "$6,237/month",
-        img: "https://i.ibb.co/pvYc9xJK/9f3cf35ad08248eba953cc922e87e538.jpg",
+        img: slider1,
         people: ["Jordan", "Jillian"]
     },
     {
         title: "Cyber Security Course",
         subtitle: "Cyber School",
         income: "$8,450/month",
-        img: "https://i.ibb.co/pvYc9xJK/9f3cf35ad08248eba953cc922e87e538.jpg",
+        img: slider2,
         people: ["Alex", "Chris"]
     },
     {
         title: "Fitness Community",
         subtitle: "Health School",
         income: "$5,200/month",
-        img: "https://i.ibb.co/pvYc9xJK/9f3cf35ad08248eba953cc922e87e538.jpg",
+        img: slider3,
         people: ["Sam", "Taylor"]
     },
     {
         title: "Fitness Community",
         subtitle: "Health School",
         income: "$5,200/month",
-        img: "https://i.ibb.co/pvYc9xJK/9f3cf35ad08248eba953cc922e87e538.jpg",
+        img: slider4,
         people: ["Sam", "Taylor"]
     },
     {
         title: "Fitness Community",
         subtitle: "Health School",
         income: "$5,200/month",
-        img: "https://i.ibb.co/pvYc9xJK/9f3cf35ad08248eba953cc922e87e538.jpg",
+        img: slider5,
         people: ["Sam", "Taylor"]
     },
     {
         title: "Fitness Community",
         subtitle: "Health School",
         income: "$5,200/month",
-        img: "https://i.ibb.co/pvYc9xJK/9f3cf35ad08248eba953cc922e87e538.jpg",
+        img: slider6,
         people: ["Sam", "Taylor"]
     }
 ];
@@ -98,7 +106,7 @@ const SignUpLanding = () => {
     };
 
     return (
-        <Container maxWidth="md" sx={{ textAlign: "center", mt: 8 }}>
+        <Container maxWidth="md" sx={{ textAlign: "center", mt: 8, mb: 8 }}>
             {/* Logo */}
             <Box className="signup_logo" >
                 <img src={logo} alt="Logo" style={{ marginBottom: 20 }} />
@@ -118,7 +126,7 @@ const SignUpLanding = () => {
                     modules={[EffectCards, Pagination, Navigation]}
                     navigation={true}
                     autoplay={{
-                        delay: 1000, 
+                        delay: 1000,
                     }}
                     className="signup_cards_swiper">
                     {sliderData.map((item, index) => (
@@ -228,6 +236,37 @@ const SignUpLanding = () => {
                                     sx={{ mt: 1 }}
                                 >
                                     Sign Up
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    size="large"
+                                    fullWidth
+                                    sx={{
+                                        py: '8px',
+                                        fontSize: '14px',
+                                        textTransform: 'none',
+                                        borderRadius: '12px',
+                                        borderColor: '#dadce0',
+                                        color: '#3c4043',
+                                        backgroundColor: '#fff',
+                                        '&:hover': {
+                                            backgroundColor: '#f8f9fa',
+                                            borderColor: '#dadce0',
+                                        },
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1,
+                                    }}
+                                    startIcon={
+                                        <Box
+                                            component="img"
+                                            src={googleLogo}
+                                            alt="Google"
+                                            sx={{ width: 20, height: 20 }}
+                                        />
+                                    }
+                                >
+                                    Sign Up with Google
                                 </Button>
                                 <Typography
                                     variant="caption"
