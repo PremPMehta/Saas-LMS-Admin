@@ -28,7 +28,7 @@ import AddAcademyModal from '../components/dashboard/AddAcademyModal';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const DashboardOverview = () => {
-  useDocumentTitle('Dashboard Overview - Bell & Desk');
+  useDocumentTitle('Dashboard Overview - Bell n Desk');
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isPlansLoading, setIsPlansLoading] = useState(false);
@@ -313,7 +313,7 @@ const DashboardOverview = () => {
                   textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 }}
               >
-                Dashboard Overview
+                Bell n Desk - Dashboard Overview
               </Typography>
             </Box>
             <Typography 

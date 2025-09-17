@@ -31,7 +31,7 @@ import axios from 'axios';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserSignup = () => {
-  useDocumentTitle('Community User Signup - Bell & Desk');
+  useDocumentTitle('Community User Signup - Bell n Desk');
   console.log('CommunityUserSignup component rendered!');
 
   const navigate = useNavigate();
@@ -268,7 +268,7 @@ const CommunityUserSignup = () => {
                   onClick={() => navigate('/community-user-login')}
                   sx={{ textDecoration: 'none' }}
                 >
-                  Sign in here
+                  Login here
                 </Link>
               </Typography>
             </CardContent>
@@ -478,7 +478,7 @@ const CommunityUserSignup = () => {
                       onClick={() => navigate('/community-user-login')}
                       sx={{ textDecoration: 'none', color: '#020617', fontWeight: 600 }}
                     >
-                      Sign in here
+                      Login here
                     </Link>
                   </Typography>
                 </Box>

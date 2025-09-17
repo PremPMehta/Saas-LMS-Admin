@@ -36,7 +36,7 @@ import { getCommunityUrl } from '../utils/communityUrlUtils';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunitySetup = () => {
-  useDocumentTitle('Community Setup - Bell & Desk');
+  useDocumentTitle('Community Setup - Bell n Desk');
   console.log('CommunitySetup: Component is loading');
   const navigate = useNavigate();
   const location = useLocation();

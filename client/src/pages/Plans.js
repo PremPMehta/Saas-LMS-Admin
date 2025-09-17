@@ -24,7 +24,7 @@ import AddPlanModal from '../components/dashboard/AddPlanModal';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Plans = () => {
-  useDocumentTitle('Subscription Plans - Bell & Desk');
+  useDocumentTitle('Subscription Plans - Bell n Desk');
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -168,7 +168,7 @@ const Plans = () => {
                 textShadow: '0 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              Subscription Plans
+              Bell n Desk - Subscription Plans
             </Typography>
             <Typography
               variant="h6"

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -50,7 +51,8 @@ import axios from 'axios';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUsers = () => {
-  useDocumentTitle('Community Users - Bell & Desk');
+  useDocumentTitle('Community Users - Bell n Desk');
+  const { communityName } = useParams();
   const { mode } = useTheme();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const [darkMode, setDarkMode] = useState(false);
@@ -79,6 +81,7 @@ const CommunityUsers = () => {
 
   // Fetch users from backend
   const fetchUsers = async (page = 1, status = null, search = '') => {
+
     setIsLoading(true);
     try {
       const token = localStorage.getItem('communityToken');
@@ -279,7 +282,7 @@ const CommunityUsers = () => {
                     textShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   }}
                 >
-                  Community Users
+                  Bell n Desk - Community Users
                 </Typography>
                 <Typography
                   variant="h6"

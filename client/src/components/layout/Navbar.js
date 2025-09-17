@@ -185,8 +185,8 @@ const Navbar = () => {
             </IconButton>
           </Tooltip>
 
-          {/* Theme Toggle */}
-          <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`} arrow>
+          {/* Theme Toggle - HIDDEN */}
+          {/* <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`} arrow>
             <IconButton
               onClick={toggleTheme}
               sx={{
@@ -198,7 +198,7 @@ const Navbar = () => {
             >
               {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
 
           {/* User Menu */}
           <Tooltip title="Account settings" arrow>

@@ -9,6 +9,7 @@ import {
   ArrowBack as ArrowBackIcon,
   People as PeopleIcon,
   Menu as MenuIcon,
+  Info as InfoIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
@@ -80,7 +81,7 @@ const FocusedSidebar = ({ darkMode }) => {
         {(isMobile || !collapsed) && (
           <img
             src="/bell-desk-logo.png"
-            alt="Bell & Desk"
+            alt="Bell n Desk"
             style={{
               width: '130px',
               objectFit: 'contain',
@@ -118,7 +119,8 @@ const FocusedSidebar = ({ darkMode }) => {
           { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/student/courses` }
         ] : [
           { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/admin/courses` },
-          { icon: <PeopleIcon />, label: 'Community Users', path: `/${communityName}/admin/community-users` }
+          { icon: <PeopleIcon />, label: 'Community Users', path: `/${communityName}/admin/community-users` },
+          { icon: <InfoIcon />, label: 'About Us', path: `/${communityName}/admin/about-us` }
         ];
 
         return navItems.map((item, index) => {

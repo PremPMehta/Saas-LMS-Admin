@@ -23,9 +23,6 @@ import {
 import {
   Search as SearchIcon,
   People as PeopleIcon,
-  KeyboardArrowDown as KeyboardArrowDownIcon,
-  Business as BusinessIcon,
-  Person as PersonIcon,
   PlayArrow as PlayIcon,
   Description as DescriptionIcon,
   TextFields as TextIcon,
@@ -37,9 +34,9 @@ import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { courseApi } from '../utils/courseApi';
 import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
-import logo from '../assets/logo.png';
 import googleLogo from '../assets/google-logo.png';
 import useDocumentTitle from '../contexts/useDocumentTitle';
+import Newsletter from '../components/Newsletter';
 
 const communities = [
   {
@@ -142,7 +139,7 @@ const categories = [
 // Simple array of category names for search functionality
 const DISCOVERY_CATEGORIES = [
   'Education',
-  'Finance', 
+  'Finance',
   'Self-Improvement',
   'Health',
   'Sports',
@@ -166,22 +163,20 @@ const TARGET_AUDIENCES = [
 ];
 
 const Discovery = () => {
-  useDocumentTitle('Discover  - Bell & Desk');
+  useDocumentTitle('Discover  - Bell n Desk');
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
-  const [showUserSignIn, setShowUserSignIn] = useState(true);
   const [courses, setCourses] = useState([]);
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9);
-  
+
   // Modal state
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [hasScrolledTwoRows, setHasScrolledTwoRows] = useState(false);
@@ -217,17 +212,6 @@ const Discovery = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (loginDropdownOpen && !event.target.closest('[data-login-dropdown]')) {
-        setLoginDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [loginDropdownOpen]);
 
   // Scroll detection for modal
   useEffect(() => {
@@ -236,15 +220,15 @@ const Discovery = () => {
       if (coursesContainer) {
         const containerRect = coursesContainer.getBoundingClientRect();
         const containerTop = containerRect.top;
-        
+
         // Calculate if user has scrolled past 4-5 rows of courses (more content)
         // Assuming each row has 3 courses and each course card is ~400px tall
         const fourRowsHeight = 4 * 400; // 4 rows * 400px per row = 1600px
         const scrollThreshold = containerTop + fourRowsHeight;
-        
+
         // Also add a minimum scroll distance from top of page
         const minScrollFromTop = 1200; // User must scroll at least 1200px from top
-        
+
         if (window.scrollY > Math.max(scrollThreshold, minScrollFromTop) && !hasScrolledTwoRows) {
           setHasScrolledTwoRows(true);
           setShowLoginModal(true);
@@ -290,11 +274,21 @@ const Discovery = () => {
               contentType: course.contentType || 'video',
               subType: course.subType || null,
               chapters: course.chapters || [],
+              community: course.community || null, // Include community information
               createdAt: course.createdAt || new Date().toISOString(),
               updatedAt: course.updatedAt || new Date().toISOString()
             };
           });
 
+          // Debug community information
+          if (normalizedCourses.length > 0) {
+            console.log('🔍 Discovery Debug: First course community info:', {
+              community: normalizedCourses[0]?.community,
+              communityType: typeof normalizedCourses[0]?.community,
+              communityName: normalizedCourses[0]?.community?.name
+            });
+          }
+          
           setCourses(normalizedCourses);
           setFilteredCommunities(normalizedCourses);
         } else {
@@ -399,198 +393,36 @@ const Discovery = () => {
               width: { xs: '120px', sm: '160px', md: '200px', lg: '240px' },
               height: 'auto'
             }}>
-              <img src={logo} alt="Logo" style={{ width: '100%', height: 'auto' }} />
+              <img src="/bnd-dark.png" alt="Bell n Desk Logo" style={{ width: '100%', height: 'auto' }} />
             </Box>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <Box sx={{ position: 'relative' }} data-login-dropdown>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    setLoginDropdownOpen(!loginDropdownOpen);
-                    setShowUserSignIn(false);
-                  }}
-                  endIcon={<KeyboardArrowDownIcon sx={{
-                    transition: 'transform 0.2s ease',
-                    transform: loginDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  }} />}
-                  sx={{
-                    textTransform: 'none',
-                    borderRadius: '25px',
-                    px: { xs: 0.7, sm: 3, md: 4 }, // responsive horizontal padding
-                    py: { xs: 0.6, md: 1.5 },        // responsive vertical padding
-                    fontWeight: 600,
-                    fontSize: { xs: '0.7rem', sm: '0.9rem', md: '0.95rem', lg: '1rem' }, // font scales
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/login')}
+                sx={{
+                  textTransform: 'none',
+                  borderRadius: '25px',
+                  px: { xs: 0.7, sm: 3, md: 4 }, // responsive horizontal padding
+                  py: { xs: 0.6, md: 1.5 },        // responsive vertical padding
+                  fontWeight: 600,
+                  fontSize: { xs: '0.7rem', sm: '0.9rem', md: '0.95rem', lg: '1rem' }, // font scales
+                  borderColor: '#0F3C60',
+                  color: '#FFF',
+                  background: '#0F3C60',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
                     borderColor: '#0F3C60',
-                    color: '#FFF',
                     background: '#0F3C60',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: '#0F3C60',
-                      background: '#0F3C60',
-                      color: 'white',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
-                      '& .MuiSvgIcon-root': {
-                        color: 'white'
-                      }
-                    }
-                  }}
-                >
-                  LOG IN
-                </Button>
+                    color: 'white',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
+                  }
+                }}
+              >
+                LOG IN
+              </Button>
 
-                {loginDropdownOpen && (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: '100%',
-                      right: 0,
-                      mt: 1.5,
-                      bgcolor: 'white',
-                      borderRadius: 3,
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)',
-                      border: '1px solid rgba(0,0,0,0.08)',
-                      zIndex: 1000,
-                      minWidth: 240,
-                      overflow: 'hidden',
-                      backdropFilter: 'blur(10px)',
-                      animation: 'fadeInScale 0.2s ease-out',
-                      '@keyframes fadeInScale': {
-                        '0%': {
-                          opacity: 0,
-                          transform: 'translateY(-8px) scale(0.95)'
-                        },
-                        '100%': {
-                          opacity: 1,
-                          transform: 'translateY(0) scale(1)'
-                        }
-                      }
-                    }}
-                  >
-                    <Button
-                      fullWidth
-                      onClick={() => {
-                        navigate('/community-login');
-                        setLoginDropdownOpen(false);
-                      }}
-                      sx={{
-                        textTransform: 'none',
-                        justifyContent: 'flex-start',
-                        px: 1.5,
-                        py: 1.5,
-                        borderRadius: 0,
-                        color: '#0F3C60',
-                        fontWeight: 500,
-                        fontSize: '0.95rem',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          bgcolor: 'hsla(207, 73%, 22%, 0.20)',
-                          color: '#0F3C60',
-                          transform: 'translateX(4px)',
-                          '& .MuiSvgIcon-root': {
-                            color: '#0F3C60'
-                          }
-                        }
-                      }}
-                    >
-                      <BusinessIcon sx={{
-                        mr: 1,
-                        fontSize: 22,
-                        color: '#0F3C60',
-                        transition: 'color 0.2s ease'
-                      }} />
-                      Login as Community
-                    </Button>
-
-                    <Box sx={{
-                      height: '1px',
-                      background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
-                      mx: 2
-                    }} />
-
-                    <Button
-                      fullWidth
-                      onClick={() => {
-                        navigate('/community-user-login');
-                        setLoginDropdownOpen(false);
-                      }}
-                      sx={{
-                        textTransform: 'none',
-                        justifyContent: 'flex-start',
-                        px: 1.5,
-                        py: 1.5,
-                        borderRadius: 0,
-                        color: '#0F3C60',
-                        fontWeight: 500,
-                        fontSize: '0.95rem',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          bgcolor: 'hsla(207, 73%, 22%, 0.20)',
-                          color: '#0F3C60',
-                          transform: 'translateX(4px)',
-                          '& .MuiSvgIcon-root': {
-                            color: '#0F3C60'
-                          }
-                        }
-                      }}
-                    >
-                      <PersonIcon sx={{
-                        mr: 1,
-                        fontSize: 22,
-                        color: '#0F3C60',
-                        transition: 'color 0.2s ease'
-
-                      }} />
-                      Login as Community User
-                    </Button>
-
-                    {showUserSignIn && (
-                      <>
-                        <Box sx={{
-                          height: '1px',
-                          background: 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
-                          mx: 2
-                        }} />
-                        <Button
-                          fullWidth
-                          onClick={() => {
-                            navigate('/login');
-                            setLoginDropdownOpen(false);
-                          }}
-                          sx={{
-                            textTransform: 'none',
-                            justifyContent: 'flex-start',
-                            px: 3,
-                            py: 2.5,
-                            borderRadius: 0,
-                            color: '#2c3e50',
-                            fontWeight: 500,
-                            fontSize: '0.95rem',
-                            transition: 'all 0.2s ease',
-                            '&:hover': {
-                              bgcolor: '#0F3C60',
-                              color: 'white',
-                              transform: 'translateX(4px)',
-                              '& .MuiSvgIcon-root': {
-                                color: 'white'
-                              }
-                            }
-                          }}
-                        >
-                          <PersonIcon sx={{
-                            mr: 2.5,
-                            fontSize: 22,
-                            color: '#4facfe',
-                            transition: 'color 0.2s ease'
-                          }} />
-                          Sign in as User
-                        </Button>
-                      </>
-                    )}
-                  </Box>
-                )}
-              </Box>
 
             </Box>
           </Box>
@@ -600,21 +432,46 @@ const Discovery = () => {
       {/* Hero Section */}
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography
-            variant="h2"
+          {/* Bell & Desk Logo */}
+          <Box sx={{ mb: 3 }}>
+            <img
+              src="/bnd-dark.png"
+              alt="Bell & Desk"
+              style={{
+                height: '80px',
+                width: 'auto',
+                maxWidth: '300px',
+                objectFit: 'contain'
+              }}
+            />
+          </Box>
+
+          <Box
+
             sx={{
-              fontWeight: 'bold',
-              mb: 2,
-              fontSize: { xs: '2rem', md: '3rem' }
+              display: 'inline-block',
+              '&:hover': {
+                color: '#0F3C60',
+              }
             }}
           >
-            Discover courses
-          </Typography>
+            <Typography
+
+              variant="h2"
+              sx={{
+                fontWeight: 'bold',
+                mb: 2,
+                fontSize: { xs: '2rem', md: '3rem' }
+              }}
+            >
+              Bell & Desk - Discover courses
+            </Typography>
+          </Box>
+
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
             or{' '}
             <Button
               variant="text"
-              disabled
               sx={{
                 color: '#0F3C60',
                 textTransform: 'none',
@@ -623,15 +480,15 @@ const Discovery = () => {
                 p: 0,
                 minWidth: 'auto',
                 opacity: 0.6,
-                cursor: 'not-allowed',
                 '&:hover': {
                   backgroundColor: 'transparent',
                   color: '#0F3C60',
                   textDecoration: 'none'
                 }
               }}
+              onClick={() => navigate('/signup-landing')}
             >
-              Create Your Own Community
+              Discover Courses
             </Button>
           </Typography>
 
@@ -675,7 +532,7 @@ const Discovery = () => {
               disabled={categoryScrollPosition === 0}
               sx={{
                 position: 'absolute',
-                left: { xs: 0, sm: -40, md: -50 }, // shifts in for small screens
+                left: { xs: 0, sm: -20, md: -50 }, // shifts in for small screens
                 top: '50%',
                 transform: 'translateY(-50%)',
                 minWidth: { xs: 30, sm: 35, md: 40 }, // smaller on mobile
@@ -697,7 +554,7 @@ const Discovery = () => {
               onClick={() => scrollCategories('right')}
               sx={{
                 position: 'absolute',
-                right: { xs: 0, sm: -40, md: -50 }, // closer on smaller screens
+                right: { xs: 0, sm: -20, md: -50 }, // closer on smaller screens
                 top: '50%',
                 transform: 'translateY(-50%)',
                 minWidth: { xs: 30, sm: 35, md: 40 }, // scale with screen size
@@ -775,7 +632,7 @@ const Discovery = () => {
                 md: 'repeat(3, 1fr)',   // 3 columns on medium and up
               },
               gap: { xs: 2, sm: 2.5, md: 3 }, // adjust spacing per screen size
-              maxWidth: '1400px',
+               
               mx: 'auto',
               alignItems: 'start' // cards align at the top
             }}
@@ -967,6 +824,30 @@ const Discovery = () => {
                     </Typography>
                   </Box>
 
+                  {/* Community Name */}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: '#1976d2',
+                      mb: 1,
+                      fontSize: '0.85rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      textDecoration: 'none',
+                      '&:hover': {
+                        textDecoration: 'underline'
+                      }
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const communityName = community.community?.name || 'Default Community';
+                      const communitySlug = communityName.toLowerCase().replace(/\s+/g, '-');
+                      navigate(`/${communitySlug}/about`);
+                    }}
+                  >
+                    {community.community?.name || 'Default Community'}
+                  </Typography>
+
                   {/* Description Section - Flexible */}
                   <Box sx={{
                     mb: 2,
@@ -1146,10 +1027,18 @@ const Discovery = () => {
           </Box>
         )}
 
+        {/* Newsletter Subscription UI */}
+        {!loading && !error && filteredCommunities.length > 0 && (
+           <Newsletter/>
+        )}
+
         {/* Footer with Pagination, Results Summary, and Navigation */}
         {!loading && !error && filteredCommunities.length > 0 && (
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 2, md: 0 },
             justifyContent: 'space-between',
             alignItems: 'center',
             mt: 4,
@@ -1192,9 +1081,9 @@ const Discovery = () => {
             )}
 
             {/* Center - Results Summary */}
-            <Typography 
-              variant="body2" 
-              sx={{ 
+            <Typography
+              variant="body2"
+              sx={{
                 color: '#6c757d',
                 fontSize: '0.9rem',
                 fontWeight: 500,
@@ -1206,14 +1095,14 @@ const Discovery = () => {
             </Typography>
 
             {/* Right side - Navigation Links */}
-            <Box sx={{ 
-              display: 'flex', 
+            <Box sx={{
+              display: 'flex',
               gap: 3,
               alignItems: 'center'
             }}>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1223,9 +1112,9 @@ const Discovery = () => {
               >
                 Community
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1235,9 +1124,9 @@ const Discovery = () => {
               >
                 Affiliates
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1247,9 +1136,9 @@ const Discovery = () => {
               >
                 Support
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1290,16 +1179,16 @@ const Discovery = () => {
           }
         }}
       >
-        <DialogTitle sx={{ textAlign: 'center', pb: 2 }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: '#0F3C60' }}>
-            Join Our Community! 🚀
+        <DialogTitle sx={{ textAlign: 'center', pb: 3, px: 0, pt: 0 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F3C60' }}>
+            Join Our Community!
           </Typography>
           <Typography variant="body2" sx={{ color: '#6c757d', mt: 1 }}>
             Sign up to access exclusive courses and connect with like-minded learners
           </Typography>
         </DialogTitle>
-        
-        <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+
+        <DialogContent sx={{ textAlign: 'center', p: 0 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               variant="contained"
@@ -1322,7 +1211,7 @@ const Discovery = () => {
             >
               Sign Up Now
             </Button>
-            
+
             <Button
               variant="outlined"
               onClick={() => {
@@ -1343,7 +1232,7 @@ const Discovery = () => {
                 }
               }}
             >
-              Already have an account? Log In
+              Already have an account? Login
             </Button>
 
             {/* Divider */}
@@ -1355,7 +1244,7 @@ const Discovery = () => {
               <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
             </Box>
 
-            {/* Google Sign In Button */}
+            {/* Google Login Button */}
             <Button
               variant="outlined"
               size="large"
@@ -1385,12 +1274,12 @@ const Discovery = () => {
                 />
               }
             >
-              Sign in with Google
+              Login with Google
             </Button>
           </Box>
         </DialogContent>
-        
-        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+
+        <DialogActions sx={{ justifyContent: 'center', pb: 0 }}>
           <Button
             onClick={() => setShowLoginModal(false)}
             sx={{

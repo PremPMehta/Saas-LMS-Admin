@@ -53,7 +53,7 @@ const countryCodes = [
 ];
 
 const Profile = () => {
-  useDocumentTitle('My Profile - Bell & Desk');
+  useDocumentTitle('My Profile - Bell n Desk');
   const location = useLocation();
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);

@@ -42,7 +42,7 @@ import { useNavigate } from 'react-router-dom';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Settings = () => {
-  useDocumentTitle('Settings - Bell & Desk');
+  useDocumentTitle('Settings - Bell n Desk');
   const { mode } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -470,7 +470,7 @@ const Settings = () => {
                 textShadow: '0 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              System Settings
+              Bell n Desk - System Settings
             </Typography>
             <Typography
               variant="h6"

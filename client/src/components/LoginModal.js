@@ -405,7 +405,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
         disabled={isLoading}
         sx={{ mb: 2 }}
       >
-        {isLoading ? <CircularProgress size={24} /> : (isSignup ? 'Sign Up' : 'Log In')}
+        {isLoading ? <CircularProgress size={24} /> : (isSignup ? 'Sign Up' : 'Login')}
       </Button>
 
       <Box sx={{ textAlign: 'center' }}>
@@ -414,7 +414,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
           onClick={() => setIsSignup(!isSignup)}
           sx={{ textTransform: 'none' }}
         >
-          {isSignup ? 'Already have an account? Log In' : "Don't have an account? Sign Up"}
+          {isSignup ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
         </Button>
       </Box>
     </Box>
@@ -528,7 +528,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
         disabled={isLoading}
         sx={{ mb: 2 }}
       >
-        {isLoading ? <CircularProgress size={24} /> : (isSignup ? 'Create Community' : 'Log In')}
+        {isLoading ? <CircularProgress size={24} /> : (isSignup ? 'Create Community' : 'Login')}
       </Button>
 
       <Box sx={{ textAlign: 'center' }}>
@@ -537,7 +537,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
           onClick={() => setIsSignup(!isSignup)}
           sx={{ textTransform: 'none' }}
         >
-          {isSignup ? 'Already have a community? Log In' : "Don't have a community? Create One"}
+          {isSignup ? 'Already have a community? Login' : "Don't have a community? Create One"}
         </Button>
       </Box>
     </Box>

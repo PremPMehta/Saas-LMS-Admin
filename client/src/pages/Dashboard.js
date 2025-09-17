@@ -31,7 +31,7 @@ import useDocumentTitle from '../contexts/useDocumentTitle';
 axios.defaults.baseURL = API_BASE_URL;
 
 const Dashboard = () => {
-  useDocumentTitle('Dashboard - Bell & Desk');
+  useDocumentTitle('Dashboard - Bell n Desk');
   const { mode } = useTheme();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

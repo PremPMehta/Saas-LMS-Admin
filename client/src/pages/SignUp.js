@@ -33,7 +33,7 @@ import { apiUrl } from '../config/api';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const SignUp = () => {
-  useDocumentTitle('Sign Up - Bell & Desk');
+  useDocumentTitle('Sign Up - Bell n Desk');
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -403,7 +403,7 @@ const SignUp = () => {
                     },
                   }}
                 >
-                  Sign in here
+                  Login here
                 </Link>
               </Typography>
             </Box>
@@ -422,7 +422,7 @@ const SignUp = () => {
                     },
                   }}
                 >
-                  Sign in as Community
+                  Login as Community
                 </Link>
               </Typography>
             </Box>

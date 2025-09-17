@@ -70,7 +70,7 @@ import {
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityAdmins = () => {
-  useDocumentTitle('Community Admins - Bell & Desk');
+  useDocumentTitle('Community Admins - Bell n Desk');
   const navigate = useNavigate();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const [darkMode, setDarkMode] = useState(false);

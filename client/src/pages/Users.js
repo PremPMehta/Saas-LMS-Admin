@@ -23,7 +23,7 @@ import KPICard from '../components/dashboard/KPICard';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const Users = () => {
-  useDocumentTitle('Users - Bell & Desk');
+  useDocumentTitle('Users - Bell n Desk');
   const { mode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -139,7 +139,7 @@ const Users = () => {
                 textShadow: '0 2px 4px rgba(0,0,0,0.1)',
               }}
             >
-              Users
+              Bell n Desk - Users
             </Typography>
             <Typography
               variant="h6"
