@@ -93,8 +93,14 @@ const Courses = () => {
   const communityUrls = communityName ? getCommunityUrls(communityName) : null;
 
   // Check if user is a community user (student) or admin
-  const communityUserData = localStorage.getItem('communityUserData');
-  const isCommunityUser = !!communityUserData;
+  const communityUserData = localStorage.getItem('communityUser');
+  const communityUserToken = localStorage.getItem('communityUserToken');
+  const authToken = localStorage.getItem('authToken');
+  const authUser = localStorage.getItem('user');
+  
+  // Determine user type based on available tokens and data
+  const isCommunityUser = !!(communityUserData && communityUserToken);
+  const isAdmin = !!(authToken && authUser);
 
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
