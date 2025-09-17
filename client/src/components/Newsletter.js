@@ -5,9 +5,15 @@ import {
   TextField,
   Button,
   Grid,
+  Container
 } from "@mui/material";
 
 export default function Newsletter() {
+  const stats = [
+    { value: "15,000+", label: "Creators" },
+    { value: "$50M+", label: "Earned" },
+    { value: "98%", label: "Success Rate" },
+  ];
   return (
     <Box
       sx={{
@@ -26,37 +32,41 @@ export default function Newsletter() {
             variant="subtitle2"
             sx={{ color: "#0F3C60", fontWeight: "bold", mb: 1 }}
           >
-            OUR NEWSLETTER
+            Bell N Desk
           </Typography>
           <Typography
             variant="h4"
             sx={{ fontWeight: "bold", mb: 2 }}
           >
-            Stay updated with our <br/> weekly newsletter
+            Turn Your Knowledge Into <br/> Recurring Revenue
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{mb: 2 }}
+          >
+            Build. Teach. Earn. Repeat.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Why kept very ever home mrs. Considered sympathize ten 
-            uncommonly occasional assistance <br/> sufficient not. Letter of on
-            become he tended active enable to.
+            Join thousands of creators making $10k+ per month with their online courses. No tech skills needed. <br /> Just bring your expertise, we'll handle the rest.
           </Typography>
         </Grid>
 
         {/* Right Side */}
         <Grid item size={{ xs: 12, md: 4, lg: 4 }}>
           <Box>
-            <Typography
+            {/* <Typography
               variant="subtitle1"
               sx={{ color: "#0F3C60", fontWeight: "bold", mb: 2 }}
             >
               Signup For Newsletter
-            </Typography>
-            <TextField
+            </Typography> */}
+            {/* <TextField
               fullWidth
               label="Email Address"
               variant="outlined"
               size="small"
               sx={{ mb: 2, bgcolor: "white", borderRadius: "6px" }}
-            />
+            /> */}
             {/* <TextField
               fullWidth
               label="Password"
@@ -65,6 +75,32 @@ export default function Newsletter() {
               size="small"
               sx={{ mb: 2, bgcolor: "white", borderRadius: "6px" }}
             /> */}
+            <Box
+                sx={{
+                  color: "#0F3C60",
+                  textAlign: "center",
+                  mb: 3,
+                }}
+              >
+                <Grid container spacing={4} justifyContent="center">
+                  {stats.map((item, index) => (
+                    <Grid item xs={12} sm={4} key={index}>
+                      <Box sx={{ display: "flex" , flexDirection: "column", alignItems: "center" , borderRight: 2, borderColor: 'divider', pr:2, lastChild: { borderRight: 'none !important' } }}>
+                        <Typography
+                          variant="h5"
+                          component="div"
+                          sx={{ fontWeight: "bold" }}
+                        >
+                          {item.value}
+                        </Typography>
+                        <Typography variant="subtitle1" sx={{ opacity: 0.85 }}>
+                          {item.label}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
             <Button
               variant="contained"
               fullWidth
@@ -75,7 +111,7 @@ export default function Newsletter() {
                 py: 1,
               }}
             >
-              GET STARTED
+              🚀 Start Free Trial
             </Button>
           </Box>
         </Grid>

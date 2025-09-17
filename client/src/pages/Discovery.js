@@ -1098,7 +1098,8 @@ const Discovery = () => {
             <Box sx={{
               display: 'flex',
               gap: 3,
-              alignItems: 'center'
+              alignItems: 'center',
+              flexWrap: 'wrap',
             }}>
               <Typography
                 variant="body2"
