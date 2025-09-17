@@ -225,6 +225,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <SchoolIcon />
+            Access Course
           </Typography>
           <CloseIcon 
             onClick={onClose}
