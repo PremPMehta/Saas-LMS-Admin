@@ -352,9 +352,6 @@ const UnifiedLogin = () => {
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   Unified Login Portal
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Login as Community Admin or Student
-                </Typography>
               </Box>
 
               {/* Success Message */}
