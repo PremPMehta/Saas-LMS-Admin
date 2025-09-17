@@ -1199,7 +1199,7 @@ const Discovery = () => {
                 }
               }}
             >
-              Already have an account? Log In
+              Already have an account? Login
             </Button>
 
             {/* Divider */}
@@ -1211,7 +1211,7 @@ const Discovery = () => {
               <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
             </Box>
 
-            {/* Google Sign In Button */}
+            {/* Google Login Button */}
             <Button
               variant="outlined"
               size="large"
@@ -1241,7 +1241,7 @@ const Discovery = () => {
                 />
               }
             >
-              Sign in with Google
+              Login with Google
             </Button>
           </Box>
         </DialogContent>

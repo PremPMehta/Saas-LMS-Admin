@@ -337,7 +337,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
             {isLoading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              'Sign In'
+              'Login'
             )}
           </Button>
 

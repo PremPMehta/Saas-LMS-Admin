@@ -403,7 +403,7 @@ const SignUp = () => {
                     },
                   }}
                 >
-                  Sign in here
+                  Login here
                 </Link>
               </Typography>
             </Box>
@@ -422,7 +422,7 @@ const SignUp = () => {
                     },
                   }}
                 >
-                  Sign in as Community
+                  Login as Community
                 </Link>
               </Typography>
             </Box>

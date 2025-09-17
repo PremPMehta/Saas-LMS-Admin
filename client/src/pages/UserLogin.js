@@ -145,7 +145,7 @@ const UserLogin = () => {
               User Login
             </Typography>
             <Typography variant="body1" sx={{ opacity: 0.9 }}>
-              {courseId ? `Sign in to access "${courseTitle}"` : 'Sign in to access courses'}
+              {courseId ? `Login to access "${courseTitle}"` : 'Login to access courses'}
             </Typography>
           </Box>
 
@@ -234,7 +234,7 @@ const UserLogin = () => {
                 {isLoading ? (
                   <CircularProgress size={24} color="inherit" />
                 ) : (
-                  'Sign In'
+                  'Login'
                 )}
               </Button>
             </Box>
@@ -291,7 +291,7 @@ const UserLogin = () => {
                     },
                   }}
                 >
-                  Sign in as Community
+                  Login as Community
                 </Link>
               </Typography>
             </Box>

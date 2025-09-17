@@ -197,7 +197,7 @@ const CommunityLogin = () => {
                     {isLoading ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
-                      'Sign In'
+                      'Login'
                     )}
                   </Button>
                 </Box>
@@ -211,7 +211,7 @@ const CommunityLogin = () => {
                   <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
                 </Box>
 
-                {/* Google Sign In Button */}
+                {/* Google Login Button */}
                 <Button
                   variant="outlined"
                   size="large"
@@ -241,7 +241,7 @@ const CommunityLogin = () => {
                     />
                   }
                 >
-                  Sign in with Google
+                  Login with Google
                 </Button>
 
                 <Box sx={{ mt: 3, }}>

@@ -268,7 +268,7 @@ const CommunityUserLogin = () => {
                     Bell and Desk User Login
                   </Typography>
                   <Typography variant="body1" sx={{ color: '#666' }}>
-                    Sign in to access your community dashboard
+                    Login to access your community dashboard
                   </Typography>
                 </Box>
 
@@ -341,7 +341,7 @@ const CommunityUserLogin = () => {
                       },
                     }}
                   >
-                    {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+                    {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
                   </Button>
 
                   {/* Divider */}
@@ -353,7 +353,7 @@ const CommunityUserLogin = () => {
                     <Box sx={{ flex: 1, height: '1px', bgcolor: '#e0e0e0' }} />
                   </Box>
 
-                  {/* Google Sign In Button */}
+                  {/* Google Login Button */}
                   <Button
                     variant="outlined"
                     size="large"
@@ -383,7 +383,7 @@ const CommunityUserLogin = () => {
                       />
                     }
                   >
-                    Sign in with Google
+                    Login with Google
                   </Button>
 
                 </Box>

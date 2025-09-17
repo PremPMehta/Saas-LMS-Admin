@@ -311,7 +311,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
           <ListItemIcon>
             <LogoutIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Sign Out</ListItemText>
+          <ListItemText>Logout</ListItemText>
         </MenuItem>
       </Menu>
     </Box>

@@ -353,7 +353,7 @@ const UnifiedLogin = () => {
                   Unified Login Portal
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Sign in as Community Admin or Student
+                  Login as Community Admin or Student
                 </Typography>
               </Box>
 
@@ -450,7 +450,7 @@ const UnifiedLogin = () => {
                   {isLoading ? (
                     <CircularProgress size={24} color="inherit" />
                   ) : (
-                    'Sign In'
+                    'Login'
                   )}
                 </Button>
 

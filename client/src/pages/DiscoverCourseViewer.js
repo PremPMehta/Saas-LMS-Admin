@@ -638,7 +638,7 @@ const DiscoverCourseViewer = () => {
               <Chip label={selectedEpisode?.duration} size="small" variant="outlined" color="secondary" />
             </Box>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              Sign up or log in to access this episode and unlock all premium content!
+              Sign up or login to access this episode and unlock all premium content!
             </Typography>
             
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 3 }}>
@@ -665,7 +665,7 @@ const DiscoverCourseViewer = () => {
                 onClick={() => handleLoginRedirect('community')}
                 sx={{ py: 1.5 }}
               >
-                Sign In as Community Admin
+                Login as Community Admin
               </Button>
             </Box>
           </Box>

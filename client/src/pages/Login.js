@@ -322,7 +322,7 @@ const Login = () => {
               textAlign: { xs: 'center', lg: 'left' },
             }}
           >
-            Admin Sign In
+            Admin Login
           </Typography>
 
           <Typography
