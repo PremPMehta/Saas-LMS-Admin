@@ -175,7 +175,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             color: darkMode ? '#b0b0b0' : '#666666',
             lineHeight: 1.2
           }}>
-            {isCommunityUser ? 'Student' : (communityData?.ownerEmail || 'Admin')}
+            {isCommunityUser ? 'Student' : 'Admin'}
           </Box>
         </Box>
         
