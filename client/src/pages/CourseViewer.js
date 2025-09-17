@@ -50,7 +50,7 @@ import {
   Refresh as RefreshIcon,
   Fullscreen as FullscreenIcon
 } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
@@ -64,6 +64,7 @@ const CourseViewer = () => {
   const theme = useTheme();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const navigate = useNavigate();
+  const location = useLocation();
   const { courseId, communityName } = useParams();
 
   // Get community-specific URLs
@@ -868,7 +869,15 @@ const CourseViewer = () => {
             <Box sx={{ pb: 2 }}>
               <Button
                 startIcon={<ArrowBackIcon />}
-                onClick={() => navigate(`/${communityName}/admin/courses`)}
+                onClick={() => {
+                  // Determine if user is student or admin based on URL path
+                  const isStudentPath = location.pathname.includes('/student/');
+                  const backUrl = isStudentPath 
+                    ? `/${communityName}/student/courses`
+                    : `/${communityName}/admin/courses`;
+                  console.log('CourseViewer back button - isStudentPath:', isStudentPath, 'backUrl:', backUrl);
+                  navigate(backUrl);
+                }}
                 sx={{
                   textTransform: 'none',
                   color: darkMode ? '#fff' : '#0F3C60',
