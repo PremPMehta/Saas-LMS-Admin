@@ -9,11 +9,6 @@ import {
 } from "@mui/material";
 
 export default function Newsletter() {
-  const stats = [
-    { value: "15,000+", label: "Creators" },
-    { value: "$50M+", label: "Earned" },
-    { value: "98%", label: "Success Rate" },
-  ];
   return (
     <Box
       sx={{
@@ -75,32 +70,6 @@ export default function Newsletter() {
               size="small"
               sx={{ mb: 2, bgcolor: "white", borderRadius: "6px" }}
             /> */}
-            <Box
-                sx={{
-                  color: "#0F3C60",
-                  textAlign: "center",
-                  mb: 3,
-                }}
-              >
-                <Grid container spacing={4} justifyContent="center">
-                  {stats.map((item, index) => (
-                    <Grid item xs={12} sm={4} key={index}>
-                      <Box sx={{ display: "flex" , flexDirection: "column", alignItems: "center" , borderRight: 2, borderColor: 'divider', pr:2, lastChild: { borderRight: 'none !important' } }}>
-                        <Typography
-                          variant="h5"
-                          component="div"
-                          sx={{ fontWeight: "bold" }}
-                        >
-                          {item.value}
-                        </Typography>
-                        <Typography variant="subtitle1" sx={{ opacity: 0.85 }}>
-                          {item.label}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
             <Button
               variant="contained"
               fullWidth
