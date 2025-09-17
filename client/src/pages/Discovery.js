@@ -141,7 +141,7 @@ const categories = [
 // Simple array of category names for search functionality
 const DISCOVERY_CATEGORIES = [
   'Education',
-  'Finance', 
+  'Finance',
   'Self-Improvement',
   'Health',
   'Sports',
@@ -176,11 +176,11 @@ const Discovery = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9);
-  
+
   // Modal state
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [hasScrolledTwoRows, setHasScrolledTwoRows] = useState(false);
@@ -235,15 +235,15 @@ const Discovery = () => {
       if (coursesContainer) {
         const containerRect = coursesContainer.getBoundingClientRect();
         const containerTop = containerRect.top;
-        
+
         // Calculate if user has scrolled past 4-5 rows of courses (more content)
         // Assuming each row has 3 courses and each course card is ~400px tall
         const fourRowsHeight = 4 * 400; // 4 rows * 400px per row = 1600px
         const scrollThreshold = containerTop + fourRowsHeight;
-        
+
         // Also add a minimum scroll distance from top of page
         const minScrollFromTop = 1200; // User must scroll at least 1200px from top
-        
+
         if (window.scrollY > Math.max(scrollThreshold, minScrollFromTop) && !hasScrolledTwoRows) {
           setHasScrolledTwoRows(true);
           setShowLoginModal(true);
@@ -601,33 +601,44 @@ const Discovery = () => {
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           {/* Bell & Desk Logo */}
           <Box sx={{ mb: 3 }}>
-            <img 
-              src="/bnd-dark.png" 
-              alt="Bell & Desk" 
-              style={{ 
-                height: '80px', 
+            <img
+              src="/bnd-dark.png"
+              alt="Bell & Desk"
+              style={{
+                height: '80px',
                 width: 'auto',
                 maxWidth: '300px',
                 objectFit: 'contain'
               }}
             />
           </Box>
-          
-          <Typography
-            variant="h2"
+
+          <Box
+
             sx={{
-              fontWeight: 'bold',
-              mb: 2,
-              fontSize: { xs: '2rem', md: '3rem' }
+              display: 'inline-block',
+              '&:hover': {
+                color: '#0F3C60',
+              }
             }}
           >
-            Bell & Desk - Discover courses
-          </Typography>
+            <Typography
+
+              variant="h2"
+              sx={{
+                fontWeight: 'bold',
+                mb: 2,
+                fontSize: { xs: '2rem', md: '3rem' }
+              }}
+            >
+              Bell & Desk - Discover courses
+            </Typography>
+          </Box>
+
           <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
             or{' '}
             <Button
               variant="text"
-              disabled
               sx={{
                 color: '#0F3C60',
                 textTransform: 'none',
@@ -636,13 +647,13 @@ const Discovery = () => {
                 p: 0,
                 minWidth: 'auto',
                 opacity: 0.6,
-                cursor: 'not-allowed',
                 '&:hover': {
                   backgroundColor: 'transparent',
                   color: '#0F3C60',
                   textDecoration: 'none'
                 }
               }}
+              onClick={() => navigate('/signup-landing')}
             >
               Create Your Own Community
             </Button>
@@ -688,7 +699,7 @@ const Discovery = () => {
               disabled={categoryScrollPosition === 0}
               sx={{
                 position: 'absolute',
-                left: { xs: 0, sm: -40, md: -50 }, // shifts in for small screens
+                left: { xs: 0, sm: -20, md: -50 }, // shifts in for small screens
                 top: '50%',
                 transform: 'translateY(-50%)',
                 minWidth: { xs: 30, sm: 35, md: 40 }, // smaller on mobile
@@ -710,7 +721,7 @@ const Discovery = () => {
               onClick={() => scrollCategories('right')}
               sx={{
                 position: 'absolute',
-                right: { xs: 0, sm: -40, md: -50 }, // closer on smaller screens
+                right: { xs: 0, sm: -20, md: -50 }, // closer on smaller screens
                 top: '50%',
                 transform: 'translateY(-50%)',
                 minWidth: { xs: 30, sm: 35, md: 40 }, // scale with screen size
@@ -788,7 +799,7 @@ const Discovery = () => {
                 md: 'repeat(3, 1fr)',   // 3 columns on medium and up
               },
               gap: { xs: 2, sm: 2.5, md: 3 }, // adjust spacing per screen size
-              maxWidth: '1400px',
+               
               mx: 'auto',
               alignItems: 'start' // cards align at the top
             }}
@@ -1159,10 +1170,87 @@ const Discovery = () => {
           </Box>
         )}
 
+        {/* Newsletter Subscription UI */}
+        {!loading && !error && filteredCommunities.length > 0 && (
+          <Box sx={{
+            
+            mx: 'auto',
+            mb: 4,
+            px: 3,
+            py: 3,
+            borderRadius: 3,
+            background: '#fff',
+            boxShadow: '0 4px 24px rgba(15,60,96,0.08)',
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center',
+            gap: 3,
+          }}>
+            <Box sx={{ flex: 1, textAlign: { xs: 'center', sm: 'left' } }}>
+              <Typography variant="h6" sx={{  fontWeight: 700 }}>
+               Stay in the loop!
+              </Typography>
+              <Typography variant="body2" sx={{   mt: 0.5 }}>
+                Subscribe to our newsletter for the latest courses, tips, and community updates.
+              </Typography>
+            </Box>
+            <Box
+              component="form"
+              sx={{
+                display: 'flex',
+                gap: 1,
+                alignItems: 'center',
+                flex: 1,
+                justifyContent: { xs: 'center', sm: 'flex-end' }
+              }}
+              onSubmit={e => {
+                e.preventDefault();
+                // You can add newsletter submit logic here
+              }}
+            >
+              <TextField
+                size="small"
+                placeholder="Your email address"
+                variant="outlined"
+                sx={{
+                  bgcolor: '#fff',
+                  borderRadius: 2,
+                  minWidth: 180,
+                  '& .MuiOutlinedInput-root': {
+                    color: '#0F3C60',
+                  }
+                }}
+                type="email"
+                required
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  bgcolor: '#34a853',
+                  color: '#fff',
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  px: 3,
+                  boxShadow: '0 2px 8px rgba(52,168,83,0.12)',
+                  '&:hover': {
+                    bgcolor: '#2e7d32',
+                  }
+                }}
+              >
+                Subscribe
+              </Button>
+            </Box>
+          </Box>
+        )}
+
         {/* Footer with Pagination, Results Summary, and Navigation */}
         {!loading && !error && filteredCommunities.length > 0 && (
-          <Box sx={{ 
-            display: 'flex', 
+          <Box sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 2, md: 0 },
             justifyContent: 'space-between',
             alignItems: 'center',
             mt: 4,
@@ -1205,9 +1293,9 @@ const Discovery = () => {
             )}
 
             {/* Center - Results Summary */}
-            <Typography 
-              variant="body2" 
-              sx={{ 
+            <Typography
+              variant="body2"
+              sx={{
                 color: '#6c757d',
                 fontSize: '0.9rem',
                 fontWeight: 500,
@@ -1219,14 +1307,14 @@ const Discovery = () => {
             </Typography>
 
             {/* Right side - Navigation Links */}
-            <Box sx={{ 
-              display: 'flex', 
+            <Box sx={{
+              display: 'flex',
               gap: 3,
               alignItems: 'center'
             }}>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1236,9 +1324,9 @@ const Discovery = () => {
               >
                 Community
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1248,9 +1336,9 @@ const Discovery = () => {
               >
                 Affiliates
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1260,9 +1348,9 @@ const Discovery = () => {
               >
                 Support
               </Typography>
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#6c757d',
                   cursor: 'pointer',
                   fontSize: '0.9rem',
@@ -1303,16 +1391,16 @@ const Discovery = () => {
           }
         }}
       >
-        <DialogTitle sx={{ textAlign: 'center', pb: 2 }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: '#0F3C60' }}>
-            Join Our Community! 🚀
+        <DialogTitle sx={{ textAlign: 'center', pb: 3, px: 0, pt: 0 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#0F3C60' }}>
+            Join Our Community!
           </Typography>
           <Typography variant="body2" sx={{ color: '#6c757d', mt: 1 }}>
             Sign up to access exclusive courses and connect with like-minded learners
           </Typography>
         </DialogTitle>
-        
-        <DialogContent sx={{ textAlign: 'center', py: 3 }}>
+
+        <DialogContent sx={{ textAlign: 'center', p: 0 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Button
               variant="contained"
@@ -1335,7 +1423,7 @@ const Discovery = () => {
             >
               Sign Up Now
             </Button>
-            
+
             <Button
               variant="outlined"
               onClick={() => {
@@ -1402,8 +1490,8 @@ const Discovery = () => {
             </Button>
           </Box>
         </DialogContent>
-        
-        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+
+        <DialogActions sx={{ justifyContent: 'center', pb: 0 }}>
           <Button
             onClick={() => setShowLoginModal(false)}
             sx={{

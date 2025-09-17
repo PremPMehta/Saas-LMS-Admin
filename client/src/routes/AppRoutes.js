@@ -29,6 +29,7 @@ import CommunityUserLogin from '../pages/CommunityUserLogin';
 import StudentCourses from '../pages/StudentCourses';
 import DiscoverCourseViewer from '../pages/DiscoverCourseViewer';
 import TestPage from '../pages/TestPage';
+import SignUpLanding from '../pages/SignUpLanding';
 
 // Component to handle legacy route redirects with community name
 const LegacyRedirect = ({ to }) => {
@@ -148,6 +149,7 @@ const AppRoutes = () => {
       <Route path="/community-login" element={<CommunityLogin />} />
       <Route path="/community-user-signup" element={<CommunityUserSignup />} />
       <Route path="/community-user-login" element={<CommunityUserLogin />} />
+      <Route path="/signup-landing" element={<SignUpLanding />} />
       <Route path="/test" element={<TestPage />} />
       
       {/* Legacy routes - redirect to community-specific URLs */}

@@ -29,7 +29,10 @@ import {
   CheckCircle as CheckCircleIcon,
   Schedule as ScheduleIcon,
   Close as CloseIcon,
-  School as SchoolIcon
+  School as SchoolIcon,
+  BackHandTwoTone,
+  ForkLeftOutlined,
+  ArrowBackIosOutlined
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -38,7 +41,7 @@ import googleLogo from '../assets/google-logo.png';
 const CourseLoginModal = ({ open, onClose, courseData }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
-  
+
   // Community User Login State
   const [userFormData, setUserFormData] = useState({
     email: '',
@@ -109,7 +112,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         courseData,
         environment: process.env.NODE_ENV
       });
-      
+
       const response = await axios.post(`${apiUrl}/api/community-user/login`, {
         email: userFormData.email,
         password: userFormData.password
@@ -117,7 +120,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
 
       if (response.data.success) {
         const { user, token } = response.data.data;
-        
+
         // Check approval status
         if (user.approvalStatus === 'pending') {
           setUserStatus('pending');
@@ -129,14 +132,14 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         // Store token and user data
         localStorage.setItem('communityUserToken', token);
         localStorage.setItem('communityUser', JSON.stringify(user));
-        
+
         console.log('✅ CourseLoginModal - Login successful:', {
           user,
           token: token ? 'present' : 'missing',
           courseData,
           navigationUrl: `/${courseData?.communityName || 'crypto-manji-academy'}/student/course-viewer/${courseData?.id}`
         });
-        
+
         // Navigate to course viewer
         navigate(`/${courseData?.communityName || 'crypto-manji-academy'}/student/course-viewer/${courseData?.id}`);
         onClose();
@@ -164,7 +167,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
 
   const handleAdminSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!adminFormData.email || !adminFormData.password) {
       setAdminError('Please fill in all fields');
       return;
@@ -179,11 +182,11 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         email: adminFormData.email,
         password: adminFormData.password
       });
-      
+
       if (response.data.success) {
         localStorage.setItem('communityToken', response.data.token);
         localStorage.setItem('community', JSON.stringify(response.data.community));
-        
+
         // Navigate to admin course viewer
         navigate(`/${courseData?.communityName || 'crypto-manji-academy'}/admin/course-viewer/${courseData?.id}`);
         onClose();
@@ -208,7 +211,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (signupData.password !== signupData.confirmPassword) {
       setSignupError('Passwords do not match');
       return;
@@ -230,7 +233,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         courseData,
         environment: process.env.NODE_ENV
       });
-      
+
       const response = await axios.post(`${apiUrl}/api/community-user/signup`, {
         firstName: signupData.firstName,
         lastName: signupData.lastName,
@@ -263,81 +266,46 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="xs"
       fullWidth
       PaperProps={{
         sx: {
           borderRadius: 3,
-          minHeight: '600px'
         }
       }}
     >
-      <DialogTitle 
-        component="div"
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          pb: 1,
-          background: '#0F3C60',
-          color: 'white'
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <SchoolIcon sx={{ fontSize: 28 }} />
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Access Course
-            </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              {courseData?.name || 'Course Name'}
-            </Typography>
-          </Box>
-        </Box>
-        <IconButton onClick={onClose} sx={{ color: 'white' }}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+
 
       <DialogContent sx={{ p: 0 }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs 
-            value={activeTab} 
+          <Tabs
+            value={activeTab}
             onChange={handleTabChange}
             variant="fullWidth"
-            sx={{
-              '& .MuiTab-root': {
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '1rem'
-              }
-            }}
-          >
-            <Tab 
-              icon={<PersonIcon />} 
-              label="Bell & Desk User Login" 
+            role="navigation"
+            centered>
+            <Tab
+              label="User Login"
               iconPosition="start"
             />
-            <Tab 
-              icon={<BusinessIcon />} 
-              label="Bell & Desk Login" 
+            <Tab
+              label="Admin Login"
               iconPosition="start"
             />
           </Tabs>
         </Box>
 
-        <Box sx={{ p: 4 }}>
+        <Box sx={{ p: 3 }}>
           {/* Community User Tab */}
           {activeTab === 0 && (
             <Box>
               {!showSignupForm ? (
                 /* Login Form */
-                <Card sx={{ border: '1px solid #e0e0e0' }}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
+                <Box>
+                  <Box>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
                       Login to Access Course
                     </Typography>
-                    
                     {userError && (
                       <Alert severity="error" sx={{ mb: 2 }}>
                         {userError}
@@ -345,8 +313,8 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                     )}
 
                     {showUserApprovalStatus && (
-                      <Alert 
-                        severity="warning" 
+                      <Alert
+                        severity="warning"
                         sx={{ mb: 2 }}
                         icon={<ScheduleIcon />}
                       >
@@ -393,7 +361,8 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                             <InputAdornment position="end">
                               <IconButton
                                 onClick={() => setShowUserPassword(!showUserPassword)}
-                                edge="end"
+
+
                               >
                                 {showUserPassword ? <VisibilityOff /> : <Visibility />}
                               </IconButton>
@@ -408,7 +377,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                         disabled={isUserLoading}
                         sx={{
                           mt: 3,
-                          mb: 2,
+                           
                           py: 1.5,
                           background: '#0F3C60',
                           '&:hover': {
@@ -485,36 +454,26 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                         </Button>
                       </Typography>
                     </Box>
-                  </CardContent>
-                </Card>
+                  </Box>
+                </Box>
               ) : (
                 /* Signup Form */
-                <Card sx={{ border: '1px solid #e0e0e0' }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Box >
+                  <Box>
+                    <Box sx={{ mb: 2 }}>
                       <Button
-                        variant="text"
+                        startIcon={<ArrowBackIosOutlined />}
+                        variant="outlined"
                         onClick={() => setShowSignupForm(false)}
-                        sx={{
-                          textTransform: 'none',
-                          color: '#0F3C60',
-                          fontWeight: 600,
-                          p: 0,
-                          minWidth: 'auto',
-                          mr: 2,
-                          '&:hover': {
-                            backgroundColor: 'transparent',
-                            textDecoration: 'underline'
-                          }
-                        }}
+                        sx={{ mb: 2 }}
                       >
-                        ← Back to Login
-                      </Button>
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                        Back
+                      </Button >
+                      <Typography variant="h6" sx={{ fontWeight: 600,  color: '#2c3e50' }}>
                         Create New Account
                       </Typography>
                     </Box>
-                    
+
                     {signupError && (
                       <Alert severity="error" sx={{ mb: 2 }}>
                         {signupError}
@@ -622,9 +581,10 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                         fullWidth
                         variant="contained"
                         disabled={isSignupLoading}
+
                         sx={{
                           mt: 3,
-                          mb: 2,
+                          mb: 0,
                           py: 1.5,
                           background: '#0F3C60',
                           '&:hover': {
@@ -636,20 +596,19 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                         {isSignupLoading ? <CircularProgress size={24} color="inherit" /> : 'Create Account'}
                       </Button>
                     </Box>
-                  </CardContent>
-                </Card>
+                  </Box>
+                </Box>
               )}
             </Box>
           )}
 
           {/* Community Admin Tab */}
           {activeTab === 1 && (
-            <Card sx={{ border: '1px solid #e0e0e0' }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
+            <Box>
+              <Box>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
                   Admin Login
                 </Typography>
-                
                 {adminError && (
                   <Alert severity="error" sx={{ mb: 2 }}>
                     {adminError}
@@ -706,7 +665,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                     disabled={isAdminLoading}
                     sx={{
                       mt: 3,
-                      mb: 2,
+                 
                       py: 1.5,
                       background: '#0F3C60',
                       '&:hover': {
@@ -760,8 +719,8 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                 >
                   Sign in with Google
                 </Button>
-              </CardContent>
-            </Card>
+              </Box>
+            </Box>
           )}
         </Box>
       </DialogContent>
