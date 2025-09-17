@@ -325,9 +325,6 @@ const UnifiedLogin = () => {
                   }}>
                     Bell n Desk
                   </Typography>
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    Unified Login Portal
-                  </Typography>
                 </Box>
 
                 {/* Success Message */}
