@@ -97,8 +97,8 @@ const CommunityAbout = () => {
             <Box sx={{ px: 3, pb: 3 }}>
               {/* Video Player and Sidebar Grid */}
               <Grid container spacing={3} sx={{ mb: 2 }}>
-                {/* Video Player - 3/5 of the space */}
-                <Grid item xs={12} lg={7.2}>
+                {/* Video Player - 4/5 of the space */}
+                <Grid item xs={12} lg={8}>
                   <Box sx={{ 
                     position: 'relative',
                     backgroundColor: 'linear-gradient(90deg, #064e3b 0%, #374151 50%, #d97706 100%)',
@@ -199,8 +199,8 @@ const CommunityAbout = () => {
                   </Box>
                 </Grid>
 
-                {/* Sidebar - 2/5 of the space */}
-                <Grid item xs={12} lg={4.8}>
+                {/* Sidebar - 1/5 of the space */}
+                <Grid item xs={12} lg={4}>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {/* Community Card */}
                     <Paper sx={{ 
