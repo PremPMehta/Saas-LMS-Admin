@@ -36,6 +36,7 @@ import { DETAILED_CATEGORIES } from '../config/categories';
 import CourseLoginModal from '../components/CourseLoginModal';
 import googleLogo from '../assets/google-logo.png';
 import useDocumentTitle from '../contexts/useDocumentTitle';
+import Newsletter from '../components/Newsletter';
 
 const communities = [
   {
@@ -1028,76 +1029,7 @@ const Discovery = () => {
 
         {/* Newsletter Subscription UI */}
         {!loading && !error && filteredCommunities.length > 0 && (
-          <Box sx={{
-            
-            mx: 'auto',
-            mb: 4,
-            px: 3,
-            py: 3,
-            borderRadius: 3,
-            background: '#fff',
-            boxShadow: '0 4px 24px rgba(15,60,96,0.08)',
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            alignItems: 'center',
-            gap: 3,
-          }}>
-            <Box sx={{ flex: 1, textAlign: { xs: 'center', sm: 'left' } }}>
-              <Typography variant="h6" sx={{  fontWeight: 700 }}>
-               Stay in the loop!
-              </Typography>
-              <Typography variant="body2" sx={{   mt: 0.5 }}>
-                Subscribe to our newsletter for the latest courses, tips, and community updates.
-              </Typography>
-            </Box>
-            <Box
-              component="form"
-              sx={{
-                display: 'flex',
-                gap: 1,
-                alignItems: 'center',
-                flex: 1,
-                justifyContent: { xs: 'center', sm: 'flex-end' }
-              }}
-              onSubmit={e => {
-                e.preventDefault();
-                // You can add newsletter submit logic here
-              }}
-            >
-              <TextField
-                size="small"
-                placeholder="Your email address"
-                variant="outlined"
-                sx={{
-                  bgcolor: '#fff',
-                  borderRadius: 2,
-                  minWidth: 180,
-                  '& .MuiOutlinedInput-root': {
-                    color: '#0F3C60',
-                  }
-                }}
-                type="email"
-                required
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                sx={{
-                  bgcolor: '#34a853',
-                  color: '#fff',
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  px: 3,
-                  boxShadow: '0 2px 8px rgba(52,168,83,0.12)',
-                  '&:hover': {
-                    bgcolor: '#2e7d32',
-                  }
-                }}
-              >
-                Subscribe
-              </Button>
-            </Box>
-          </Box>
+           <Newsletter/>
         )}
 
         {/* Footer with Pagination, Results Summary, and Navigation */}

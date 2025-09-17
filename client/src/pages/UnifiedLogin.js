@@ -34,16 +34,16 @@ import { apiUrl } from '../config/api';
 const UnifiedLogin = () => {
   useDocumentTitle('Login - Bell n Desk');
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     userType: 'auto', // 'auto', 'admin', 'user'
   });
-  
+
   const [detectedCommunity, setDetectedCommunity] = useState(null);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -58,7 +58,7 @@ const UnifiedLogin = () => {
 
     // Clear error when user starts typing
     if (error) setError('');
-    
+
     // Check email when user types in email field
     if (name === 'email' && value.includes('@')) {
       checkEmailCommunity(value);
@@ -67,13 +67,13 @@ const UnifiedLogin = () => {
 
   const checkEmailCommunity = async (email) => {
     if (!email || !email.includes('@')) return;
-    
+
     setIsCheckingEmail(true);
     setDetectedCommunity(null);
-    
+
     try {
       console.log('🔍 Checking which community email belongs to:', email);
-      
+
       const response = await fetch(apiUrl('/api/communities/check-email'), {
         method: 'POST',
         headers: {
@@ -87,7 +87,7 @@ const UnifiedLogin = () => {
         if (data.success) {
           console.log('✅ Email detected:', data.userType, 'for community:', data.community.name);
           setDetectedCommunity(data);
-          
+
           // Auto-select the detected user type
           setFormData(prev => ({
             ...prev,
@@ -130,7 +130,7 @@ const UnifiedLogin = () => {
         if (detectedCommunity) {
           console.log('🎯 Using detected community:', detectedCommunity.community.name, 'as', detectedCommunity.userType);
           userType = detectedCommunity.userType;
-          
+
           if (detectedCommunity.userType === 'admin') {
             // Community Admin login
             loginResult = await communityAuthApi.login(formData.email, formData.password);
@@ -161,14 +161,14 @@ const UnifiedLogin = () => {
             localStorage.setItem('communityUserToken', userData.data.token);
             localStorage.setItem('communityUser', JSON.stringify(userData.data.user));
             localStorage.setItem('communityId', userData.data.user.community.id);
-            
+
             loginResult = userData;
             console.log('✅ Community User login successful');
           }
         } else {
           // Fallback: Try both login types automatically
           console.log('🔄 No community detected, trying both login types...');
-          
+
           try {
             // First try Community Admin login
             console.log('🔍 Trying Community Admin login...');
@@ -177,7 +177,7 @@ const UnifiedLogin = () => {
             console.log('✅ Community Admin login successful');
           } catch (adminError) {
             console.log('❌ Community Admin login failed, trying Community User login...');
-            
+
             // If admin login fails, try community user login
             try {
               const response = await fetch(apiUrl('/api/community-user/login'), {
@@ -204,7 +204,7 @@ const UnifiedLogin = () => {
               localStorage.setItem('communityUserToken', userData.data.token);
               localStorage.setItem('communityUser', JSON.stringify(userData.data.user));
               localStorage.setItem('communityId', userData.data.user.community.id);
-              
+
               loginResult = userData;
               userType = 'user';
               console.log('✅ Community User login successful');
@@ -247,7 +247,7 @@ const UnifiedLogin = () => {
         localStorage.setItem('communityUserToken', userData.data.token);
         localStorage.setItem('communityUser', JSON.stringify(userData.data.user));
         localStorage.setItem('communityId', userData.data.user.community.id);
-        
+
         loginResult = userData;
         userType = 'user';
         console.log('✅ Community User login successful');
@@ -258,7 +258,7 @@ const UnifiedLogin = () => {
 
       // Use detected community for redirect if available
       let communityForRedirect = null;
-      
+
       if (detectedCommunity) {
         communityForRedirect = detectedCommunity.community;
         console.log('🎯 Using detected community for redirect:', communityForRedirect.name);
@@ -270,22 +270,22 @@ const UnifiedLogin = () => {
         communityForRedirect = userData?.community;
         console.log('🔍 Using student community data:', communityForRedirect);
       }
-      
+
       if (communityForRedirect && communityForRedirect.name) {
         // Convert community name to URL format (same logic as CommunityRoute expects)
         const communityUrlName = communityForRedirect.name.toLowerCase().replace(/\s+/g, '-');
-        
+
         if (userType === 'admin') {
           const adminCoursesUrl = `/${communityUrlName}/admin/courses`;
           console.log('✅ Redirecting to admin courses URL:', adminCoursesUrl);
-          
+
           setTimeout(() => {
             navigate(adminCoursesUrl);
           }, 1500);
         } else {
           const studentCoursesUrl = `/${communityUrlName}/student/courses`;
           console.log('✅ Redirecting to student courses URL:', studentCoursesUrl);
-          
+
           setTimeout(() => {
             navigate(studentCoursesUrl);
           }, 1500);
@@ -310,182 +310,165 @@ const UnifiedLogin = () => {
 
   return (
     <Box>
-      <Box className="login-card" style={{
-        backgroundImage: `url(${loginImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative'
-      }}>
-        {/* Overlay */}
-        <Box style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 1
-        }} />
-        
-        {/* Login Form */}
-        <Container maxWidth="sm" style={{ position: 'relative', zIndex: 2 }}>
-          <Card elevation={10} style={{ 
-            borderRadius: '20px',
-            backdropFilter: 'blur(10px)',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)'
-          }}>
-            <CardContent style={{ padding: '40px' }}>
-              {/* Header */}
-              <Box textAlign="center" mb={4}>
-                <SchoolIcon style={{ fontSize: 60, color: '#1976d2', marginBottom: '16px' }} />
-                <Typography variant="h4" component="h1" gutterBottom style={{ 
-                  fontWeight: 'bold',
-                  color: '#1976d2',
-                  marginBottom: '8px'
-                }}>
-                  Bell n Desk
-                </Typography>
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  Unified Login Portal
-                </Typography>
-              </Box>
-
-              {/* Success Message */}
-              {success && (
-                <Alert severity="success" style={{ marginBottom: '20px' }}>
-                  {success}
-                </Alert>
-              )}
-
-              {/* Error Message */}
-              {error && (
-                <Alert severity="error" style={{ marginBottom: '20px' }}>
-                  {error}
-                </Alert>
-              )}
-
-              {/* Login Form */}
-              <form onSubmit={handleSubmit}>
-
-                {/* Email Field */}
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  name="email"
-                  label="Email Address"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                  required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <EmailIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: isCheckingEmail ? (
-                      <InputAdornment position="end">
-                        <CircularProgress size={20} />
-                      </InputAdornment>
-                    ) : null,
-                  }}
-                />
-
-
-                {/* Password Field */}
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  name="password"
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  variant="outlined"
-                  required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LockIcon color="action" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-
-                {/* Login Button */}
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  size="large"
-                  disabled={isLoading}
-                  style={{
-                    marginTop: '24px',
-                    marginBottom: '16px',
-                    padding: '12px',
-                    fontSize: '16px',
+      <Box className="login-card">
+        <Grid container spacing={2} sx={{ alignItems: 'center', height: '100vh', alignItems: 'center' }}>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }}>
+             <Box className="login_box" elevation={10}> 
+              <Box style={{ padding: '40px' }}>
+                {/* Header */}
+                <Box textAlign="left" mb={4}>
+                  <SchoolIcon style={{ fontSize: 60, color: '#0F3C60', marginBottom: '16px' }} />
+                  <Typography variant="h4" component="h1" gutterBottom style={{
                     fontWeight: 'bold',
-                    borderRadius: '10px',
-                    background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
-                  }}
-                >
-                  {isLoading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : (
-                    'Login'
-                  )}
-                </Button>
-
-                {/* Forgot Password Link */}
-                <Box textAlign="center" mt={2}>
-                  <Link
-                    component="button"
-                    variant="body2"
-                    onClick={handleForgotPassword}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    Forgot your password?
-                  </Link>
-                </Box>
-
-                {/* Signup Link */}
-                <Box textAlign="center" mt={1}>
-                  <Typography variant="body2" color="text.secondary">
-                    Don't have an account?{' '}
-                    <Link
-                      component="button"
-                      variant="body2"
-                      onClick={() => navigate('/community-user-signup')}
-                      style={{ 
-                        textDecoration: 'none',
-                        color: '#1976d2',
-                        fontWeight: 500
-                      }}
-                    >
-                      Sign up here
-                    </Link>
+                    color: '#0F3C60',
+                    marginBottom: '8px'
+                  }}>
+                    Bell n Desk
+                  </Typography>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Unified Login Portal
                   </Typography>
                 </Box>
 
-              </form>
-            </CardContent>
-          </Card>
-        </Container>
+                {/* Success Message */}
+                {success && (
+                  <Alert severity="success" style={{ marginBottom: '20px' }}>
+                    {success}
+                  </Alert>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                  <Alert severity="error" style={{ marginBottom: '20px' }}>
+                    {error}
+                  </Alert>
+                )}
+
+                {/* Login Form */}
+                <form onSubmit={handleSubmit}>
+
+                  {/* Email Field */}
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    name="email"
+                    label="Email Address"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailIcon color="action" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: isCheckingEmail ? (
+                        <InputAdornment position="end">
+                          <CircularProgress size={20} />
+                        </InputAdornment>
+                      ) : null,
+                    }}
+                  />
+
+
+                  {/* Password Field */}
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    name="password"
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                    required
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon color="action" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+
+                  {/* Login Button */}
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    size="large"
+                    disabled={isLoading}
+                    style={{
+                      marginTop: '24px',
+                      marginBottom: '16px',
+                      padding: '12px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      borderRadius: '10px',
+                      background: '#0F3C60',
+                    }}
+                  >
+                    {isLoading ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      'Login'
+                    )}
+                  </Button>
+
+                  {/* Forgot Password Link */}
+                  <Box textAlign="left" mt={2}>
+                    <Link
+                      component="button"
+                      variant="body2"
+                      onClick={handleForgotPassword}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      Forgot your password?
+                    </Link>
+                  </Box>
+
+                  {/* Signup Link */}
+                  <Box textAlign="left" mt={1}>
+                    <Typography variant="body2" color="text.secondary">
+                      Don't have an account?{' '}
+                      <Link
+                        component="button"
+                        variant="body2"
+                        onClick={() => navigate('/community-user-signup')}
+                        style={{
+                          textDecoration: 'none',
+                          color: '#0F3C60',
+                          fontWeight: 500
+                        }}
+                      >
+                        Sign up here
+                      </Link>
+                    </Typography>
+                  </Box>
+
+                </form>
+              </Box>
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Box className="login_image_box">
+              <img src={loginImage} alt="login" />
+            </Box>
+          </Grid>
+        </Grid>
+
       </Box>
     </Box>
   );
