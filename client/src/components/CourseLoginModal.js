@@ -224,7 +224,6 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <SchoolIcon />
-            Access Course
           </Typography>
           <CloseIcon 
             onClick={onClose}
@@ -239,7 +238,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       <DialogContent sx={{ pt: 0 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography variant="h6" sx={{ mb: 1, color: 'text.primary' }}>
-            {courseData?.title || 'This Course'}
+            {courseData?.title || ''}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Please log in to access this course content
