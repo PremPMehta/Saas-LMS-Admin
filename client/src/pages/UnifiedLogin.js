@@ -317,15 +317,17 @@ const UnifiedLogin = () => {
              <Box className="login_box" elevation={10}> 
               <Box style={{ padding: '40px' }}>
                 {/* Header */}
-                <Box textAlign="left" mb={4}>
-                  <SchoolIcon style={{ fontSize: 60, color: '#0F3C60', marginBottom: '16px' }} />
-                  <Typography variant="h4" component="h1" gutterBottom style={{
+                <Box textAlign="left" mb={3}>
+                  <SchoolIcon style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} />
+                  <Box variant="h4" component="h1" gutterBottom style={{
                     fontWeight: 'bold',
                     color: '#0F3C60',
-                    marginBottom: '8px'
+                    marginBottom: '8px',
+                    width: '150px'
                   }}>
-                    Bell n Desk
-                  </Typography>
+                     
+                    <img src="/bnd-dark.png" alt="Bell n Desk Logo" style={{ width: '100%', height: 'auto' }} />
+                  </Box>
                 </Box>
 
                 {/* Success Message */}

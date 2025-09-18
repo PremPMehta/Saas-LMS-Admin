@@ -420,7 +420,7 @@ const Discovery = () => {
                   }
                 }}
               >
-                LOG IN
+                Sign In
               </Button>
 
 
@@ -432,11 +432,11 @@ const Discovery = () => {
       {/* Hero Section */}
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          {/* Bell & Desk Logo */}
+          {/* Bell n Desk Logo */}
           {/* <Box sx={{ mb: 3 }}>
             <img
               src="/bnd-dark.png"
-              alt="Bell & Desk"
+              alt="Bell n Desk"
               style={{
                 height: '80px',
                 width: 'auto',

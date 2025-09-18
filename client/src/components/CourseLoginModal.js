@@ -236,10 +236,10 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       <DialogContent sx={{ pt: 0 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography variant="h6" sx={{ mb: 1, color: 'text.primary' }}>
-            Log In
+            Sign In
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Please log in to access this course content
+            Please Sign In to access this course content
           </Typography>
         </Box>
 

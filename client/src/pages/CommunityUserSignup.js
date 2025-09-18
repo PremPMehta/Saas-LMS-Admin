@@ -154,7 +154,7 @@ const CommunityUserSignup = () => {
         const { approvalStatus } = response.data.data;
 
         if (approvalStatus === 'approved') {
-          setSuccess('Your account has been approved! You can now log in.');
+          setSuccess('Your account has been approved! You can now Sign In.');
           // Redirect to login page after a short delay
           setTimeout(() => {
             navigate('/community-user-login');
@@ -286,11 +286,11 @@ const CommunityUserSignup = () => {
           <Grid size={{ xs:12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <Box>
-                <School sx={{ fontSize: 48, mb: 2 }} />
-                <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                <School style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }}/>
+                <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
                   Community User Signup
                 </Typography>
-                <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                <Typography variant="body1" sx={{ opacity: 0.9, mb:1 }}>
                   Join a learning community and start your journey
                 </Typography>
               </Box>
@@ -437,7 +437,7 @@ const CommunityUserSignup = () => {
                         </Link>
                       </Typography>
                     }
-                    sx={{ mb: 3 }}
+                    sx={{ mb: 1 }}
                   />
 
                   <Button
