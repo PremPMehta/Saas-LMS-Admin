@@ -180,7 +180,7 @@ const CommunityUserSignup = () => {
       <Box
         sx={{
           minHeight: '100vh',
-           
+
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -283,14 +283,19 @@ const CommunityUserSignup = () => {
 
       <Box className="login-card">
         <Grid container spacing={2} sx={{ alignItems: 'center', height: '100vh', alignItems: 'center' }}>
-          <Grid size={{ xs:12, md: 6, lg: 6 }}>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Box className="login_image_box">
+              <img src={loginImage} alt="login" />
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <Box>
-                <School style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }}/>
+                <School style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} />
                 <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
                   Community User Signup
                 </Typography>
-                <Typography variant="body1" sx={{ opacity: 0.9, mb:1 }}>
+                <Typography variant="body1" sx={{ opacity: 0.9, mb: 1 }}>
                   Join a learning community and start your journey
                 </Typography>
               </Box>
@@ -309,7 +314,7 @@ const CommunityUserSignup = () => {
 
                 <Box component="form" onSubmit={handleSubmit}>
                   <Grid container spacing={2}>
-                    <Grid  size={{ xs: 12, sm: 6, lg: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
                       <TextField
                         fullWidth
                         label="First Name"
@@ -327,7 +332,7 @@ const CommunityUserSignup = () => {
                         sx={{ mb: 2 }}
                       />
                     </Grid>
-                    <Grid  size={{ xs: 12, sm: 6, lg: 6 }}>
+                    <Grid size={{ xs: 12, sm: 6, lg: 6 }}>
                       <TextField
                         fullWidth
                         label="Last Name"
@@ -442,7 +447,7 @@ const CommunityUserSignup = () => {
 
                   <Button
                     type="submit"
-                     
+
                     variant="contained"
                     size="large"
                     disabled={isLoading}
@@ -451,7 +456,7 @@ const CommunityUserSignup = () => {
                       color: 'white',
                       py: 1.5,
                       fontSize: '14px',
-                 
+
                       textTransform: 'none',
                       borderRadius: 2,
                       '&:hover': {
@@ -485,11 +490,7 @@ const CommunityUserSignup = () => {
               </CardContent>
             </Box>
           </Grid>
-          <Grid size={{ xs:12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Box className="login_image_box">
-              <img src={loginImage} alt="login" />
-            </Box>
-          </Grid>
+
         </Grid>
       </Box>
 

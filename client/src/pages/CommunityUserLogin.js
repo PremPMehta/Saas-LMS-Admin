@@ -266,7 +266,6 @@ const CommunityUserLogin = () => {
                 <Box sx={{ textAlign: 'left', mb: 4 }}>
                   <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, color: '#333' }}>
                     Bell n Desk User Sign In
-                    Bell and Desk User Sign In
                   </Typography>
                   <Typography variant="body1" sx={{ color: '#666' }}>
                     Sign In to access your community dashboard
