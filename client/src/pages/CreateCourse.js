@@ -797,10 +797,11 @@ const CreateCourse = () => {
                           sx={{
                             cursor: 'pointer',
                             border: courseData.contentType === type.value ? '2px solid #0F3C60' : '1px solid #e0e0e0',
-                            background: courseData.contentType === type.value ? '#f8f9ff' : '#ffffff',
+                            background: courseData.contentType === type.value ? '#0f3c6024' : '#ffffff',
+                            boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)',
                             '&:hover': {
                               borderColor: '#0F3C60',
-                              background: '#f8f9ff',
+                              background: '#0f3c6024',
                             }
                           }}
                           onClick={() => handleInputChange('contentType', type.value)}
@@ -863,7 +864,7 @@ const CreateCourse = () => {
                 )}
 
                 {chapters.length === 0 ? (
-                  <Card sx={{ p: 4, textAlign: 'center', background: '#f8f9fa' }}>
+                  <Card sx={{ p: 4, textAlign: 'center', borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
                     <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
                       No chapters added yet
                     </Typography>
@@ -883,7 +884,7 @@ const CreateCourse = () => {
                     <Grid container spacing={2}>
                       {chapters.map((chapter, index) => (
                         <Grid item size={{ xs: 12, md: 6 }}>
-                          <Card key={chapter.id}>
+                          <Card key={chapter.id} sx={{ borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
                             <CardContent sx={{ p: 3 }}>
                               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -989,7 +990,7 @@ const CreateCourse = () => {
             <Grid item size={{ xs: 12, md: 12 }}>
               <Grid container spacing={2}>
                 <Grid item size={{ xs: 12, lg: 6 }}>
-                  <Card>
+                  <Card sx={{ boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' , borderRadius: '15px'}}>
                     <CardContent sx={{ width: '100%' }}>
                       {courseData.thumbnail && !chapters.some(chapter => chapter.videos.length > 0) && (
                         <Box>
@@ -1071,7 +1072,7 @@ const CreateCourse = () => {
                 </Grid>
 
                 <Grid size={{ xs: 12, lg: 6 }}>
-                  <Card>
+                  <Card sx={{ boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' , borderRadius: '15px'}}>
                     <CardContent>
                       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
                         Course Structure
@@ -1136,7 +1137,7 @@ const CreateCourse = () => {
         <Box sx={{ flex: 1, px: 0, py: 0, overflow: 'visible' }}>
           <Container maxWidth="xl" sx={{ overflow: 'visible' }}>
             <Card sx={{
-              // mb: 4,
+              my: 4,
               borderRadius: 4,
               border: 'none',
               boxShadow: 'none',
@@ -1145,7 +1146,8 @@ const CreateCourse = () => {
                 <Stepper
                   activeStep={activeStep}
                   sx={{
-                    mb: 3,
+                    p: { xs: 2, md: 4 },
+                    pb: '0 !important',
                     gap: 1,
                     justifyContent: 'start',
                     flexWrap: 'wrap',
@@ -1190,9 +1192,11 @@ const CreateCourse = () => {
                       }
                     },
                     '& .MuiStepConnector-root': {
-                      display: 'none',
+                      '@media (max-width: 560px)': {
+                          display: 'none',
+                        },
                       '& .MuiStepConnector-line': {
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderColor: 'rgb(212 212 212)',
                         borderWidth: 2,
                       }
                     }
@@ -1247,7 +1251,7 @@ const CreateCourse = () => {
 
                 {/* Enhanced Step Content */}
                 <Card sx={{
-                  mb: 4,
+                  // mb: 4,
                   p: 0,
                   background: 'rgba(255, 255, 255, 0.95)',
                   backdropFilter: 'blur(10px)',
@@ -1261,8 +1265,9 @@ const CreateCourse = () => {
                   <CardContent sx={{ p: 0, }}>
                     <Box sx={{
                       p: { xs: 2, md: 4 },
+                      pb: '0 !important',
                       borderRadius: 3,
-                      backgroundColor: '#f7f7f7ff'
+                      backgroundColor: '#fff'
                     }}>
 
                       {getStepContent(activeStep)}
@@ -1829,11 +1834,11 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                           sx={{
                             cursor: 'pointer',
                             border: formData.videoType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
-                            background: formData.videoType === type.value ? '#f8f9ff' : '#ffffff',
+                            background: formData.videoType === type.value ? '#0f3c6024' : '#ffffff',
                             transition: 'all 0.3s ease',
                             '&:hover': {
                               borderColor: type.color,
-                              background: '#f8f9ff',
+                              background: '#0f3c6024',
                               transform: 'translateY(-2px)',
                               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                             }
@@ -1878,12 +1883,12 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                         borderRadius: 2,
                         p: 3,
                         textAlign: 'center',
-                        background: formData.videoFile ? '#f8f9ff' : '#fafafa',
+                        background: formData.videoFile ? '#0f3c6024' : '#fafafa',
                         borderColor: formData.videoFile ? '#0F3C60' : '#e0e0e0',
                         transition: 'all 0.3s ease',
                         '&:hover': {
                           borderColor: '#0F3C60',
-                          background: '#f8f9ff',
+                          background: '#0f3c6024',
                         }
                       }}
                     >
@@ -2160,16 +2165,18 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                         }}
                         sx={{
                           cursor: type.disabled ? 'not-allowed' : 'pointer',
-                          border: formData.contentType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
-                          background: type.disabled ? '#f5f5f5' : (formData.contentType === type.value ? '#f8f9ff' : '#ffffff'),
+                          // border: formData.contentType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
+                          background: type.disabled ? '#f5f5f5' : (formData.contentType === type.value ? '#0f3c6024' : '#ffffff'),
                           opacity: type.disabled ? 0.6 : 1,
                           transition: 'all 0.3s ease',
                           position: 'relative',
+                          boxShadow:  '0 1px 3px rgba(0,0,0,0.1)',
+                          borderRadius: '15px',
                           '&:hover': type.disabled ? {} : {
                             borderColor: type.color,
-                            background: '#f8f9ff',
+                            background: '#0f3c6024',
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                            // boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                           }
                         }}
                       >
@@ -2325,12 +2332,12 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                       borderRadius: 2,
                       p: 3,
                       textAlign: 'center',
-                      background: formData.pdfFile ? '#f8f9ff' : '#fafafa',
+                      background: formData.pdfFile ? '#0f3c6024' : '#fafafa',
                       borderColor: formData.pdfFile ? '#0F3C60' : '#e0e0e0',
                       transition: 'all 0.3s ease',
                       '&:hover': {
                         borderColor: '#0F3C60',
-                        background: '#f8f9ff',
+                        background: '#0f3c6024',
                       }
                     }}
                   >
@@ -2408,12 +2415,12 @@ const VideoDialog = ({ open, onClose, onSave, video, contentType, chapter }) => 
                   borderRadius: 2,
                   p: 3,
                   textAlign: 'center',
-                  background: formData.pdfFile ? '#f8f9ff' : '#fafafa',
+                  background: formData.pdfFile ? '#0f3c6024' : '#fafafa',
                   borderColor: formData.pdfFile ? '#0F3C60' : '#e0e0e0',
                   transition: 'all 0.3s ease',
                   '&:hover': {
                     borderColor: '#0F3C60',
-                    background: '#f8f9ff',
+                    background: '#0f3c6024',
                   }
                 }}
               >

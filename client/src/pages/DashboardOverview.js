@@ -306,7 +306,7 @@ const DashboardOverview = () => {
                 component="h1" 
                 sx={{ 
                   fontWeight: 800,
-                  background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                  background: 'linear-gradient(45deg, #0F3C60, #42a5f5)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -409,7 +409,7 @@ const DashboardOverview = () => {
                   variant="h5" 
                   sx={{ 
                     fontWeight: 700,
-                    background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                    background: 'linear-gradient(45deg, #0F3C60, #42a5f5)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
@@ -423,7 +423,7 @@ const DashboardOverview = () => {
                 startIcon={<AddIcon />}
                 onClick={() => setIsModalOpen(true)}
                 sx={{
-                  background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                  background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
                   borderRadius: 2,
                   px: 3,
                   py: 1.5,
@@ -433,7 +433,7 @@ const DashboardOverview = () => {
                   boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
                   transition: 'all 0.3s ease-in-out',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                    background: 'linear-gradient(135deg, #1565c0 0%, #0F3C60 100%)',
                     transform: 'translateY(-2px)',
                     boxShadow: '0 8px 24px rgba(25, 118, 210, 0.4)',
                   },
@@ -467,7 +467,7 @@ const DashboardOverview = () => {
                   variant="h5" 
                   sx={{ 
                     fontWeight: 700,
-                    background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                    background: 'linear-gradient(45deg, #0F3C60, #42a5f5)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
@@ -574,7 +574,7 @@ const DashboardOverview = () => {
                             height: 48,
                             borderRadius: '50%',
                             background: plan.popular 
-                              ? 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)'
+                              ? 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)'
                               : 'rgba(25, 118, 210, 0.1)',
                           }}
                         >
@@ -594,7 +594,7 @@ const DashboardOverview = () => {
                           variant="h4" 
                           sx={{ 
                             fontWeight: 800,
-                            background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                            background: 'linear-gradient(45deg, #0F3C60, #42a5f5)',
                             backgroundClip: 'text',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
@@ -646,7 +646,7 @@ const DashboardOverview = () => {
                         <Typography 
                           variant="caption" 
                           sx={{ 
-                            background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                            background: 'linear-gradient(45deg, #0F3C60, #42a5f5)',
                             color: 'white',
                             px: 2,
                             py: 0.5,

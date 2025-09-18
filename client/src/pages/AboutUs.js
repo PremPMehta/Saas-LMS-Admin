@@ -40,7 +40,7 @@ import {
     Instagram,
     Telegram
 } from '@mui/icons-material';
-
+import { CSS } from '@dnd-kit/utilities';
 // Define and configure the theme
 let theme = createTheme({
     palette: {
@@ -52,10 +52,8 @@ let theme = createTheme({
         },
     },
     typography: {
-        fontFamily: 'Roboto, Arial, sans-serif',
-        h4: { fontWeight: 700 },
-        h5: { fontWeight: 700 },
-        body1: { lineHeight: 1.6 },
+        fontFamily: `'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+            'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Helvetica', sans-serif`,
     },
 });
 
@@ -127,8 +125,8 @@ const AboutUs = () => {
                 <Container maxWidth="lg">
                     <Grid container spacing={{ xs: 3, md: 4 }}>
                         <Grid item size={{ xs: 12, md: 8 }} >
-                            <Card>
-                                <CardHeader title="Cryptomanji" />
+                            <Card sx={{ boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' , borderRadius: '15px' }}>
+                                <CardHeader title="Cryptomanji" sx={{pb: 0}} />
                                 <CardContent>
                                     <Box sx={{
                                         '.swiper-button-next, .swiper-button-prev': { color: '#fff' },
@@ -235,7 +233,7 @@ const AboutUs = () => {
                             display: { xs: 'none', md: 'block' }
 
                         }} >
-                            <Card variant="outlined">
+                            <Card sx={{ boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' , borderRadius: '15px' }}>
                                 <CardMedia component="img" height="140" image="https://picsum.photos/id/3/200/300" alt="Crypto Manji Banner" />
                                 <CardContent sx={{ textAlign: 'left' }}>
                                     <Typography variant="h5" component="div">Cryptomanji</Typography>

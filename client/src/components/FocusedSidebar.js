@@ -59,8 +59,9 @@ const FocusedSidebar = ({ darkMode }) => {
     <Box sx={{
       // width: isMobile ? 240 : (collapsed ? 60 : 240),
       width: '100%',
-      background: '#0F3C60',
-      borderRight: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+      background: '#fff',
+      // borderRight: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.2)',
+      // boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)',
       display: 'flex',
       flexDirection: 'column',
       py: 2,
@@ -80,7 +81,7 @@ const FocusedSidebar = ({ darkMode }) => {
       >
         {(isMobile || !collapsed) && (
           <img
-            src="/bell-desk-logo.png"
+            src="/bnd-dark.png"
             alt="Bell n Desk"
             style={{
               width: '130px',
@@ -93,7 +94,7 @@ const FocusedSidebar = ({ darkMode }) => {
         <IconButton
           onClick={isMobile ? handleMobileClose : handleToggleSidebar}
           sx={{
-            color: '#ffffff',
+            color: '#0F3C60',
             backgroundColor: 'transparent',
             transform: (isMobile || collapsed) ? 'rotate(180deg)' : 'rotate(0deg)',
             transition: 'transform 0.3s ease',
@@ -139,12 +140,12 @@ const FocusedSidebar = ({ darkMode }) => {
                 sx={{
                   borderRadius: 0,
                   py: 1.5,
-                  borderLeft: isActive ? '4px solid #ffffff' : 'none',
-                  color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.7)',
-                  backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  borderLeft: isActive ? '4px solid #0F3C60' : 'none',
+                  color: isActive ? '#0F3C60' : '#0F3C60',
+                  backgroundColor: isActive ? '#0f3b6033' : 'transparent',
                   '&:hover': {
-                    backgroundColor: isActive ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.1)',
-                    color: '#ffffff'
+                    backgroundColor: isActive ? '#0f3b6033' : '#0f3b6033',
+                    color: '#0F3C60'
                   },
                   justifyContent: (isMobile || !collapsed) ? 'flex-start' : 'center'
                 }}
@@ -165,13 +166,14 @@ const FocusedSidebar = ({ darkMode }) => {
                     mt: 0,  // 4px
                     mb: 0,  // 4px
                     opacity: (isMobile || !collapsed) ? 1 : 0,
-                    display: (isMobile || !collapsed) ? 'block' : 'none',
+                    display: (isMobile || !collapsed) ? 'inline-block' : 'none',
                   }}
                   primary={item.label}
                   primaryTypographyProps={{
-                    fontSize: '0.9rem',
+                    fontSize: '16px',
                     fontWeight: isActive ? 600 : 400,
-                    color: 'inherit'
+                    color: 'inherit',
+                    display: 'inline-block',
                   }}
                 />
 
@@ -191,8 +193,9 @@ const FocusedSidebar = ({ darkMode }) => {
         <Box sx={{
           // width: collapsed ? 60 : 240,
           width: collapsed ? 60 : 240,
-          background: '#0F3C60',
-          borderRight: '1px solid rgba(255, 255, 255, 0.2)',
+          background: '#fff',
+          // borderRight: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)',
           display: 'flex',
           flexDirection: 'column',
           py: 2,

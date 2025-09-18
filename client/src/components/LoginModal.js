@@ -405,7 +405,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
         disabled={isLoading}
         sx={{ mb: 2 }}
       >
-        {isLoading ? <CircularProgress size={24} /> : (isSignup ? 'Sign Up' : 'Login')}
+        {isLoading ? <CircularProgress size={24} /> : (isSignup ? 'Sign Up' : 'Sign In')}
       </Button>
 
       <Box sx={{ textAlign: 'center' }}>
@@ -414,7 +414,7 @@ const LoginModal = ({ open, onClose, onLoginSuccess }) => {
           onClick={() => setIsSignup(!isSignup)}
           sx={{ textTransform: 'none' }}
         >
-          {isSignup ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
+          {isSignup ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
         </Button>
       </Box>
     </Box>

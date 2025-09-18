@@ -267,11 +267,11 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
               py: 2,
               borderRadius: 2,
               mx: 1,
-              my: 0.5,
+              // my: 0.5,
               transition: 'all 0.2s ease',
               '&:hover': {
                 backgroundColor: darkMode ? '#404040' : '#f5f5f5',
-                transform: 'translateX(4px)',
+                // transform: 'translateX(4px)',
               },
               '&:first-of-type': {
                 mt: 1,

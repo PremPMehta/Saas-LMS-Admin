@@ -21,7 +21,7 @@ const KPICard = ({
   
   const getColorValue = (colorName) => {
     const colorMap = {
-      primary: '#1976d2',
+      primary: '#0F3C60',
       secondary: '#9c27b0',
       success: '#4CAF50',
       error: '#F44336',

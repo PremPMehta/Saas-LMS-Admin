@@ -79,20 +79,22 @@ const leaderboardAllTime = [{ name: 'Avi Kumar', score: '340', avatar: 'https://
 const notifications = [{ user: 'Edward Honour', action: '(following) new post', time: '4d', title: "Video from Saturday's Session" }, { user: 'Edward Honour', action: '(admin) new post', time: '6d', title: "Tomorrow's Live Call: The 90 Day AI Roadmap" }, { user: 'Edward Honour', action: '(following) new post', time: '19d', title: 'Live Event - 8/30' }];
 const chats = [{ user: "Edward Honour", date: "Jul 8", message: "Hey Prem! Welcome to the AI Masters Community 👋", avatar: "https://i.pravatar.cc/150?u=edward" }]
 const levelsData = [
-  { level: 1, percentage: 93, unlocked: true, unlockAction: null },
-  { level: 6, percentage: 0, unlocked: false, unlockAction: null },
-  { level: 2, percentage: 3, unlocked: false, unlockAction: 'Unlock Chat with members' },
-  { level: 7, percentage: 1, unlocked: false, unlockAction: null },
-  { level: 3, percentage: 1, unlocked: false, unlockAction: null },
-  { level: 8, percentage: 0, unlocked: false, unlockAction: null },
-  { level: 4, percentage: 1, unlocked: false, unlockAction: null },
-  { level: 9, percentage: 0, unlocked: false, unlockAction: null },
-  { level: 5, percentage: 1, unlocked: false, unlockAction: null },
+    { level: 1, percentage: 93, unlocked: true, unlockAction: null },
+    { level: 6, percentage: 0, unlocked: false, unlockAction: null },
+    { level: 2, percentage: 3, unlocked: false, unlockAction: 'Unlock Chat with members' },
+    { level: 7, percentage: 1, unlocked: false, unlockAction: null },
+    { level: 3, percentage: 1, unlocked: false, unlockAction: null },
+];
+const levelsData2 = [
+    { level: 8, percentage: 0, unlocked: false, unlockAction: null },
+    { level: 4, percentage: 1, unlocked: false, unlockAction: null },
+    { level: 9, percentage: 0, unlocked: false, unlockAction: null },
+    { level: 5, percentage: 1, unlocked: false, unlockAction: null },
 ];
 
 const CommunityFeed = ({ handleOpenPostModal }) => (
-    <Stack spacing={3}>
-        <Card onClick={handleOpenPostModal} sx={{ cursor: 'pointer' }}>
+    <Stack spacing={3} sx={{ mb: 3 }}>
+        <Card onClick={handleOpenPostModal} sx={{ cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <CardContent><Stack direction="row" spacing={2} alignItems="center"><Avatar src="https://i.pravatar.cc/150?u=me" /><Typography color="text.secondary">Write something...</Typography></Stack></CardContent>
         </Card>
         <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 1 }}>
@@ -110,7 +112,7 @@ const CommunityFeed = ({ handleOpenPostModal }) => (
             <Chip label="More..." variant="outlined" />
         </Stack>
         {posts.map((post) => (
-            <Card key={post.id}>
+            <Card key={post.id} sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <CardContent>
                     <Stack direction="row" spacing={2}>
                         <Box sx={{ flexGrow: 1 }}>
@@ -146,10 +148,10 @@ const CommunityFeed = ({ handleOpenPostModal }) => (
 );
 
 const ClassroomView = () => (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{ mb: 3 }}>
         {courses.map(course => (
             <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={course.title}>
-                <Card>
+                <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                     <CardMedia component="img" height="200" image={course.image} alt={course.title} />
                     <CardContent>
                         <Typography variant="h6" gutterBottom sx={{
@@ -173,7 +175,7 @@ const CalendarView = () => {
     const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     const dates = Array.from({ length: 30 }, (_, i) => i + 1);
     return (
-        <Card>
+        <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', mb: 3 }}>
             <CardContent>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
                     <Button variant="outlined">Today</Button>
@@ -202,16 +204,22 @@ const CalendarView = () => {
 };
 
 const MembersView = () => (
-    <Stack spacing={2}>
-        <Stack direction="row" spacing={1} alignItems="center">
-            <Chip label="Members 10093" variant="filled" sx={{ bgcolor: '#0F3C60', color: '#fff' }} />
-            <Chip label="Admins 3" variant="outlined" />
-            <Chip label="Online 26" variant="outlined" />
-            <Box sx={{ flexGrow: 1 }} />
-            <Button variant="contained" color="primary">Invite</Button>
+    <Stack spacing={2} sx={{ mb: 3 }}>
+        <Stack display="flex" spacing={1} alignItems="center" flexDirection="row" gap={2} flexWrap={"wrap"}>
+            <Chip label="Members 10093" variant="filled" sx={{ bgcolor: '#0F3C60', color: '#fff', mt: 0 }} />
+            <Chip label="Admins 3" variant="outlined" sx={{ mt: '0 !important' }} />
+            <Chip label="Online 26" variant="outlined" sx={{ mt: '0 !important' }} />
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    display: { xs: 'none', sm: 'block' }
+                }}
+            />
+
+            <Button variant="contained" color="primary" sx={{ mt: '0 !important' }}>Invite</Button>
         </Stack>
         {members.map(member => (
-            <Card key={member.name}>
+            <Card key={member.name} sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 <CardContent>
                     <Stack direction="row" spacing={2} alignItems="center">
 
@@ -243,58 +251,145 @@ const MembersView = () => (
 );
 
 const LeaderboardsView = () => (
-    <Stack spacing={3}>
-        <Card>
-            <CardContent sx={{ textAlign: 'center' }}>
-                <Avatar src="https://i.pravatar.cc/150?u=me" sx={{ width: 80, height: 80, mx: 'auto', mb: 2, border: '4px solid orange' }} />
-                <Typography variant="h5">Prem Mehta</Typography>
-                <Chip label="Level 1" sx={{ mt: 1 }} />
-                <Typography variant="caption" display="block" color="text.secondary">5 points to level up</Typography>
-                <Box sx={{ bgcolor: 'background.default', p: 4, display: 'flex', justifyContent: 'center' }}>
-                    <Container maxWidth="md">
-                        <Paper>
+    <Stack spacing={3} sx={{ mb: 3 }}>
+        <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+            <CardContent
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 4
+                }}
+            >
+                <Grid container spacing={2} sx={{ alignItems: 'center' }}>
+                    <Grid item size={{ xs: 12, md: 4 }}>
+                        {/* Left Side - Profile */}
+                        <Box sx={{ textAlign: 'center', minWidth: 220 }}>
+                            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                                <Avatar
+                                    src="https://i.pravatar.cc/150?u=me"
+                                    sx={{
+                                        width: 150,
+                                        height: 150,
+                                        border: '4px solid #E5E7EB'
+                                    }}
+                                />
+                                <Box
+                                    sx={{
+                                        position: 'absolute',
+                                        bottom: 5,
+                                        right: 20,
+                                        bgcolor: 'primary.main',
+                                        color: 'white',
+                                        borderRadius: '50%',
+                                        width: 28,
+                                        height: 28,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: 14,
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    1
+                                </Box>
+                            </Box>
+                            <Typography variant="h6" sx={{ mt: 1 }}>
+                                Prem Mehta
+                            </Typography>
+                            <Typography variant="body2" color="primary">
+                                Level 1
+                            </Typography>
+                            <Typography variant="caption" display="block" color="text.secondary">
+                                5 points to level up
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item size={{ xs: 12, md: 8 }}>
+                        {/* Right Side - Levels in 2 columns */}
+                        <Box sx={{ flex: 1 }}>
                             <Grid container spacing={2}>
-                                {levelsData.map((item) => (
-                                    <Grid item xs={12} sm={6} key={item.level}>
-                                        <List disablePadding>
-                                            <ListItem>
-                                                <ListItemAvatar>
-                                                    <Avatar sx={{
-                                                        bgcolor: item.unlocked ? '#FFFBEB' : '#F3F4F6',
-                                                        color: item.unlocked ? '#B45309' : 'text.secondary',
-                                                        fontWeight: 'bold'
-                                                    }}>
-                                                        {item.unlocked ? item.level : <LockOutlineSharp />}
-                                                    </Avatar>
-                                                </ListItemAvatar>
-                                                <ListItemText
-                                                    primary={`Level ${item.level}`}
-                                                    secondary={
-                                                        item.unlockAction ? (
-                                                            <>
-                                                                <Link href="#" underline="hover">{item.unlockAction.split(' ')[1] + ' ' + item.unlockAction.split(' ')[2]}</Link>
-                                                                {` ${item.percentage}% of members`}
-                                                            </>
-                                                        ) : (
-                                                            `${item.percentage}% of members`
-                                                        )
-                                                    }
-                                                    primaryTypographyProps={{ fontWeight: 'bold' }}
-                                                />
-                                            </ListItem>
-                                        </List>
+                                {levelsData.map((item, index) => (
+                                    <Grid item size={{ xs: 12, sm: 6 }} key={item.level}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                            <Avatar
+                                                sx={{
+                                                    bgcolor: item.unlocked ? '#FEF3C7' : '#F3F4F6',
+                                                    color: item.unlocked ? '#B45309' : 'text.secondary',
+                                                    width: 40,
+                                                    height: 40,
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                {item.unlocked ? item.level : <LockOutlineSharp fontSize="small" />}
+                                            </Avatar>
+                                            <Box>
+                                                <Typography variant="body2" fontWeight="bold">
+                                                    Level {item.level}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {item.unlockAction ? (
+                                                        <>
+                                                            <Link href="#" underline="hover" sx={{ mr: 0.5 }}>
+                                                                {item.unlockAction}
+                                                            </Link>
+                                                            {`${item.percentage}% of members`}
+                                                        </>
+                                                    ) : (
+                                                        `${item.percentage}% of members`
+                                                    )}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+                                ))}
+                                {levelsData2.map((item, index) => (
+                                    <Grid item size={{ xs: 12, sm: 6 }} key={item.level}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                            <Avatar
+                                                sx={{
+                                                    bgcolor: item.unlocked ? '#FEF3C7' : '#F3F4F6',
+                                                    color: item.unlocked ? '#B45309' : 'text.secondary',
+                                                    width: 40,
+                                                    height: 40,
+                                                    fontWeight: 'bold'
+                                                }}
+                                            >
+                                                {item.unlocked ? item.level : <LockOutlineSharp fontSize="small" />}
+                                            </Avatar>
+                                            <Box>
+                                                <Typography variant="body2" fontWeight="bold">
+                                                    Level {item.level}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {item.unlockAction ? (
+                                                        <>
+                                                            <Link href="#" underline="hover" sx={{ mr: 0.5 }}>
+                                                                {item.unlockAction}
+                                                            </Link>
+                                                            {`${item.percentage}% of members`}
+                                                        </>
+                                                    ) : (
+                                                        `${item.percentage}% of members`
+                                                    )}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
                                     </Grid>
                                 ))}
                             </Grid>
-                        </Paper>
-                    </Container>
-                </Box>
+                        </Box>
+                    </Grid>
+                </Grid>
+
             </CardContent>
         </Card>
+
         <Grid container spacing={3}>
             {[{ title: 'Leaderboard (7-day)', data: leaderboard7day }, { title: 'Leaderboard (30-day)', data: leaderboard30day }, { title: 'Leaderboard (all-time)', data: leaderboardAllTime },].map(board => (
                 <Grid item size={{ xs: 12, md: 4 }} key={board.title}>
-                    <Card>
+                    <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
                         <CardContent>
                             <Typography variant="h6">{board.title}</Typography>
                             <List>
@@ -316,7 +411,7 @@ const LeaderboardsView = () => (
 );
 
 const AboutView = () => (
-    <Card>
+    <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' , mb: 3}}>
         <CardMedia component="img" image="https://i.imgur.com/uG20I1s.png" alt="Welcome video" />
         <CardContent>
             <Stack direction="row" spacing={2} sx={{ borderBottom: '1px solid #e0e0e0', pb: 2, mb: 2 }}>
@@ -327,17 +422,17 @@ const AboutView = () => (
             <Typography variant="body1" sx={{ my: 2 }}>AI is moving fast — don't just watch it happen. Learn how to master it. This is the free community for coders, creators, operators, and curious minds who want to understand AI, build with it, and get ahead while the world plays catch up.</Typography>
             <Typography variant="h6">Inside, you'll get:</Typography>
             <List sx={{ listStyleType: 'disc', pl: 4 }}>
-                <ListItem sx={{ display: 'list-item', px:0 }}>Crash course in core AI concepts</ListItem>
-                <ListItem sx={{ display: 'list-item', px:0 }}>Hands-on practice with tools, code, and real projects</ListItem>
-                <ListItem sx={{ display: 'list-item', px:0 }}>Access to a network of sharp, motivated builders</ListItem>
+                <ListItem sx={{ display: 'list-item', px: 0 }}>Crash course in core AI concepts</ListItem>
+                <ListItem sx={{ display: 'list-item', px: 0 }}>Hands-on practice with tools, code, and real projects</ListItem>
+                <ListItem sx={{ display: 'list-item', px: 0 }}>Access to a network of sharp, motivated builders</ListItem>
             </List>
         </CardContent>
     </Card>
 );
 
 const RightSidebar = () => (
-    <Stack spacing={3}>
-        <Card>
+    <Stack spacing={3} sx={{ mb: 3 }}>
+        <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <CardMedia component="img" height="200" image="https://i.ibb.co/qYtwFDC6/banner.jpg" alt="Community Banner" />
             <CardContent sx={{ textAlign: 'left' }}>
                 <Typography variant="h6">Cryptomanji</Typography>
@@ -351,7 +446,7 @@ const RightSidebar = () => (
                 <Button variant="outlined" fullWidth>Invite People</Button>
             </CardContent>
         </Card>
-        <Card>
+        <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <CardContent>
                 <Typography variant="h6" gutterBottom>Leaderboard (30-day)</Typography>
                 <List disablePadding>{leaderboard30day.map((member) => (<ListItem key={member.name} disablePadding>
@@ -387,7 +482,7 @@ const AiBellnDesk = () => {
             case 1: return <ClassroomView />;
             case 2: return <CalendarView />;
             case 3: return <MembersView />;
-            case 4: return <Card><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2021171.7185316933!2d-81.6388085853078!3d8.342381187511716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa61583c8be2be3%3A0x79eee04d1fa59bcf!2sPanama!5e0!3m2!1sen!2sin!4v1758190007780!5m2!1sen!2sin" width="100%" height="500" style={{ border: 0 }} allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></Card>;
+            case 4: return <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' , mb: 3}}><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2021171.7185316933!2d-81.6388085853078!3d8.342381187511716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa61583c8be2be3%3A0x79eee04d1fa59bcf!2sPanama!5e0!3m2!1sen!2sin!4v1758190007780!5m2!1sen!2sin" width="100%" height="500" style={{ border: 0 }} allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></Card>;
             case 5: return <LeaderboardsView />;
             case 6: return <AboutView />;
             default: return <CommunityFeed handleOpenPostModal={handleOpenPostModal} />;

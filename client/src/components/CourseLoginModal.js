@@ -117,12 +117,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
           });
 
           if (!response.ok) {
-            throw new Error('Community User login failed');
+            throw new Error('Community User Sign In failed');
           }
 
           const userData = await response.json();
           if (!userData.success) {
-            throw new Error(userData.message || 'Login failed');
+            throw new Error(userData.message || 'Sign In failed');
           }
 
           localStorage.setItem('communityUserToken', userData.data.token);
@@ -149,12 +149,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
           });
 
           if (!response.ok) {
-            throw new Error('Community User login failed');
+            throw new Error('Community User Sign In failed');
           }
 
           const userData = await response.json();
           if (!userData.success) {
-            throw new Error(userData.message || 'Login failed');
+            throw new Error(userData.message || 'Sign In failed');
           }
 
           localStorage.setItem('communityUserToken', userData.data.token);
@@ -167,7 +167,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       }
 
       // Success - redirect to course
-      setSuccess('Login successful! Redirecting to course...');
+      setSuccess('Sign In successful! Redirecting to course...');
 
       let communityForRedirect = null;
       
@@ -197,12 +197,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
           }, 1500);
         }
       } else {
-        setError('Login successful but unable to redirect. Please try again.');
+        setError('Sign In successful but unable to redirect. Please try again.');
       }
 
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.message || 'Login failed. Please check your credentials.');
+      console.error('Sign In error:', error);
+      setError(error.message || 'Sign In failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -328,13 +328,13 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
               fontSize: '16px',
               fontWeight: 'bold',
               borderRadius: '10px',
-              background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+              background: '#0F3C60',
             }}
           >
             {isLoading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              'Login'
+              'Sign In'
             )}
           </Button>
 
@@ -351,22 +351,21 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
               />
             }
             sx={{
-              marginTop: '16px',
               marginBottom: '16px',
               padding: '12px',
               fontSize: '16px',
               fontWeight: 'bold',
               borderRadius: '10px',
-              borderColor: '#1976d2',
-              color: '#1976d2',
+              borderColor: '#0F3C60',
+              color: '#0F3C60',
               backgroundColor: '#fff',
               '&:hover': {
-                borderColor: '#1976d2',
+                borderColor: '#0F3C60',
                 backgroundColor: 'rgba(25, 118, 210, 0.04)',
               }
             }}
           >
-            Login with Google
+            Sign In with Google
           </Button>
 
           {/* Signup Link */}
@@ -382,7 +381,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                 }}
                 style={{ 
                   textDecoration: 'none',
-                  color: '#1976d2',
+                  color: '#0F3C60',
                   fontWeight: 500
                 }}
               >

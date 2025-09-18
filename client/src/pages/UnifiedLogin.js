@@ -33,7 +33,7 @@ import communityAuthApi from '../utils/communityAuthApi';
 import { apiUrl } from '../config/api';
 
 const UnifiedLogin = () => {
-  useDocumentTitle('Login - Bell n Desk');
+  useDocumentTitle('Sign In - Bell n Desk');
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -150,12 +150,12 @@ const UnifiedLogin = () => {
             });
 
             if (!response.ok) {
-              throw new Error('Community User login failed');
+              throw new Error('Community User Sign In failed');
             }
 
             const userData = await response.json();
             if (!userData.success) {
-              throw new Error(userData.message || 'Login failed');
+              throw new Error(userData.message || 'Sign In failed');
             }
 
             // Store community user data
@@ -164,20 +164,20 @@ const UnifiedLogin = () => {
             localStorage.setItem('communityId', userData.data.user.community.id);
 
             loginResult = userData;
-            console.log('✅ Community User login successful');
+            console.log('✅ Community User Sign In successful');
           }
         } else {
           // Fallback: Try both login types automatically
-          console.log('🔄 No community detected, trying both login types...');
+          console.log('🔄 No community detected, trying both Sign In types...');
 
           try {
             // First try Community Admin login
             console.log('🔍 Trying Community Admin login...');
             loginResult = await communityAuthApi.login(formData.email, formData.password);
             userType = 'admin';
-            console.log('✅ Community Admin login successful');
+            console.log('✅ Community Admin Sign In successful');
           } catch (adminError) {
-            console.log('❌ Community Admin login failed, trying Community User login...');
+            console.log('❌ Community Admin Sign In failed, trying Community User Sign In...');
 
             // If admin login fails, try community user login
             try {
@@ -193,12 +193,12 @@ const UnifiedLogin = () => {
               });
 
               if (!response.ok) {
-                throw new Error('Community User login failed');
+                throw new Error('Community User Sign In failed');
               }
 
               const userData = await response.json();
               if (!userData.success) {
-                throw new Error(userData.message || 'Login failed');
+                throw new Error(userData.message || 'Sign In failed');
               }
 
               // Store community user data
@@ -208,22 +208,22 @@ const UnifiedLogin = () => {
 
               loginResult = userData;
               userType = 'user';
-              console.log('✅ Community User login successful');
+              console.log('✅ Community User Sign In successful');
             } catch (userError) {
-              console.log('❌ Both login attempts failed');
+              console.log('❌ Both Sign In attempts failed');
               throw new Error('Invalid credentials. Please check your email and password.');
             }
           }
         }
       } else if (formData.userType === 'admin') {
         // Community Admin login
-        console.log('🔍 Community Admin login...');
+        console.log('🔍 Community Admin Sign In...');
         loginResult = await communityAuthApi.login(formData.email, formData.password);
         userType = 'admin';
-        console.log('✅ Community Admin login successful');
+        console.log('✅ Community Admin Sign In successful');
       } else {
         // Community User login
-        console.log('🔍 Community User login...');
+        console.log('🔍 Community User Sign In...');
         const response = await fetch(apiUrl('/api/community-user/login'), {
           method: 'POST',
           headers: {
@@ -236,12 +236,12 @@ const UnifiedLogin = () => {
         });
 
         if (!response.ok) {
-          throw new Error('Login failed');
+          throw new Error('Sign In failed');
         }
 
         const userData = await response.json();
         if (!userData.success) {
-          throw new Error(userData.message || 'Login failed');
+          throw new Error(userData.message || 'Sign In failed');
         }
 
         // Store community user data
@@ -251,11 +251,11 @@ const UnifiedLogin = () => {
 
         loginResult = userData;
         userType = 'user';
-        console.log('✅ Community User login successful');
+        console.log('✅ Community User Sign In successful');
       }
 
       // Success - redirect based on user type
-      setSuccess(`Login successful! Redirecting to your ${userType === 'admin' ? 'admin courses' : 'student courses'}...`);
+      setSuccess(`Sign In successful! Redirecting to your ${userType === 'admin' ? 'admin courses' : 'student courses'}...`);
 
       // Use detected community for redirect if available
       let communityForRedirect = null;
@@ -313,6 +313,11 @@ const UnifiedLogin = () => {
     <Box>
       <Box className="login-card">
         <Grid container spacing={2} sx={{ alignItems: 'center', height: '100vh', alignItems: 'center' }}>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Box className="login_image_box">
+              <img src={loginImage} alt="login" />
+            </Box>
+          </Grid>
           <Grid size={{ xs: 12, md: 6, lg: 6 }}>
              <Box className="login_box" elevation={10}> 
               <Box style={{ padding: '40px' }}>
@@ -423,7 +428,7 @@ const UnifiedLogin = () => {
                     {isLoading ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
-                      'Login'
+                      'Sign In'
                     )}
                   </Button>
 
@@ -455,7 +460,7 @@ const UnifiedLogin = () => {
                       }
                     }}
                   >
-                    Login with Google
+                    Sign In with Google
                   </Button>
 
                   {/* Forgot Password Link */}
@@ -493,11 +498,7 @@ const UnifiedLogin = () => {
               </Box>
             </Box>
           </Grid>
-          <Grid size={{ xs: 12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Box className="login_image_box">
-              <img src={loginImage} alt="login" />
-            </Box>
-          </Grid>
+          
         </Grid>
 
       </Box>

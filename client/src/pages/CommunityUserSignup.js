@@ -268,7 +268,7 @@ const CommunityUserSignup = () => {
                   onClick={() => navigate('/community-user-login')}
                   sx={{ textDecoration: 'none' }}
                 >
-                  Login here
+                  Sign In here
                 </Link>
               </Typography>
             </CardContent>
@@ -478,7 +478,7 @@ const CommunityUserSignup = () => {
                       onClick={() => navigate('/community-user-login')}
                       sx={{ textDecoration: 'none', color: '#020617', fontWeight: 600 }}
                     >
-                      Login here
+                      Sign In here
                     </Link>
                   </Typography>
                 </Box>

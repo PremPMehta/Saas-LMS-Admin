@@ -330,7 +330,7 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
           <Box sx={{
             p: 1,
             borderRadius: 2,
-            background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+            background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -543,7 +543,7 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
                   >
                     <MenuItem value="admin">
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#1976d2' }} />
+                        <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#0F3C60' }} />
                         Administrator
                       </Box>
                     </MenuItem>
@@ -643,9 +643,9 @@ const AddUserModal = ({ open, onClose, onSave, editingUser }) => {
             textTransform: 'none',
             fontWeight: 600,
             px: 3,
-            background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+            background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
             '&:hover': {
-              background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+              background: 'linear-gradient(135deg, #1565c0 0%, #0F3C60 100%)',
             },
           }}
         >

@@ -350,7 +350,7 @@ const AddPlanModal = ({
           <Box sx={{
             p: 1,
             borderRadius: 2,
-            background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+            background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -793,9 +793,9 @@ const AddPlanModal = ({
             textTransform: 'none',
             fontWeight: 600,
             px: 3,
-            background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+            background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
             '&:hover': {
-              background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+              background: 'linear-gradient(135deg, #1565c0 0%, #0F3C60 100%)',
             },
           }}
         >

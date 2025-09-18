@@ -80,7 +80,7 @@ const Sidebar = () => {
       <Box
         sx={{
           p: 2,
-          background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+          background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
           position: 'relative',
           overflow: 'hidden',
           '&::before': {
@@ -177,7 +177,7 @@ const Sidebar = () => {
                 width: 40,
                 height: 40,
                 backgroundColor: userRole === 'admin' 
-                  ? 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)'
+                  ? 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)'
                   : 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)',
                 color: 'white',
                 fontWeight: 700,

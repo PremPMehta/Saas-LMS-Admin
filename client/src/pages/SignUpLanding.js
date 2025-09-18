@@ -317,7 +317,7 @@ const SignUpLanding = () => {
                                     fullWidth
                                     sx={{ mt: 1 }}
                                 >
-                                    Login
+                                    Sign In
                                 </Button>
                                 <Typography
                                     variant="body2"

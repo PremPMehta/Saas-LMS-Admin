@@ -29,7 +29,7 @@ import googleLogo from '../assets/google-logo.png';
 import useDocumentTitle from '../contexts/useDocumentTitle';
 
 const CommunityUserLogin = () => {
-  useDocumentTitle('Community User Login - Bell n Desk');
+  useDocumentTitle('Community User Sign In - Bell n Desk');
   const navigate = useNavigate();
   const { communityName } = useParams();
   const [formData, setFormData] = useState({
@@ -57,7 +57,7 @@ const CommunityUserLogin = () => {
 
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com';
-      console.log('🔍 Community User Login Debug:', {
+      console.log('🔍 Community User Sign In Debug:', {
         apiUrl,
         endpoint: `${apiUrl}/api/community-user/login`,
         formData: { email: formData.email, password: '[HIDDEN]' },
@@ -84,7 +84,7 @@ const CommunityUserLogin = () => {
           setShowApprovalStatus(true);
         }
       } else {
-        setError(response.data.message || 'Login failed. Please try again.');
+        setError(response.data.message || 'Sign In failed. Please try again.');
       }
 
     } catch (error) {
@@ -101,7 +101,7 @@ const CommunityUserLogin = () => {
       } else if (error.response?.status === 423) {
         setError('Account temporarily locked. Please try again later.');
       } else {
-        setError('Login failed. Please try again.');
+        setError('Sign In failed. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -265,10 +265,11 @@ const CommunityUserLogin = () => {
               <CardContent sx={{ p: 0 }}>
                 <Box sx={{ textAlign: 'left', mb: 4 }}>
                   <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, color: '#333' }}>
-                    Bell n Desk User Login
+                    Bell n Desk User Sign In
+                    Bell and Desk User Sign In
                   </Typography>
                   <Typography variant="body1" sx={{ color: '#666' }}>
-                    Login to access your community dashboard
+                    Sign In to access your community dashboard
                   </Typography>
                 </Box>
 
@@ -341,7 +342,7 @@ const CommunityUserLogin = () => {
                       },
                     }}
                   >
-                    {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Login'}
+                    {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
                   </Button>
 
                   {/* Divider */}
@@ -383,7 +384,7 @@ const CommunityUserLogin = () => {
                       />
                     }
                   >
-                    Login with Google
+                    Sign In with Google
                   </Button>
 
                 </Box>
@@ -406,7 +407,7 @@ const CommunityUserLogin = () => {
           </Grid>
           <Grid size={{ xs:12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
             <Box className="login_image_box">
-              <img src={loginImage} alt="login" />
+              <img src={loginImage} alt="Sign In" />
             </Box>
           </Grid>
         </Grid>

@@ -634,14 +634,15 @@ const Courses = () => {
           borderRadius: 3,
           transition: 'all 0.3s ease',
           overflow: 'hidden',
-          height: '100%', // Fixed height for consistent alignment
+          height: '100%',
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
+          boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)',
           '&:hover': {
             transform: isDragDisabled ? 'translateY(-2px)' : 'none',
-            boxShadow: isDragDisabled ? '0 8px 25px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.1)'
+            // boxShadow: isDragDisabled ? '0 8px 25px rgba(0,0,0,0.15)' : '0 2px 8px rgba(0,0,0,0.1)'
           },
           '&:active': {
             cursor: isDragDisabled ? 'pointer' : 'grabbing'
@@ -2073,7 +2074,7 @@ const Courses = () => {
                           label={selectedCourse.category || 'Uncategorized'}
                           sx={{
                             backgroundColor: darkMode ? '#404040' : '#e3f2fd',
-                            color: darkMode ? '#ffffff' : '#1976d2'
+                            color: darkMode ? '#ffffff' : '#0F3C60'
                           }}
                         />
                         <Chip
