@@ -667,7 +667,7 @@ const StudentCourses = () => {
                             <Typography
                               variant="body2"
                               sx={{
-                                color: darkMode ? '#90caf9' : '#1976d2',
+                                color: darkMode ? '#90caf9' : '#0F3C60',
                                 mb: 1,
                                 fontSize: '0.85rem',
                                 fontWeight: 500,

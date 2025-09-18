@@ -126,7 +126,7 @@ const CommunityAbout = () => {
               }}
               href={settings.login_button_url || '/login'}
             >
-              {settings.login_button_text || 'LOG IN'}
+              {settings.login_button_text || 'Sign In'}
             </Button>
           </Box>
         </Container>

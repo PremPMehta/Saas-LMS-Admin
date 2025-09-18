@@ -36,7 +36,7 @@ const targetAudienceSchema = new mongoose.Schema({
   },
   color: {
     type: String,
-    default: '#1976d2'
+    default: '#0F3C60'
   },
   isActive: {
     type: Boolean,

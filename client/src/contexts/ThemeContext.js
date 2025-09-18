@@ -59,7 +59,7 @@ export const ThemeProvider = ({ children }) => {
       },
     },
     typography: {
-      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"Lato", "Roboto", "Montserrat", "Arial", sans-serif',
       h1: {
         fontWeight: 600,
       },
@@ -83,7 +83,7 @@ export const ThemeProvider = ({ children }) => {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: mode === 'light' ? '#ffffff' : '#0a0a0a',
+            backgroundColor: mode === 'light' ? '#f8fafc' : '#0a0a0a',
             color: mode === 'light' ? '#1a202c' : '#ffffff',
           },
         },
@@ -147,7 +147,7 @@ export const ThemeProvider = ({ children }) => {
                 borderColor: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : 'rgba(255, 255, 255, 0.87)',
               },
               '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#1976d2',
+                borderColor: '#0F3C60',
               },
             },
             '& .MuiFormHelperText-root': {
@@ -178,7 +178,7 @@ export const ThemeProvider = ({ children }) => {
                 borderColor: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : 'rgba(255, 255, 255, 0.87)',
               },
               '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#1976d2',
+                borderColor: '#0F3C60',
               },
             },
           },
@@ -224,7 +224,7 @@ export const ThemeProvider = ({ children }) => {
           root: {
             '& .MuiTableCell-head': {
               backgroundColor: mode === 'light' ? 'rgba(25, 118, 210, 0.04)' : 'rgba(25, 118, 210, 0.08)',
-              color: mode === 'light' ? '#1976d2' : '#42a5f5',
+              color: mode === 'light' ? '#0F3C60' : '#42a5f5',
             },
           },
         },
@@ -246,6 +246,8 @@ export const ThemeProvider = ({ children }) => {
         },
       },
     },
+   
+ 
   });
 
   return (

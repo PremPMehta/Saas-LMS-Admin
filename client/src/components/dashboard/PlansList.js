@@ -182,7 +182,7 @@ const PlansList = ({ plans }) => {
                     fontWeight: 800,
                     background: plan.popular 
                       ? getPlanGradient(plan.name) 
-                      : 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                      : 'linear-gradient(45deg, #0F3C60, #42a5f5)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',

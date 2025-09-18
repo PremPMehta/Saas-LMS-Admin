@@ -22,19 +22,30 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
   
   // Check if user is a community user (student) or admin
   const communityUserData = localStorage.getItem('communityUser');
-  const isCommunityUser = !!communityUserData;
+  const communityUserToken = localStorage.getItem('communityUserToken');
+  const communityToken = localStorage.getItem('communityToken');
+  const authToken = localStorage.getItem('authToken');
+  const authUser = localStorage.getItem('user');
+  
+  // Determine user type based on available tokens and data
+  const isCommunityUser = !!(communityUserData && communityUserToken);
+  const isAdmin = !!(authToken && authUser);
   
   // Debug logging
   console.log('🔍 FocusedTopBar Debug:', {
     communityUserData: communityUserData ? 'present' : 'null',
+    communityUserToken: communityUserToken ? 'present' : 'null',
+    communityToken: communityToken ? 'present' : 'null',
+    authToken: authToken ? 'present' : 'null',
+    authUser: authUser ? 'present' : 'null',
     isCommunityUser,
-    communityUserToken: localStorage.getItem('communityUserToken') ? 'present' : 'null',
-    communityToken: localStorage.getItem('communityToken') ? 'present' : 'null'
+    isAdmin
   });
   
   // Get appropriate data based on user type
   const communityData = communityAuthApi.getCurrentCommunity();
   const studentData = isCommunityUser ? JSON.parse(communityUserData) : null;
+  const adminData = isAdmin ? JSON.parse(authUser) : (!isCommunityUser ? communityData : null);
   
   console.log('🔍 FocusedTopBar User Data:', {
     studentData: studentData ? { firstName: studentData.firstName, lastName: studentData.lastName, email: studentData.email } : null,
@@ -167,7 +178,13 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
                 `${studentData.firstName} ${studentData.lastName}` : 
                 (studentData?.firstName || studentData?.email || 'Student')
               ) : 
-              (communityData?.name || 'Community')
+              (isAdmin ? 
+                (adminData?.firstName && adminData?.lastName ? 
+                  `${adminData.firstName} ${adminData.lastName}` : 
+                  (adminData?.email || 'Admin')
+                ) :
+                (adminData?.ownerName || adminData?.name || 'Admin')
+              )
             }
           </Box>
           <Box sx={{ 
@@ -175,16 +192,22 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             color: darkMode ? '#b0b0b0' : '#666666',
             lineHeight: 1.2
           }}>
-            {isCommunityUser ? 'Student' : (communityData?.ownerEmail || 'Admin')}
+            {isCommunityUser ? 'Student' : (isAdmin ? 'Admin' : 'Admin')}
           </Box>
         </Box>
         
-        <Tooltip title={`${isCommunityUser ? 
+        <Tooltip title={`${isCommunityUser ?
           (studentData?.firstName && studentData?.lastName ? 
             `${studentData.firstName} ${studentData.lastName}` : 
             (studentData?.firstName || studentData?.email || 'Student')
           ) : 
-          (communityData?.name || 'Community')
+          (isAdmin ? 
+            (adminData?.firstName && adminData?.lastName ? 
+              `${adminData.firstName} ${adminData.lastName}` : 
+              (adminData?.email || 'Admin')
+            ) :
+            (adminData?.ownerName || adminData?.name || 'Admin')
+          )
         } Profile`}>
           <IconButton
             onClick={handleAvatarClick}
@@ -213,7 +236,10 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
             >
               {isCommunityUser ? 
                 (studentData?.firstName?.charAt(0) || studentData?.email?.charAt(0) || 'S') : 
-                (communityData?.name?.charAt(0) || 'C')
+                (isAdmin ? 
+                  (adminData?.firstName?.charAt(0) || adminData?.email?.charAt(0) || 'A') :
+                  (adminData?.ownerName?.charAt(0) || adminData?.name?.charAt(0) || 'A')
+                )
               }
             </Avatar>
           </IconButton>
@@ -241,11 +267,11 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
               py: 2,
               borderRadius: 2,
               mx: 1,
-              my: 0.5,
+              // my: 0.5,
               transition: 'all 0.2s ease',
               '&:hover': {
                 backgroundColor: darkMode ? '#404040' : '#f5f5f5',
-                transform: 'translateX(4px)',
+                // transform: 'translateX(4px)',
               },
               '&:first-of-type': {
                 mt: 1,

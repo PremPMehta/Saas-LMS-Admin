@@ -652,7 +652,7 @@ const AcademiesList = ({ academies, onAcademyUpdate, onAcademyDelete, defaultRow
         }}
       >
         <DialogTitle sx={{
-          background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+          background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
           color: 'white',
           borderRadius: '12px 12px 0 0',
           display: 'flex',

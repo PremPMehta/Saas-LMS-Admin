@@ -59,7 +59,7 @@ const AboutUsAdmin = () => {
     communityLogoUrl: '',
     
     // Header
-    loginButtonText: 'LOG IN',
+    loginButtonText: 'Sign In',
     loginButtonUrl: '',
     
     // Video Settings

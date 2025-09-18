@@ -50,7 +50,7 @@ import {
   Refresh as RefreshIcon,
   Fullscreen as FullscreenIcon
 } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
 import { useResponsiveLayout } from '../utils/responsiveLayout';
 import FocusedSidebar from '../components/FocusedSidebar';
@@ -64,6 +64,7 @@ const CourseViewer = () => {
   const theme = useTheme();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
   const navigate = useNavigate();
+  const location = useLocation();
   const { courseId, communityName } = useParams();
 
   // Get community-specific URLs
@@ -868,7 +869,15 @@ const CourseViewer = () => {
             <Box sx={{ pb: 2 }}>
               <Button
                 startIcon={<ArrowBackIcon />}
-                onClick={() => navigate(`/${communityName}/admin/courses`)}
+                onClick={() => {
+                  // Determine if user is student or admin based on URL path
+                  const isStudentPath = location.pathname.includes('/student/');
+                  const backUrl = isStudentPath 
+                    ? `/${communityName}/student/courses`
+                    : `/${communityName}/admin/courses`;
+                  console.log('CourseViewer back button - isStudentPath:', isStudentPath, 'backUrl:', backUrl);
+                  navigate(backUrl);
+                }}
                 sx={{
                   textTransform: 'none',
                   color: darkMode ? '#fff' : '#0F3C60',
@@ -886,7 +895,7 @@ const CourseViewer = () => {
             <Grid container spacing={2}>
               {/* Sidebar - Courses and Lectures */}
               <Grid size={{ xs: 12, md: 5, lg: 5, xl: 4 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' , borderRadius: '15px' , boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)'}}>
                   <CardContent sx={{ flexGrow: 1, overflow: 'hidden', p: 0 }}>
                     <Box sx={{ p: 2, pb: 0, borderColor: 'divider' }}>
                       <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -1017,7 +1026,7 @@ const CourseViewer = () => {
 
               {/* Main Content Area */}
               <Grid size={{ xs: 12, md: 7, lg: 7, xl: 8 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' , borderRadius: '15px' , boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)'}}>
                   <CardContent sx={{ flexGrow: 1, p: 0, display: 'flex', flexDirection: 'column' }}>
                     {selectedLecture ? (
                       <>
@@ -1035,11 +1044,11 @@ const CourseViewer = () => {
                           minHeight: '300px',
                           backgroundColor: '#000',
                           position: 'relative',
-                          borderRadius: 1,
+                          // borderRadius: 1,
                           overflow: 'hidden',
                           // aspectRatio: { xs: '4/3', sm: '16/10', md: '16/9' },
                           width: '100%',
-                          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                          // boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
                         }}>
                           {selectedLecture.type === 'PDF' ? (
                             // Enhanced PDF Viewer with react-pdf
@@ -1171,7 +1180,7 @@ const CourseViewer = () => {
                                   maxHeight: '100%',
                                   cursor: 'pointer',
                                   '&:focus': {
-                                    outline: '2px solid #1976d2',
+                                    outline: '2px solid #0F3C60',
                                     outlineOffset: '2px'
                                   }
                                 }}

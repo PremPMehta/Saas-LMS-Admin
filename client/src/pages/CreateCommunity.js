@@ -295,13 +295,13 @@ const CreateCommunity = () => {
                   <Card
                     sx={{
                       cursor: 'pointer',
-                      border: formData.category === category.id ? '2px solid #1976d2' : '1px solid #e0e0e0',
+                      border: formData.category === category.id ? '2px solid #0F3C60' : '1px solid #e0e0e0',
                       borderRadius: 2,
                       transition: 'all 0.2s ease-in-out',
                       '&:hover': {
                         transform: 'translateY(-4px)',
                         boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
-                        borderColor: '#1976d2'
+                        borderColor: '#0F3C60'
                       },
                       height: '100%',
                       position: 'relative'
@@ -334,7 +334,7 @@ const CreateCommunity = () => {
                           </Typography>
                         </Box>
                         {formData.category === category.id && (
-                          <CheckCircleIcon sx={{ color: '#1976d2', fontSize: 28 }} />
+                          <CheckCircleIcon sx={{ color: '#0F3C60', fontSize: 28 }} />
                         )}
                       </Box>
                     </CardContent>
@@ -395,18 +395,18 @@ const CreateCommunity = () => {
                     <Card
                       sx={{
                         cursor: 'pointer',
-                        border: formData.selectedPlan === plan._id ? '2px solid #1976d2' : '1px solid #e0e0e0',
+                        border: formData.selectedPlan === plan._id ? '2px solid #0F3C60' : '1px solid #e0e0e0',
                         borderRadius: 2,
                         transition: 'all 0.2s ease-in-out',
                         '&:hover': {
                           transform: 'translateY(-8px)',
                           boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-                          borderColor: '#1976d2'
+                          borderColor: '#0F3C60'
                         },
                         position: 'relative',
                         height: '100%',
                         ...(plan.popular && {
-                          borderColor: '#1976d2',
+                          borderColor: '#0F3C60',
                           boxShadow: '0 8px 30px rgba(25, 118, 210, 0.2)'
                         })
                       }}
@@ -420,7 +420,7 @@ const CreateCommunity = () => {
                             left: -1,
                             right: -1,
                             height: 4,
-                            background: 'linear-gradient(90deg, #1976d2, #42a5f5)',
+                            background: 'linear-gradient(90deg, #0F3C60, #42a5f5)',
                             borderRadius: '2px 2px 0 0'
                           }}
                         />
@@ -433,7 +433,7 @@ const CreateCommunity = () => {
                             size="small" 
                             sx={{ 
                               mb: 2, 
-                              bgcolor: '#1976d2', 
+                              bgcolor: '#0F3C60', 
                               color: 'white',
                               fontWeight: 600,
                               alignSelf: 'flex-start'
@@ -446,7 +446,7 @@ const CreateCommunity = () => {
                         </Typography>
                         
                         <Box sx={{ mb: 3 }}>
-                          <Typography variant="h3" sx={{ fontWeight: 700, color: '#1976d2' }}>
+                          <Typography variant="h3" sx={{ fontWeight: 700, color: '#0F3C60' }}>
                             {plan.price}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
@@ -542,7 +542,7 @@ const CreateCommunity = () => {
                     sx={{ 
                       width: 80, 
                       height: 80, 
-                      bgcolor: '#1976d2',
+                      bgcolor: '#0F3C60',
                       fontSize: '2rem',
                       fontWeight: 600
                     }}
@@ -653,7 +653,7 @@ const CreateCommunity = () => {
         <Container maxWidth="xl">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <BusinessIcon sx={{ fontSize: 32, color: '#1976d2' }} />
+              <BusinessIcon sx={{ fontSize: 32, color: '#0F3C60' }} />
               <Typography 
                 variant="h5" 
                 sx={{ 
@@ -676,8 +676,8 @@ const CreateCommunity = () => {
                 borderColor: '#e0e0e0',
                 color: '#666',
                 '&:hover': {
-                  borderColor: '#1976d2',
-                  color: '#1976d2'
+                  borderColor: '#0F3C60',
+                  color: '#0F3C60'
                 }
               }}
             >
@@ -695,10 +695,10 @@ const CreateCommunity = () => {
             alternativeLabel
             sx={{
               '& .MuiStepLabel-root .Mui-completed': {
-                color: '#1976d2'
+                color: '#0F3C60'
               },
               '& .MuiStepLabel-root .Mui-active': {
-                color: '#1976d2'
+                color: '#0F3C60'
               },
               '& .MuiStepConnector-line': {
                 borderColor: '#e0e0e0'
@@ -724,7 +724,7 @@ const CreateCommunity = () => {
               borderRadius: 2,
               bgcolor: '#f0f0f0',
               '& .MuiLinearProgress-bar': {
-                bgcolor: '#1976d2'
+                bgcolor: '#0F3C60'
               }
             }}
           />
@@ -767,7 +767,7 @@ const CreateCommunity = () => {
                 textTransform: 'none',
                 fontSize: '1rem',
                 fontWeight: 600,
-                bgcolor: '#1976d2',
+                bgcolor: '#0F3C60',
                 '&:hover': {
                   bgcolor: '#1565c0'
                 }
@@ -788,7 +788,7 @@ const CreateCommunity = () => {
                 textTransform: 'none',
                 fontSize: '1rem',
                 fontWeight: 500,
-                bgcolor: '#1976d2',
+                bgcolor: '#0F3C60',
                 '&:hover': {
                   bgcolor: '#1565c0'
                 },

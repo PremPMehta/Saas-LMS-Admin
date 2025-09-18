@@ -246,9 +246,9 @@ const Dashboard = () => {
                 borderRadius: 2,
                 textTransform: 'none',
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                  background: 'linear-gradient(135deg, #1565c0 0%, #0F3C60 100%)',
                 },
               }}
             >

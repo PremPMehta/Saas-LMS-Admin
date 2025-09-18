@@ -5,6 +5,7 @@ import {
   TextField,
   Button,
   Grid,
+  Container
 } from "@mui/material";
 
 export default function Newsletter() {
@@ -26,37 +27,41 @@ export default function Newsletter() {
             variant="subtitle2"
             sx={{ color: "#0F3C60", fontWeight: "bold", mb: 1 }}
           >
-            OUR NEWSLETTER
+            Bell N Desk
           </Typography>
           <Typography
             variant="h4"
             sx={{ fontWeight: "bold", mb: 2 }}
           >
-            Stay updated with our <br/> weekly newsletter
+            Turn Your Knowledge Into <br/> Recurring Revenue
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{mb: 2 }}
+          >
+            Build. Teach. Earn. Repeat.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Why kept very ever home mrs. Considered sympathize ten 
-            uncommonly occasional assistance <br/> sufficient not. Letter of on
-            become he tended active enable to.
+            Join thousands of creators making money per month with their online courses. No tech skills needed. <br /> Just bring your expertise, we'll handle the rest.
           </Typography>
         </Grid>
 
         {/* Right Side */}
         <Grid item size={{ xs: 12, md: 4, lg: 4 }}>
           <Box>
-            <Typography
+            {/* <Typography
               variant="subtitle1"
               sx={{ color: "#0F3C60", fontWeight: "bold", mb: 2 }}
             >
               Signup For Newsletter
-            </Typography>
-            <TextField
+            </Typography> */}
+            {/* <TextField
               fullWidth
               label="Email Address"
               variant="outlined"
               size="small"
               sx={{ mb: 2, bgcolor: "white", borderRadius: "6px" }}
-            />
+            /> */}
             {/* <TextField
               fullWidth
               label="Password"
@@ -75,7 +80,7 @@ export default function Newsletter() {
                 py: 1,
               }}
             >
-              GET STARTED
+              🚀 Start Free Trial
             </Button>
           </Box>
         </Grid>

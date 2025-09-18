@@ -64,7 +64,7 @@ const CommunityLogin = () => {
       const response = await communityAuthApi.login(formData.email, formData.password);
       console.log('Login response:', response);
 
-      setSuccess('Login successful! Redirecting to your courses...');
+      setSuccess('Sign In successful! Redirecting to your courses...');
 
       // Get community name and redirect to admin courses
       const community = communityAuthApi.getCurrentCommunity();
@@ -81,13 +81,13 @@ const CommunityLogin = () => {
         }, 1500);
       } else {
         // Fallback - this shouldn't happen but just in case
-        console.error('No community data found after login');
+        console.error('No community data found after Sign In');
         console.log('Available localStorage keys:', Object.keys(localStorage));
-        setError('Login successful but unable to redirect. Please try again.');
+        setError('Sign In successful but unable to redirect. Please try again.');
       }
 
     } catch (error) {
-      setError(error.message || 'Login failed. Please check your credentials.');
+      setError(error.message || 'Sign In failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -102,12 +102,18 @@ const CommunityLogin = () => {
     <Box>
       <Box className="login-card" >
         <Grid container spacing={2} sx={{ alignItems: 'center', height: '100vh', alignItems: 'center' }}>
+                   
+          <Grid size={{ xs:12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Box className="login_image_box">
+              <img src={loginImage} alt="login" />
+            </Box>
+          </Grid>
           <Grid size={{ xs:12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <Box sx={{ mb: 4 }}>
                 <School sx={{ fontSize: 48, mb: 2 }} />
                 <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                  Bell n Desk Login
+                  Bell n Desk Sign In
                 </Typography>
                 <Typography variant="body1" sx={{ opacity: 0.9 }}>
                   Access your community dashboard
@@ -197,7 +203,7 @@ const CommunityLogin = () => {
                     {isLoading ? (
                       <CircularProgress size={24} color="inherit" />
                     ) : (
-                      'Login'
+                      'Sign In'
                     )}
                   </Button>
                 </Box>
@@ -241,7 +247,7 @@ const CommunityLogin = () => {
                     />
                   }
                 >
-                  Login with Google
+                  Sign In with Google
                 </Button>
 
                 <Box sx={{ mt: 3, }}>
@@ -285,12 +291,7 @@ const CommunityLogin = () => {
                 </Box>
               </CardContent>
             </Box>
-          </Grid>          
-          <Grid size={{ xs:12, md: 6, lg: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Box className="login_image_box">
-              <img src={loginImage} alt="login" />
-            </Box>
-          </Grid>
+          </Grid> 
         </Grid>
       </Box>
     </Box>

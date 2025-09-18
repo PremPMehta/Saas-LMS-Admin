@@ -24,6 +24,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import communityAuthApi from '../utils/communityAuthApi';
 import { apiUrl } from '../config/api';
+import googleLogo from '../assets/google-logo.png';
 
 const CourseLoginModal = ({ open, onClose, courseData }) => {
   const navigate = useNavigate();
@@ -116,12 +117,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
           });
 
           if (!response.ok) {
-            throw new Error('Community User login failed');
+            throw new Error('Community User Sign In failed');
           }
 
           const userData = await response.json();
           if (!userData.success) {
-            throw new Error(userData.message || 'Login failed');
+            throw new Error(userData.message || 'Sign In failed');
           }
 
           localStorage.setItem('communityUserToken', userData.data.token);
@@ -148,12 +149,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
           });
 
           if (!response.ok) {
-            throw new Error('Community User login failed');
+            throw new Error('Community User Sign In failed');
           }
 
           const userData = await response.json();
           if (!userData.success) {
-            throw new Error(userData.message || 'Login failed');
+            throw new Error(userData.message || 'Sign In failed');
           }
 
           localStorage.setItem('communityUserToken', userData.data.token);
@@ -166,7 +167,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       }
 
       // Success - redirect to course
-      setSuccess('Login successful! Redirecting to course...');
+      setSuccess('Sign In successful! Redirecting to course...');
 
       let communityForRedirect = null;
       
@@ -196,12 +197,12 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
           }, 1500);
         }
       } else {
-        setError('Login successful but unable to redirect. Please try again.');
+        setError('Sign In successful but unable to redirect. Please try again.');
       }
 
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.message || 'Login failed. Please check your credentials.');
+      console.error('Sign In error:', error);
+      setError(error.message || 'Sign In failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -221,11 +222,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       }}
     >
       <DialogTitle sx={{ pb: 1 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <SchoolIcon />
-            Access Course
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
           <CloseIcon 
             onClick={onClose}
             sx={{ 
@@ -239,10 +236,10 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
       <DialogContent sx={{ pt: 0 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Typography variant="h6" sx={{ mb: 1, color: 'text.primary' }}>
-            {courseData?.title || 'This Course'}
+            Sign In
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Please log in to access this course content
+            Please Sign In to access this course content
           </Typography>
         </Box>
 
@@ -331,14 +328,44 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
               fontSize: '16px',
               fontWeight: 'bold',
               borderRadius: '10px',
-              background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+              background: '#0F3C60',
             }}
           >
             {isLoading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              'Login'
+              'Sign In'
             )}
+          </Button>
+
+          {/* Google Login Button */}
+          <Button
+            fullWidth
+            variant="outlined"
+            size="large"
+            startIcon={
+              <img
+                src={googleLogo}
+                alt="Google"
+                style={{ width: 20, height: 20 }}
+              />
+            }
+            sx={{
+              marginBottom: '16px',
+              padding: '12px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              borderRadius: '10px',
+              borderColor: '#0F3C60',
+              color: '#0F3C60',
+              backgroundColor: '#fff',
+              '&:hover': {
+                borderColor: '#0F3C60',
+                backgroundColor: 'rgba(25, 118, 210, 0.04)',
+              }
+            }}
+          >
+            Sign In with Google
           </Button>
 
           {/* Signup Link */}
@@ -354,7 +381,7 @@ const CourseLoginModal = ({ open, onClose, courseData }) => {
                 }}
                 style={{ 
                   textDecoration: 'none',
-                  color: '#1976d2',
+                  color: '#0F3C60',
                   fontWeight: 500
                 }}
               >

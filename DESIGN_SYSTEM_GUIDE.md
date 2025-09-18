@@ -11,7 +11,7 @@ This document outlines the complete design system, color palette, and styling gu
 ```javascript
 // Primary Colors (Blue)
 primary: {
-  main: '#1976d2',      // Main blue
+  main: '#0F3C60',      // Main blue
   light: '#42a5f5',     // Light blue
   dark: '#1565c0',      // Dark blue
   contrastText: '#ffffff'
@@ -149,10 +149,10 @@ background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)  /* Light mode */
 background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)  /* Dark mode */
 
 /* Sidebar Logo Background */
-background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)
+background: linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)
 
 /* Text Gradients */
-background: linear-gradient(45deg, #1976d2, #42a5f5)
+background: linear-gradient(45deg, #0F3C60, #42a5f5)
 background-clip: text
 -webkit-background-clip: text
 -webkit-text-fill-color: transparent
@@ -163,7 +163,7 @@ background-clip: text
 ### Font Family
 
 ```css
-font-family: "Montserrat", "Roboto", "Helvetica", "Arial", sans-serif;
+font-family: "Lato", "Roboto", "Montserrat", "Arial", sans-serif;
 ```
 
 ### Font Weights
@@ -215,7 +215,7 @@ caption: 0.75rem (12px)
 ```css
 /* Primary Button */
 .primary-button {
-  background: #1976d2
+  background: #0F3C60
   color: #ffffff
   border-radius: 8px
   padding: 12px 24px
@@ -243,7 +243,7 @@ caption: 0.75rem (12px)
 }
 
 .text-field:focus {
-  border-color: #1976d2
+  border-color: #0F3C60
   box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2)
 }
 ```
@@ -349,7 +349,7 @@ xlarge: 40px
 
 ### Color Usage Rules
 
-1. **Primary Blue (#1976d2)**: Use for main actions, links, and primary elements
+1. **Primary Blue (#0F3C60)**: Use for main actions, links, and primary elements
 2. **Secondary Purple (#9c27b0)**: Use for secondary actions and accents
 3. **Success Green (#34a853)**: Use for success states, positive metrics
 4. **Warning Yellow (#fbbc04)**: Use for warnings and attention-grabbing elements

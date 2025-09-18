@@ -206,7 +206,7 @@ const Users = () => {
               startIcon={<AddIcon />}
               onClick={handleAddUser}
               sx={{
-                background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
                 px: 4,
                 py: 1.5,
                 borderRadius: 3,
@@ -214,7 +214,7 @@ const Users = () => {
                 fontSize: '1rem',
                 boxShadow: '0 8px 24px rgba(25, 118, 210, 0.3)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                  background: 'linear-gradient(135deg, #1565c0 0%, #0F3C60 100%)',
                   transform: 'translateY(-2px)',
                   boxShadow: '0 12px 32px rgba(25, 118, 210, 0.4)',
                 },

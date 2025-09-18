@@ -316,7 +316,7 @@ const DiscoverCourseViewer = () => {
                   px: 3
                 }}
               >
-                LOG IN
+                Sign In
               </Button>
             </Box>
           </Box>

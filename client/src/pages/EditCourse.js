@@ -519,7 +519,7 @@ const EditCourse = () => {
           <ArrowBackIcon />
         </IconButton>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#0F3C60' , fontSize: { xs: '20px', sm: '30px' }}}>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#0F3C60', fontSize: { xs: '20px', sm: '30px' } }}>
             Edit Course
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.9, color: '#34495e' }}>
@@ -529,7 +529,7 @@ const EditCourse = () => {
       </Box>
 
       {/* Stepper */}
-      <Card sx={{ mb: 4, p: 3 }}>
+      <Card sx={{ mb: 4, p: 3, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
         <Stepper
           activeStep={activeStep}
           sx={{
@@ -563,7 +563,7 @@ const EditCourse = () => {
 
       {/* Step Content */}
       {activeStep === 0 && (
-        <Card sx={{ p: { xs: 1.5, sm: 2, md: 4 } }}>
+        <Card sx={{ p: { xs: 1.5, sm: 2, md: 4 }, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: '#2c3e50' }}>
               Edit Course Information
@@ -627,7 +627,7 @@ const EditCourse = () => {
               <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: '#2c3e50' }}>
                 Course Thumbnail
               </Typography>
-              <Card sx={{ p: 3, border: '2px dashed #e0e0e0', }}>
+              <Card sx={{ p: 3, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)', border: '2px dashed #e0e0e0', }}>
                 {/* Current Thumbnail Display */}
                 {courseData.thumbnail && (
                   <Box sx={{ mb: 3 }}>
@@ -732,7 +732,7 @@ const EditCourse = () => {
               </Typography>
               <Grid container spacing={3}>
                 <Grid item size={{ xs: 12, sm: 6 }}>
-                  <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+                  <Card sx={{ p: 3, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <DescriptionIcon sx={{ color: '#0F3C60', mr: 1 }} />
                       <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
@@ -748,7 +748,7 @@ const EditCourse = () => {
                   </Card>
                 </Grid>
                 <Grid item size={{ xs: 12, sm: 6 }}>
-                  <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+                  <Card sx={{ p: 3, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <VideoIcon sx={{ color: '#0F3C60', mr: 1 }} />
                       <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
@@ -764,7 +764,7 @@ const EditCourse = () => {
                   </Card>
                 </Grid>
                 <Grid item size={{ xs: 12, md: 12 }}>
-                  <Card sx={{ p: 3, backgroundColor: '#f8f9fa', border: '1px solid #e0e0e0' }}>
+                  <Card sx={{ p: 3, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)', border: '1px solid #e0e0e0' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       {courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
                       <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, ml: 1 }}>
@@ -792,8 +792,8 @@ const EditCourse = () => {
       )}
 
       {activeStep === 1 && (
-        <Card sx={{ p: 4 }}>
-          <Box sx={{ mb: 4 }}>
+        <Card sx={{ p: 4, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
+          <Box sx={{ mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 2 }}>
               <Typography variant="h5" sx={{ fontWeight: 600, color: '#2c3e50' }}>
                 Course Structure
@@ -877,8 +877,8 @@ const EditCourse = () => {
                     transition: 'all 0.3s ease',
                     boxShadow: 'none'
                   }}>
-                    <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 4 } }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',  flexWrap: 'wrap', gap: 2, mb: 3 }}>
+                    <CardContent sx={{ p: { xs: 1.5, sm: 2, md: 3 } }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 3 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                           <Box sx={{
                             width: 40,
@@ -896,7 +896,7 @@ const EditCourse = () => {
                             {index + 1}
                           </Box>
                           <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50', mb: 0.5 , fontSize: '16px'}}>
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50', mb: 0.5, fontSize: '16px' }}>
                               {chapter.title}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
@@ -926,7 +926,7 @@ const EditCourse = () => {
                         </Box>
                       </Box>
 
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
                         {chapter.description}
                       </Typography>
 
@@ -1010,7 +1010,7 @@ const EditCourse = () => {
                                     </Typography>
                                   }
                                 />
-                                <Box sx={{ display: 'flex', gap: 0.5 , gap: 1}}>
+                                <Box sx={{ display: 'flex', gap: 0.5, gap: 1 }}>
                                   <IconButton
                                     size="small"
                                     onClick={() => handleEditVideo(video, chapter._id)}
@@ -1047,7 +1047,7 @@ const EditCourse = () => {
       )}
 
       {activeStep === 2 && (
-        <Card sx={{ p: 4 }}>
+        <Card sx={{ p: 4, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, color: '#2c3e50' }}>
               Review & Update Course
@@ -1061,16 +1061,17 @@ const EditCourse = () => {
             <Grid item size={{ xs: 12, md: 6 }}>
               <Card sx={{
                 border: '1px solid #e0e0e0',
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
+                borderRadius: '15px',
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+                boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)'
               }}>
                 <CardContent sx={{ p: 4 }}>
                   <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
                     Course Information
                   </Typography>
 
-                  <Box sx={{ mb: 4 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Box sx={{ mb: 4, p: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderRadius: 2, }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ m: 0, fontWeight: 600 }}>
                       Course Title
                     </Typography>
                     <Typography variant="h6" sx={{ fontWeight: 500, color: '#2c3e50' }}>
@@ -1078,55 +1079,56 @@ const EditCourse = () => {
                     </Typography>
                   </Box>
 
-                  <Box sx={{ mb: 4 }}>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Box sx={{ mb: 4, p: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderRadius: 2, }}>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ m: 0, fontWeight: 600 }}>
                       Description
                     </Typography>
                     <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
                       {courseData.description}
                     </Typography>
                   </Box>
+                  <Box sx={{ p: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderRadius: 2, }}>
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} md={4}>
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                            Category
+                          </Typography>
+                          <Chip
+                            label={courseData.category}
+                            color="primary"
+                            sx={{ fontWeight: 500 , mt: 1 }}
+                          />
+                        </Box>
+                      </Grid>
 
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
-                          Category
-                        </Typography>
-                        <Chip
-                          label={courseData.category}
-                          color="primary"
-                          sx={{ fontWeight: 500 }}
-                        />
-                      </Box>
+                      <Grid item xs={12} md={4}>
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                            Target Audience
+                          </Typography>
+                          <Chip
+                            label={courseData.targetAudience}
+                            color="secondary"
+                            sx={{ fontWeight: 500 , mt: 1 }}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <Box>
+                          <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+                            Content Type
+                          </Typography>
+                          <Chip
+                            icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
+                            label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'}
+                            color="success"
+                            sx={{ fontWeight: 500 , mt: 1 }}
+                          />
+                        </Box>
+                      </Grid>
                     </Grid>
-
-                    <Grid item xs={12} md={4}>
-                      <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
-                          Target Audience
-                        </Typography>
-                        <Chip
-                          label={courseData.targetAudience}
-                          color="secondary"
-                          sx={{ fontWeight: 500 }}
-                        />
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Box sx={{ mb: 3 }}>
-                        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 2, fontWeight: 600 }}>
-                          Content Type
-                        </Typography>
-                        <Chip
-                          icon={courseData.contentType === 'video' ? <VideoIcon /> : <TextIcon />}
-                          label={courseData.contentType === 'video' ? 'Video Based' : 'Text Based'}
-                          color="success"
-                          sx={{ fontWeight: 500 }}
-                        />
-                      </Box>
-                    </Grid>
-                  </Grid>
+                  </Box>
 
                 </CardContent>
               </Card>
@@ -1135,8 +1137,9 @@ const EditCourse = () => {
             <Grid item size={{ xs: 12, md: 6 }}>
               <Card sx={{
                 border: '1px solid #e0e0e0',
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
+                borderRadius: '15px',
+                background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)',
+                boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)'
               }}>
                 <CardContent sx={{ p: 4 }}>
                   <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, color: '#2c3e50' }}>
@@ -1207,7 +1210,7 @@ const EditCourse = () => {
       )}
 
       {/* Navigation Buttons */}
-      <Card sx={{ mt: 4, p: 3 }}>
+      <Card sx={{ mt: 4, p: 3, borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
           <Button
             disabled={activeStep === 0}
@@ -1632,11 +1635,11 @@ const EditCourse = () => {
                                   sx={{
                                     cursor: 'pointer',
                                     border: formData.videoType === type.value ? `2px solid ${type.color}` : '1px solid #e0e0e0',
-                                    background: formData.videoType === type.value ? '#f8f9ff' : '#ffffff',
+                                    background: formData.videoType === type.value ? '#0f3c6024' : '#ffffff',
                                     transition: 'all 0.3s ease',
                                     '&:hover': {
                                       borderColor: type.color,
-                                      background: '#f8f9ff',
+                                      background: '#0f3c6024',
                                       transform: 'translateY(-2px)',
                                       boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                                     }
@@ -1681,12 +1684,12 @@ const EditCourse = () => {
                                 borderRadius: 2,
                                 p: 3,
                                 textAlign: 'center',
-                                background: formData.videoFile ? '#f8f9ff' : '#fafafa',
+                                background: formData.videoFile ? '#0f3c6024' : '#fafafa',
                                 borderColor: formData.videoFile ? '#0F3C60' : '#e0e0e0',
                                 transition: 'all 0.3s ease',
                                 '&:hover': {
                                   borderColor: '#0F3C60',
-                                  background: '#f8f9ff',
+                                  background: '#0f3c6024',
                                 }
                               }}
                             >

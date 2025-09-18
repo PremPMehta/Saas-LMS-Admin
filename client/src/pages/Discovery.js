@@ -420,7 +420,7 @@ const Discovery = () => {
                   }
                 }}
               >
-                LOG IN
+                Sign In
               </Button>
 
 
@@ -432,11 +432,11 @@ const Discovery = () => {
       {/* Hero Section */}
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          {/* Bell & Desk Logo */}
+          {/* Bell n Desk Logo */}
           {/* <Box sx={{ mb: 3 }}>
             <img
               src="/bnd-dark.png"
-              alt="Bell & Desk"
+              alt="Bell n Desk"
               style={{
                 height: '80px',
                 width: 'auto',
@@ -496,6 +496,7 @@ const Discovery = () => {
           <Paper
             elevation={1}
             sx={{
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
               maxWidth: 600,
               mx: 'auto',
               mb: 4,
@@ -651,9 +652,10 @@ const Discovery = () => {
                   overflow: 'hidden',
                   transition: 'transform 0.2s, box-shadow 0.2s, height 0.3s ease-in-out',
                   cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   '&:hover': {
                     transform: 'translateY(-4px)',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                    // boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
                   },
                   position: 'relative'
                 }}
@@ -828,7 +830,7 @@ const Discovery = () => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: '#1976d2',
+                      color: '#0F3C60',
                       mb: 1,
                       fontSize: '0.85rem',
                       fontWeight: 500,
@@ -1098,7 +1100,8 @@ const Discovery = () => {
             <Box sx={{
               display: 'flex',
               gap: 3,
-              alignItems: 'center'
+              alignItems: 'center',
+              flexWrap: 'wrap',
             }}>
               <Typography
                 variant="body2"
@@ -1232,7 +1235,7 @@ const Discovery = () => {
                 }
               }}
             >
-              Already have an account? Login
+              Already have an account? Sign In
             </Button>
 
             {/* Divider */}
@@ -1274,7 +1277,7 @@ const Discovery = () => {
                 />
               }
             >
-              Login with Google
+              Sign In with Google
             </Button>
           </Box>
         </DialogContent>

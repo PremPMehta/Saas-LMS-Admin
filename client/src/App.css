@@ -40,8 +40,7 @@
 .bg-black {
   display: flex;
   height: 100vh;
-  background-color: #fff;
-
+  background-color: #F7F8F9;
 }
 .sidebar_profile {
   padding-inline: 10px !important;

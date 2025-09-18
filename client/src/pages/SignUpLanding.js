@@ -198,7 +198,7 @@ const SignUpLanding = () => {
                                 align="center"
                                 fontWeight="bold"
                             >
-                                Create your Bell & Desk account
+                                Create your Bell n Desk account
                             </Typography>
                             <Box mt={2} display="flex" flexDirection="column" gap={2}>
                                 <TextField
@@ -277,13 +277,9 @@ const SignUpLanding = () => {
                                     <Link href="#">terms</Link> and{" "}
                                     <Link href="#">privacy policy</Link>.
                                 </Typography>
-                                <Typography
-                                    variant="body2"
-                                    align="center"
-                                    sx={{ mt: 1 }}
-                                >
+                                <Typography variant="body2" align="center" sx={{ mt: 1 }} >
                                     Already have an account?{" "}
-                                    <Link href="#" onClick={() => { setModalView("login"); setForm({ email: "", password: "" }); }}>Log in</Link>
+                                    <Link href="#" onClick={() => { setModalView("login"); setForm({ email: "", password: "" }); }}>Sign In</Link>
                                 </Typography>
                             </Box>
                         </>
@@ -295,7 +291,7 @@ const SignUpLanding = () => {
                                 align="center"
                                 fontWeight="bold"
                             >
-                                Log in to Bell & Desk
+                                Sign In to Bell n Desk
                             </Typography>
                             <Box mt={2} display="flex" flexDirection="column" gap={2}>
                                 <TextField
@@ -321,7 +317,7 @@ const SignUpLanding = () => {
                                     fullWidth
                                     sx={{ mt: 1 }}
                                 >
-                                    Login
+                                    Sign In
                                 </Button>
                                 <Typography
                                     variant="body2"

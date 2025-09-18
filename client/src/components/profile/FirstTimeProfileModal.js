@@ -192,7 +192,7 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
       }}
     >
       <DialogTitle sx={{
-        background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+        background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
         color: 'white',
         borderRadius: '12px 12px 0 0',
         display: 'flex',
@@ -415,9 +415,9 @@ const FirstTimeProfileModal = ({ open, onComplete, user }) => {
             fontWeight: 600,
             px: 4,
             py: 1.5,
-            background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+            background: 'linear-gradient(135deg, #0F3C60 0%, #42a5f5 100%)',
             '&:hover': {
-              background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+              background: 'linear-gradient(135deg, #1565c0 0%, #0F3C60 100%)',
             },
           }}
         >

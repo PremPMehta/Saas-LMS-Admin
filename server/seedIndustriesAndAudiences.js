@@ -28,7 +28,7 @@ const seedIndustriesAndAudiences = async () => {
         name: 'Technology',
         description: 'Software development, IT services, and digital innovation',
         icon: 'computer',
-        color: '#1976d2',
+        color: '#0F3C60',
         sortOrder: 1,
         createdBy: adminUser._id
       },
@@ -76,7 +76,7 @@ const seedIndustriesAndAudiences = async () => {
         name: 'Sales',
         description: 'Sales, business development, and customer relations',
         icon: 'people',
-        color: '#1976d2',
+        color: '#0F3C60',
         sortOrder: 7,
         createdBy: adminUser._id
       },
@@ -132,7 +132,7 @@ const seedIndustriesAndAudiences = async () => {
         name: 'Government',
         description: 'Public sector and government services',
         icon: 'account_balance',
-        color: '#1976d2',
+        color: '#0F3C60',
         sortOrder: 14,
         createdBy: adminUser._id
       },
@@ -163,7 +163,7 @@ const seedIndustriesAndAudiences = async () => {
         description: 'Students pursuing education and learning',
         category: 'Student',
         icon: 'school',
-        color: '#1976d2',
+        color: '#0F3C60',
         sortOrder: 1,
         createdBy: adminUser._id
       },
@@ -208,7 +208,7 @@ const seedIndustriesAndAudiences = async () => {
         description: 'Team leaders and management professionals',
         category: 'Manager',
         icon: 'supervisor_account',
-        color: '#1976d2',
+        color: '#0F3C60',
         sortOrder: 6,
         createdBy: adminUser._id
       },
