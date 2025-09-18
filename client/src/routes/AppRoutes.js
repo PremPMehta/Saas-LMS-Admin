@@ -34,6 +34,8 @@ import CommunityAbout from '../pages/CommunityAbout';
 import AboutUsAdmin from '../pages/AboutUsAdmin';
 import NotFound from '../pages/NotFound';
 import SignUpLanding from '../pages/SignUpLanding';
+import AboutUs from '../pages/AboutUs';
+import AiBellnDesk from '../pages/AiBellnDesk';
 
 // Component to handle legacy route redirects with community name
 const LegacyRedirect = ({ to }) => {
@@ -154,8 +156,11 @@ const AppRoutes = () => {
       <Route path="/community-user-login" element={<UnifiedLogin />} />
       <Route path="/community-user-signup" element={<CommunityUserSignup />} />
       <Route path="/community-user-login" element={<CommunityUserLogin />} />
-      <Route path="/signup-landing" element={<SignUpLanding />} />
       <Route path="/test" element={<TestPage />} />
+      {/* new page added */}
+      <Route path="/signup-landing" element={<SignUpLanding />} />
+      <Route path="/about-us" element={<AboutUs />} />
+      <Route path="/ai-bell-n-desk" element={<AiBellnDesk />} />
       
       {/* Community About Page - Public route */}
       <Route path="/:communityName/about" element={<CommunityAbout />} />

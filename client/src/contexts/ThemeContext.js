@@ -246,6 +246,8 @@ export const ThemeProvider = ({ children }) => {
         },
       },
     },
+   
+ 
   });
 
   return (
