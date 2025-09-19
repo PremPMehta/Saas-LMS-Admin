@@ -17,6 +17,14 @@ router.delete('/:id', courseController.deleteCourse);
 router.patch('/:id/publish', courseController.publishCourse);
 router.post('/:courseId/enroll/:studentId', courseController.enrollStudent);
 router.post('/:courseId/rate', courseController.rateCourse);
+
+// Reorder courses - with explicit OPTIONS handler for CORS
+router.options('/reorder', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.sendStatus(200);
+});
 router.patch('/reorder', courseController.reorderCourses);
 
 module.exports = router;

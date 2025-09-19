@@ -160,6 +160,16 @@ exports.createCourse = async (req, res) => {
       instructor
     });
 
+    // Set order to be the next available order for this community
+    let order = 1;
+    if (!req.body.order) {
+      const lastCourse = await Course.findOne({ community: communityId })
+        .sort({ order: -1 });
+      order = lastCourse ? (lastCourse.order || 0) + 1 : 1;
+    } else {
+      order = req.body.order;
+    }
+
     // Create the course
     const course = new Course({
       title,
@@ -177,7 +187,8 @@ exports.createCourse = async (req, res) => {
       requirements: requirements || [],
       learningOutcomes: learningOutcomes || [],
       price: price || 0,
-      isFree: isFree !== undefined ? isFree : true
+      isFree: isFree !== undefined ? isFree : true,
+      order: order
     });
 
     const savedCourse = await course.save();
@@ -253,7 +264,7 @@ exports.getCourses = async (req, res) => {
 
     const courses = await Course.find(filter)
       .populate('community')
-      .sort({ createdAt: -1 })
+      .sort({ order: 1, createdAt: -1 }) // Sort by order first, then by creation date
       .limit(50); // Add limit to prevent memory issues
 
     console.log('📊 Backend: Found', courses.length, 'courses');
@@ -582,12 +593,33 @@ exports.reorderCourses = async (req, res) => {
       });
     }
 
+    if (!communityId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Community ID is required'
+      });
+    }
+
     console.log('🔄 Reordering courses:', {
       communityId,
       courseCount: courseOrder.length,
       courseIds: courseOrder.map(c => c.id || c._id),
       fullCourseOrder: courseOrder
     });
+
+    // Validate that all courses exist and belong to the community
+    const courseIds = courseOrder.map(c => c.id || c._id);
+    const existingCourses = await Course.find({
+      _id: { $in: courseIds },
+      community: communityId
+    });
+
+    if (existingCourses.length !== courseIds.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'Some courses not found or do not belong to the specified community'
+      });
+    }
 
     // Update each course with its new order
     const updatePromises = courseOrder.map((courseData, index) => {

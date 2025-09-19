@@ -125,6 +125,8 @@ const Courses = () => {
   const [courseToDelete, setCourseToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDragDisabled, setIsDragDisabled] = useState(true); // Start with drag disabled by default
+  const [isReordering, setIsReordering] = useState(false);
+  const [reorderError, setReorderError] = useState(null);
 
   // Debug logging
   console.log('🔍 User Debug Info:', {
@@ -275,7 +277,8 @@ const Courses = () => {
             title: course.title,
             thumbnail: course.thumbnail,
             thumbnailType: typeof course.thumbnail,
-            thumbnailLength: course.thumbnail ? course.thumbnail.length : 0
+            thumbnailLength: course.thumbnail ? course.thumbnail.length : 0,
+            order: course.order
           });
 
           return {
@@ -290,9 +293,18 @@ const Courses = () => {
             targetAudience: course.targetAudience || null,
             contentType: course.contentType || null,
             subType: course.subType || null,
+            order: course.order || 0,
             createdAt: course.createdAt || new Date().toISOString(),
             updatedAt: course.updatedAt || new Date().toISOString()
           };
+        });
+
+        // Sort courses by order first, then by creation date
+        normalizedCourses.sort((a, b) => {
+          if (a.order !== b.order) {
+            return (a.order || 0) - (b.order || 0);
+          }
+          return new Date(b.createdAt) - new Date(a.createdAt);
         });
 
         // Always update with the latest data from API
@@ -378,9 +390,18 @@ const Courses = () => {
         targetAudience: course.targetAudience || null,
         contentType: course.contentType || null,
         subType: course.subType || null,
+        order: course.order || 0,
         createdAt: course.createdAt || new Date().toISOString(),
         updatedAt: course.updatedAt || new Date().toISOString()
       }));
+
+      // Sort courses by order first, then by creation date
+      normalizedCourses.sort((a, b) => {
+        if (a.order !== b.order) {
+          return (a.order || 0) - (b.order || 0);
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
 
       setCourses(normalizedCourses);
       console.log('✅ Manual refresh: Courses updated successfully');
@@ -501,10 +522,8 @@ const Courses = () => {
     }
 
     console.log('✅ Valid drag operation:', { from: active.id, to: over.id });
-    console.log('🔍 Active course data:', filteredCourses.find(course => course._id === active.id));
-    console.log('🔍 Over course data:', filteredCourses.find(course => course._id === over.id));
 
-    // Find the indices of the dragged items
+    // Find the indices of the dragged items in the filtered courses
     const oldIndex = filteredCourses.findIndex(course => course._id === active.id);
     const newIndex = filteredCourses.findIndex(course => course._id === over.id);
 
@@ -513,46 +532,62 @@ const Courses = () => {
       return;
     }
 
-    // Create new course order
-    const newCourses = arrayMove(filteredCourses, oldIndex, newIndex);
+    // Create new course order based on filtered courses
+    const newFilteredCourses = arrayMove(filteredCourses, oldIndex, newIndex);
+
+    // Create a map of the new order from filtered courses
+    const newOrderMap = new Map();
+    newFilteredCourses.forEach((course, index) => {
+      newOrderMap.set(course._id, index + 1);
+    });
 
     // Update the courses state with new order
     setCourses(prevCourses => {
-      const updatedCourses = [...prevCourses];
-
-      // Find the course that was moved
-      const movedCourse = updatedCourses.find(course => course._id === active.id);
-      if (!movedCourse) return prevCourses;
-
-      // Remove the course from its old position
-      const oldCourseIndex = updatedCourses.findIndex(course => course._id === active.id);
-      updatedCourses.splice(oldCourseIndex, 1);
-
-      // Find the new position based on the filtered courses
-      const targetCourse = newCourses[newIndex];
-      const targetIndex = updatedCourses.findIndex(course => course._id === targetCourse._id);
-
-      // Insert at the new position
-      updatedCourses.splice(targetIndex, 0, movedCourse);
-
-      return updatedCourses;
+      // Update all courses with their new order
+      return prevCourses.map(course => {
+        const newOrder = newOrderMap.get(course._id);
+        if (newOrder !== undefined) {
+          return { ...course, order: newOrder };
+        }
+        return course;
+      }).sort((a, b) => {
+        // Sort by order first, then by creation date
+        if (a.order !== b.order) {
+          return (a.order || 0) - (b.order || 0);
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
     });
 
     // Save the new order to the backend
+    setIsReordering(true);
+    setReorderError(null);
+    
     try {
       const communityId = localStorage.getItem('communityId') || '68bae2a8807f3a3bb8ac6307';
-      const courseOrder = newCourses.map(course => ({
-        id: course._id,
-        _id: course._id,
-        title: course.title
-      }));
+      
+      // Create course order array with all courses in the community, not just filtered ones
+      const allCommunityCourses = courses.filter(course => 
+        course.community === communityId || 
+        (course.community && course.community._id === communityId)
+      );
+      
+      // Apply the new order to all community courses
+      const courseOrder = allCommunityCourses.map(course => {
+        const newOrder = newOrderMap.get(course._id);
+        return {
+          id: course._id,
+          _id: course._id,
+          title: course.title,
+          order: newOrder || course.order || 0
+        };
+      }).sort((a, b) => a.order - b.order);
 
       console.log('🚀 Sending reorder request:', {
         courseOrder,
         communityId,
         courseCount: courseOrder.length,
         sampleCourseId: courseOrder[0]?.id,
-        sampleCourseIdType: typeof courseOrder[0]?.id,
         allCourseIds: courseOrder.map(c => c.id)
       });
 
@@ -574,25 +609,18 @@ const Courses = () => {
         response: error.response,
         stack: error.stack
       });
+      
+      setReorderError(error.message || 'Failed to save course order');
+      
       // Revert the local state change if backend save fails
       setCourses(prevCourses => {
-        const revertedCourses = [...prevCourses];
-        const movedCourse = revertedCourses.find(course => course._id === active.id);
-        if (!movedCourse) return prevCourses;
-
-        // Remove from current position
-        const currentIndex = revertedCourses.findIndex(course => course._id === active.id);
-        revertedCourses.splice(currentIndex, 1);
-
-        // Insert back at original position
-        const targetCourse = filteredCourses[oldIndex];
-        const targetIndex = revertedCourses.findIndex(course => course._id === targetCourse._id);
-        revertedCourses.splice(targetIndex, 0, movedCourse);
-
-        return revertedCourses;
+        // Reload courses from server to get the correct order
+        handleRefresh();
+        return prevCourses;
       });
 
-      alert('Failed to save course order. Please try again.');
+    } finally {
+      setIsReordering(false);
     }
   };
 
@@ -1280,7 +1308,7 @@ const Courses = () => {
                       }
                     </Typography>
                   </Box> */}
-                  <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     {/* Drag Mode Toggle - Only show for admins */}
                     {!isCommunityUser && (
                       <Tooltip
@@ -1295,8 +1323,10 @@ const Courses = () => {
                           onClick={() => {
                             console.log('🔄 Toggling drag mode from', isDragDisabled, 'to', !isDragDisabled);
                             setIsDragDisabled(!isDragDisabled);
+                            setReorderError(null); // Clear any previous errors
                           }}
                           startIcon={<DragIndicatorIcon />}
+                          disabled={isReordering}
                           sx={{
                             background: isDragDisabled ? 'transparent' : '#0F3C60',
                             borderColor: '#0F3C60',
@@ -1304,12 +1334,42 @@ const Courses = () => {
                             '&:hover': {
                               background: isDragDisabled ? 'rgba(15, 60, 96, 0.1)' : '#30648e',
                               borderColor: '#0F3C60'
+                            },
+                            '&:disabled': {
+                              opacity: 0.6
                             }
                           }}
                         >
                           {isDragDisabled ? 'Reorder Mode: OFF' : 'Reorder Mode: ON'}
                         </Button>
                       </Tooltip>
+                    )}
+                    
+                    {/* Reordering Status */}
+                    {isReordering && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={16} />
+                        <Typography variant="body2" sx={{ color: '#0F3C60', fontWeight: 500 }}>
+                          Saving order...
+                        </Typography>
+                      </Box>
+                    )}
+                    
+                    {/* Reorder Error */}
+                    {reorderError && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <ErrorIcon sx={{ color: '#E53935', fontSize: 16 }} />
+                        <Typography variant="body2" sx={{ color: '#E53935', fontWeight: 500 }}>
+                          {reorderError}
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={() => setReorderError(null)}
+                          sx={{ color: '#E53935' }}
+                        >
+                          <CloseIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
                     )}
                   </Box>
                   <Box sx={{ display: 'flex', gap: 2 }}>
