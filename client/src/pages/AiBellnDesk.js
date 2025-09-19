@@ -92,6 +92,30 @@ const levelsData2 = [
     { level: 5, percentage: 1, unlocked: false, unlockAction: null },
 ];
 
+const ClassroomView = () => (
+    <Grid container spacing={2} sx={{ mb: 3 }}>
+        {courses.map(course => (
+            <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={course.title}>
+                <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+                    <CardMedia component="img" height="200" image={course.image} alt={course.title} />
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom sx={{
+                            display: 'block',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                        }}>{course.title}</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{
+                            minHeight: 48,
+                        }}>{course.description}</Typography>
+                        <LinearProgress variant="determinate" value={course.progress} sx={{ height: 8, borderRadius: 4, mt: 2 }} />
+                    </CardContent>
+                </Card>
+            </Grid>
+        ))}
+    </Grid >
+);
+
 const CommunityFeed = ({ handleOpenPostModal }) => (
     <Stack spacing={3} sx={{ mb: 3 }}>
         <Card onClick={handleOpenPostModal} sx={{ cursor: 'pointer', borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
@@ -145,30 +169,6 @@ const CommunityFeed = ({ handleOpenPostModal }) => (
             </Card>
         ))}
     </Stack>
-);
-
-const ClassroomView = () => (
-    <Grid container spacing={2} sx={{ mb: 3 }}>
-        {courses.map(course => (
-            <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 4 }} key={course.title}>
-                <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                    <CardMedia component="img" height="200" image={course.image} alt={course.title} />
-                    <CardContent>
-                        <Typography variant="h6" gutterBottom sx={{
-                            display: 'block',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                        }}>{course.title}</Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{
-                            minHeight: 48,
-                        }}>{course.description}</Typography>
-                        <LinearProgress variant="determinate" value={course.progress} sx={{ height: 8, borderRadius: 4, mt: 2 }} />
-                    </CardContent>
-                </Card>
-            </Grid>
-        ))}
-    </Grid >
 );
 
 const CalendarView = () => {
@@ -478,8 +478,8 @@ const AiBellnDesk = () => {
 
     const renderContent = () => {
         switch (tabValue) {
-            case 0: return <CommunityFeed handleOpenPostModal={handleOpenPostModal} />;
-            case 1: return <ClassroomView />;
+            case 0: return <ClassroomView />;
+            case 1: return <CommunityFeed handleOpenPostModal={handleOpenPostModal} />;
             case 2: return <CalendarView />;
             case 3: return <MembersView />;
             case 4: return <Card sx={{ borderRadius: '15px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' , mb: 3}}><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2021171.7185316933!2d-81.6388085853078!3d8.342381187511716!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa61583c8be2be3%3A0x79eee04d1fa59bcf!2sPanama!5e0!3m2!1sen!2sin!4v1758190007780!5m2!1sen!2sin" width="100%" height="500" style={{ border: 0 }} allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></Card>;
@@ -573,7 +573,7 @@ const AiBellnDesk = () => {
             <AppBar position="static" color="inherit" elevation={1} sx={{ bgcolor: 'background.paper', borderTop: '1px solid #e0e0e0' }}>
                 <Container maxWidth="lg">
                     <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary" variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-                        {['Community', 'Classroom', 'Calendar', 'Members', 'Map', 'Leaderboards', 'About'].map(label => <Tab key={label} label={label} />)}
+                        {['Classroom', ' Community', 'Calendar', 'Members', 'Map', 'Leaderboards', 'About'].map(label => <Tab key={label} label={label} />)}
                     </Tabs>
                 </Container>
             </AppBar>

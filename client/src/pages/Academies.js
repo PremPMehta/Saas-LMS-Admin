@@ -176,7 +176,7 @@ const Academies = () => {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                Bell n Desk - Academies
+                Academies
               </Typography>
               <Typography 
                 variant="body1" 

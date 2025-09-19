@@ -126,7 +126,7 @@ const FocusedTopBar = ({ darkMode, setDarkMode }) => {
       px: 3,
       position: 'fixed',
       top: 0,
-      left: getTopBarLeft(), // Responsive positioning from context
+      left: isCommunityUser ? 0 : getTopBarLeft(), // Responsive positioning from context
       right: 0, // Extend to right edge
       zIndex: 1000,
       transition: 'left 0.3s ease'

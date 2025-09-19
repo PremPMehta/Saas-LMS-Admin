@@ -256,9 +256,14 @@ const AppRoutes = () => {
       } />
       <Route path="/:communityName/student/courses" element={
         <CommunityRoute>
-          <StudentCourses />
+          <AiBellnDesk />
         </CommunityRoute>
       } />
+      {/* <Route path="/:communityName/student/courses" element={
+        <CommunityRoute>
+          <StudentCourses />
+        </CommunityRoute>
+      } /> */}
       <Route path="/:communityName/student/course-viewer/:courseId?" element={
         <CommunityRoute>
           <CourseViewer />

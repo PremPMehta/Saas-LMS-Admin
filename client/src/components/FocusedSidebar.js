@@ -10,6 +10,7 @@ import {
   People as PeopleIcon,
   Menu as MenuIcon,
   Info as InfoIcon,
+  Home as HomeIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCommunityUrls } from '../utils/communityUrlUtils';
@@ -119,6 +120,7 @@ const FocusedSidebar = ({ darkMode }) => {
           // Navigation for community users (students) - only show Courses
           { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/student/courses` }
         ] : [
+          { icon: <HomeIcon />, label: 'Dashboard', path: `/${communityName}/admin/dashboard` },
           { icon: <VideoIcon />, label: 'Courses', path: `/${communityName}/admin/courses` },
           { icon: <PeopleIcon />, label: 'Community Users', path: `/${communityName}/admin/community-users` },
           { icon: <InfoIcon />, label: 'About Us', path: `/${communityName}/admin/about-us` }

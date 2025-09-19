@@ -294,18 +294,18 @@ const StudentCourses = () => {
   return (
     <Box className="bg-black">
       {/* Common Focused Sidebar */}
-      <FocusedSidebar darkMode={darkMode} />
+      {/* <FocusedSidebar darkMode={darkMode} /> */}
 
       {/* Main Content Area */}
       <Box sx={{
         flex: 1,
-        ml: getMainContentMargin(), // responsive margin from context
+        // ml: getMainContentMargin(), // responsive margin from context
         mt: 9, // Account for fixed top bar (70px height) + padding
         display: 'flex',
         flexDirection: 'column'
       }}>
         {/* Common Focused Top Bar */}
-        <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} />
+        <FocusedTopBar darkMode={darkMode} setDarkMode={setDarkMode} sx={{ left: '0 !important' }} />
 
         {/* Main Content */}
         <Box sx={{ flex: 1, px: 1, py: 4, overflow: 'visible' }}>
@@ -326,8 +326,9 @@ const StudentCourses = () => {
                     onClick={handleRefresh}
                     disabled={refreshing}
                     sx={{
-                      color: '#0F3C60',
-                      '&:hover': { backgroundColor: 'rgba(66, 133, 244, 0.1)' }
+                      backgroundColor: '#0F3C60',
+                      color: '#ffffffff',
+                      borderRadius: '10px',
                     }}
                     title="Refresh courses"
                   >
@@ -352,7 +353,8 @@ const StudentCourses = () => {
                       display: 'flex',
                       alignItems: 'center',
                       background: 'linear-gradient(45deg, #ffffff 30%, #edf3ff 90%)',
-                      borderRadius: 3,
+                      borderRadius: '15px',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -389,7 +391,8 @@ const StudentCourses = () => {
                       display: 'flex',
                       alignItems: 'center',
                       background: 'linear-gradient(45deg, #ffffff 30%, #e9fbea 90%)',
-                      borderRadius: 3,
+                      borderRadius: '15px',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -426,7 +429,8 @@ const StudentCourses = () => {
                       display: 'flex',
                       alignItems: 'center',
                       background: 'linear-gradient(45deg, #ffffff 30%, #fff9e5 90%)',
-                      borderRadius: 3,
+                      borderRadius: '15px',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -463,7 +467,8 @@ const StudentCourses = () => {
                       display: 'flex',
                       alignItems: 'center',
                       background: 'linear-gradient(45deg, #ffffff 30%, #ffecec 90%)',
-                      borderRadius: 3,
+                      borderRadius: '15px',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -506,7 +511,9 @@ const StudentCourses = () => {
                     display: 'flex',
                     alignItems: 'center',
                     flex: 1,
-                    minWidth: 300
+                    minWidth: 300,
+                    borderRadius: '15px',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
                   }}
                 >
                   <InputBase
@@ -570,15 +577,16 @@ const StudentCourses = () => {
 
                           {/* Course Thumbnail */}
                           <Box sx={{
-                            height: 200,
-                            width: '100%',
-                            background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-                            position: 'relative',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            overflow: 'hidden',
-                            flexShrink: 0 // Prevent thumbnail from shrinking
+                            p: 2,
+                            // height: 200,
+                            // width: '100%',
+                            // background: `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
+                            // position: 'relative',
+                            // display: 'flex',
+                            // alignItems: 'center',
+                            // justifyContent: 'center',
+                            // overflow: 'hidden',
+                            // flexShrink: 0
                           }}>
                             {course.thumbnailUrl && course.thumbnailUrl.trim() !== '' ? (
                               <img
@@ -589,7 +597,8 @@ const StudentCourses = () => {
                                   height: '100%',
                                   objectFit: 'cover',
                                   objectPosition: 'center',
-                                  display: 'block'
+                                  display: 'block',
+                                  borderRadius: 10
                                 }}
                                 onError={(e) => {
                                   // Prevent multiple error logs for the same image
@@ -638,6 +647,7 @@ const StudentCourses = () => {
 
                           <CardContent sx={{
                             p: 2,
+                            py: 0,
                             display: 'flex',
                             flexDirection: 'column',
                             flex: 1,
@@ -652,14 +662,12 @@ const StudentCourses = () => {
                                 fontWeight: 600,
                                 mb: 1,
                                 color: darkMode ? '#ffffff' : '#000000',
-                                lineHeight: 1.3,
+                                // lineHeight: 1.3,
                                 display: '-webkit-box',
-                                WebkitLineClamp: 2,
+                                WebkitLineClamp: 1,
                                 WebkitBoxOrient: 'vertical',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
-                                minHeight: '2.6em', // Ensure consistent height for 2 lines
-                                maxHeight: '2.6em'  // Prevent expansion beyond 2 lines
                               }}>
                                 {course.title}
                               </Typography>
@@ -846,7 +854,6 @@ const StudentCourses = () => {
                                 display: 'flex',
                                 gap: 1,
                                 mt: 1,
-                                pb: 1 // Add bottom padding to ensure buttons are fully visible
                               }}>
                                 <Button
                                   size="small"

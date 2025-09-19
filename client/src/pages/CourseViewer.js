@@ -872,7 +872,7 @@ const CourseViewer = () => {
                 onClick={() => {
                   // Determine if user is student or admin based on URL path
                   const isStudentPath = location.pathname.includes('/student/');
-                  const backUrl = isStudentPath 
+                  const backUrl = isStudentPath
                     ? `/${communityName}/student/courses`
                     : `/${communityName}/admin/courses`;
                   console.log('CourseViewer back button - isStudentPath:', isStudentPath, 'backUrl:', backUrl);
@@ -893,140 +893,9 @@ const CourseViewer = () => {
               </Button>
             </Box>
             <Grid container spacing={2}>
-              {/* Sidebar - Courses and Lectures */}
-              <Grid size={{ xs: 12, md: 5, lg: 5, xl: 4 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' , borderRadius: '15px' , boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)'}}>
-                  <CardContent sx={{ flexGrow: 1, overflow: 'hidden', p: 0 }}>
-                    <Box sx={{ p: 2, pb: 0, borderColor: 'divider' }}>
-                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        Tributación (Crypto)
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ overflow: 'auto', height: 'calc(100% - 80px)' }}>
-                      {selectedCourse && (
-                        <Box>
-                          {/* Simple Course Header */}
-                          <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Avatar
-                              sx={{
-                                bgcolor: "#0F3C60",
-                                width: 40,
-                                height: 40,
-                              }}
-                            >
-                              <PlayCircleFilledWhiteIcon sx={{ color: "#ffffff" }} />
-                            </Avatar>
-                            <Box>
-                              <Typography variant="body2" sx={{ fontSize: '16px', fontWeight: 600 }}>
-                                {selectedCourse.title}
-                              </Typography>
-                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                0:00
-                              </Typography>
-                            </Box>
-
-
-                            {/* Course Content Type Indicator */}
-                            {/* <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                              <Chip
-                                icon={selectedCourse.contentType === 'video' ? <VideoIcon fontSize="small" /> : <TextIcon fontSize="small" />}
-                                label={selectedCourse.contentType === 'video' ? 'Video Course' : 'Text Course'}
-                                size="small"
-                                variant="outlined"
-                                color={selectedCourse.contentType === 'video' ? 'primary' : 'warning'}
-                                sx={{ fontSize: '12px', px: 1, py: 0.5 }}
-                              />
-                              <Chip
-                                label={selectedCourse.status}
-                                size="small"
-                                variant="outlined"
-                                color={selectedCourse.status === 'published' ? 'success' : 'warning'}
-                              />
-                            </Box> */}
-                          </Box>
-
-                          {/* Simple List of Chapters and Videos */}
-                          {selectedCourse.chapters?.map((chapter) => (
-                            <Box key={chapter._id} sx={{}}>
-                              <Typography variant="h6" sx={{ p: 2, fontWeight: 600, color: 'primary.main' }}>
-                                 {chapter.title}
-                              </Typography>
-
-                              {chapter.videos?.map((video) => (
-                                <Box
-                                  key={video._id}
-                                  sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 1,
-                                    p: 1.5,
-                                    cursor: 'pointer',
-                                    backgroundColor: activeLectureId === video._id ? '#0F3C6033' : 'transparent',
-                                    '&:hover': { backgroundColor: 'action.hover' },
-                                    mb: 0.5,
-                                    // ml: 2,
-                                    // borderRadius: 1,
-                                    borderLeft: activeLectureId === video._id ? 3 : 3,
-                                    borderColor: activeLectureId === video._id ? '#0F3C60' : 'transparent',
-                                  }}
-                                  onClick={() => handleLectureSelect(video)}
-                                >
-                                  {/* {video.completed ? (
-                                    <CheckIcon sx={{ fontSize: 18, color: 'success.main' }} />
-                                  ) : (
-                                    <CircleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                                  )} */}
-
-                                  {/* Content Type Icon */}
-                                  {/* <Box sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: 24,
-                                    height: 24,
-                                    borderRadius: '50%',
-                                    backgroundColor: (video.type === 'VIDEO' || video.videoType) ? '#0F3C60' :
-                                      video.type === 'PDF' ? '#34a853' : '#f59e0b',
-                                    color: 'white',
-                                    fontSize: '12px'
-                                  }}>
-                                    {(video.type === 'VIDEO' || video.videoType) ? '▶️' :
-                                      video.type === 'PDF' ? '📄' : '📝'}
-                                  </Box> */}
-
-                                  <Avatar
-                                    sx={{
-                                      bgcolor: "#0F3C60",
-                                      width: 40,
-                                      height: 40,
-                                    }}
-                                  >
-                                    <PlayCircleFilledWhiteIcon sx={{ color: "#ffffff" }} />
-                                  </Avatar>
-
-                                  <Box sx={{ flex: 1 }}>
-                                    <Typography variant="body2" sx={{ fontSize: '16px', fontWeight: 600 }}>
-                                      {video.title}
-                                    </Typography>
-                                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                      {video.type === 'PDF' ? 'PDF Document' : video.duration || 'Text Content'}
-                                    </Typography>
-                                  </Box>
-                                </Box>
-                              ))}
-                            </Box>
-                          ))}
-                        </Box>
-                      )}
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-
               {/* Main Content Area */}
               <Grid size={{ xs: 12, md: 7, lg: 7, xl: 8 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' , borderRadius: '15px' , boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)'}}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
                   <CardContent sx={{ flexGrow: 1, p: 0, display: 'flex', flexDirection: 'column' }}>
                     {selectedLecture ? (
                       <>
@@ -1563,6 +1432,204 @@ const CourseViewer = () => {
                         </Typography>
                       </Box>
                     )}
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Sidebar - Courses and Lectures */}
+              <Grid size={{ xs: 12, md: 5, lg: 5, xl: 4 }} sx={{ height: { xs: 'auto', md: '100%' } }}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '15px', boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)' }}>
+                  <CardContent sx={{ flexGrow: 1, overflow: 'hidden', p: 0 }}>
+                    <Box sx={{ p: 2, pb: 0, borderColor: 'divider' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        Tributación (Crypto)
+                      </Typography>
+                    </Box>
+
+                    <Box sx={{ overflow: 'auto', height: 'calc(100% - 80px)' }}>
+                      {selectedCourse && (
+                        <Box>
+                          {/* Simple Course Header */}
+                          <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Avatar
+                              sx={{
+                                bgcolor: "#0F3C60",
+                                width: 130,
+                                height: 80,
+                                borderRadius: 4,
+                                overflow: 'hidden'
+                              }}
+                            >
+                              {selectedLecture && selectedLecture.videoUrl && isUploadedVideo(selectedLecture.videoUrl) ? (
+                                <video
+                                  width="100%"
+                                  height="100%"
+                                  style={{ objectFit: 'cover', display: 'block' }}
+                                  src={
+                                    selectedLecture.videoUrl.startsWith('/uploads')
+                                      ? `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${selectedLecture.videoUrl}`
+                                      : (selectedLecture.videoUrl.startsWith('http')
+                                        ? selectedLecture.videoUrl
+                                        : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${selectedLecture.videoUrl}`)
+                                  }
+                                  muted
+                                  playsInline
+                                  controls
+                                />
+                              ) : (
+                                <Box sx={{ width: '100%', height: '100%' }} />
+                              )}
+                            </Avatar>
+                            <Box>
+                              <Typography variant="body2" sx={{ fontSize: '16px', fontWeight: 600 }}>
+                                {selectedCourse.title}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                0:00
+                              </Typography>
+                            </Box>
+
+
+                            {/* Course Content Type Indicator */}
+                            {/* <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                              <Chip
+                                icon={selectedCourse.contentType === 'video' ? <VideoIcon fontSize="small" /> : <TextIcon fontSize="small" />}
+                                label={selectedCourse.contentType === 'video' ? 'Video Course' : 'Text Course'}
+                                size="small"
+                                variant="outlined"
+                                color={selectedCourse.contentType === 'video' ? 'primary' : 'warning'}
+                                sx={{ fontSize: '12px', px: 1, py: 0.5 }}
+                              />
+                              <Chip
+                                label={selectedCourse.status}
+                                size="small"
+                                variant="outlined"
+                                color={selectedCourse.status === 'published' ? 'success' : 'warning'}
+                              />
+                            </Box> */}
+                          </Box>
+
+                          {/* Simple List of Chapters and Videos */}
+                          {selectedCourse.chapters?.map((chapter) => (
+                            <Box key={chapter._id} sx={{}}>
+                              <Typography variant="h6" sx={{ p: 2, fontWeight: 600, color: 'primary.main' }}>
+                                {chapter.title}
+                              </Typography>
+
+                              {chapter.videos?.map((video) => (
+                                <Box
+                                  key={video._id}
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    p: 1.5,
+                                    cursor: 'pointer',
+                                    backgroundColor: activeLectureId === video._id ? '#0F3C6033' : 'transparent',
+                                    '&:hover': { backgroundColor: 'action.hover' },
+                                    mb: 0.5,
+                                    // ml: 2,
+                                    // borderRadius: 1,
+                                    borderLeft: activeLectureId === video._id ? 3 : 3,
+                                    borderColor: activeLectureId === video._id ? '#0F3C60' : 'transparent',
+                                  }}
+                                  onClick={() => handleLectureSelect(video)}
+                                >
+                                  {/* {video.completed ? (
+                                    <CheckIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                                  ) : (
+                                    <CircleIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                                  )} */}
+
+                                  {/* Content Type Icon */}
+                                  {/* <Box sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: 24,
+                                    height: 24,
+                                    borderRadius: '50%',
+                                    backgroundColor: (video.type === 'VIDEO' || video.videoType) ? '#0F3C60' :
+                                      video.type === 'PDF' ? '#34a853' : '#f59e0b',
+                                    color: 'white',
+                                    fontSize: '12px'
+                                  }}>
+                                    {(video.type === 'VIDEO' || video.videoType) ? '▶️' :
+                                      video.type === 'PDF' ? '📄' : '📝'}
+                                  </Box> */}
+
+                                  <Avatar
+                                    sx={{
+                                      bgcolor: "#0F3C60",
+                                      width: 130,
+                                      height: 80,
+                                      borderRadius: 4,
+                                      overflow: 'hidden',
+                                      position: 'relative'
+                                    }}
+                                  >
+                                    {video?.videoUrl && isUploadedVideo(video.videoUrl) ? (
+                                      <>
+                                        <video
+                                          width="100%"
+                                          height="100%"
+                                          style={{ objectFit: 'cover', display: 'block' }}
+                                          src={
+                                            video.videoUrl.startsWith('/uploads')
+                                              ? `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${video.videoUrl}`
+                                              : (video.videoUrl.startsWith('http')
+                                                  ? video.videoUrl
+                                                  : `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${video.videoUrl}`)
+                                          }
+                                          muted
+                                          playsInline
+                                          loop
+                                        />
+                                        <Box sx={{
+                                          position: 'absolute',
+                                          inset: 0,
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          pointerEvents: 'none'
+                                        }}>
+                                          <PlayCircleFilledWhiteIcon sx={{ fontSize: 36, color: 'rgba(255,255,255,0.9)' }} />
+                                        </Box>
+                                        <Box sx={{
+                                          position: 'absolute',
+                                          right: 6,
+                                          bottom: 6,
+                                          bgcolor: 'rgba(0,0,0,0.7)',
+                                          color: '#fff',
+                                          px: 0.75,
+                                          py: 0.25,
+                                          borderRadius: 1,
+                                          fontSize: 11,
+                                          lineHeight: 1
+                                        }}>
+                                          {video.duration || '0:00'}
+                                        </Box>
+                                      </>
+                                    ) : (
+                                      <Box sx={{ width: '100%', height: '100%' }} />
+                                    )}
+                                  </Avatar>
+
+                                  <Box sx={{ flex: 1 }}>
+                                    <Typography variant="body2" sx={{ fontSize: '16px', fontWeight: 600 }}>
+                                      {video.title}
+                                    </Typography>
+                                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                                      {video.type === 'PDF' ? 'PDF Document' : video.duration || 'Text Content'}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              ))}
+                            </Box>
+                          ))}
+                        </Box>
+                      )}
+                    </Box>
                   </CardContent>
                 </Card>
               </Grid>
