@@ -288,10 +288,24 @@ const CommunityUserSignup = () => {
               <img src={loginImage} alt="login" />
             </Box>
           </Grid>
+
           <Grid size={{ xs: 12, md: 6, lg: 6 }}>
+
             <Box className="login_box">
               <Box>
-                <School style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} />
+                <Box textAlign="left" mb={3}>
+                  {/* <SchoolIcon style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} /> */}
+                  <Box variant="h4" component="h1" gutterBottom style={{
+                    fontWeight: 'bold',
+                    color: '#0F3C60',
+                    marginBottom: '8px',
+                    width: '150px'
+                  }}>
+
+                    <img src="/bnd-dark.png" alt="Bell n Desk Logo" style={{ width: '100%', height: 'auto' }} />
+                  </Box>
+                </Box>
+                {/* <School style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} /> */}
                 <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
                   Community User Signup
                 </Typography>
