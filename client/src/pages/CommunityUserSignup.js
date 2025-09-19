@@ -291,7 +291,7 @@ const CommunityUserSignup = () => {
           <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Box className="login_box">
               <Box>
-                <School style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} />
+                {/* <School style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} /> */}
                 <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
                   Community User Signup
                 </Typography>

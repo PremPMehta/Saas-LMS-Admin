@@ -527,20 +527,24 @@ const AiBellnDesk = () => {
                             </Badge>
                         </IconButton>
                         <IconButton onClick={handleMenuOpen(setProfileAnchor)}>
-                            <Avatar src="https://i.pravatar.cc/150?u=me" sx={{ ml: 2 }} />
+                            <Avatar src="https://i.pravatar.cc/150?u=me" />
                         </IconButton>
                     </Toolbar>
                 </Container>
             </AppBar>
 
             <Menu anchorEl={chatAnchor} open={Boolean(chatAnchor)} onClose={handleMenuClose(setChatAnchor)}>
-                <List sx={{ width: 300 }}>
-                    <ListItem>
-                        <ListItemText primary="Chats" />
+                <List sx={{ width: 300 , py: '0 !important'}}>
+                    <ListItem sx={{ pt: '0 !important' }}>
+                        <ListItemText primary="Chats"/>
                     </ListItem>
                     <Divider />
                     {chats.map(c => (
-                        <MenuItem key={c.user}>
+                        <MenuItem key={c.user} sx={{
+                            '& .MuiListItemText-secondary': {
+                                whiteSpace: 'normal',
+                            }
+                        }}>
                             <ListItemAvatar>
                                 <Avatar src={c.avatar} />
                             </ListItemAvatar>
@@ -550,8 +554,8 @@ const AiBellnDesk = () => {
                 </List>
             </Menu>
             <Menu anchorEl={notifAnchor} open={Boolean(notifAnchor)} onClose={handleMenuClose(setNotifAnchor)}>
-                <List sx={{ width: 350 }}>
-                    <ListItem>
+                <List sx={{ width: 350 , py: '0 !important'}}>
+                    <ListItem sx={{ pt: '0 !important' }}>
                         <ListItemText primary="Notifications" />
                     </ListItem>
                     <Divider />

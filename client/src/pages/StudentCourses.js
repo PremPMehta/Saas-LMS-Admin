@@ -40,7 +40,7 @@ const StudentCourses = () => {
   const navigate = useNavigate();
   const { communityName } = useParams();
   const { isMobile, getMainContentMargin } = useResponsiveLayout();
-  
+
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -105,27 +105,27 @@ const StudentCourses = () => {
       try {
         setLoading(true);
         console.log('🎓 StudentCourses: Loading courses for community:', communityName);
-        
+
         // Get the community ID for Crypto Manji Academy
         const communityId = '68bae2a8807f3a3bb8ac6307'; // Crypto Manji Academy ID
-        
-        const response = await courseApi.getCourses({ 
+
+        const response = await courseApi.getCourses({
           community: communityId,
           status: 'published'
         });
-        
+
         console.log('📚 StudentCourses: Fetched courses:', response);
-        
+
         if (response.success && response.courses) {
           // Filter out test courses and normalize data
           const filteredCourses = response.courses.filter(course => {
-            return course.title && 
-                   course.title.trim() !== '' && 
-                   course.chapters && 
-                   course.chapters.length > 0 &&
-                   !course.title.toLowerCase().includes('test') &&
-                   !course.title.toLowerCase().includes('sample') &&
-                   !course.title.toLowerCase().includes('duplicate');
+            return course.title &&
+              course.title.trim() !== '' &&
+              course.chapters &&
+              course.chapters.length > 0 &&
+              !course.title.toLowerCase().includes('test') &&
+              !course.title.toLowerCase().includes('sample') &&
+              !course.title.toLowerCase().includes('duplicate');
           });
 
           const normalizedCourses = filteredCourses.map(course => ({
@@ -140,7 +140,7 @@ const StudentCourses = () => {
             createdAt: course.createdAt || new Date().toISOString(),
             chapters: course.chapters || []
           }));
-          
+
           // Debug community information
           if (normalizedCourses.length > 0) {
             console.log('🔍 StudentCourses Debug: First course community info:', {
@@ -149,7 +149,7 @@ const StudentCourses = () => {
               communityName: normalizedCourses[0]?.community?.name
             });
           }
-          
+
           setCourses(normalizedCourses);
           console.log('✅ StudentCourses: Loaded', normalizedCourses.length, 'courses');
         } else {
@@ -172,20 +172,20 @@ const StudentCourses = () => {
     try {
       // Reload courses from API
       const communityId = '68bae2a8807f3a3bb8ac6307';
-      const response = await courseApi.getCourses({ 
+      const response = await courseApi.getCourses({
         community: communityId,
         status: 'published'
       });
-      
+
       if (response.success && response.courses) {
         const filteredCourses = response.courses.filter(course => {
-          return course.title && 
-                 course.title.trim() !== '' && 
-                 course.chapters && 
-                 course.chapters.length > 0 &&
-                 !course.title.toLowerCase().includes('test') &&
-                 !course.title.toLowerCase().includes('sample') &&
-                 !course.title.toLowerCase().includes('duplicate');
+          return course.title &&
+            course.title.trim() !== '' &&
+            course.chapters &&
+            course.chapters.length > 0 &&
+            !course.title.toLowerCase().includes('test') &&
+            !course.title.toLowerCase().includes('sample') &&
+            !course.title.toLowerCase().includes('duplicate');
         });
 
         const normalizedCourses = filteredCourses.map(course => ({
@@ -199,7 +199,7 @@ const StudentCourses = () => {
           createdAt: course.createdAt || new Date().toISOString(),
           chapters: course.chapters || []
         }));
-        
+
         setCourses(normalizedCourses);
         console.log('🔄 StudentCourses: Refreshed', normalizedCourses.length, 'courses');
       }
@@ -233,24 +233,24 @@ const StudentCourses = () => {
     if (!course.thumbnail || course.thumbnail.trim() === '') {
       return `https://via.placeholder.com/400x225/4285f4/ffffff?text=${encodeURIComponent(course.title)}`;
     }
-    
+
     if (course.thumbnail.startsWith('data:')) {
       return course.thumbnail;
     }
-    
+
     if (course.thumbnail.includes('localhost')) {
       const filename = course.thumbnail.split('/').pop();
       return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${filename}`;
     }
-    
+
     if (course.thumbnail.startsWith('https://saas-lms-admin-1.onrender.com')) {
       return course.thumbnail;
     }
-    
+
     if (course.thumbnail.startsWith('/uploads/')) {
       return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}${course.thumbnail}`;
     }
-    
+
     return `${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/uploads/${course.thumbnail}`;
   };
 
@@ -272,13 +272,13 @@ const StudentCourses = () => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.category.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const hasCategoryFilters = selectedFilters.categories.length > 0;
     const hasAudienceFilters = selectedFilters.audiences.length > 0;
-    
+
     const matchesCategory = !hasCategoryFilters || selectedFilters.categories.includes(course.category);
     const matchesAudience = !hasAudienceFilters || selectedFilters.audiences.includes(course.targetAudience);
-    
+
     return matchesSearch && matchesCategory && matchesAudience;
   });
 
@@ -557,13 +557,14 @@ const StudentCourses = () => {
                           borderRadius: 3,
                           transition: 'all 0.3s ease',
                           overflow: 'hidden',
-                          height: 520, // Fixed height for consistent alignment
+                          height: '100%', // Fixed height for consistent alignment
                           width: '100%',
                           display: 'flex',
                           flexDirection: 'column',
+                          boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)',
                           '&:hover': {
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                            // boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
                           }
                         }} onClick={() => handleEnrollCourse(course)}>
 
@@ -635,9 +636,9 @@ const StudentCourses = () => {
                             </Box>
                           </Box>
 
-                          <CardContent sx={{ 
-                            p: 2, 
-                            display: 'flex', 
+                          <CardContent sx={{
+                            p: 2,
+                            display: 'flex',
                             flexDirection: 'column',
                             flex: 1,
                             justifyContent: 'space-between',
@@ -646,177 +647,177 @@ const StudentCourses = () => {
 
                             {/* Top Content Section */}
                             <Box sx={{ flex: 1 }}>
-                            {/* Course Title */}
-                            <Typography variant="h6" sx={{
-                              fontWeight: 600,
-                              mb: 1,
-                              color: darkMode ? '#ffffff' : '#000000',
-                              lineHeight: 1.3,
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              minHeight: '2.6em', // Ensure consistent height for 2 lines
-                              maxHeight: '2.6em'  // Prevent expansion beyond 2 lines
-                            }}>
-                              {course.title}
-                            </Typography>
-
-                            {/* Community Name */}
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                color: darkMode ? '#90caf9' : '#0F3C60',
+                              {/* Course Title */}
+                              <Typography variant="h6" sx={{
+                                fontWeight: 600,
                                 mb: 1,
-                                fontSize: '0.85rem',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                textDecoration: 'none',
-                                '&:hover': {
-                                  textDecoration: 'underline'
-                                }
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const communityName = course.community?.name || 'Default Community';
-                                const communitySlug = communityName.toLowerCase().replace(/\s+/g, '-');
-                                navigate(`/${communitySlug}/about`);
-                              }}
-                            >
-                              {course.community?.name || 'Default Community'}
-                            </Typography>
+                                color: darkMode ? '#ffffff' : '#000000',
+                                lineHeight: 1.3,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                minHeight: '2.6em', // Ensure consistent height for 2 lines
+                                maxHeight: '2.6em'  // Prevent expansion beyond 2 lines
+                              }}>
+                                {course.title}
+                              </Typography>
 
-                            {/* Course Tags - Fixed Layout */}
-                            <Box sx={{ 
-                              mb: 2,
-                              minHeight: '64px', // Fixed height for 2 rows of tags
-                              maxHeight: '64px',
-                              overflow: 'hidden'
-                            }}>
-                              {/* First Row - Primary Tags */}
-                              <Box sx={{ 
-                                display: 'flex', 
-                                gap: 0.5, 
-                                mb: 0.5,
+                              {/* Community Name */}
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  color: darkMode ? '#90caf9' : '#0F3C60',
+                                  mb: 1,
+                                  fontSize: '0.85rem',
+                                  fontWeight: 500,
+                                  cursor: 'pointer',
+                                  textDecoration: 'none',
+                                  '&:hover': {
+                                    textDecoration: 'underline'
+                                  }
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const communityName = course.community?.name || 'Default Community';
+                                  const communitySlug = communityName.toLowerCase().replace(/\s+/g, '-');
+                                  navigate(`/${communitySlug}/about`);
+                                }}
+                              >
+                                {course.community?.name || 'Default Community'}
+                              </Typography>
+
+                              {/* Course Tags - Fixed Layout */}
+                              <Box sx={{
+                                mb: 2,
+                                minHeight: '64px', // Fixed height for 2 rows of tags
+                                maxHeight: '64px',
                                 overflow: 'hidden'
                               }}>
-                                {/* Target Audience Tag */}
-                                {course.targetAudience && (
-                                  <Chip
-                                    label={course.targetAudience}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      fontSize: '0.7rem',
-                                      height: 24,
-                                      fontWeight: 500,
-                                      borderColor: '#6366f1',
-                                      color: '#6366f1',
-                                      backgroundColor: '#6366f115',
-                                      borderRadius: 2,
-                                      maxWidth: '120px',
-                                      '& .MuiChip-label': {
-                                        px: 1,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap'
-                                      },
-                                      '&:hover': {
-                                        backgroundColor: '#6366f125'
-                                      }
-                                    }}
-                                  />
-                                )}
-                                
-                                {/* Course Type Tag */}
-                                {course.contentType && (
-                                  <Chip
-                                    label={course.contentType === 'video' ? 'Video' : 'Text'}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      fontSize: '0.7rem',
-                                      height: 24,
-                                      fontWeight: 500,
-                                      borderColor: course.contentType === 'video' ? '#f59e0b' : '#10b981',
-                                      color: course.contentType === 'video' ? '#f59e0b' : '#10b981',
-                                      backgroundColor: course.contentType === 'video' ? '#f59e0b15' : '#10b98115',
-                                      borderRadius: 2,
-                                      '& .MuiChip-label': {
-                                        px: 1
-                                      },
-                                      '&:hover': {
-                                        backgroundColor: course.contentType === 'video' ? '#f59e0b25' : '#10b98125'
-                                      }
-                                    }}
-                                  />
-                                )}
-                              </Box>
-                              
-                              {/* Second Row - Category Tag */}
-                              <Box sx={{ 
-                                display: 'flex', 
-                                gap: 0.5,
-                                overflow: 'hidden'
-                              }}>
-                                {/* Category Tag */}
-                                {course.category && (
-                                  <Chip
-                                    label={course.category}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{
-                                      fontSize: '0.7rem',
-                                      height: 24,
-                                      fontWeight: 500,
-                                      borderColor: getCategoryColor(course.category),
-                                      color: getCategoryColor(course.category),
-                                      backgroundColor: `${getCategoryColor(course.category)}15`,
-                                      borderRadius: 2,
-                                      maxWidth: '200px',
-                                      '& .MuiChip-label': {
-                                        px: 1,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap'
-                                      },
-                                      '&:hover': {
-                                        backgroundColor: `${getCategoryColor(course.category)}25`
-                                      }
-                                    }}
-                                  />
-                                )}
-                              </Box>
-                            </Box>
+                                {/* First Row - Primary Tags */}
+                                <Box sx={{
+                                  display: 'flex',
+                                  gap: 0.5,
+                                  mb: 0.5,
+                                  overflow: 'hidden'
+                                }}>
+                                  {/* Target Audience Tag */}
+                                  {course.targetAudience && (
+                                    <Chip
+                                      label={course.targetAudience}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: '0.7rem',
+                                        height: 24,
+                                        fontWeight: 500,
+                                        borderColor: '#6366f1',
+                                        color: '#6366f1',
+                                        backgroundColor: '#6366f115',
+                                        borderRadius: 2,
+                                        maxWidth: '120px',
+                                        '& .MuiChip-label': {
+                                          px: 1,
+                                          overflow: 'hidden',
+                                          textOverflow: 'ellipsis',
+                                          whiteSpace: 'nowrap'
+                                        },
+                                        '&:hover': {
+                                          backgroundColor: '#6366f125'
+                                        }
+                                      }}
+                                    />
+                                  )}
 
-                            {/* Course Description */}
-                            <Typography variant="body2" sx={{
-                              color: 'text.secondary',
-                              mb: 2,
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              lineHeight: 1.4,
-                              minHeight: '2.8em', // Ensure consistent height for 2 lines
-                              maxHeight: '2.8em'  // Prevent expansion beyond 2 lines
-                            }}>
-                              {course.description || 'No description available'}
-                            </Typography>
+                                  {/* Course Type Tag */}
+                                  {course.contentType && (
+                                    <Chip
+                                      label={course.contentType === 'video' ? 'Video' : 'Text'}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: '0.7rem',
+                                        height: 24,
+                                        fontWeight: 500,
+                                        borderColor: course.contentType === 'video' ? '#f59e0b' : '#10b981',
+                                        color: course.contentType === 'video' ? '#f59e0b' : '#10b981',
+                                        backgroundColor: course.contentType === 'video' ? '#f59e0b15' : '#10b98115',
+                                        borderRadius: 2,
+                                        '& .MuiChip-label': {
+                                          px: 1
+                                        },
+                                        '&:hover': {
+                                          backgroundColor: course.contentType === 'video' ? '#f59e0b25' : '#10b98125'
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                </Box>
+
+                                {/* Second Row - Category Tag */}
+                                <Box sx={{
+                                  display: 'flex',
+                                  gap: 0.5,
+                                  overflow: 'hidden'
+                                }}>
+                                  {/* Category Tag */}
+                                  {course.category && (
+                                    <Chip
+                                      label={course.category}
+                                      size="small"
+                                      variant="outlined"
+                                      sx={{
+                                        fontSize: '0.7rem',
+                                        height: 24,
+                                        fontWeight: 500,
+                                        borderColor: getCategoryColor(course.category),
+                                        color: getCategoryColor(course.category),
+                                        backgroundColor: `${getCategoryColor(course.category)}15`,
+                                        borderRadius: 2,
+                                        maxWidth: '200px',
+                                        '& .MuiChip-label': {
+                                          px: 1,
+                                          overflow: 'hidden',
+                                          textOverflow: 'ellipsis',
+                                          whiteSpace: 'nowrap'
+                                        },
+                                        '&:hover': {
+                                          backgroundColor: `${getCategoryColor(course.category)}25`
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                </Box>
+                              </Box>
+
+                              {/* Course Description */}
+                              <Typography variant="body2" sx={{
+                                color: 'text.secondary',
+                                mb: 2,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                lineHeight: 1.4,
+                                minHeight: '2.8em', // Ensure consistent height for 2 lines
+                                maxHeight: '2.8em'  // Prevent expansion beyond 2 lines
+                              }}>
+                                {course.description || 'No description available'}
+                              </Typography>
                             </Box>
 
                             {/* Bottom Section - Meta and Buttons */}
-                            <Box sx={{ 
+                            <Box sx={{
                               flexShrink: 0, // Prevent this section from shrinking
                               mt: 'auto' // Push to bottom
                             }}>
-                            {/* Course Meta */}
-                              <Box sx={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'space-between', 
+                              {/* Course Meta */}
+                              <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
                                 mb: 2,
                                 py: 1,
                                 px: 1.5,
@@ -824,14 +825,14 @@ const StudentCourses = () => {
                                 borderRadius: 1.5,
                                 border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'}`
                               }}>
-                                <Typography variant="body2" sx={{ 
+                                <Typography variant="body2" sx={{
                                   color: 'text.secondary',
                                   fontWeight: 500,
                                   fontSize: '0.8rem'
                                 }}>
                                   Crypto Manji Academy
                                 </Typography>
-                                <Typography variant="body2" sx={{ 
+                                <Typography variant="body2" sx={{
                                   color: 'text.secondary',
                                   fontWeight: 500,
                                   fontSize: '0.8rem'
@@ -841,12 +842,12 @@ const StudentCourses = () => {
                               </Box>
 
                               {/* Action Buttons */}
-                                <Box sx={{ 
-                                  display: 'flex', 
-                                  gap: 1,
-                                  mt: 1,
-                                  pb: 1 // Add bottom padding to ensure buttons are fully visible
-                                }}>
+                              <Box sx={{
+                                display: 'flex',
+                                gap: 1,
+                                mt: 1,
+                                pb: 1 // Add bottom padding to ensure buttons are fully visible
+                              }}>
                                 <Button
                                   size="small"
                                   variant="contained"
@@ -859,15 +860,15 @@ const StudentCourses = () => {
                                 >
                                   Start Learning
                                 </Button>
-                                </Box>
                               </Box>
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  )}
-                </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </Box>
             </Box>
 
             {/* Course Details Dialog */}

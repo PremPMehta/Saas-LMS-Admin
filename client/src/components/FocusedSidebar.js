@@ -64,7 +64,7 @@ const FocusedSidebar = ({ darkMode }) => {
       // boxShadow: '0 0 21px 0 rgba(89, 102, 122, 0.1)',
       display: 'flex',
       flexDirection: 'column',
-      py: 2,
+      // py: 2,
       height: '100%',
       transition: 'width 0.3s ease',
     }}>
@@ -218,9 +218,10 @@ const FocusedSidebar = ({ darkMode }) => {
             '& .MuiDrawer-paper': {
               width: 240,
               boxSizing: 'border-box',
-              background: '#0F3C60',
+              background: '#fff',
               border: 'none',
-              transition: 'width 0.3s ease'
+              transition: 'width 0.3s ease',
+              overflowX: 'hidden',
             }
           }}
         >

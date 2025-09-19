@@ -323,7 +323,7 @@ const UnifiedLogin = () => {
               <Box style={{ padding: '40px' }}>
                 {/* Header */}
                 <Box textAlign="left" mb={3}>
-                  <SchoolIcon style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} />
+                  {/* <SchoolIcon style={{ fontSize: 60, color: '#0F3C60', marginBottom: '0' }} /> */}
                   <Box variant="h4" component="h1" gutterBottom style={{
                     fontWeight: 'bold',
                     color: '#0F3C60',
