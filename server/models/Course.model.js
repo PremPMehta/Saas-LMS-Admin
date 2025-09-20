@@ -161,6 +161,9 @@ const courseSchema = new mongoose.Schema({
 // Indexes for better query performance
 courseSchema.index({ instructor: 1, status: 1 });
 courseSchema.index({ community: 1, status: 1 });
+courseSchema.index({ community: 1, status: 1, order: 1 }); // Optimized for course listing
+courseSchema.index({ status: 1, createdAt: -1 }); // For discovery queries
+courseSchema.index({ community: 1, order: 1, createdAt: -1 }); // For sorted course listing
 courseSchema.index({ category: 1, status: 1 });
 // courseSchema.index({ title: 'text', description: 'text' }); // Temporarily disabled to fix memory issue
 

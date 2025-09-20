@@ -252,11 +252,31 @@ const Discovery = () => {
 
   const [filteredCommunities, setFilteredCommunities] = useState([]);
 
-  // Fetch courses from database
+  // Fetch courses from database with caching
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
+        
+        // Check cache first for discovery courses
+        const cacheKey = 'discovery_courses';
+        const cacheExpiry = 10 * 60 * 1000; // 10 minutes for discovery
+        const cached = localStorage.getItem(cacheKey);
+        
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < cacheExpiry) {
+            console.log('✅ Using cached discovery course data');
+            setCourses(data);
+            setFilteredCommunities(data);
+            setLoading(false);
+            return;
+          } else {
+            console.log('🔄 Discovery cache expired, fetching fresh data');
+            localStorage.removeItem(cacheKey);
+          }
+        }
+        
         // Fetch all published courses for discovery
         const response = await courseApi.getCourses({ discovery: 'true' });
         if (response.success && response.courses) {
@@ -291,6 +311,14 @@ const Discovery = () => {
           
           setCourses(normalizedCourses);
           setFilteredCommunities(normalizedCourses);
+          
+          // Cache the discovery course data
+          const cacheData = {
+            data: normalizedCourses,
+            timestamp: Date.now()
+          };
+          localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+          console.log('💾 Cached discovery course data for faster future loads');
         } else {
           setError('Failed to fetch courses');
         }

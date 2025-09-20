@@ -262,8 +262,10 @@ exports.getCourses = async (req, res) => {
 
     console.log('🔍 Backend: Fetching courses with filter:', filter);
 
+    // Optimize query with selective field loading for better performance
     const courses = await Course.find(filter)
-      .populate('community')
+      .select('title description thumbnail status order createdAt updatedAt category targetAudience contentType instructor community')
+      .populate('community', 'name _id') // Only populate essential community fields
       .sort({ order: 1, createdAt: -1 }) // Sort by order first, then by creation date
       .limit(50); // Add limit to prevent memory issues
 

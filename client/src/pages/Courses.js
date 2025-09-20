@@ -192,9 +192,9 @@ const Courses = () => {
 
         setLoading(true);
 
-        // Add timeout to prevent infinite loading
+        // Add timeout to prevent infinite loading (reduced from 15s to 8s for better UX)
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Request timeout')), 15000)
+          setTimeout(() => reject(new Error('Request timeout')), 8000)
         );
 
         // Get community ID from authenticated user's community data
@@ -216,6 +216,24 @@ const Courses = () => {
         // FORCE: Set the correct community ID in localStorage to fix the issue
         localStorage.setItem('communityId', '68bae2a8807f3a3bb8ac6307');
         console.log('🔧 FORCED: Set communityId in localStorage to:', '68bae2a8807f3a3bb8ac6307');
+
+        // Check cache first for better performance
+        const cacheKey = `courses_${communityId}`;
+        const cacheExpiry = 5 * 60 * 1000; // 5 minutes
+        const cached = localStorage.getItem(cacheKey);
+        
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < cacheExpiry) {
+            console.log('✅ Using cached course data');
+            setCourses(data);
+            setLoading(false);
+            return;
+          } else {
+            console.log('🔄 Cache expired, fetching fresh data');
+            localStorage.removeItem(cacheKey);
+          }
+        }
 
         // FORCE: Also fix the communityData in localStorage if it has wrong community ID
         const communityData = localStorage.getItem('communityData');
@@ -326,6 +344,14 @@ const Courses = () => {
         }
 
         setCourses(normalizedCourses);
+        
+        // Cache the course data for faster future loads
+        const cacheData = {
+          data: normalizedCourses,
+          timestamp: Date.now()
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        console.log('💾 Cached course data for faster future loads');
 
       } catch (error) {
         console.error('❌ Error loading courses:', error);
