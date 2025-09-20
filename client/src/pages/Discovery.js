@@ -252,6 +252,24 @@ const Discovery = () => {
 
   const [filteredCommunities, setFilteredCommunities] = useState([]);
 
+  // Preload server to reduce cold start time
+  useEffect(() => {
+    const preloadServer = async () => {
+      try {
+        // Ping the warmup endpoint to wake up the server
+        await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/warmup`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        console.log('🔥 Discovery: Server preloaded successfully');
+      } catch (error) {
+        console.log('⚠️ Discovery: Server preload failed:', error.message);
+      }
+    };
+    
+    preloadServer();
+  }, []);
+
   // Fetch courses from database with caching
   useEffect(() => {
     const fetchCourses = async () => {

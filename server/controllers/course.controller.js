@@ -228,6 +228,10 @@ exports.createCourse = async (req, res) => {
   }
 };
 
+// Simple in-memory cache for courses
+const courseCache = new Map();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 // Get all courses for a community
 exports.getCourses = async (req, res) => {
   try {
@@ -260,6 +264,21 @@ exports.getCourses = async (req, res) => {
     if (category) filter.category = category;
     if (instructor) filter.instructor = instructor;
 
+    // Create cache key
+    const cacheKey = JSON.stringify(filter);
+    const cached = courseCache.get(cacheKey);
+    
+    // Check cache first
+    if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+      console.log('⚡ Using cached course data');
+      return res.status(200).json({
+        success: true,
+        courses: cached.data,
+        count: cached.data.length,
+        cached: true
+      });
+    }
+
     console.log('🔍 Backend: Fetching courses with filter:', filter);
 
     // Optimize query with selective field loading for better performance
@@ -271,6 +290,18 @@ exports.getCourses = async (req, res) => {
 
     console.log('📊 Backend: Found', courses.length, 'courses');
     console.log('📋 Backend: Course IDs:', courses.map(c => c._id));
+    
+    // Cache the results
+    courseCache.set(cacheKey, {
+      data: courses,
+      timestamp: Date.now()
+    });
+    
+    // Clean up old cache entries (keep only last 10)
+    if (courseCache.size > 10) {
+      const oldestKey = courseCache.keys().next().value;
+      courseCache.delete(oldestKey);
+    }
     
     // Debug: Check community information
     if (courses.length > 0) {

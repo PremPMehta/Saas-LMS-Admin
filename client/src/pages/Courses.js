@@ -182,6 +182,24 @@ const Courses = () => {
     }
   ];
 
+  // Preload server to reduce cold start time
+  useEffect(() => {
+    const preloadServer = async () => {
+      try {
+        // Ping the warmup endpoint to wake up the server
+        await fetch(`${process.env.REACT_APP_API_URL || 'https://saas-lms-admin-1.onrender.com'}/api/warmup`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        console.log('🔥 Server preloaded successfully');
+      } catch (error) {
+        console.log('⚠️ Server preload failed:', error.message);
+      }
+    };
+    
+    preloadServer();
+  }, []);
+
   // Load courses from API
   useEffect(() => {
     let isMounted = true;

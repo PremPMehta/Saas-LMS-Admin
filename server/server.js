@@ -82,6 +82,41 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Keep-alive endpoint to prevent server sleep on Render.com
+app.get('/api/keepalive', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is alive and warm',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Warm-up endpoint to pre-load critical data
+app.get('/api/warmup', async (req, res) => {
+  try {
+    // Pre-load some course data to warm up the cache
+    const Course = require('./models/Course.model');
+    await Course.find({ status: 'published' })
+      .select('title status community')
+      .limit(5)
+      .lean();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Server warmed up successfully',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(200).json({
+      success: true,
+      message: 'Warm-up completed with minor issues',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Default route
 app.get('/', (req, res) => {
   res.status(200).json({
